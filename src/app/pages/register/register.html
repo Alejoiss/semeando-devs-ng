@@ -1,0 +1,145 @@
+<div class="min-h-screen bg-background text-on-surface font-body selection:bg-primary/30 flex flex-col">
+    <div class="fixed inset-0 z-0 overflow-hidden pointer-events-none">
+        <div class="absolute inset-0 bg-[radial-gradient(circle_at_20%_30%,rgba(63,194,251,0.08)_0%,transparent_40%)]">
+        </div>
+        <div class="absolute inset-0 bg-[radial-gradient(circle_at_80%_70%,rgba(254,105,172,0.08)_0%,transparent_40%)]">
+        </div>
+        <div class="absolute top-[-10%] right-[-5%] w-[40rem] h-[40rem] bg-primary/5 rounded-full blur-[120px]"></div>
+        <div class="absolute bottom-[-10%] left-[-5%] w-[40rem] h-[40rem] bg-secondary/5 rounded-full blur-[120px]">
+        </div>
+    </div>
+
+    <main class="relative z-10 flex-grow flex items-center justify-center px-6 py-12">
+        <div class="w-full max-w-[520px]">
+            <header class="text-center mb-10">
+                <h1 class="font-headline text-3xl md:text-4xl font-extrabold tracking-tight text-on-surface mb-3">
+                    {{ registerTitle }}</h1>
+                <p class="font-body text-on-surface-variant/80 text-lg">
+                    Sua primeira conquista está a um clique de distância. Registre-se grátis agora mesmo!
+                </p>
+            </header>
+
+            <div
+                class="bg-surface-container-low backdrop-blur-xl border border-outline-variant/15 p-8 md:p-10 rounded-lg shadow-2xl relative overflow-hidden group">
+                <div
+                    class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-primary to-secondary opacity-50 group-hover:opacity-100 transition-opacity">
+                </div>
+
+                <form [formGroup]="registerForm" (ngSubmit)="onSubmit()" class="space-y-5">
+
+                    <div class="space-y-2">
+                        <label for="name"
+                            class="font-label text-sm font-medium tracking-wider text-on-surface-variant uppercase">
+                            Nome completo
+                        </label>
+                        <div class="relative">
+                            <span
+                                class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-outline-variant">person</span>
+                            <input id="name" formControlName="name" type="text" placeholder="Como devemos te chamar?"
+                                class="w-full bg-surface-container-lowest border-none rounded-DEFAULT py-4 pl-12 pr-4 text-on-surface placeholder:text-outline focus:ring-2 focus:ring-primary/50 transition-all" />
+                        </div>
+                        @if (submitted && f.name.invalid) {
+                            <p class="text-error text-sm mt-1">
+                                @if (f.name.hasError('required')) {
+                                <span>Nome é obrigatório.</span>
+                                }
+                                @if (f.name.hasError('minlength')) {
+                                <span>Mínimo de 3 caracteres.</span>
+                                }
+                            </p>
+                        }
+                    </div>
+
+                    <div class="space-y-2">
+                        <label for="email"
+                            class="font-label text-sm font-medium tracking-wider text-on-surface-variant uppercase">E-mail</label>
+                        <div class="relative">
+                            <span
+                                class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-outline-variant">alternate_email</span>
+                            <input id="email" formControlName="email" type="email" placeholder="seu@email.com"
+                                class="w-full bg-surface-container-lowest border-none rounded-DEFAULT py-4 pl-12 pr-4 text-on-surface placeholder:text-outline focus:ring-2 focus:ring-primary/50 transition-all" />
+                        </div>
+                        @if (submitted && f.email.invalid) {
+                            <p class="text-error text-sm mt-1">
+                                @if (f.email.hasError('required')) {
+                                <span>Email é obrigatório.</span>
+                                }
+                                @if (f.email.hasError('email')) {
+                                <span>Email inválido.</span>
+                                }
+                            </p>
+                        }
+                    </div>
+
+                    <div class="space-y-2">
+                        <label for="password"
+                            class="font-label text-sm font-medium tracking-wider text-on-surface-variant uppercase">Senha</label>
+                        <div class="relative">
+                            <span
+                                class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-outline-variant">lock</span>
+                            <input id="password" formControlName="password" type="password" placeholder="••••••••"
+                                class="w-full bg-surface-container-lowest border-none rounded-DEFAULT py-4 pl-12 pr-4 text-on-surface placeholder:text-outline focus:ring-2 focus:ring-primary/50 transition-all" />
+                        </div>
+                        @if (submitted && f.password.invalid) {
+                            <p class="text-error text-sm mt-1">
+                                @if (f.password.hasError('required')) {
+                                <span>Senha é obrigatória.</span>
+                                }
+                                @if (f.password.hasError('minlength')) {
+                                <span>Mínimo de 6 caracteres.</span>
+                                }
+                            </p>
+                        }
+                    </div>
+
+                    <div class="space-y-2">
+                        <label for="confirmPassword"
+                            class="font-label text-sm font-medium tracking-wider text-on-surface-variant uppercase">Confirmar
+                            senha</label>
+                        <div class="relative">
+                            <span
+                                class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-outline-variant">lock</span>
+                            <input id="confirmPassword" formControlName="confirmPassword" type="password"
+                                placeholder="••••••••"
+                                class="w-full bg-surface-container-lowest border-none rounded-DEFAULT py-4 pl-12 pr-4 text-on-surface placeholder:text-outline focus:ring-2 focus:ring-primary/50 transition-all" />
+                        </div>
+                        @if (submitted && f.confirmPassword.invalid) {
+                            <p class="text-error text-sm mt-1">
+                                @if (f.confirmPassword.hasError('required')) {
+                                <span>Confirmação de senha é obrigatória.</span>
+                                }
+                            </p>
+                        }
+                        @if (submitted && registerForm.hasError('mismatch')) {
+                            <p class="text-error text-sm mt-1"><span>As senhas não conferem.</span></p>
+                        }
+                    </div>
+
+                    <button type="submit" [disabled]="busy"
+                        class="w-full group relative flex items-center justify-center py-4 bg-gradient-to-r from-primary to-primary-container text-on-primary font-headline font-bold rounded-DEFAULT overflow-hidden hover:shadow-[0_0_20px_rgba(63,194,251,0.4)] active:scale-[0.98] transition-all">
+                        <span class="relative z-10 flex items-center gap-2">{{ busy ? 'Criando conta...' : 'Criar Minha
+                            Conta' }} <span class="material-symbols-outlined text-xl">bolt</span></span>
+                    </button>
+
+                    @if (registerError) {
+                        <p class="text-error text-center text-sm">{{ registerError }}</p>
+                    }
+
+                </form>
+
+                <div class="mt-8 pt-8 border-t border-outline-variant/10 text-center">
+                    <p class="text-on-surface-variant text-sm font-body">
+                        Já possui um perfil ativo?
+                        <a
+                            class="text-secondary font-bold hover:text-secondary-fixed transition-colors ml-1"
+                            routerLink="/login">
+                            Fazer Login
+                        </a>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <app-footer></app-footer>
+</div>

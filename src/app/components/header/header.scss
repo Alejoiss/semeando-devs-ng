@@ -1,0 +1,83 @@
+.top-nav {
+    position: fixed;
+    top: 0;
+    width: 100%;
+    z-index: 50;
+    background: rgba(6, 14, 32, 0.8);
+    backdrop-filter: blur(12px);
+    box-shadow: 0 8px 32px rgba(63, 194, 251, 0.1);
+}
+
+.top-nav-inner {
+    max-width: 1120px;
+    margin: 0 auto;
+    padding: 16px 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.brand-row {
+    display: flex;
+    align-items: center;
+    gap: 32px;
+}
+
+.brand {
+    font-size: 1.5rem;
+    font-weight: 900;
+    color: #3fc2fb;
+    font-family: "Plus Jakarta Sans", sans-serif;
+}
+
+.nav-links {
+    display: none;
+}
+
+@media (min-width: 768px) {
+    .nav-links {
+        display: flex;
+        gap: 24px;
+    }
+}
+
+.nav-links a {
+    color: #dee5ff;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    text-decoration: none;
+    font-size: 0.8rem;
+}
+
+.nav-links a:first-child {
+    color: #3fc2fb;
+    border-bottom: 2px solid #3fc2fb;
+    padding-bottom: 2px;
+}
+
+.buttons-row {
+    display: flex;
+    gap: 12px;
+}
+
+.btn-tone,
+.btn-action,
+.btn-primary,
+.btn-secondary {
+    border: 0;
+    border-radius: 12px;
+    padding: 12px 22px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.btn-tone {
+    color: #3fc2fb;
+    background: transparent;
+}
+
+.btn-action {
+    background: linear-gradient(120deg, #3fc2fb, #27b4ed);
+    color: #ffffff;
+    box-shadow: 0 0 20px rgba(63, 194, 251, 0.3);
+}

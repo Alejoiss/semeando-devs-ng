@@ -1,0 +1,16 @@
+.label-font { font-family: 'Space Grotesk', sans-serif; }
+.headline-font { font-family: 'Plus Jakarta Sans', sans-serif; }
+
+:host { display: block; }
+
+footer {
+  width: 100%;
+}
+
+a {
+  transition: transform 0.2s ease;
+}
+
+a:hover {
+  transform: translateY(-2px);
+}

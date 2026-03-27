@@ -1,0 +1,201 @@
+:host {
+    display: block;
+    min-height: 100vh;
+    font-family: "Inter", sans-serif;
+    background: #060e20;
+    color: #dee5ff;
+}
+
+.hero-section {
+    position: relative;
+    padding: 120px 24px 80px;
+    max-width: 1120px;
+    margin: 0 auto;
+    text-align: center;
+}
+
+.hero-backdrop {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background: radial-gradient(circle at center, rgba(63, 194, 251, 0.2), transparent 45%);
+}
+
+.hero-logo {
+    border-radius: 16px;
+    object-fit: cover;
+    margin: 0 auto 1.5rem;
+}
+
+.headline {
+    font-family: "Plus Jakarta Sans", sans-serif;
+    font-size: clamp(2rem, 5vw, 4rem);
+    font-weight: 800;
+    margin: 0;
+    line-height: 1.1;
+    max-width: 840px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.gradient-text {
+    background: linear-gradient(90deg, #3fc2fb, #fe69ac, #b8fd4b);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+}
+
+.subheadline {
+    color: #cfd7f3;
+    font-size: 1.1rem;
+    max-width: 760px;
+    margin: 16px auto 32px;
+}
+
+.actions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 14px;
+    margin-bottom: 2.5rem;
+}
+
+.btn-primary {
+    background: linear-gradient(120deg, #3fc2fb, #27b4ed);
+    color: #00394f;
+    font-weight: 800;
+}
+
+.btn-secondary {
+    color: #3fc2fb;
+    background: rgba(15, 25, 48, 0.8);
+    border: 2px solid rgba(63, 194, 251, 0.3);
+}
+
+.dashboard-preview {
+    position: relative;
+    max-width: 900px;
+    margin: 0 auto;
+    border-radius: 1rem;
+    overflow: hidden;
+    border: 1px solid rgba(109, 117, 140, 0.2);
+    box-shadow: 0 0 50px rgba(0, 0, 0, 0.35);
+}
+
+.dashboard-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to top, #060e20 33%, transparent 100%);
+    z-index: 1;
+}
+
+.dashboard-img {
+    width: 100%;
+    height: auto;
+    display: block;
+    transform: translateZ(0);
+    transition: transform 0.7s ease;
+}
+
+.dashboard-preview:hover .dashboard-img {
+    transform: scale(1.02);
+}
+
+.tracks-section {
+    background: #091328;
+    padding: 60px 24px 70px;
+}
+
+.tracks-inner {
+    max-width: 1120px;
+    margin: 0 auto;
+}
+
+.tracks-title span {
+    color: #fe69ac;
+    letter-spacing: 0.25em;
+    font-weight: 700;
+    text-transform: uppercase;
+    font-size: 0.75rem;
+}
+
+.tracks-title h2 {
+    font-family: "Plus Jakarta Sans", sans-serif;
+    font-size: 2.5rem;
+    margin: 0.75rem 0 2.5rem;
+}
+
+.tracks-grid {
+    display: grid;
+    grid-template-columns: repeat(1, minmax(0, 1fr));
+    gap: 18px;
+}
+
+@media (min-width: 768px) {
+    .tracks-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+}
+
+.track-card {
+    background: rgba(31, 43, 73, 0.6);
+    border-radius: 24px;
+    padding: 24px;
+    position: relative;
+    overflow: hidden;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.track-card .card-icon {
+    width: 64px;
+    height: 64px;
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 16px;
+}
+
+.track-card h3 {
+    margin: 0 0 8px;
+    font-size: 1.5rem;
+}
+
+.track-card p {
+    color: #b8c0dc;
+    margin: 0 0 16px;
+}
+
+.progress {
+    display: inline-block;
+    font-size: 0.75rem;
+    font-weight: 800;
+    margin-bottom: 8px;
+}
+
+.progress-bar {
+    height: 10px;
+    border-radius: 999px;
+    background: rgba(0, 0, 0, 0.2);
+    overflow: hidden;
+}
+
+.progress-bar > div {
+    height: 100%;
+    width: 0;
+    border-radius: 999px;
+    transition: width 1s ease;
+}
+
+.track-card.html .progress-bar > div {
+    background: #3fc2fb;
+    width: 8%;
+}
+.track-card.css .progress-bar > div {
+    background: #fe69ac;
+    width: 5%;
+}
+.track-card.js .progress-bar > div {
+    background: #b8fd4b;
+    width: 2%;
+}
