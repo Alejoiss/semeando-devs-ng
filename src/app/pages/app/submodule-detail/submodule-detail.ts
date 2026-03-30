@@ -3,12 +3,10 @@ import { Component } from '@angular/core';
 import { RouterLink } from '@angular/router';
 
 @Component({
-    selector: 'app-footer',
+    selector: 'app-submodule-detail',
     standalone: true,
     imports: [CommonModule, RouterLink],
-    templateUrl: './footer.html',
-    styleUrls: ['./footer.scss']
+    templateUrl: './submodule-detail.html',
+    styleUrls: ['./submodule-detail.scss'],
 })
-export class Footer {
-    currentYear: number = new Date().getFullYear();
-}
+export class SubmoduleDetail {}

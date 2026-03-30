@@ -1,11 +1,61 @@
 import { Routes } from '@angular/router';
 
-import { LandingPage } from './pages/landing-page/landing-page';
-import { Login } from './pages/login/login';
-import { Register } from './pages/register/register';
-
 export const routes: Routes = [
-    { path: '', component: LandingPage },
-    { path: 'login', component: Login },
-    { path: 'register', component: Register }
+    {
+        path: '',
+        pathMatch: 'full',
+        redirectTo: 'home'
+    },
+    {
+        path: 'home',
+        loadComponent: () => import('./pages/landing-page/landing-page').then((m) => m.LandingPage),
+        title: 'Semeando Devs | Home'
+    },
+    {
+        path: 'auth/login',
+        loadComponent: () => import('./pages/login/login').then((m) => m.Login),
+        title: 'Semeando Devs | Login'
+    },
+    {
+        path: 'auth/register',
+        loadComponent: () => import('./pages/register/register').then((m) => m.Register),
+        title: 'Semeando Devs | Cadastro'
+    },
+    {
+        path: 'support/contact',
+        loadComponent: () => import('./pages/contact/contact').then((m) => m.Contact),
+        title: 'Semeando Devs | Contato'
+    },
+    {
+        path: 'app',
+        loadComponent: () => import('./pages/app/app').then((m) => m.App),
+        title: 'Semeando Devs | App',
+        children: [
+            {
+                path: '',
+                loadComponent: () => import('./pages/app/modules/modules').then((m) => m.Modules),
+                title: 'Semeando Devs | Módulos'
+            },
+            {
+                path: 's/:slug',
+                loadComponent: () => import('./pages/app/submodule/submodule').then((m) => m.Submodule),
+                title: 'Semeando Devs | Submódulo'
+            },
+            {
+                path: 's/:slug/ss/:slugSubmodule',
+                loadComponent: () => import('./pages/app/submodule-detail/submodule-detail').then((m) => m.SubmoduleDetail),
+                title: 'Semeando Devs | Submódulo Detalhe'
+            },
+            {
+                path: 's/:slug/ss/:slugSubmodule/lesson/:lessonId',
+                loadComponent: () => import('./pages/app/lesson/lesson').then((m) => m.Lesson),
+                title: 'Semeando Devs | Aula'
+            },
+            {
+                path: 's/:slug/ss/:slugSubmodule/lesson/:lessonId/quiz',
+                loadComponent: () => import('./pages/app/quiz/quiz').then((m) => m.Quiz),
+                title: 'Semeando Devs | Quiz'
+            }
+        ]
+    }
 ];

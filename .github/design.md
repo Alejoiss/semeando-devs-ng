@@ -145,6 +145,13 @@ In this system, elevation is conveyed through **Tonal Layering** and **Luminesce
 * **Code Snippets:** Use a dark, slightly desaturated background (`surface_container_low`) with Inter for commentary and a high-quality monospace font for syntax.
 
 
+#### URL's Standards
+
+* **URLs routes:** ALWAYS must be in 'pt-br' and using a friendly path.
+    Ex.: { path: 'registro', component: Register },
+* **URLs titles:** Every routes must be accompanied by a title property according to the path and using the 'Semeando Devs' suffix.
+    Ex.: { path: 'registro', component: Register, title: 'Registro - Semeando Devs' },
+
 
 ---
 

@@ -3,12 +3,10 @@ import { Component } from '@angular/core';
 import { RouterLink } from '@angular/router';
 
 @Component({
-    selector: 'app-footer',
+    selector: 'app-internal-header',
     standalone: true,
     imports: [CommonModule, RouterLink],
-    templateUrl: './footer.html',
-    styleUrls: ['./footer.scss']
+    templateUrl: './internal-header.html',
+    styleUrls: ['./internal-header.scss']
 })
-export class Footer {
-    currentYear: number = new Date().getFullYear();
-}
+export class InternalHeader {}

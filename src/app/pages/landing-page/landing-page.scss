@@ -6,6 +6,28 @@
     color: #dee5ff;
 }
 
+.btn-tone,
+.btn-action,
+.btn-primary,
+.btn-secondary {
+    border: 0;
+    border-radius: 12px;
+    padding: 12px 22px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.btn-tone {
+    color: #3fc2fb;
+    background: transparent;
+}
+
+.btn-action {
+    background: linear-gradient(120deg, #3fc2fb, #27b4ed);
+    color: #ffffff;
+    box-shadow: 0 0 20px rgba(63, 194, 251, 0.3);
+}
+
 .hero-section {
     position: relative;
     padding: 120px 24px 80px;
@@ -70,6 +92,25 @@
     color: #3fc2fb;
     background: rgba(15, 25, 48, 0.8);
     border: 2px solid rgba(63, 194, 251, 0.3);
+}
+
+.btn-tertiary {
+    color: #f8f9ff;
+    background: rgba(126, 58, 160, 0.8);
+    border: 2px solid rgba(254, 105, 172, 0.45);
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.75rem 1.25rem;
+    border-radius: 0.75rem;
+    font-weight: 700;
+    transition: transform 0.2s ease, opacity 0.2s ease;
+}
+
+.btn-tertiary:hover {
+    transform: translateY(-1px);
+    opacity: 0.94;
 }
 
 .dashboard-preview {

@@ -1,0 +1,76 @@
+<div class="contact-page bg-background text-on-background selection:bg-primary/30 min-h-screen">
+    <app-header></app-header>
+
+    <main class="pt-32 pb-20 px-6 flex flex-col items-center">
+        <!-- <div class="absolute bottom-1/4 -right-20 w-96 h-96 bg-secondary opacity-10 blur-[120px] rounded-full"></div> -->
+
+        <section class="max-w-4xl w-full flex flex-col items-center text-center relative z-10">
+            <div class="mb-12">
+                <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-surface-container-high border border-outline-variant/20 mb-6">
+                    <span class="w-2 h-2 rounded-full bg-tertiary shadow-[0_0_8px_#e8ffc0]"></span>
+                    <span class="text-[10px] font-label uppercase tracking-[0.2em] text-on-surface-variant">Central de Suporte</span>
+                </div>
+                <h1 class="text-5xl md:text-7xl font-headline font-black tracking-tight text-on-surface mb-6">
+                    Precisa de Ajuda, <span class="text-primary italic">Dev?</span>
+                </h1>
+                <p class="text-lg md:text-xl text-on-surface-variant max-w-2xl mx-auto leading-relaxed">
+                    Nossa equipe está pronta para ajudar você a resolver qualquer problema ou dúvida na sua jornada de aprendizado.
+                </p>
+            </div>
+
+            <div class="w-full max-w-2xl glass-panel rounded-lg p-10 md:p-16 border border-outline-variant/10 neon-glow-primary relative overflow-hidden group">
+                <div class="absolute inset-0 opacity-[0.03] pointer-events-none bg-[radial-gradient(#3fc2fb_1px,transparent_1px)] [background-size:24px_24px]"></div>
+                <div class="relative z-20 flex flex-col items-center">
+                    <div class="w-24 h-24 rounded-full bg-surface-container-highest flex items-center justify-center mb-8 relative">
+                        <div class="absolute inset-0 rounded-full border border-primary/20 scale-125 group-hover:scale-150 transition-transform duration-700"></div>
+                        <span class="material-symbols-outlined text-5xl text-primary" data-icon="support_agent">support_agent</span>
+                    </div>
+
+                    <h2 class="text-2xl font-headline font-bold text-on-surface mb-2">Suporte via E-mail</h2>
+                    <p class="font-label text-xs uppercase tracking-[0.3em] text-on-surface-variant mb-8">Protocolo de Comunicação Direta</p>
+
+                    <div class="flex flex-col md:flex-row items-center gap-4 w-full bg-surface-container-lowest/50 p-6 rounded-lg border border-outline-variant/20">
+                        <div class="flex-grow text-left">
+                            <span class="block font-label text-[10px] uppercase tracking-widest text-on-tertiary-container/60 mb-1">Endereço de Destino</span>
+                            <span class="text-xl md:text-2xl font-bold text-on-surface select-all">{{ supportEmail }}</span>
+                        </div>
+                        <button (click)="copyEmail()" class="flex items-center gap-2 bg-primary text-on-primary-container px-6 py-4 rounded-md font-label uppercase text-xs tracking-widest font-bold transition-all hover:scale-105 active:scale-95 shadow-lg shadow-primary/20">
+                            <span class="material-symbols-outlined text-sm">content_copy</span>
+                            {{ copied ? 'Copiado' : 'Copiar E-mail' }}
+                        </button>
+                    </div>
+
+                    <!-- <div class="mt-10 flex items-center gap-3">
+                        <div class="flex -space-x-2">
+                            <img alt="" class="w-8 h-8 rounded-full border-2 border-surface" src="https://randomuser.me/api/portraits/men/32.jpg" />
+                            <img alt="" class="w-8 h-8 rounded-full border-2 border-surface" src="https://randomuser.me/api/portraits/women/44.jpg" />
+                        </div>
+                        <p class="text-sm text-on-surface-variant italic">
+                            Resposta média em <span class="text-tertiary font-bold">2 horas</span>
+                        </p>
+                    </div> -->
+                </div>
+            </div>
+
+            <!-- <div class="mt-16 grid grid-cols-1 md:grid-cols-3 gap-8 w-full">
+                <div class="bg-surface-container p-8 rounded-lg text-left transition-colors hover:bg-surface-container-high group">
+                    <span class="material-symbols-outlined text-secondary mb-4 text-3xl">menu_book</span>
+                    <h3 class="font-headline font-bold text-lg mb-2 group-hover:text-secondary transition-colors">Documentação</h3>
+                    <p class="text-sm text-on-surface-variant">Encontre guias rápidos para as dúvidas mais comuns.</p>
+                </div>
+                <div class="bg-surface-container p-8 rounded-lg text-left transition-colors hover:bg-surface-container-high group">
+                    <span class="material-symbols-outlined text-primary mb-4 text-3xl">forum</span>
+                    <h3 class="font-headline font-bold text-lg mb-2 group-hover:text-primary transition-colors">Comunidade</h3>
+                    <p class="text-sm text-on-surface-variant">Conecte-se com outros devs no nosso servidor Discord.</p>
+                </div>
+                <div class="bg-surface-container p-8 rounded-lg text-left transition-colors hover:bg-surface-container-high group">
+                    <span class="material-symbols-outlined text-tertiary mb-4 text-3xl">terminal</span>
+                    <h3 class="font-headline font-bold text-lg mb-2 group-hover:text-tertiary transition-colors">Status</h3>
+                    <p class="text-sm text-on-surface-variant">Acompanhe a integridade de todos os nossos sistemas.</p>
+                </div>
+            </div> -->
+        </section>
+    </main>
+
+    <app-footer></app-footer>
+</div>

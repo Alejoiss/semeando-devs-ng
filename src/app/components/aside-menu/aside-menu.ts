@@ -3,12 +3,10 @@ import { Component } from '@angular/core';
 import { RouterLink } from '@angular/router';
 
 @Component({
-    selector: 'app-footer',
+    selector: 'app-aside-menu',
     standalone: true,
     imports: [CommonModule, RouterLink],
-    templateUrl: './footer.html',
-    styleUrls: ['./footer.scss']
+    templateUrl: './aside-menu.html',
+    styleUrls: ['./aside-menu.scss']
 })
-export class Footer {
-    currentYear: number = new Date().getFullYear();
-}
+export class AsideMenu { }

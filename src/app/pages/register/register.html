@@ -117,8 +117,8 @@
 
                     <button type="submit" [disabled]="busy"
                         class="w-full group relative flex items-center justify-center py-4 bg-gradient-to-r from-primary to-primary-container text-on-primary font-headline font-bold rounded-DEFAULT overflow-hidden hover:shadow-[0_0_20px_rgba(63,194,251,0.4)] active:scale-[0.98] transition-all">
-                        <span class="relative z-10 flex items-center gap-2">{{ busy ? 'Criando conta...' : 'Criar Minha
-                            Conta' }} <span class="material-symbols-outlined text-xl">bolt</span></span>
+                        <span class="relative z-10 flex items-center gap-2">
+                            {{ busy ? 'Criando conta...' : 'Criar Minha Conta' }} <span class="material-symbols-outlined text-xl">bolt</span></span>
                     </button>
 
                     @if (registerError) {
@@ -132,7 +132,7 @@
                         Já possui um perfil ativo?
                         <a
                             class="text-secondary font-bold hover:text-secondary-fixed transition-colors ml-1"
-                            routerLink="/login">
+                            routerLink="/auth/login">
                             Fazer Login
                         </a>
                     </p>
