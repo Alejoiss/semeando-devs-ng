@@ -26,3 +26,8 @@
         box-sizing: border-box;
     }
 }
+
+
+:not(pre) > code[class*=language-], pre[class*=language-] {
+    background: none !important;
+}
