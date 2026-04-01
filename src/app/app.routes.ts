@@ -65,6 +65,11 @@ export const routes: Routes = [
                 path: 'conquistas',
                 loadComponent: () => import('./pages/app/achievements/achievements').then((m) => m.Achievements),
                 title: 'Semeando Devs | Conquistas'
+            },
+            {
+                path: 'upgrade',
+                loadComponent: () => import('./pages/app/upgrade/upgrade').then((m) => m.Upgrade),
+                title: 'Semeando Devs | Assinatura PRO'
             }
         ]
     }

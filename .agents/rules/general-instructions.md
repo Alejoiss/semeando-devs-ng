@@ -6,7 +6,7 @@ trigger: always_on
 
 ## Visão Geral do Projeto
 - **Framework:** Angular 20+ (componentes standalone, Angular CLI). Sempre use o `angular-instructions.md` para detalhes específicos de Angular.
-- **UI:** Tailwind CSS, ng-zorro-antd
+- **UI:** Tailwind CSS
 - **Estrutura:**
     - `src/app/components/`: Componentes de UI compartilhados (ex: `internal-header`, `breadcrumb`, `aside-menu`)
     - `src/app/pages/`: Páginas de funcionalidades, agrupadas por domínio (ex: `home`, `login`, `company`, `campaigns`)
