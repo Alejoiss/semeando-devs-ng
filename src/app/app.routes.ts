@@ -55,6 +55,16 @@ export const routes: Routes = [
                 path: 's/:slug/ss/:slugSubmodule/lesson/:lessonId/quiz',
                 loadComponent: () => import('./pages/app/quiz/quiz').then((m) => m.Quiz),
                 title: 'Semeando Devs | Quiz'
+            },
+            {
+                path: 'ranking',
+                loadComponent: () => import('./pages/app/ranking/ranking').then((m) => m.Ranking),
+                title: 'Semeando Devs | Ranking'
+            },
+            {
+                path: 'conquistas',
+                loadComponent: () => import('./pages/app/achievements/achievements').then((m) => m.Achievements),
+                title: 'Semeando Devs | Conquistas'
             }
         ]
     }
