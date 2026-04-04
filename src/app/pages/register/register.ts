@@ -30,12 +30,13 @@ export class Register {
             name: ['', [Validators.required, Validators.minLength(3)]],
             email: ['', [Validators.required, Validators.email]],
             password: ['', [Validators.required, Validators.minLength(6)]],
-            confirmPassword: ['', [Validators.required]]
+            confirmPassword: ['', [Validators.required]],
+            termsAccepted: [false, [Validators.requiredTrue]]
         }, { validators: passwordMatchValidator });
     }
 
-    get f(): { name: AbstractControl; email: AbstractControl; password: AbstractControl; confirmPassword: AbstractControl } {
-        return this.registerForm.controls as { name: AbstractControl; email: AbstractControl; password: AbstractControl; confirmPassword: AbstractControl };
+    get f(): { name: AbstractControl; email: AbstractControl; password: AbstractControl; confirmPassword: AbstractControl; termsAccepted: AbstractControl } {
+        return this.registerForm.controls as { name: AbstractControl; email: AbstractControl; password: AbstractControl; confirmPassword: AbstractControl; termsAccepted: AbstractControl };
     }
 
     onSubmit(): void {

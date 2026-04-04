@@ -27,6 +27,11 @@ export const routes: Routes = [
         title: 'Semeando Devs | Contato'
     },
     {
+        path: 'termos-de-uso',
+        loadComponent: () => import('./pages/terms-of-use/terms-of-use').then((m) => m.TermsOfUse),
+        title: 'Semeando Devs | Termos de Uso'
+    },
+    {
         path: 'app',
         loadComponent: () => import('./pages/app/app').then((m) => m.App),
         title: 'Semeando Devs | App',
