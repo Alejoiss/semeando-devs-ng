@@ -16,7 +16,7 @@ Your job is to produce a clean requirements artifact that:
 ## Process
 
 1. **Read Project Guidelines** (if they exist):
-   - Use `Glob` to find `AGENTS.md`, `STYLEGUIDE.md`, `ARCHITECTURE.md`
+   - Use `Glob` to find `general-instructions.md`, `STYLEGUIDE.md`, `angular-instructions.md`
    - Use `Read` to understand existing patterns, naming conventions, and architecture
    - Use `Grep` to search for keywords or patterns relevant to the feature
 2. Analyze user description and any issue context

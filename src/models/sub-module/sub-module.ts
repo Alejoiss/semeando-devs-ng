@@ -6,5 +6,6 @@ export interface SubModule {
     description: string;
     avatar: string;
     icon: string;
+    order: number;
     module: Module;
 }

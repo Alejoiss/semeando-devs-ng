@@ -1,9 +1,10 @@
 import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
 import { AbstractControl, FormBuilder, FormGroup, ReactiveFormsModule, ValidatorFn, Validators } from '@angular/forms';
-import { RouterModule } from '@angular/router';
+import { RouterModule, Router } from '@angular/router';
 
 import { Footer } from '../../components/footer/footer';
+import { UserService } from '../../services/user';
 
 const passwordMatchValidator: ValidatorFn = (group: AbstractControl) => {
     const password = group.get('password')?.value;
@@ -25,7 +26,7 @@ export class Register {
     public registerError = '';
     public registerTitle = 'Comece sua jornada hoje';
 
-    constructor(private fb: FormBuilder) {
+    constructor(private fb: FormBuilder, private userService: UserService, private router: Router) {
         this.registerForm = this.fb.group({
             name: ['', [Validators.required, Validators.minLength(3)]],
             email: ['', [Validators.required, Validators.email]],
@@ -39,7 +40,7 @@ export class Register {
         return this.registerForm.controls as { name: AbstractControl; email: AbstractControl; password: AbstractControl; confirmPassword: AbstractControl; termsAccepted: AbstractControl };
     }
 
-    onSubmit(): void {
+    async onSubmit(): Promise<void> {
         this.submitted = true;
         this.registerError = '';
 
@@ -48,13 +49,14 @@ export class Register {
         }
 
         this.busy = true;
-        setTimeout(() => {
+        try {
+            const { name, email, password } = this.registerForm.value;
+            await this.userService.register({ name, email, password });
+            this.router.navigate(['/login']);
+        } catch (error: any) {
+            this.registerError = error.message || 'Erro ao criar conta. Tente novamente.';
+        } finally {
             this.busy = false;
-            if (this.registerForm.value.email === 'teste@semeando.dev') {
-                this.registerError = 'O e-mail já está em uso. Use outro e-mail.';
-            } else {
-                this.registerError = '';
-            }
-        }, 800);
+        }
     }
 }

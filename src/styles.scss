@@ -10,15 +10,15 @@
     :root {
         color-scheme: dark;
         font-family: "Inter", sans-serif;
-        background-color: #001207;
-        color: #cafcdb;
+        background-color: #060e20;
+        color: #cae1fc;
     }
 
     body {
         margin: 0;
         min-height: 100vh;
-        background: #001207;
-        color: #cafcdb;
+        background: #060e20;
+        color: #cae1fc;
         font-family: "Inter", sans-serif;
     }
 
@@ -28,6 +28,7 @@
 }
 
 
-:not(pre) > code[class*=language-], pre[class*=language-] {
+:not(pre)>code[class*=language-],
+pre[class*=language-] {
     background: none !important;
 }

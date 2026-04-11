@@ -48,6 +48,7 @@ trigger: always_on
         <p>Bem-vindo, usuário!</p>
     }
     ```
+- **Integração com Supabase:** Sempre utilize o MCP do Supabase para integrações. Utilize SEMPRE services para para a integração, NUNCA nos componentes.
 
 ## Fluxos de Trabalho do Desenvolvedor
 - **Iniciar Servidor de Dev:** `ng serve` (ou `npm start`)

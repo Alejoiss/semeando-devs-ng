@@ -4,6 +4,7 @@ import { AbstractControl, FormBuilder, FormGroup, ReactiveFormsModule, Validator
 import { Router, RouterModule } from '@angular/router';
 
 import { Footer } from '../../components/footer/footer';
+import { UserService } from '../../services/user';
 
 @Component({
     selector: 'app-login',
@@ -21,7 +22,8 @@ export class Login {
 
     constructor(
         private fb: FormBuilder,
-        private router: Router
+        private router: Router,
+        private userService: UserService
     ) {
         this.loginForm = this.fb.group({
             email: ['', [Validators.required, Validators.email]],
@@ -32,7 +34,7 @@ export class Login {
         return this.loginForm.controls as { email: AbstractControl; password: AbstractControl };
     }
 
-    onSubmit(): void {
+    async onSubmit(): Promise<void> {
         this.submitted = true;
         this.authError = '';
 
@@ -42,15 +44,13 @@ export class Login {
 
         this.busy = true;
 
-        setTimeout(() => {
+        try {
+            await this.userService.signIn(this.loginForm.value);
+            this.router.navigate(['/app']);
+        } catch (error: any) {
+            this.authError = error.message || 'Email ou senha incorretos. Tente novamente.';
+        } finally {
             this.busy = false;
-            if (this.loginForm.value.email === 'joissonjdm@gmail.com' && this.loginForm.value.password === '123456') {
-                // redirecionar ou workflow real de autenticação
-                this.authError = '';
-                this.router.navigate(['/app']);
-            } else {
-                this.authError = 'Email ou senha incorretos. Tente novamente.';
-            }
-        }, 800);
+        }
     }
 }
