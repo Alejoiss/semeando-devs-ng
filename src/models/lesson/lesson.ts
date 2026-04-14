@@ -1,6 +1,7 @@
 export enum LessonType {
     LESSON = 'LESSON',
     CHALLENGE = 'CHALLENGE',
+    REVISION = 'REVISION',
 }
 
 export interface Lesson {

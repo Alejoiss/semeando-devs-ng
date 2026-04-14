@@ -4,4 +4,5 @@ export interface Module {
     description: string;
     avatar: string;
     icon: string;
+    slug: string;
 }

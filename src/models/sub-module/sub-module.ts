@@ -7,5 +7,6 @@ export interface SubModule {
     avatar: string;
     icon: string;
     order: number;
+    slug: string;
     module: Module;
 }

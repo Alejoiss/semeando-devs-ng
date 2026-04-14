@@ -1,96 +1,125 @@
-<div class="relative z-10 max-w-6xl mx-auto p-6 md:p-10">
-    <div class="mb-12">
-        <div class="flex items-center gap-4 mb-4">
-            <span class="px-3 py-1 bg-primary/10 text-primary border border-primary/20 rounded-full font-label text-xs uppercase tracking-widest">Trilha</span>
-            <div class="flex items-center gap-2 text-on-surface-variant font-label text-xs">
-                <span class="material-symbols-outlined text-[14px]">chevron_right</span> Estrutura HTML
-            </div>
+@if (isLoading()) {
+    <div class="relative z-10 max-w-6xl mx-auto p-6 md:p-10">
+        <div class="mb-12 animate-pulse">
+            <div class="h-5 w-32 bg-surface-container-high rounded-full mb-6"></div>
+            <div class="h-10 w-3/4 bg-surface-container-high rounded-2xl mb-4"></div>
+            <div class="h-5 w-full max-w-2xl bg-surface-container rounded-full mb-2"></div>
+            <div class="h-5 w-2/3 bg-surface-container rounded-full mb-8"></div>
+            <div class="h-3 w-64 bg-surface-container-high rounded-full"></div>
         </div>
-        <h1 class="text-4xl md:text-5xl font-extrabold font-headline tracking-tight text-on-surface mb-4">Trilha de Lições: <span class="text-gradient-from-primary">Estrutura HTML</span></h1>
-        <p class="text-on-surface-variant text-lg leading-relaxed max-w-3xl">Domine os pilares da web moderna. Do esqueleto semântico à acessibilidade, aprenda como construir interfaces robustas e bem estruturadas para o futuro da tecnologia.</p>
-        <div class="mt-8 flex items-center gap-4">
-            <div class="w-full max-w-xs h-3 bg-surface-container rounded-full overflow-hidden">
-                <div class="h-full w-[65%] bg-gradient-to-r from-primary to-tertiary shadow-[0_0_12px_rgba(63,194,251,0.5)]"></div>
-            </div>
-            <span class="font-label font-bold text-primary">65% Completo</span>
+        <div class="space-y-10">
+            @for (i of [1, 2, 3]; track i) {
+                <div class="flex items-center gap-6 animate-pulse">
+                    <div class="w-16 h-16 rounded-full bg-surface-container-high flex-shrink-0"></div>
+                    <div class="flex-1 h-28 bg-surface-container-high rounded-2xl"></div>
+                </div>
+            }
         </div>
     </div>
+} @else if (error()) {
+    <div class="relative z-10 max-w-6xl mx-auto p-6 md:p-10 flex flex-col items-center justify-center min-h-[40vh] gap-4">
+        <span class="material-symbols-outlined text-5xl text-error">error</span>
+        <p class="text-on-surface-variant text-lg text-center">{{ error() }}</p>
+    </div>
+} @else {
+    <div class="relative z-10 max-w-6xl mx-auto p-6 md:p-10">
+        <div class="mb-12">
+            <div class="flex items-center gap-4 mb-4">
+                <span class="px-3 py-1 bg-primary/10 text-primary rounded-full font-label text-xs uppercase tracking-widest">Trilha</span>
+                <div class="flex items-center gap-2 text-on-surface-variant font-label text-xs">
+                    <span class="material-symbols-outlined text-[14px]">chevron_right</span>
+                    {{ submodule()?.title ?? slugSubmodule() }}
+                </div>
+            </div>
+            <h1 class="text-4xl md:text-5xl font-extrabold font-headline tracking-tight text-on-surface mb-4">
+                Trilha de Lições: <span class="text-gradient-from-primary">{{ submodule()?.title }}</span>
+            </h1>
+            <p class="text-on-surface-variant text-lg leading-relaxed max-w-3xl">{{ submodule()?.description }}</p>
 
-    <section class="relative">
-        <div class="line-drawing"></div>
-        <div class="space-y-14 relative z-10">
-            <article class="flex flex-col md:flex-row items-center gap-6">
-                <div class="w-16 h-16 rounded-full bg-primary flex items-center justify-center text-on-primary shadow-[0_0_20px_rgba(63,194,251,0.4)]">
-                    <span class="material-symbols-outlined text-3xl">play_circle</span>
-                </div>
-                <div class="glass-card flex-1 p-6 rounded-2xl border-l-4 border-primary">
-                    <div class="flex justify-between items-start mb-2">
-                        <span class="font-label text-xs text-primary font-bold uppercase tracking-widest">Lição 01</span>
-                        <span class="px-3 py-1 bg-tertiary/10 text-tertiary font-label text-xs rounded-full">Concluído • Nota: 10/10</span>
+            @if (lessonsWithState().length > 0) {
+                <div class="mt-8 flex items-center gap-4">
+                    <div class="w-full max-w-xs h-3 bg-surface-container rounded-full overflow-hidden">
+                        <div class="h-full bg-gradient-to-r from-primary to-tertiary shadow-[0_0_12px_rgba(63,194,251,0.5)] transition-all duration-500"
+                             [style.width.%]="completionPercentage()">
+                        </div>
                     </div>
-                    <h3 class="text-xl font-headline font-bold mb-2">Introdução à Semântica</h3>
-                    <p class="text-on-surface-variant text-sm mb-4">Entenda por que a estrutura importa e como o navegador interpreta suas tags.</p>
-                    <button class="flex items-center gap-2 text-primary font-label text-sm font-bold">Rever Aula <span class="material-symbols-outlined text-sm">arrow_forward</span></button>
+                    <span class="font-label font-bold text-primary">
+                        {{ completedCount() }}/{{ lessonsWithState().length }} Completas
+                    </span>
                 </div>
-            </article>
-
-            <article class="flex flex-col md:flex-row-reverse items-center gap-6">
-                <div class="w-16 h-16 rounded-full bg-secondary flex items-center justify-center text-on-secondary shadow-[0_0_20px_rgba(254,105,172,0.4)]">
-                    <span class="material-symbols-outlined text-3xl">terminal</span>
-                </div>
-                <div class="glass-card flex-1 p-6 rounded-2xl border-r-4 border-secondary text-right">
-                    <div class="flex justify-between items-start mb-2">
-                        <span class="font-label text-xs text-secondary font-bold uppercase tracking-widest">Desafio 01</span>
-                        <span class="px-3 py-1 bg-tertiary/10 text-tertiary font-label text-xs rounded-full">Concluído</span>
-                    </div>
-                    <h3 class="text-xl font-headline font-bold mb-2">O Primeiro Esqueleto</h3>
-                    <p class="text-on-surface-variant text-sm mb-4">Construa a estrutura básica de um portal de notícias usando tags semânticas.</p>
-                    <button class="flex items-center gap-2 text-secondary font-label text-sm font-bold ml-auto">Ver Resultado <span class="material-symbols-outlined text-sm">arrow_forward</span></button>
-                </div>
-            </article>
-
-            <article class="flex flex-col md:flex-row items-center gap-6">
-                <div class="w-16 h-16 rounded-full bg-surface-container border-2 border-primary flex items-center justify-center text-primary shadow-[0_0_15px_rgba(63,194,251,0.2)] animate-pulse">
-                    <span class="material-symbols-outlined text-3xl">play_circle</span>
-                </div>
-                <div class="glass-card flex-1 p-6 rounded-2xl border-l-4 border-primary/50 bg-surface-container-low">
-                    <div class="flex justify-between items-start mb-2">
-                        <span class="font-label text-xs text-primary-dim font-bold uppercase tracking-widest">Lição 02</span>
-                        <span class="px-3 py-1 bg-primary/10 text-primary font-label text-xs rounded-full">Em Progresso</span>
-                    </div>
-                    <h3 class="text-xl font-headline font-bold mb-2">Formulários e Inputs</h3>
-                    <p class="text-on-surface-variant text-sm mb-4">Crie interfaces de entrada de dados seguras e fáceis de usar pelo usuário.</p>
-                    <button routerLink="lesson/1" class="px-6 py-2 bg-gradient-to-r from-primary to-primary-dim text-on-primary-container font-headline font-bold rounded-lg">Continuar Agora</button>
-                </div>
-            </article>
-
-            <article class="flex flex-col md:flex-row-reverse items-center gap-6 opacity-50 grayscale">
-                <div class="w-16 h-16 rounded-full bg-surface-container-high flex items-center justify-center text-on-surface-variant">
-                    <span class="material-symbols-outlined text-3xl">lock</span>
-                </div>
-                <div class="glass-card flex-1 p-6 rounded-2xl bg-surface-container-lowest/50 border border-outline-variant/10 text-right">
-                    <div class="flex justify-between items-start mb-2">
-                        <span class="font-label text-xs text-on-surface-variant font-bold uppercase tracking-widest">Lição 03</span>
-                        <span class="px-3 py-1 bg-surface-container-highest text-on-surface-variant font-label text-xs rounded-full">Bloqueado</span>
-                    </div>
-                    <h3 class="text-xl font-headline font-bold mb-2">SEO e Metadados</h3>
-                    <p class="text-on-surface-variant text-sm">Como preparar seu HTML para ser encontrado pelos motores de busca.</p>
-                </div>
-            </article>
-
-            <article class="flex flex-col md:flex-row items-center gap-6 opacity-50 grayscale">
-                <div class="w-16 h-16 rounded-full bg-surface-container-high flex items-center justify-center text-on-surface-variant">
-                    <span class="material-symbols-outlined text-3xl">lock</span>
-                </div>
-                <div class="glass-card flex-1 p-6 rounded-2xl bg-surface-container-lowest/50 border border-outline-variant/10">
-                    <div class="flex justify-between items-start mb-2">
-                        <span class="font-label text-xs text-on-surface-variant font-bold uppercase tracking-widest">Desafio Final</span>
-                        <span class="px-3 py-1 bg-surface-container-highest text-on-surface-variant font-label text-xs rounded-full">Bloqueado</span>
-                    </div>
-                    <h3 class="text-xl font-headline font-bold mb-2">Portfólio Semântico</h3>
-                    <p class="text-on-surface-variant text-sm">O projeto final para validar seus conhecimentos de estrutura HTML.</p>
-                </div>
-            </article>
+            }
         </div>
-    </section>
-</div>
+
+        <section class="relative">
+            <div class="line-drawing"></div>
+            <div class="space-y-14 relative z-10">
+                @for (item of lessonsWithState(); track item.lesson.id; let isEven = $even) {
+                    @let isCompleted = item.progressState === 'completed';
+                    @let isInProgress = item.progressState === 'in-progress';
+                    @let notStarted = item.progressState === 'not-started';
+                    @let isLesson = item.lesson.type === 'LESSON';
+                    @let isChallenge = item.lesson.type === 'CHALLENGE';
+                    @let isRevision = item.lesson.type === 'REVISION';
+
+                    <article [class]="isEven ? 'flex flex-col md:flex-row items-center gap-6' : 'flex flex-col md:flex-row-reverse items-center gap-6'">
+                        <div [class]="
+                            'w-16 h-16 rounded-full flex items-center justify-center flex-shrink-0 ' +
+                            (isCompleted
+                                ? (isChallenge ? 'bg-secondary shadow-[0_0_20px_rgba(254,105,172,0.4)] text-on-secondary' : 'bg-primary shadow-[0_0_20px_rgba(63,194,251,0.4)] text-on-primary')
+                                : isInProgress
+                                    ? 'bg-surface-container border-2 border-primary text-primary shadow-[0_0_15px_rgba(63,194,251,0.2)] animate-pulse'
+                                    : 'bg-surface-container-high text-on-surface-variant')
+                        ">
+                            <span class="material-symbols-outlined text-3xl">
+                                {{ isCompleted ? 'check_circle' : isInProgress ? 'play_circle' : isChallenge ? 'terminal' : 'lock' }}
+                            </span>
+                        </div>
+
+                        <div [class]="
+                            'glass-card flex-1 p-6 rounded-2xl ' +
+                            (isEven ? 'border-l-4 ' : 'border-r-4 ') +
+                            (isCompleted
+                                ? (isChallenge ? 'border-secondary' : 'border-primary')
+                                : isInProgress
+                                    ? 'border-primary/50 bg-surface-container-low'
+                                    : 'bg-surface-container-lowest/50 opacity-60 grayscale') +
+                            (isEven ? '' : ' text-right')
+                        ">
+                            <div class="flex justify-between items-start mb-2">
+                                <span [class]="
+                                    'font-label text-xs font-bold uppercase tracking-widest ' +
+                                    (isChallenge ? 'text-secondary' : isRevision ? 'text-tertiary' : isInProgress ? 'text-primary-dim' : isCompleted ? 'text-primary' : 'text-on-surface-variant')
+                                ">
+                                    {{ isLesson ? 'Lição' : isChallenge ? 'Desafio' : 'Revisão' }}
+                                </span>
+                                @if (isCompleted) {
+                                    <span class="px-3 py-1 bg-tertiary/10 text-tertiary font-label text-xs rounded-full">Concluído • Nota: 10/10</span>
+                                } @else if (isInProgress) {
+                                    <span class="px-3 py-1 bg-primary/10 text-primary font-label text-xs rounded-full">Em Progresso</span>
+                                } @else {
+                                    <span class="px-3 py-1 bg-surface-container-highest text-on-surface-variant font-label text-xs rounded-full">Não Iniciado</span>
+                                }
+                            </div>
+                            <h3 class="text-xl font-headline font-bold mb-2">{{ item.lesson.title }}</h3>
+                            <p class="text-on-surface-variant text-sm mb-4">{{ item.lesson.description }}</p>
+
+                            @if (isCompleted || isInProgress) {
+                                <a [routerLink]="['lesson', item.lesson.id]"
+                                   [class]="
+                                    isCompleted
+                                        ? 'flex items-center gap-2 font-label text-sm font-bold ' + (isEven ? '' : 'ml-auto justify-end ') + (isChallenge ? 'text-secondary' : 'text-primary')
+                                        : 'px-6 py-2 bg-gradient-to-r from-primary to-primary-dim text-on-primary-container font-headline font-bold rounded-lg inline-flex items-center gap-2'
+                                ">
+                                    {{ isCompleted ? 'Rever Aula' : 'Continuar Agora' }}
+                                    <span class="material-symbols-outlined text-sm">arrow_forward</span>
+                                </a>
+                            }
+                        </div>
+                    </article>
+                } @empty {
+                    <p class="text-on-surface-variant text-center py-16">Nenhuma lição encontrada para este submódulo.</p>
+                }
+            </div>
+        </section>
+    </div>
+}

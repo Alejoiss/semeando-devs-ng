@@ -1,174 +1,172 @@
-<main class="flex-1 p-6 lg:p-10 max-w-6xl mx-auto min-h-screen">
-    <header class="mb-10">
-        <div
-            class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-secondary-container/30 border border-secondary/20 mb-4">
-            <span class="w-1.5 h-1.5 rounded-full bg-secondary"></span>
-            <span class="font-label text-[10px] uppercase tracking-widest text-secondary-fixed">Módulo 01 • Aula
-                01</span>
+@if (isLoading()) {
+    <main class="flex-1 p-6 lg:p-10 max-w-6xl mx-auto min-h-screen animate-pulse">
+        <div class="mb-10">
+            <div class="h-5 w-48 bg-surface-container-high rounded-full mb-6"></div>
+            <div class="h-10 w-3/4 bg-surface-container-high rounded-2xl mb-4"></div>
+            <div class="h-5 w-full max-w-xl bg-surface-container rounded-full mb-2"></div>
+            <div class="h-5 w-2/3 bg-surface-container rounded-full"></div>
         </div>
-        <h1 class="text-4xl md:text-5xl font-black text-on-surface tracking-tight mb-4">Lição 01: Introdução à Semântica
-        </h1>
-        <p class="text-on-surface-variant text-lg max-w-2xl leading-relaxed">
-            Aprenda por que a estrutura importa e como o navegador interpreta suas tags. O código não é apenas para
-            máquinas, é para pessoas e robôs de busca.
-        </p>
-    </header>
-    <!-- Grid Layout -->
-    <div class="grid grid-cols-1 xl:grid-cols-3 gap-8 items-start">
-        <!-- Main Content (Video + Text) -->
-        <div class="xl:col-span-2 space-y-8">
-            <!-- Video Player Card -->
-            <div
-                class="relative group aspect-video rounded-2xl overflow-hidden bg-surface-container-highest shadow-2xl">
-                <img alt="Video thumbnail of code editor"
-                    class="w-full h-full object-cover opacity-60 group-hover:scale-105 transition-transform duration-700"
-                    data-alt="Cinematic shot of a computer screen showing clean HTML code with syntax highlighting in a dark room with neon blue ambient lighting"
-                    src="https://lh3.googleusercontent.com/aida-public/AB6AXuB7Rk-2irA5wXBteOoEUGHduWdhSLOL2328GUi6GROq3PtojCp_aweNu0EonB0ugHdyDtVsSBFGBcqx6D0zB7J3_B3R_C0G36cr7rgBgmBiJVf4X2uu0gHQmumQwD4MwD9xdoVTgnCid-DsP8gS7H-WRiTE966Kcs2dGn0H8U4knDhFUt8x-G7m5zBKyklC4wC3GI6UDIPeWpoGNBDan5kPSG2bl1qF174MFyMh_rtYC2XL1yEJrbRGJbVVbO9U2o8YnyQFvtmFnFI" />
-                <!-- Video UI Overlay -->
-                <div
-                    class="absolute inset-0 bg-gradient-to-t from-surface-dim via-transparent to-transparent flex items-center justify-center">
-                    <button
-                        class="w-20 h-20 rounded-full glass border border-primary/40 flex items-center justify-center group-hover:scale-110 transition-all duration-300 neon-glow-primary">
-                        <span class="material-symbols-outlined text-primary text-4xl"
-                            style="font-variation-settings: 'FILL' 1;">play_arrow</span>
-                    </button>
-                </div>
-                <!-- Video Info Overlay -->
-                <div
-                    class="absolute bottom-0 left-0 w-full p-6 bg-gradient-to-t from-surface-container-lowest to-transparent">
-                    <h3 class="font-headline font-bold text-xl text-on-surface">Aula 01 - O Poder do HTML Semântico</h3>
-                    <div
-                        class="flex items-center gap-4 mt-2 font-label text-[10px] uppercase tracking-widest text-on-surface-variant">
-                        <span class="flex items-center gap-1"><span
-                                class="material-symbols-outlined text-sm">schedule</span> 12:45</span>
-                        <span class="flex items-center gap-1"><span
-                                class="material-symbols-outlined text-sm">visibility</span> 4.2k Views</span>
-                    </div>
-                </div>
+        <div class="grid grid-cols-1 xl:grid-cols-3 gap-8">
+            <div class="xl:col-span-2 space-y-8">
+                <div class="aspect-video rounded-2xl bg-surface-container-high"></div>
+                <div class="h-64 rounded-3xl bg-surface-container-high"></div>
             </div>
-            <!-- Article Section -->
-            <section class="glass rounded-3xl p-8 md:p-12 border border-outline-variant/10">
-                <div class="prose prose-invert max-w-none">
-                    <h2 class="text-2xl font-bold text-on-surface mb-6 flex items-center gap-3">
-                        <span class="w-1 h-8 bg-tertiary rounded-full"></span>
-                        O que é Semântica?
-                    </h2>
-                    <p class="text-on-surface-variant leading-relaxed mb-6">
-                        O HTML semântico é a base de uma web acessível e bem estruturada. Ao contrário de tags genéricas
-                        como <code class="bg-surface-container px-2 py-0.5 rounded text-secondary-fixed">div</code> e
-                        <code class="bg-surface-container px-2 py-0.5 rounded text-secondary-fixed">span</code>, tags
-                        semânticas descrevem o significado do conteúdo que elas envolvem.
-                    </p>
-                    <!-- Code Snippet (ngx-markdown) -->
-                    <div
-                        class="bg-surface-container-lowest rounded-xl p-6 mb-8 font-mono text-sm border-l-4 border-primary">
-                        <div
-                            class="flex items-center gap-2 mb-4 text-[10px] uppercase tracking-widest font-label text-on-surface-variant opacity-50">
-                        </div>
-                        <markdown [innerHtml]="codeSnippet" ngPreserveWhitespaces></markdown>
-                    </div>
-                    <p class="text-on-surface-variant leading-relaxed mb-6">
-                        Utilizar a estrutura correta permite que leitores de tela guiem usuários com deficiência visual
-                        de forma eficiente, além de ajudar motores de busca como o Google a indexar melhor suas páginas,
-                        melhorando o SEO.
-                    </p>
-                </div>
-            </section>
+            <div class="space-y-6">
+                <div class="h-72 rounded-3xl bg-surface-container-high"></div>
+                <div class="h-40 rounded-3xl bg-surface-container-high"></div>
+            </div>
         </div>
-        <!-- Sidebar / Resources -->
-        <div class="space-y-6">
-            <!-- Lesson Checklist -->
-            <div class="surface-container-high rounded-3xl p-6 border border-outline-variant/10">
-                <h4 class="font-headline font-bold text-on-surface mb-6 uppercase text-sm tracking-widest">Conteúdo da
-                    Trilha</h4>
-                <div class="space-y-4">
-                    <div class="flex items-start gap-4 p-3 bg-surface-container rounded-xl">
-                        <span class="material-symbols-outlined text-tertiary"
-                            style="font-variation-settings: 'FILL' 1;">check_circle</span>
-                        <div>
-                            <p class="text-xs font-bold text-on-surface">Introdução à Web</p>
-                            <p class="text-[10px] text-on-surface-variant">Concluído</p>
-                        </div>
+    </main>
+} @else if (error()) {
+    <main class="flex-1 p-6 lg:p-10 max-w-6xl mx-auto min-h-screen flex flex-col items-center justify-center gap-4">
+        <span class="material-symbols-outlined text-5xl text-error">error</span>
+        <p class="text-on-surface-variant text-lg text-center">{{ error() }}</p>
+    </main>
+} @else {
+    <main class="flex-1 p-6 lg:p-10 max-w-6xl mx-auto min-h-screen">
+        <header class="mb-10">
+            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-secondary-container/30 border border-secondary/20 mb-4">
+                <span class="w-1.5 h-1.5 rounded-full bg-secondary"></span>
+                <span class="font-label text-[10px] uppercase tracking-widest text-secondary-fixed">{{ slugSubmodule() }} • Aula</span>
+            </div>
+            <h1 class="text-4xl md:text-5xl font-black text-on-surface tracking-tight mb-4">
+                {{ activeLesson()?.title }}
+            </h1>
+            <p class="text-on-surface-variant text-lg max-w-2xl leading-relaxed">
+                {{ activeLesson()?.description }}
+            </p>
+        </header>
+
+        <div class="grid grid-cols-1 xl:grid-cols-3 gap-8 items-start">
+            <!-- Main Content -->
+            <div class="xl:col-span-2 space-y-8">
+                <!-- Video Player Card -->
+                <div class="relative group aspect-video rounded-2xl overflow-hidden bg-surface-container-highest shadow-2xl">
+                    <img alt="Video thumbnail"
+                        class="w-full h-full object-cover opacity-60 group-hover:scale-105 transition-transform duration-700"
+                        src="https://lh3.googleusercontent.com/aida-public/AB6AXuB7Rk-2irA5wXBteOoEUGHduWdhSLOL2328GUi6GROq3PtojCp_aweNu0EonB0ugHdyDtVsSBFGBcqx6D0zB7J3_B3R_C0G36cr7rgBgmBiJVf4X2uu0gHQmumQwD4MwD9xdoVTgnCid-DsP8gS7H-WRiTE966Kcs2dGn0H8U4knDhFUt8x-G7m5zBKyklC4wC3GI6UDIPeWpoGNBDan5kPSG2bl1qF174MFyMh_rtYC2XL1yEJrbRGJbVVbO9U2o8YnyQFvtmFnFI" />
+                    <div class="absolute inset-0 bg-gradient-to-t from-surface-dim via-transparent to-transparent flex items-center justify-center">
+                        <button class="w-20 h-20 rounded-full glass border border-primary/40 flex items-center justify-center group-hover:scale-110 transition-all duration-300 neon-glow-primary">
+                            <span class="material-symbols-outlined text-primary text-4xl" style="font-variation-settings: 'FILL' 1;">play_arrow</span>
+                        </button>
                     </div>
-                    <div class="flex items-start gap-4 p-3 bg-primary/10 rounded-xl border border-primary/20">
-                        <span
-                            class="w-6 h-6 rounded-full border-2 border-primary flex items-center justify-center text-[10px] font-bold text-primary">02</span>
-                        <div>
-                            <p class="text-xs font-bold text-primary">Estrutura Semântica</p>
-                            <p class="text-[10px] text-primary">Em progresso</p>
-                        </div>
-                    </div>
-                    <div class="flex items-start gap-4 p-3 opacity-40 grayscale">
-                        <span
-                            class="w-6 h-6 rounded-full border-2 border-outline flex items-center justify-center text-[10px] font-bold">03</span>
-                        <div>
-                            <p class="text-xs font-bold">Formulários Avançados</p>
-                            <p class="text-[10px]">Bloqueado</p>
+                    <div class="absolute bottom-0 left-0 w-full p-6 bg-gradient-to-t from-surface-container-lowest to-transparent">
+                        <h3 class="font-headline font-bold text-xl text-on-surface">{{ activeLesson()?.title }}</h3>
+                        <div class="flex items-center gap-4 mt-2 font-label text-[10px] uppercase tracking-widest text-on-surface-variant">
+                            <span class="flex items-center gap-1"><span class="material-symbols-outlined text-sm">schedule</span> 12:45</span>
                         </div>
                     </div>
                 </div>
+
+                <!-- Article Section -->
+                <section class="glass rounded-3xl p-8 md:p-12 border border-outline-variant/10">
+                    <div class="prose prose-invert max-w-none">
+                        <h2 class="text-2xl font-bold text-on-surface mb-6 flex items-center gap-3">
+                            <span class="w-1 h-8 bg-tertiary rounded-full"></span>
+                            {{ activeLesson()?.title }}
+                        </h2>
+                        <p class="text-on-surface-variant leading-relaxed mb-6">
+                            {{ activeLesson()?.description }}
+                        </p>
+                    </div>
+                </section>
             </div>
-            <!-- Resources Card -->
-            <div
-                class="bg-gradient-to-br from-surface-container to-surface-container-high rounded-3xl p-6 border border-outline-variant/10">
-                <h4 class="font-headline font-bold text-on-surface mb-4 uppercase text-sm tracking-widest">Materiais
-                    Extra</h4>
-                <ul class="space-y-3">
-                    <li>
-                        <a class="flex items-center justify-between p-3 rounded-xl hover:bg-surface-bright transition-all group"
-                            href="#">
-                            <div class="flex items-center gap-3">
-                                <span class="material-symbols-outlined text-secondary">description</span>
-                                <span class="text-xs text-on-surface">Guia MDN - HTML</span>
+
+            <!-- Sidebar -->
+            <div class="space-y-6">
+                <!-- Lesson Checklist -->
+                <div class="surface-container-high rounded-3xl p-6 border border-outline-variant/10">
+                    <h4 class="font-headline font-bold text-on-surface mb-6 uppercase text-sm tracking-widest">Conteúdo da Trilha</h4>
+                    <div class="space-y-4">
+                        @for (item of lessonsWithState(); track item.lesson.id; let idx = $index) {
+                            @let isActive = item.lesson.id === lessonId();
+                            @let isCompleted = item.progressState === 'completed';
+                            @let isInProgress = item.progressState === 'in-progress';
+
+                            <div [class]="
+                                'flex items-start gap-4 p-3 rounded-xl transition-all ' +
+                                (isActive
+                                    ? 'bg-primary/10 border border-primary/20'
+                                    : isCompleted
+                                        ? 'bg-surface-container'
+                                        : 'opacity-40 grayscale')
+                            ">
+                                @if (isCompleted) {
+                                    <span class="material-symbols-outlined text-tertiary flex-shrink-0" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+                                } @else if (isActive && isInProgress) {
+                                    <span class="w-6 h-6 rounded-full border-2 border-primary flex items-center justify-center text-[10px] font-bold text-primary flex-shrink-0">{{ idx + 1 }}</span>
+                                } @else {
+                                    <span class="w-6 h-6 rounded-full border-2 border-outline flex items-center justify-center text-[10px] font-bold flex-shrink-0">{{ idx + 1 }}</span>
+                                }
+                                <div>
+                                    <p [class]="'text-xs font-bold ' + (isActive ? 'text-primary' : 'text-on-surface')">{{ item.lesson.title }}</p>
+                                    <p [class]="'text-[10px] ' + (isActive ? 'text-primary' : 'text-on-surface-variant')">
+                                        {{ isCompleted ? 'Concluído' : isInProgress ? 'Em progresso' : 'Não iniciado' }}
+                                    </p>
+                                </div>
                             </div>
-                            <span
-                                class="material-symbols-outlined text-on-surface-variant group-hover:text-secondary text-sm">open_in_new</span>
-                        </a>
-                    </li>
-                    <li>
-                        <a class="flex items-center justify-between p-3 rounded-xl hover:bg-surface-bright transition-all group"
-                            href="#">
-                            <div class="flex items-center gap-3">
-                                <span class="material-symbols-outlined text-secondary">download</span>
-                                <span class="text-xs text-on-surface">Cheat-sheet Semântica</span>
-                            </div>
-                            <span
-                                class="material-symbols-outlined text-on-surface-variant group-hover:text-secondary text-sm">download</span>
-                        </a>
-                    </li>
-                </ul>
-            </div>
-            <!-- Gamification Callout -->
-            <div class="relative overflow-hidden glass rounded-3xl p-6 border border-tertiary/20">
-                <div class="absolute top-0 right-0 p-4 opacity-10">
-                    <span class="material-symbols-outlined text-8xl text-tertiary">bolt</span>
+                        } @empty {
+                            <p class="text-on-surface-variant text-sm text-center py-4">Nenhuma aula disponível.</p>
+                        }
+                    </div>
                 </div>
-                <p class="font-label text-[10px] uppercase tracking-[0.2em] text-tertiary mb-2">Desafio Final</p>
-                <h4 class="font-headline font-bold text-on-surface text-lg mb-4">Ganhe +250 XP</h4>
-                <p class="text-xs text-on-surface-variant mb-6 leading-relaxed">
-                    Conclua o quiz desta lição com mais de 80% de acerto para liberar o emblema "Guardião da Estrutura".
-                </p>
+
+                <!-- Resources Card -->
+                <div class="bg-gradient-to-br from-surface-container to-surface-container-high rounded-3xl p-6 border border-outline-variant/10">
+                    <h4 class="font-headline font-bold text-on-surface mb-4 uppercase text-sm tracking-widest">Materiais Extra</h4>
+                    <ul class="space-y-3">
+                        <li>
+                            <a class="flex items-center justify-between p-3 rounded-xl hover:bg-surface-bright transition-all group" href="#">
+                                <div class="flex items-center gap-3">
+                                    <span class="material-symbols-outlined text-secondary">description</span>
+                                    <span class="text-xs text-on-surface">Guia MDN - HTML</span>
+                                </div>
+                                <span class="material-symbols-outlined text-on-surface-variant group-hover:text-secondary text-sm">open_in_new</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a class="flex items-center justify-between p-3 rounded-xl hover:bg-surface-bright transition-all group" href="#">
+                                <div class="flex items-center gap-3">
+                                    <span class="material-symbols-outlined text-secondary">download</span>
+                                    <span class="text-xs text-on-surface">Cheat-sheet Semântica</span>
+                                </div>
+                                <span class="material-symbols-outlined text-on-surface-variant group-hover:text-secondary text-sm">download</span>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Gamification Callout -->
+                <div class="relative overflow-hidden glass rounded-3xl p-6 border border-tertiary/20">
+                    <div class="absolute top-0 right-0 p-4 opacity-10">
+                        <span class="material-symbols-outlined text-8xl text-tertiary">bolt</span>
+                    </div>
+                    <p class="font-label text-[10px] uppercase tracking-[0.2em] text-tertiary mb-2">Desafio Final</p>
+                    <h4 class="font-headline font-bold text-on-surface text-lg mb-4">Ganhe +250 XP</h4>
+                    <p class="text-xs text-on-surface-variant mb-6 leading-relaxed">
+                        Conclua o quiz desta lição com mais de 80% de acerto para liberar o emblema.
+                    </p>
+                </div>
             </div>
         </div>
-    </div>
-    <!-- Bottom Action Bar -->
-    <footer
-        class="mt-12 flex flex-col sm:flex-row items-center justify-between gap-6 p-6 rounded-3xl bg-surface-container-low border border-outline-variant/5">
-        <div class="flex items-center gap-4">
-            <img alt="Mentor profile" class="w-12 h-12 rounded-full object-cover grayscale"
-                data-alt="Professional studio headshot of a developer mentor with a friendly expression and modern spectacles"
-                src="https://lh3.googleusercontent.com/aida-public/AB6AXuA_QzA8vHxs1Zyt3iT2Je7ETUEvPpQAvueeBheeZ5RMLSqtV5UN0Vqw6JMoV3qIdGO7TeaZMTRA5pBynOSYyxKSJnYRJrMHggqAMWMyeOM8Ypu2dbvEixAdRZ8gvZEjMBgJikDLvc4WLpb4GIhjOQh19kHE1pJVp-MzVdunuAPB9tEHi48tWetbzjunJ1SweO08uuFOwHGf56FVIl-0B_Ne9rKheo95rfASyXDWMFv5YX3DBX-7_vePU7IwH3_hj20i4jaMSCb-K6o" />
-            <div>
-                <p class="text-xs text-on-surface-variant">Dúvidas sobre o conteúdo?</p>
-                <a class="text-sm font-bold text-primary hover:underline" href="#">Perguntar ao Mentor</a>
+
+        <!-- Bottom Action Bar -->
+        <footer class="mt-12 flex flex-col sm:flex-row items-center justify-between gap-6 p-6 rounded-3xl bg-surface-container-low border border-outline-variant/5">
+            <div class="flex items-center gap-4">
+                <img alt="Mentor profile" class="w-12 h-12 rounded-full object-cover grayscale"
+                    src="https://lh3.googleusercontent.com/aida-public/AB6AXuA_QzA8vHxs1Zyt3iT2Je7ETUEvPpQAvueeBheeZ5RMLSqtV5UN0Vqw6JMoV3qIdGO7TeaZMTRA5pBynOSYyxKSJnYRJrMHggqAMWMyeOM8Ypu2dbvEixAdRZ8gvZEjMBgJikDLvc4WLpb4GIhjOQh19kHE1pJVp-MzVdunuAPB9tEHi48tWetbzjunJ1SweO08uuFOwHGf56FVIl-0B_Ne9rKheo95rfASyXDWMFv5YX3DBX-7_vePU7IwH3_hj20i4jaMSCb-K6o" />
+                <div>
+                    <p class="text-xs text-on-surface-variant">Dúvidas sobre o conteúdo?</p>
+                    <a class="text-sm font-bold text-primary hover:underline" href="#">Perguntar ao Mentor</a>
+                </div>
             </div>
-        </div>
-        <div class="flex items-center gap-4 w-full sm:w-auto">
-            <button routerLink="quiz"
-                class="flex-1 sm:flex-none px-6 py-4 rounded-2xl font-headline font-bold text-sm bg-gradient-to-r from-primary to-primary-container text-on-primary-container flex items-center justify-center gap-3 neon-glow-primary hover:brightness-110 active:scale-95 transition-all">
-                Próximo: Iniciar Quiz (10 questões)
-                <span class="material-symbols-outlined">arrow_forward</span>
-            </button>
-        </div>
-    </footer>
-</main>
+            <div class="flex items-center gap-4 w-full sm:w-auto">
+                <button [routerLink]="['quiz']"
+                    class="flex-1 sm:flex-none px-6 py-4 rounded-2xl font-headline font-bold text-sm bg-gradient-to-r from-primary to-primary-container text-on-primary-container flex items-center justify-center gap-3 neon-glow-primary hover:brightness-110 active:scale-95 transition-all">
+                    Próximo: Iniciar Quiz (10 questões)
+                    <span class="material-symbols-outlined">arrow_forward</span>
+                </button>
+            </div>
+        </footer>
+    </main>
+}

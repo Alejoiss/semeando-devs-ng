@@ -1,0 +1,1 @@
+ALTER TABLE public.modules ADD COLUMN slug TEXT NOT NULL DEFAULT '';
