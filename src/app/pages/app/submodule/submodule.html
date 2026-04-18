@@ -32,8 +32,8 @@
             </div>
         } @else {
             @for (item of submodulesWithState(); track item.submodule.id) {
-                <div class="group relative bg-surface-container rounded-lg p-8 transition-all hover:bg-surface-container-high cursor-pointer"
-                    [class]="item.progressState === 'in-progress' ? 'border-t-2 border-primary/20' : ''">
+                <div class="group relative bg-surface-container rounded-lg p-8 transition-all"
+                    [class]="item.progressState === 'in-progress' ? 'border-t-2 border-primary/20 cursor-pointer hover:bg-surface-container-high' : item.progressState === 'blocked' ? 'opacity-50 grayscale select-none' : 'cursor-pointer hover:bg-surface-container-high'">
                     <div class="absolute top-0 right-0 p-4">
                         @if (item.progressState === 'completed') {
                             <div class="bg-tertiary/20 text-tertiary font-label text-[10px] px-3 py-1 rounded-full uppercase tracking-widest font-bold">
@@ -43,22 +43,30 @@
                             <div class="bg-primary/20 text-primary font-label text-[10px] px-3 py-1 rounded-full uppercase tracking-widest font-bold">
                                 Em progresso
                             </div>
-                        } @else {
+                        } @else if (item.progressState === 'not-started') {
                             <div class="bg-on-surface-variant/10 text-on-surface-variant font-label text-[10px] px-3 py-1 rounded-full uppercase tracking-widest font-bold">
                                 Disponível
+                            </div>
+                        } @else {
+                            <div class="bg-surface-container-highest text-on-surface-variant font-label text-[10px] px-3 py-1 rounded-full uppercase tracking-widest font-bold">
+                                Bloqueado
                             </div>
                         }
                     </div>
 
-                    <div class="flex items-start gap-6 mb-8" [routerLink]="['s', item.submodule.slug]">
+                    <div class="flex items-start gap-6 mb-8" [routerLink]="item.progressState !== 'blocked' ? ['s', item.submodule.slug] : null">
                         <div class="w-16 h-16 rounded-xl flex items-center justify-center ring-1 transition-all"
                             [class]="item.progressState === 'completed'
                                      ? 'bg-tertiary/10 text-tertiary ring-tertiary/20'
                                      : item.progressState === 'in-progress'
                                      ? 'bg-primary/10 text-primary ring-primary/20 shadow-[0_0_15px_rgba(63,194,251,0.2)]'
+                                     : item.progressState === 'blocked'
+                                     ? 'bg-surface-container/50 text-on-surface-variant/50 ring-outline-variant/10'
                                      : 'bg-surface-container-highest text-on-surface-variant ring-outline-variant/30 group-hover:ring-primary/50'">
                             @if (item.progressState === 'completed') {
                                 <span class="material-symbols-outlined text-3xl" [attr.data-icon]="item.submodule.icon || 'check_circle'" data-weight="fill" style="font-variation-settings: 'FILL' 1;">{{ item.submodule.icon || 'check_circle' }}</span>
+                            } @else if (item.progressState === 'blocked') {
+                                <span class="material-symbols-outlined text-3xl" data-icon="lock">lock</span>
                             } @else {
                                 <span class="material-symbols-outlined text-3xl" [attr.data-icon]="item.submodule.icon || 'auto_stories'">{{ item.submodule.icon || 'auto_stories' }}</span>
                             }
@@ -95,7 +103,7 @@
                         </div>
                     </div>
 
-                    @if (item.targetLessonId) {
+                    @if (item.targetLessonId && item.progressState !== 'blocked') {
                         <div class="mt-6 flex justify-end">
                             @if (item.progressState === 'completed') {
                                 <button [routerLink]="['ss', item.submodule.slug]"
@@ -114,6 +122,12 @@
                                     Começar
                                 </button>
                             }
+                        </div>
+                    } @else if (item.progressState === 'blocked') {
+                        <div class="mt-6 flex justify-end">
+                            <button disabled class="flex items-center gap-2 px-8 py-3 bg-surface-container text-on-surface-variant font-headline font-bold rounded-xl cursor-not-allowed">
+                                Bloqueado
+                            </button>
                         </div>
                     }
                 </div>

@@ -11,4 +11,5 @@ export interface Lesson {
     type: LessonType;
     order: number;
     subModuleId: string;
+    xp: number;
 }

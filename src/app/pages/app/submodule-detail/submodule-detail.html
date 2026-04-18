@@ -57,6 +57,7 @@
                     @let isCompleted = item.progressState === 'completed';
                     @let isInProgress = item.progressState === 'in-progress';
                     @let notStarted = item.progressState === 'not-started';
+                    @let isBlocked = item.progressState === 'blocked';
                     @let isLesson = item.lesson.type === 'LESSON';
                     @let isChallenge = item.lesson.type === 'CHALLENGE';
                     @let isRevision = item.lesson.type === 'REVISION';
@@ -68,21 +69,25 @@
                                 ? (isChallenge ? 'bg-secondary shadow-[0_0_20px_rgba(254,105,172,0.4)] text-on-secondary' : 'bg-primary shadow-[0_0_20px_rgba(63,194,251,0.4)] text-on-primary')
                                 : isInProgress
                                     ? 'bg-surface-container border-2 border-primary text-primary shadow-[0_0_15px_rgba(63,194,251,0.2)] animate-pulse'
-                                    : 'bg-surface-container-high text-on-surface-variant')
+                                    : isBlocked
+                                        ? 'bg-surface-container-highest/50 text-on-surface-variant/30'
+                                        : 'bg-surface-container-high text-on-surface-variant')
                         ">
                             <span class="material-symbols-outlined text-3xl">
-                                {{ isCompleted ? 'check_circle' : isInProgress ? 'play_circle' : isChallenge ? 'terminal' : 'lock' }}
+                                {{ isCompleted ? 'check_circle' : isInProgress ? 'play_circle' : isBlocked ? 'lock' : (isChallenge ? 'terminal' : 'play_circle') }}
                             </span>
                         </div>
 
                         <div [class]="
-                            'glass-card flex-1 p-6 rounded-2xl ' +
+                            'glass-card flex-1 p-6 rounded-2xl transition-all ' +
                             (isEven ? 'border-l-4 ' : 'border-r-4 ') +
                             (isCompleted
                                 ? (isChallenge ? 'border-secondary' : 'border-primary')
                                 : isInProgress
                                     ? 'border-primary/50 bg-surface-container-low'
-                                    : 'bg-surface-container-lowest/50 opacity-60 grayscale') +
+                                    : isBlocked
+                                        ? 'bg-surface-container-lowest/30 opacity-40 grayscale border-transparent hover:bg-surface-container-lowest/30 select-none'
+                                        : 'bg-surface-container-lowest/50 hover:bg-surface-container-low border-surface-container-highest') +
                             (isEven ? '' : ' text-right')
                         ">
                             <div class="flex justify-between items-start mb-2">
@@ -96,23 +101,30 @@
                                     <span class="px-3 py-1 bg-tertiary/10 text-tertiary font-label text-xs rounded-full">Concluído • Nota: 10/10</span>
                                 } @else if (isInProgress) {
                                     <span class="px-3 py-1 bg-primary/10 text-primary font-label text-xs rounded-full">Em Progresso</span>
+                                } @else if (isBlocked) {
+                                    <span class="px-3 py-1 bg-surface-container-highest text-on-surface-variant/50 font-label text-xs rounded-full">Bloqueado</span>
                                 } @else {
-                                    <span class="px-3 py-1 bg-surface-container-highest text-on-surface-variant font-label text-xs rounded-full">Não Iniciado</span>
+                                    <span class="px-3 py-1 bg-surface-container-highest text-on-surface-variant font-label text-xs rounded-full">Disponível</span>
                                 }
                             </div>
                             <h3 class="text-xl font-headline font-bold mb-2">{{ item.lesson.title }}</h3>
                             <p class="text-on-surface-variant text-sm mb-4">{{ item.lesson.description }}</p>
 
-                            @if (isCompleted || isInProgress) {
+                            @if (!isBlocked && (isCompleted || isInProgress || notStarted)) {
                                 <a [routerLink]="['lesson', item.lesson.id]"
                                    [class]="
                                     isCompleted
                                         ? 'flex items-center gap-2 font-label text-sm font-bold ' + (isEven ? '' : 'ml-auto justify-end ') + (isChallenge ? 'text-secondary' : 'text-primary')
-                                        : 'px-6 py-2 bg-gradient-to-r from-primary to-primary-dim text-on-primary-container font-headline font-bold rounded-lg inline-flex items-center gap-2'
+                                        : 'px-6 py-2 bg-gradient-to-r from-primary to-primary-dim text-on-primary-container font-headline font-bold rounded-lg inline-flex items-center gap-2 ' + (isEven ? '' : 'ml-auto justify-end')
                                 ">
-                                    {{ isCompleted ? 'Rever Aula' : 'Continuar Agora' }}
+                                    {{ isCompleted ? 'Rever Aula' : isInProgress ? 'Continuar Agora' : 'Começar Agora' }}
                                     <span class="material-symbols-outlined text-sm">arrow_forward</span>
                                 </a>
+                            } @else if (isBlocked) {
+                                <div [class]="'flex items-center gap-2 font-label text-sm font-bold text-on-surface-variant/50 ' + (isEven ? '' : 'ml-auto justify-end')">
+                                    <span class="material-symbols-outlined text-sm">lock</span>
+                                    Conclua a lição anterior
+                                </div>
                             }
                         </div>
                     </article>

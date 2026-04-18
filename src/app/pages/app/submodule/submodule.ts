@@ -9,7 +9,7 @@ import { SubModule } from '../../../../models/sub-module/sub-module';
 
 export interface SubmoduleWithState {
     submodule: SubModule;
-    progressState: 'not-started' | 'in-progress' | 'completed';
+    progressState: 'not-started' | 'in-progress' | 'completed' | 'blocked';
     targetLessonId: string | null;
 }
 
@@ -59,38 +59,47 @@ export class Submodule implements OnInit {
                 userLessons.filter(ul => ul.completed).map(ul => ul.lesson?.id)
             );
 
-            const withState: SubmoduleWithState[] = await Promise.all(
-                submodules.map(async sm => {
-                    // @ts-ignore - DB returns sub_module_id as well
-                    const usm = userSubmodules.find(u => u.subModule?.id === sm.id || u.sub_module_id === sm.id);
-                    let state: 'not-started' | 'in-progress' | 'completed' = 'not-started';
+            const sortedSubmodules = [...submodules].sort((a, b) => (a.order || 0) - (b.order || 0));
 
-                    if (usm) {
-                        state = usm.completed ? 'completed' : 'in-progress';
-                    }
+            let previousCompleted = true;
+            const withState: SubmoduleWithState[] = [];
 
-                    let targetLessonId: string | null = null;
-                    try {
-                        const lessons = await this.lessonService.getLessonsBySubModuleSlug(sm.slug);
-                        if (lessons.length > 0) {
-                            if (state === 'in-progress') {
-                                const firstIncomplete = lessons.find(l => !completedLessonIds.has(l.id));
-                                targetLessonId = firstIncomplete?.id ?? lessons[0].id;
-                            } else {
-                                targetLessonId = lessons[0].id;
-                            }
+            for (const sm of sortedSubmodules) {
+                // @ts-ignore - DB returns sub_module_id as well
+                const usm = userSubmodules.find(u => u.subModule?.id === sm.id || u.sub_module_id === sm.id);
+                let state: 'not-started' | 'in-progress' | 'completed' | 'blocked' = 'not-started';
+
+                if (usm) {
+                    state = usm.completed ? 'completed' : 'in-progress';
+                } else if (!previousCompleted) {
+                    state = 'blocked';
+                }
+
+                previousCompleted = state === 'completed';
+
+                let targetLessonId: string | null = null;
+                try {
+                    const lessons = await this.lessonService.getLessonsBySubModuleSlug(sm.slug);
+                    if (lessons.length > 0) {
+                        if (state === 'in-progress') {
+                            const sortedLessons = [...lessons].sort((a, b) => (a.order || 0) - (b.order || 0));
+                            const firstIncomplete = sortedLessons.find(l => !completedLessonIds.has(l.id));
+                            targetLessonId = firstIncomplete?.id ?? sortedLessons[0].id;
+                        } else {
+                            const sortedLessons = [...lessons].sort((a, b) => (a.order || 0) - (b.order || 0));
+                            targetLessonId = sortedLessons[0].id;
                         }
-                    } catch {
-                        // fallback: no target lesson
                     }
+                } catch {
+                    // fallback: no target lesson
+                }
 
-                    return {
-                        submodule: sm,
-                        progressState: state,
-                        targetLessonId
-                    };
-                })
-            );
+                withState.push({
+                    submodule: sm,
+                    progressState: state,
+                    targetLessonId
+                });
+            }
 
             this.submodulesWithState.set(withState);
             this.error.set(null);

@@ -10,7 +10,7 @@ import { UserLesson } from '../../../../models/user-lesson/user-lesson';
 
 export interface LessonWithState {
     lesson: Lesson;
-    progressState: 'not-started' | 'in-progress' | 'completed';
+    progressState: 'not-started' | 'in-progress' | 'completed' | 'blocked';
 }
 
 @Component({
@@ -38,12 +38,20 @@ export class SubmoduleDetail implements OnInit {
         const userLessonMap = new Map<string, UserLesson>(
             this.userLessons().map(ul => [ul.lesson?.id, ul])
         );
-        return this.lessons().map(lesson => {
+        const sortedLessons = [...this.lessons()].sort((a, b) => (a.order || 0) - (b.order || 0));
+        
+        let previousCompleted = true;
+        return sortedLessons.map(lesson => {
             const userLesson = userLessonMap.get(lesson.id);
-            let progressState: 'not-started' | 'in-progress' | 'completed' = 'not-started';
+            let progressState: 'not-started' | 'in-progress' | 'completed' | 'blocked' = 'not-started';
+            
             if (userLesson) {
                 progressState = userLesson.completed ? 'completed' : 'in-progress';
+            } else if (!previousCompleted) {
+                progressState = 'blocked';
             }
+            
+            previousCompleted = progressState === 'completed';
             return { lesson, progressState };
         });
     });
