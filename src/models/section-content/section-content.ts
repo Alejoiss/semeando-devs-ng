@@ -1,3 +1,6 @@
+import { Lesson } from "../lesson/lesson";
+import { Quiz } from "../quiz/quiz";
+
 export enum SectionContentType {
     TEXT = 'TEXT',
     MARKDOWN = 'MARKDOWN',
@@ -12,4 +15,6 @@ export interface SectionContent {
     file: string;
     fileDescription: string;
     order: number;
+    lesson: Lesson;
+    quiz: Quiz;
 }

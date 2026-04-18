@@ -24,117 +24,105 @@
     </main>
 } @else {
     <main class="flex-1 p-6 lg:p-10 max-w-6xl mx-auto min-h-screen">
-        <header class="mb-10">
-            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-secondary-container/30 border border-secondary/20 mb-4">
-                <span class="w-1.5 h-1.5 rounded-full bg-secondary"></span>
-                <span class="font-label text-[10px] uppercase tracking-widest text-secondary-fixed">{{ slugSubmodule() }} • Aula</span>
+        <header class="mb-10 flex flex-col md:flex-row md:items-end justify-between gap-6">
+            <div class="flex-1 text-left">
+                <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-secondary-container/30 border border-secondary/20 mb-4">
+                    <span class="w-1.5 h-1.5 rounded-full bg-secondary"></span>
+                    <span class="font-label text-[10px] uppercase tracking-widest text-secondary-fixed">{{ slugSubmodule() }} • Aula</span>
+                </div>
+                <h1 class="text-4xl md:text-5xl font-black text-on-surface tracking-tight mb-4">
+                    {{ activeLesson()?.title }}
+                </h1>
+                <p class="text-on-surface-variant text-lg max-w-2xl leading-relaxed">
+                    {{ activeLesson()?.description }}
+                </p>
             </div>
-            <h1 class="text-4xl md:text-5xl font-black text-on-surface tracking-tight mb-4">
-                {{ activeLesson()?.title }}
-            </h1>
-            <p class="text-on-surface-variant text-lg max-w-2xl leading-relaxed">
-                {{ activeLesson()?.description }}
-            </p>
         </header>
 
         <div class="grid grid-cols-1 xl:grid-cols-3 gap-8 items-start">
             <!-- Main Content -->
             <div class="xl:col-span-2 space-y-8">
-                <!-- Video Player Card -->
-                <div class="relative group aspect-video rounded-2xl overflow-hidden bg-surface-container-highest shadow-2xl">
-                    <img alt="Video thumbnail"
-                        class="w-full h-full object-cover opacity-60 group-hover:scale-105 transition-transform duration-700"
-                        src="https://lh3.googleusercontent.com/aida-public/AB6AXuB7Rk-2irA5wXBteOoEUGHduWdhSLOL2328GUi6GROq3PtojCp_aweNu0EonB0ugHdyDtVsSBFGBcqx6D0zB7J3_B3R_C0G36cr7rgBgmBiJVf4X2uu0gHQmumQwD4MwD9xdoVTgnCid-DsP8gS7H-WRiTE966Kcs2dGn0H8U4knDhFUt8x-G7m5zBKyklC4wC3GI6UDIPeWpoGNBDan5kPSG2bl1qF174MFyMh_rtYC2XL1yEJrbRGJbVVbO9U2o8YnyQFvtmFnFI" />
-                    <div class="absolute inset-0 bg-gradient-to-t from-surface-dim via-transparent to-transparent flex items-center justify-center">
-                        <button class="w-20 h-20 rounded-full glass border border-primary/40 flex items-center justify-center group-hover:scale-110 transition-all duration-300 neon-glow-primary">
-                            <span class="material-symbols-outlined text-primary text-4xl" style="font-variation-settings: 'FILL' 1;">play_arrow</span>
-                        </button>
+                @for (section of sectionContents(); track section.id) {
+                    <div class="section-container animate-fade-in">
+                        @switch (section.type) {
+                            @case ('TEXT') {
+                                <div class="glass rounded-3xl p-8 md:p-12 border border-outline-variant/10">
+                                    <div class="prose prose-invert max-w-none">
+                                        <p class="text-on-surface-variant leading-relaxed text-lg">
+                                            {{ section.content }}
+                                        </p>
+                                    </div>
+                                </div>
+                            }
+                            @case ('MARKDOWN') {
+                                <div class="glass rounded-3xl p-8 md:p-12 border border-outline-variant/10">
+                                    <div class="prose prose-invert prose-blue max-w-none">
+                                        <markdown [data]="section.content"></markdown>
+                                    </div>
+                                </div>
+                            }
+                            @case ('IMAGE') {
+                                <div class="relative group rounded-3xl overflow-hidden bg-surface-container-highest border border-outline-variant/10 shadow-2xl">
+                                    <img [src]="section.file" [alt]="section.fileDescription || 'Lesson image'"
+                                        class="w-full h-auto object-cover group-hover:scale-105 transition-transform duration-700" />
+                                    @if (section.fileDescription) {
+                                        <div class="absolute bottom-0 left-0 w-full p-4 bg-black">
+                                            <p class="text-[10px] font-label uppercase tracking-widest text-white">
+                                                {{ section.fileDescription }}
+                                            </p>
+                                        </div>
+                                    }
+                                </div>
+                            }
+                            @case ('VIDEO') {
+                                <div class="relative group rounded-3xl overflow-hidden bg-black border border-outline-variant/10 shadow-2xl aspect-video">
+                                    <video [src]="section.file" controls preload="metadata"
+                                        class="w-full h-full object-contain">
+                                        Seu navegador não suporta a tag de vídeo.
+                                    </video>
+                                </div>
+                            }
+                        }
                     </div>
-                    <div class="absolute bottom-0 left-0 w-full p-6 bg-gradient-to-t from-surface-container-lowest to-transparent">
-                        <h3 class="font-headline font-bold text-xl text-on-surface">{{ activeLesson()?.title }}</h3>
-                        <div class="flex items-center gap-4 mt-2 font-label text-[10px] uppercase tracking-widest text-on-surface-variant">
-                            <span class="flex items-center gap-1"><span class="material-symbols-outlined text-sm">schedule</span> 12:45</span>
-                        </div>
+                } @empty {
+                    <div class="flex flex-col items-center justify-center p-20 glass rounded-3xl border border-outline-variant/10 opacity-50">
+                        <span class="material-symbols-outlined text-6xl mb-4">auto_stories</span>
+                        <p class="text-on-surface-variant text-lg">Ainda não há conteúdo para esta aula.</p>
                     </div>
-                </div>
-
-                <!-- Article Section -->
-                <section class="glass rounded-3xl p-8 md:p-12 border border-outline-variant/10">
-                    <div class="prose prose-invert max-w-none">
-                        <h2 class="text-2xl font-bold text-on-surface mb-6 flex items-center gap-3">
-                            <span class="w-1 h-8 bg-tertiary rounded-full"></span>
-                            {{ activeLesson()?.title }}
-                        </h2>
-                        <p class="text-on-surface-variant leading-relaxed mb-6">
-                            {{ activeLesson()?.description }}
-                        </p>
-                    </div>
-                </section>
+                }
             </div>
 
             <!-- Sidebar -->
             <div class="space-y-6">
-                <!-- Lesson Checklist -->
-                <div class="surface-container-high rounded-3xl p-6 border border-outline-variant/10">
-                    <h4 class="font-headline font-bold text-on-surface mb-6 uppercase text-sm tracking-widest">Conteúdo da Trilha</h4>
-                    <div class="space-y-4">
-                        @for (item of lessonsWithState(); track item.lesson.id; let idx = $index) {
-                            @let isActive = item.lesson.id === lessonId();
-                            @let isCompleted = item.progressState === 'completed';
-                            @let isInProgress = item.progressState === 'in-progress';
-
-                            <div [class]="
-                                'flex items-start gap-4 p-3 rounded-xl transition-all ' +
-                                (isActive
-                                    ? 'bg-primary/10 border border-primary/20'
-                                    : isCompleted
-                                        ? 'bg-surface-container'
-                                        : 'opacity-40 grayscale')
-                            ">
-                                @if (isCompleted) {
-                                    <span class="material-symbols-outlined text-tertiary flex-shrink-0" style="font-variation-settings: 'FILL' 1;">check_circle</span>
-                                } @else if (isActive && isInProgress) {
-                                    <span class="w-6 h-6 rounded-full border-2 border-primary flex items-center justify-center text-[10px] font-bold text-primary flex-shrink-0">{{ idx + 1 }}</span>
-                                } @else {
-                                    <span class="w-6 h-6 rounded-full border-2 border-outline flex items-center justify-center text-[10px] font-bold flex-shrink-0">{{ idx + 1 }}</span>
-                                }
-                                <div>
-                                    <p [class]="'text-xs font-bold ' + (isActive ? 'text-primary' : 'text-on-surface')">{{ item.lesson.title }}</p>
-                                    <p [class]="'text-[10px] ' + (isActive ? 'text-primary' : 'text-on-surface-variant')">
-                                        {{ isCompleted ? 'Concluído' : isInProgress ? 'Em progresso' : 'Não iniciado' }}
-                                    </p>
-                                </div>
-                            </div>
-                        } @empty {
-                            <p class="text-on-surface-variant text-sm text-center py-4">Nenhuma aula disponível.</p>
-                        }
-                    </div>
-                </div>
-
                 <!-- Resources Card -->
-                <div class="bg-gradient-to-br from-surface-container to-surface-container-high rounded-3xl p-6 border border-outline-variant/10">
-                    <h4 class="font-headline font-bold text-on-surface mb-4 uppercase text-sm tracking-widest">Materiais Extra</h4>
-                    <ul class="space-y-3">
-                        <li>
-                            <a class="flex items-center justify-between p-3 rounded-xl hover:bg-surface-bright transition-all group" href="#">
-                                <div class="flex items-center gap-3">
-                                    <span class="material-symbols-outlined text-secondary">description</span>
-                                    <span class="text-xs text-on-surface">Guia MDN - HTML</span>
-                                </div>
-                                <span class="material-symbols-outlined text-on-surface-variant group-hover:text-secondary text-sm">open_in_new</span>
-                            </a>
-                        </li>
-                        <li>
-                            <a class="flex items-center justify-between p-3 rounded-xl hover:bg-surface-bright transition-all group" href="#">
-                                <div class="flex items-center gap-3">
-                                    <span class="material-symbols-outlined text-secondary">download</span>
-                                    <span class="text-xs text-on-surface">Cheat-sheet Semântica</span>
-                                </div>
-                                <span class="material-symbols-outlined text-on-surface-variant group-hover:text-secondary text-sm">download</span>
-                            </a>
-                        </li>
-                    </ul>
-                </div>
+                @if (extraMaterials().length > 0) {
+                    <div class="bg-gradient-to-br from-surface-container to-surface-container-high rounded-3xl p-6 border border-outline-variant/10">
+                        <h4 class="font-headline font-bold text-on-surface mb-4 uppercase text-sm tracking-widest">Materiais Extra</h4>
+                        <ul class="space-y-3">
+                            @for (material of extraMaterials(); track material.id) {
+                                <li>
+                                    @if (material.type === 'URL') {
+                                        <a [href]="material.url" target="_blank" class="flex items-center justify-between p-3 rounded-xl hover:bg-surface-bright transition-all group">
+                                            <div class="flex items-center gap-3">
+                                                <span class="material-symbols-outlined text-secondary">description</span>
+                                                <span class="text-xs text-on-surface">{{ material.title }}</span>
+                                            </div>
+                                            <span class="material-symbols-outlined text-on-surface-variant group-hover:text-secondary text-sm">open_in_new</span>
+                                        </a>
+                                    } @else if (material.type === 'FILE') {
+                                        <a [href]="material.file" target="_blank" download class="flex items-center justify-between p-3 rounded-xl hover:bg-surface-bright transition-all group">
+                                            <div class="flex items-center gap-3">
+                                                <span class="material-symbols-outlined text-secondary">download</span>
+                                                <span class="text-xs text-on-surface">{{ material.title }}</span>
+                                            </div>
+                                            <span class="material-symbols-outlined text-on-surface-variant group-hover:text-secondary text-sm">download</span>
+                                        </a>
+                                    }
+                                </li>
+                            }
+                        </ul>
+                    </div>
+                }
 
                 <!-- Gamification Callout -->
                 <div class="relative overflow-hidden glass rounded-3xl p-6 border border-tertiary/20">
@@ -142,9 +130,9 @@
                         <span class="material-symbols-outlined text-8xl text-tertiary">bolt</span>
                     </div>
                     <p class="font-label text-[10px] uppercase tracking-[0.2em] text-tertiary mb-2">Desafio Final</p>
-                    <h4 class="font-headline font-bold text-on-surface text-lg mb-4">Ganhe +250 XP</h4>
+                    <h4 class="font-headline font-bold text-on-surface text-lg mb-4">Ganhe +{{ activeLesson()?.xp }} XP</h4>
                     <p class="text-xs text-on-surface-variant mb-6 leading-relaxed">
-                        Conclua o quiz desta lição com mais de 80% de acerto para liberar o emblema.
+                        Conclua o quiz desta lição com mais de 80% de acerto para liberar o próximo conteúdo.
                     </p>
                 </div>
             </div>

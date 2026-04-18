@@ -5,4 +5,5 @@ export interface Answer {
     text: string;
     isCorrect: boolean;
     question: Question;
+    reason: string;
 }

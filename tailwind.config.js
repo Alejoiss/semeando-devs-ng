@@ -6,6 +6,58 @@ module.exports = {
         "./src/**/**/*.html",
     ],
     theme: {
+        extend: {
+            typography: ({ theme }) => ({
+                invert: {
+                    css: {
+                        '--tw-prose-body': theme('colors.on-surface'),
+                        '--tw-prose-headings': theme('colors.primary'),
+                        '--tw-prose-lead': theme('colors.on-surface-variant'),
+                        '--tw-prose-links': theme('colors.secondary'),
+                        '--tw-prose-bold': theme('colors.on-surface'),
+                        '--tw-prose-counters': theme('colors.primary'),
+                        '--tw-prose-bullets': theme('colors.primary'),
+                        '--tw-prose-hr': theme('colors.outline-variant'),
+                        '--tw-prose-quotes': theme('colors.tertiary'),
+                        '--tw-prose-quote-borders': theme('colors.primary'),
+                        '--tw-prose-captions': theme('colors.on-surface-variant'),
+                        '--tw-prose-code': theme('colors.secondary'),
+                        '--tw-prose-pre-code': theme('colors.on-surface'),
+                        '--tw-prose-pre-bg': theme('colors.surface-container'),
+                        '--tw-prose-th-borders': theme('colors.outline-variant'),
+                        '--tw-prose-td-borders': theme('colors.outline-variant'),
+                    },
+                },
+                DEFAULT: {
+                    css: {
+                        maxWidth: 'none',
+                        color: theme('colors.on-surface'),
+                        fontFamily: theme('fontFamily.body').join(', '),
+                        'h1, h2, h3, h4': {
+                            fontFamily: theme('fontFamily.headline').join(', '),
+                            fontWeight: '800',
+                            letterSpacing: theme('letterSpacing.tight'),
+                        },
+                        a: {
+                            color: theme('colors.secondary'),
+                            textDecorationColor: theme('colors.secondary'),
+                            '&:hover': {
+                                color: theme('colors.secondary-dim'),
+                            },
+                        },
+                        code: {
+                            color: theme('colors.secondary'),
+                            backgroundColor: 'rgba(254, 105, 172, 0.1)',
+                            padding: '0.2rem 0.4rem',
+                            borderRadius: '0.4rem',
+                            fontWeight: '600',
+                        },
+                        'code::before': { content: 'none' },
+                        'code::after': { content: 'none' },
+                    },
+                },
+            }),
+        },
         colors: {
             "background": "#060e20",
             "primary": "#3fc2fb",
@@ -66,6 +118,8 @@ module.exports = {
         },
         borderRadius: { "DEFAULT": "1rem", "lg": "2rem", "xl": "3rem", "full": "9999px" },
     },
-    plugins: [],
+    plugins: [
+        require('@tailwindcss/typography'),
+    ],
 }
 
