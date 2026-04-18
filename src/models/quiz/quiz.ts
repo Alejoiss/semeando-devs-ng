@@ -1,7 +1,9 @@
-import { Lesson } from "../../app/pages/app/lesson/lesson";
+import { Lesson } from "../lesson/lesson";
 
 export interface Quiz {
     id: string;
-    lesson: Lesson;
+    lessonId: string;
+    lesson?: Lesson;
     spentTime: number;
+    createdAt?: Date;
 }

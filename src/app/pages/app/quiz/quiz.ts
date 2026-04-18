@@ -1,140 +1,218 @@
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
-import { RouterLink } from '@angular/router';
+import { ChangeDetectionStrategy, Component, computed, inject, OnInit, signal } from '@angular/core';
+import { ActivatedRoute, RouterLink } from '@angular/router';
+import { Answer } from '../../../../models/answer/answer';
+import { Question } from '../../../../models/question/question';
+import { Quiz as QuizModel } from '../../../../models/quiz/quiz';
+import { UserQuiz } from '../../../../models/user-quiz/user-quiz';
+import { AnswerService } from '../../../services/answer';
+import { QuestionService } from '../../../services/question';
+import { QuizService } from '../../../services/quiz';
+import { UserService } from '../../../services/user';
+import { UserQuestionService } from '../../../services/user-question';
+import { UserQuizService } from '../../../services/user-quiz';
+import { MarkdownModule } from 'ngx-markdown';
 
-interface QuizQuestion {
-    id: number;
-    statement: string;
-    options: string[];
-    correctIndex: number;
+interface QuizResult {
+    questionId: string;
+    correct: boolean;
+    answerId: string;
 }
 
 @Component({
     selector: 'app-quiz',
     standalone: true,
-    imports: [CommonModule, RouterLink],
+    imports: [CommonModule, RouterLink, MarkdownModule],
     templateUrl: './quiz.html',
-    styleUrls: ['./quiz.scss']
+    styleUrls: ['./quiz.scss'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class Quiz {
-    questions: QuizQuestion[] = [
-        { id: 1, statement: 'Qual tag representa o conteúdo principal do documento?', options: ['<header>', '<main>', '<section>', '<footer>'], correctIndex: 1 },
-        { id: 2, statement: 'Qual tag é usada para rodapé semântico?', options: ['<aside>', '<footer>', '<nav>', '<article>'], correctIndex: 1 },
-        { id: 3, statement: 'Qual tag é ideal para navegação principal?', options: ['<nav>', '<div>', '<header>', '<main>'], correctIndex: 0 },
-        { id: 4, statement: 'Qual tag indica um tópico independente?', options: ['<article>', '<section>', '<aside>', '<span>'], correctIndex: 0 },
-        { id: 5, statement: 'Qual elemento não é semântico?', options: ['<section>', '<div>', '<article>', '<header>'], correctIndex: 1 },
-        { id: 6, statement: 'Qual tag é usada para título de uma seção?', options: ['<h1>', '<p>', '<ul>', '<table>'], correctIndex: 0 },
-        { id: 7, statement: 'Qual tag envolve informação tangencial?', options: ['<aside>', '<main>', '<footer>', '<nav>'], correctIndex: 0 },
-        { id: 8, statement: 'Qual tag agrupa conteúdo em bloco lógico?', options: ['<section>', '<span>', '<strong>', '<em>'], correctIndex: 0 },
-        { id: 9, statement: 'Qual tag é usada para citação em bloco?', options: ['<blockquote>', '<code>', '<br>', '<i>'], correctIndex: 0 },
-        { id: 10, statement: 'Qual tag contém metadados e scripts?', options: ['<head>', '<body>', '<html>', '<footer>'], correctIndex: 0 }
-    ];
+export class Quiz implements OnInit {
+    public route = inject(ActivatedRoute);
+    private userService = inject(UserService);
+    private quizService = inject(QuizService);
+    private questionService = inject(QuestionService);
+    private answerService = inject(AnswerService);
+    private userQuizService = inject(UserQuizService);
+    private userQuestionService = inject(UserQuestionService);
 
-    currentIndex = 0;
-    selectedOption: number | null = null;
-    confirmed = false;
-    finished = false;
-    answers: Array<{ questionId: number; correct: boolean; selected: number }> = [];
+    protected readonly quiz = signal<QuizModel | null>(null);
+    protected readonly questions = signal<Question[]>([]);
+    protected readonly currentAnswers = signal<Answer[]>([]);
+    protected readonly currentIndex = signal(0);
+    protected readonly selectedOptionId = signal<string | null>(null);
+    protected readonly confirmed = signal(false);
+    protected readonly finished = signal(false);
+    protected readonly results = signal<QuizResult[]>([]);
+    protected readonly spentTimeSeconds = signal(0);
 
-    get currentQuestion(): QuizQuestion {
-        return this.questions[this.currentIndex];
-    }
+    private timerInterval: any;
+    private userId: string | null = null;
+    private currentAttempt: UserQuiz | null = null;
 
-    get progress(): number {
-        return this.currentIndex + 1;
-    }
+    protected readonly currentQuestion = computed(() => this.questions()[this.currentIndex()]);
+    protected readonly selectedAnswer = computed(() => this.currentAnswers().find(a => a.id === this.selectedOptionId()));
 
-    get correctCount(): number {
-        return this.answers.filter((a) => a.correct).length;
-    }
+    protected readonly progress = computed(() => this.currentIndex() + 1);
+    protected readonly totalQuestions = computed(() => this.questions().length);
 
-    get wrongCount(): number {
-        return this.answers.filter((a) => !a.correct).length;
-    }
+    protected readonly correctCount = computed(() => this.results().filter(r => r.correct).length);
+    protected readonly wrongCount = computed(() => this.results().filter(r => !r.correct).length);
 
-    get remaining(): number {
-        return this.questions.length - this.answers.length;
-    }
+    protected readonly scorePercent = computed(() => {
+        const total = this.totalQuestions();
+        return total > 0 ? Math.round((this.correctCount() / total) * 100) : 0;
+    });
 
-    answer(optionIndex: number) {
-        if (this.confirmed) {
-            return; // não pode mudar após confirmar
+    protected readonly scoreLabel = computed(() => `${this.correctCount()}/${this.totalQuestions()}`);
+
+    protected readonly progressCircleCircumference = 2 * Math.PI * 88;
+    protected readonly progressCircleDashoffset = computed(() =>
+        Math.round(this.progressCircleCircumference * (1 - this.scorePercent() / 100))
+    );
+
+    protected readonly progressCircleFailureCircumference = 2 * Math.PI * 70;
+    protected readonly progressCircleFailureDashoffset = computed(() =>
+        Math.round(this.progressCircleFailureCircumference * (1 - this.scorePercent() / 100))
+    );
+
+    protected readonly passed = computed(() => this.scorePercent() >= 70);
+
+    async ngOnInit() {
+        const lessonId = this.route.snapshot.paramMap.get('lessonId');
+        if (!lessonId) return;
+
+        try {
+            const user = await this.userService.getUserProfile();
+            this.userId = user.id;
+
+            const quizData = await this.quizService.getQuizByLessonId(lessonId);
+            if (!quizData) return;
+            this.quiz.set(quizData);
+
+            let questionsData = await this.questionService.getQuestionsByQuizId(quizData.id);
+            questionsData = this.shuffle(questionsData);
+            this.questions.set(questionsData);
+
+            if (questionsData.length > 0) {
+                await this.loadAnswersForCurrentQuestion();
+                this.startTimer();
+
+                // Opcional: criar tentativa inicial no banco
+                // this.currentAttempt = await this.userQuizService.createAttempt(this.userId, quizData.id);
+            }
+        } catch (error) {
+            console.error('Error loading quiz:', error);
         }
-        this.selectedOption = optionIndex;
     }
 
-    confirmAnswer() {
-        if (this.selectedOption === null || this.confirmed || this.finished) {
+    private startTimer() {
+        this.timerInterval = setInterval(() => {
+            this.spentTimeSeconds.update(s => s + 1);
+        }, 1000);
+    }
+
+    private stopTimer() {
+        if (this.timerInterval) {
+            clearInterval(this.timerInterval);
+        }
+    }
+
+    protected async loadAnswersForCurrentQuestion() {
+        const question = this.currentQuestion();
+        if (!question) return;
+
+        let answers = await this.answerService.getAnswersByQuestionId(question.id);
+        answers = this.shuffle(answers);
+        this.currentAnswers.set(answers);
+    }
+
+    protected answer(answerId: string) {
+        if (this.confirmed()) return;
+        this.selectedOptionId.set(answerId);
+    }
+
+    protected async confirmAnswer() {
+        const selectedId = this.selectedOptionId();
+        const question = this.currentQuestion();
+        const selectedAnswer = this.selectedAnswer();
+
+        if (!selectedId || !question || !selectedAnswer || this.confirmed() || this.finished()) {
             return;
         }
 
-        const isCorrect = this.selectedOption === this.currentQuestion.correctIndex;
-        this.answers.push({ questionId: this.currentQuestion.id, correct: isCorrect, selected: this.selectedOption });
-        this.confirmed = true;
+        const isCorrect = selectedAnswer.isCorrect;
+
+        this.results.update(r => [...r, {
+            questionId: question.id,
+            correct: isCorrect,
+            answerId: selectedId
+        }]);
+
+        // Persist question result
+        // if (this.userId) {
+        //     await this.userQuestionService.saveUserQuestion({
+        //         userId: this.userId,
+        //         questionId: question.id,
+        //         answerId: selectedId,
+        //         isCorrect: isCorrect
+        //     });
+        // }
+
+        this.confirmed.set(true);
     }
 
-    next() {
-        if (!this.confirmed || this.finished) {
-            return;
-        }
+    protected async next() {
+        if (!this.confirmed() || this.finished()) return;
 
-        if (this.currentIndex < this.questions.length - 1) {
-            this.currentIndex++;
-            this.selectedOption = null;
-            this.confirmed = false;
+        if (this.currentIndex() < this.totalQuestions() - 1) {
+            this.currentIndex.update(i => i + 1);
+            this.selectedOptionId.set(null);
+            this.confirmed.set(false);
+            await this.loadAnswersForCurrentQuestion();
         } else {
-            this.finished = true;
+            await this.finishQuiz();
         }
     }
 
-    prev() {
-        if (this.currentIndex > 0) {
-            this.currentIndex--;
+    private async finishQuiz() {
+        this.stopTimer();
+        this.finished.set(true);
+
+        if (this.currentAttempt) {
+            await this.userQuizService.finishAttempt(
+                this.currentAttempt.id,
+                this.scorePercent(),
+                this.spentTimeSeconds()
+            );
         }
     }
 
-    get status() {
-        return this.finished ? 'finished' : 'playing';
+    protected restart() {
+        // Simple recharge or reload? Local restart:
+        this.currentIndex.set(0);
+        this.selectedOptionId.set(null);
+        this.confirmed.set(false);
+        this.finished.set(false);
+        this.results.set([]);
+        this.spentTimeSeconds.set(0);
+        this.questions.update(q => this.shuffle(q));
+        this.loadAnswersForCurrentQuestion();
+        this.startTimer();
     }
 
-    get totalQuestions(): number {
-        return this.questions.length;
+    private shuffle<T>(array: T[]): T[] {
+        const newArray = [...array];
+        for (let i = newArray.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [newArray[i], newArray[j]] = [newArray[j], newArray[i]];
+        }
+        return newArray;
     }
 
-    get scoreLabel(): string {
-        return `${this.correctCount}/${this.totalQuestions}`;
-    }
-
-    get scorePercent(): number {
-        return this.totalQuestions > 0 ? Math.round((this.correctCount / this.totalQuestions) * 100) : 0;
-    }
-
-    get progressCircleCircumference(): number {
-        return 2 * Math.PI * 88; // 88 is the radius used in the success circle
-    }
-
-    get progressCircleDashoffset(): number {
-        return Math.round(this.progressCircleCircumference * (1 - this.scorePercent / 100));
-    }
-
-    get progressCircleFailureCircumference(): number {
-        return 2 * Math.PI * 70; // 70 is the radius used in the failure circle
-    }
-
-    get progressCircleFailureDashoffset(): number {
-        return Math.round(this.progressCircleFailureCircumference * (1 - this.scorePercent / 100));
-    }
-
-    get passed(): boolean {
-        return this.correctCount >= 8;
-    }
-
-    restart() {
-        this.currentIndex = 0;
-        this.selectedOption = null;
-        this.confirmed = false;
-        this.finished = false;
-        this.answers = [];
+    protected formatTime(seconds: number): string {
+        const mins = Math.floor(seconds / 60);
+        const secs = seconds % 60;
+        return `${mins}:${secs.toString().padStart(2, '0')}`;
     }
 }
-

@@ -2,8 +2,10 @@ import { Question } from "../question/question";
 
 export interface Answer {
     id: string;
+    questionId: string;
+    question?: Question;
     text: string;
     isCorrect: boolean;
-    question: Question;
     reason: string;
+    createdAt?: Date;
 }

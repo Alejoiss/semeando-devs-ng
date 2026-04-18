@@ -5,4 +5,6 @@ export interface Plan {
     validUntil: Date;
     discount: number;
     discountUntil: Date;
+    couponCode?: string;
+    couponCodeQuantity?: number;
 }

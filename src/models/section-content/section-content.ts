@@ -1,4 +1,5 @@
 import { Lesson } from "../lesson/lesson";
+import { Question } from "../question/question";
 import { Quiz } from "../quiz/quiz";
 
 export enum SectionContentType {
@@ -15,6 +16,9 @@ export interface SectionContent {
     file: string;
     fileDescription: string;
     order: number;
-    lesson: Lesson;
-    quiz: Quiz;
+    lessonId?: string;
+    lesson?: Lesson;
+    questionId?: string;
+    question?: Question;
+    quiz?: Quiz;
 }

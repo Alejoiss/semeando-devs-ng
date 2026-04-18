@@ -3,10 +3,13 @@ import { User } from "../user/user";
 
 export interface UserQuiz {
     id: string;
-    user: User;
-    quiz: Quiz;
-    startedAt: Date;
-    completed: boolean;
-    completedAt: Date;
+    userId: string;
+    user?: User;
+    quizId: string;
+    quiz?: Quiz;
     score: number;
+    spentTime: number;
+    completed: boolean;
+    completedAt: Date | null;
+    createdAt?: Date;
 }
