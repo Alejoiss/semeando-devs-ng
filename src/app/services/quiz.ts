@@ -33,4 +33,22 @@ export class QuizService {
             createdAt: new Date(data.created_at),
         } as Quiz;
     }
+
+    async completeQuiz(attemptId: string, lessonId: string, correctCount: number, totalCount: number, spentTime: number): Promise<any> {
+        const { data: { session } } = await this.supabase.auth.getSession();
+        if (!session) throw new Error('No active session found');
+
+        const { data, error } = await this.supabase.functions.invoke('complete-quiz', {
+            body: { attemptId, lessonId, correctCount, totalCount, spentTime },
+            headers: {
+                Authorization: `Bearer ${session.access_token}`
+            }
+        });
+
+        if (error) {
+            throw new Error(error.message || 'Error completing quiz');
+        }
+
+        return data;
+    }
 }

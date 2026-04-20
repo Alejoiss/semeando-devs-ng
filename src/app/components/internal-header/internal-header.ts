@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { RouterLink } from '@angular/router';
+import { XpService } from '../../services/xp';
 
 @Component({
     selector: 'app-internal-header',
@@ -9,4 +10,11 @@ import { RouterLink } from '@angular/router';
     templateUrl: './internal-header.html',
     styleUrls: ['./internal-header.scss']
 })
-export class InternalHeader {}
+export class InternalHeader implements OnInit {
+    private xpService = inject(XpService);
+    protected readonly totalXp = this.xpService.totalXp;
+
+    ngOnInit(): void {
+        this.xpService.getXp();
+    }
+}

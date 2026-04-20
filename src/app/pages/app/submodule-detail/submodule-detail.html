@@ -98,9 +98,20 @@
                                     {{ isLesson ? 'Lição' : isChallenge ? 'Desafio' : 'Revisão' }}
                                 </span>
                                 @if (isCompleted) {
-                                    <span class="px-3 py-1 bg-tertiary/10 text-tertiary font-label text-xs rounded-full">Concluído • Nota: 10/10</span>
+                                    @let quiz = lessonQuizzesMap().get(item.lesson.id);
+                                    <span class="px-3 py-1 bg-tertiary/10 text-tertiary font-label text-xs rounded-full">
+                                        Concluído{{ quiz ? ' • Nota: ' + quiz.score + '/' + quiz.totalQuestions : '' }}
+                                    </span>
                                 } @else if (isInProgress) {
-                                    <span class="px-3 py-1 bg-primary/10 text-primary font-label text-xs rounded-full">Em Progresso</span>
+                                    <div>
+                                        <span class="px-3 py-1 bg-primary/10 text-primary font-label text-xs rounded-full mr-2">Em Progresso</span>
+                                        @let quiz = lessonQuizzesMap().get(item.lesson.id);
+                                        @if (quiz) {
+                                            <span class="px-3 py-1 bg-error/10 text-error font-label text-xs rounded-full">
+                                                Nota: {{ quiz.score + '/' + quiz.totalQuestions }}
+                                            </span>
+                                        }
+                                    </div>
                                 } @else if (isBlocked) {
                                     <span class="px-3 py-1 bg-surface-container-highest text-on-surface-variant/50 font-label text-xs rounded-full">Bloqueado</span>
                                 } @else {

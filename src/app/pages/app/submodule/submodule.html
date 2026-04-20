@@ -85,20 +85,20 @@
                         <div class="flex justify-between items-end font-label">
                             <span class="text-xs text-on-surface-variant">Progresso</span>
                             @if (item.progressState === 'completed') {
-                                <span class="text-lg font-bold text-tertiary">100%</span>
+                                <span class="text-lg font-bold text-tertiary">{{ item.progressPercentage }}%</span>
                             } @else if (item.progressState === 'in-progress') {
-                                <span class="text-lg font-bold text-primary">50%</span>
+                                <span class="text-lg font-bold text-primary">{{ item.progressPercentage }}%</span>
                             } @else {
-                                <span class="text-lg font-bold text-on-surface-variant/50">0%</span>
+                                <span class="text-lg font-bold text-on-surface-variant/50">{{ item.progressPercentage }}%</span>
                             }
                         </div>
                         <div class="h-2 w-full bg-surface-container-highest rounded-full overflow-hidden">
                             @if (item.progressState === 'completed') {
-                                <div class="h-full w-full bg-tertiary rounded-full"></div>
+                                <div class="h-full bg-tertiary rounded-full" [style.width.%]="item.progressPercentage"></div>
                             } @else if (item.progressState === 'in-progress') {
-                                <div class="h-full w-1/2 bg-gradient-to-r from-primary to-primary-container rounded-full progress-glow"></div>
+                                <div class="h-full bg-gradient-to-r from-primary to-primary-container rounded-full progress-glow" [style.width.%]="item.progressPercentage"></div>
                             } @else {
-                                <div class="h-full w-0 bg-primary rounded-full"></div>
+                                <div class="h-full bg-primary rounded-full" [style.width.%]="item.progressPercentage"></div>
                             }
                         </div>
                     </div>

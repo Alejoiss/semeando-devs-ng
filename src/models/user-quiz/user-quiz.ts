@@ -7,9 +7,11 @@ export interface UserQuiz {
     user?: User;
     quizId: string;
     quiz?: Quiz;
+    lessonId?: string;
     score: number;
     spentTime: number;
     completed: boolean;
     completedAt: Date | null;
+    totalQuestions?: number;
     createdAt?: Date;
 }

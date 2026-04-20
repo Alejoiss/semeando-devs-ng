@@ -11,6 +11,7 @@ export interface SubmoduleWithState {
     submodule: SubModule;
     progressState: 'not-started' | 'in-progress' | 'completed' | 'blocked';
     targetLessonId: string | null;
+    progressPercentage: number;
 }
 
 @Component({
@@ -79,6 +80,12 @@ export class Submodule implements OnInit {
                 previousCompleted = state === 'completed';
 
                 let targetLessonId: string | null = null;
+                let progressPercentage = 0;
+
+                if (state === 'completed') {
+                    progressPercentage = 100;
+                }
+
                 try {
                     const lessons = await this.lessonService.getLessonsBySubModuleSlug(sm.slug);
                     if (lessons.length > 0) {
@@ -86,6 +93,9 @@ export class Submodule implements OnInit {
                             const sortedLessons = [...lessons].sort((a, b) => (a.order || 0) - (b.order || 0));
                             const firstIncomplete = sortedLessons.find(l => !completedLessonIds.has(l.id));
                             targetLessonId = firstIncomplete?.id ?? sortedLessons[0].id;
+                            
+                            const completedCount = lessons.filter(l => completedLessonIds.has(l.id)).length;
+                            progressPercentage = Math.round((completedCount / lessons.length) * 100);
                         } else {
                             const sortedLessons = [...lessons].sort((a, b) => (a.order || 0) - (b.order || 0));
                             targetLessonId = sortedLessons[0].id;
@@ -98,7 +108,8 @@ export class Submodule implements OnInit {
                 withState.push({
                     submodule: sm,
                     progressState: state,
-                    targetLessonId
+                    targetLessonId,
+                    progressPercentage
                 });
             }
 

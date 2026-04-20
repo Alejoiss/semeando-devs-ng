@@ -7,6 +7,8 @@ import { UserLessonService } from '../../../services/user-lesson';
 import { SubModule } from '../../../../models/sub-module/sub-module';
 import { Lesson } from '../../../../models/lesson/lesson';
 import { UserLesson } from '../../../../models/user-lesson/user-lesson';
+import { UserQuizService } from '../../../services/user-quiz';
+import { UserQuiz } from '../../../../models/user-quiz/user-quiz';
 
 export interface LessonWithState {
     lesson: Lesson;
@@ -25,6 +27,7 @@ export class SubmoduleDetail implements OnInit {
     private subModuleService = inject(SubModuleService);
     private lessonService = inject(LessonService);
     private userLessonService = inject(UserLessonService);
+    private userQuizService = inject(UserQuizService);
     private router = inject(Router);
 
     submodule = signal<SubModule | null>(null);
@@ -32,8 +35,24 @@ export class SubmoduleDetail implements OnInit {
     slugSubmodule = signal<string>('');
     lessons = signal<Lesson[]>([]);
     userLessons = signal<UserLesson[]>([]);
+    userQuizzes = signal<UserQuiz[]>([]);
     isLoading = signal<boolean>(true);
     error = signal<string | null>(null);
+
+    lessonQuizzesMap = computed<Map<string, UserQuiz>>(() => {
+        const quizMap = new Map<string, UserQuiz>();
+        this.userQuizzes().forEach(uq => {
+            if (uq.lessonId) {
+                // If there are multiple attempts, we might want the best one or the completed one.
+                // For now, let's take the latest/best.
+                const existing = quizMap.get(uq.lessonId);
+                if (!existing || (uq.score > existing.score)) {
+                    quizMap.set(uq.lessonId, uq);
+                }
+            }
+        });
+        return quizMap;
+    });
 
     lessonsWithState = computed<LessonWithState[]>(() => {
         const userLessonMap = new Map<string, UserLesson>(
@@ -81,9 +100,6 @@ export class SubmoduleDetail implements OnInit {
                 return;
             }
 
-            this.slug.set(slug);
-            this.slugSubmodule.set(slugSubmodule);
-
             const [submodules, lessons, userLessons] = await Promise.all([
                 this.subModuleService.getSubModulesByModuleSlug(slug),
                 this.lessonService.getLessonsBySubModuleSlug(slugSubmodule),
@@ -98,6 +114,12 @@ export class SubmoduleDetail implements OnInit {
             this.submodule.set(submodule);
             this.lessons.set(lessons);
             this.userLessons.set(userLessons);
+
+            if (submodule) {
+                const quizzes = await this.userQuizService.getUserQuizzesBySubModule(submodule.id);
+                this.userQuizzes.set(quizzes);
+            }
+            
             this.error.set(null);
         } catch (err: unknown) {
             this.error.set(err instanceof Error ? err.message : 'Erro ao carregar os dados.');

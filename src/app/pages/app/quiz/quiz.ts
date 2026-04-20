@@ -11,6 +11,7 @@ import { QuizService } from '../../../services/quiz';
 import { UserService } from '../../../services/user';
 import { UserQuestionService } from '../../../services/user-question';
 import { UserQuizService } from '../../../services/user-quiz';
+import { XpService } from '../../../services/xp';
 import { MarkdownModule } from 'ngx-markdown';
 
 interface QuizResult {
@@ -35,6 +36,7 @@ export class Quiz implements OnInit {
     private answerService = inject(AnswerService);
     private userQuizService = inject(UserQuizService);
     private userQuestionService = inject(UserQuestionService);
+    private xpService = inject(XpService);
 
     protected readonly quiz = signal<QuizModel | null>(null);
     protected readonly questions = signal<Question[]>([]);
@@ -179,12 +181,21 @@ export class Quiz implements OnInit {
         this.stopTimer();
         this.finished.set(true);
 
-        if (this.currentAttempt) {
-            await this.userQuizService.finishAttempt(
-                this.currentAttempt.id,
-                this.scorePercent(),
-                this.spentTimeSeconds()
-            );
+        const lessonId = this.route.snapshot.paramMap.get('lessonId');
+
+        if (this.currentAttempt && lessonId) {
+            try {
+                await this.quizService.completeQuiz(
+                    this.currentAttempt.id,
+                    lessonId,
+                    this.correctCount(),
+                    this.totalQuestions(),
+                    this.spentTimeSeconds()
+                );
+                await this.xpService.refreshXp();
+            } catch (error) {
+                console.error('Error completing quiz via Edge Function:', error);
+            }
         }
     }
 
