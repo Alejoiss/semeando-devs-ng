@@ -102,9 +102,9 @@
                                 Continuar
                             </button>
                         } @else {
-                            <button [routerLink]="['s', item.module.slug]"
+                            <button (click)="onStartModule(item.module.id, item.module.slug)"
                                 class="px-8 py-3 bg-gradient-to-r from-primary to-primary-container text-on-primary-container font-headline font-bold rounded-xl glow-primary hover:scale-105 active:scale-95 transition-all">
-                                Começar
+                                Iniciar
                             </button>
                         }
                     </div>

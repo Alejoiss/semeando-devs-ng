@@ -99,7 +99,7 @@ export class Quiz implements OnInit {
                 this.startTimer();
 
                 // Opcional: criar tentativa inicial no banco
-                // this.currentAttempt = await this.userQuizService.createAttempt(this.userId, quizData.id);
+                this.currentAttempt = await this.userQuizService.createAttempt(this.userId, quizData.id);
             }
         } catch (error) {
             console.error('Error loading quiz:', error);
@@ -150,14 +150,14 @@ export class Quiz implements OnInit {
         }]);
 
         // Persist question result
-        // if (this.userId) {
-        //     await this.userQuestionService.saveUserQuestion({
-        //         userId: this.userId,
-        //         questionId: question.id,
-        //         answerId: selectedId,
-        //         isCorrect: isCorrect
-        //     });
-        // }
+        if (this.userId) {
+            await this.userQuestionService.saveUserQuestion({
+                userId: this.userId,
+                questionId: question.id,
+                answerId: selectedId,
+                isCorrect: isCorrect
+            });
+        }
 
         this.confirmed.set(true);
     }

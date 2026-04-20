@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, inject, OnInit, signal } from '@angular/core';
-import { ActivatedRoute, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { SubModuleService } from '../../../services/sub-module';
 import { UserSubModuleService } from '../../../services/user-sub-module';
 import { LessonService } from '../../../services/lesson';
@@ -23,6 +23,7 @@ export interface SubmoduleWithState {
 })
 export class Submodule implements OnInit {
     private route = inject(ActivatedRoute);
+    private router = inject(Router);
     private submoduleService = inject(SubModuleService);
     private userSubmoduleService = inject(UserSubModuleService);
     private lessonService = inject(LessonService);
@@ -107,6 +108,15 @@ export class Submodule implements OnInit {
             this.error.set(err.message || 'Erro ao carregar os submódulos.');
         } finally {
             this.isLoading.set(false);
+        }
+    }
+
+    protected async onStartSubmodule(submoduleId: string, slug: string): Promise<void> {
+        try {
+            await this.userSubmoduleService.startSubModule(submoduleId);
+            await this.router.navigate(['ss', slug], { relativeTo: this.route });
+        } catch (err) {
+            console.error('Erro ao iniciar submódulo:', err);
         }
     }
 }

@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, computed, inject, OnInit, signal } from '@angular/core';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { Module } from '../../../../models/module/module';
 import { UserModule } from '../../../../models/user-module/user-module';
 import { ModuleService } from '../../../services/module';
@@ -22,6 +22,7 @@ interface ModuleWithState {
 export class Modules implements OnInit {
     private readonly moduleService = inject(ModuleService);
     private readonly userModuleService = inject(UserModuleService);
+    private readonly router = inject(Router);
 
     protected readonly modules = signal<Module[]>([]);
     protected readonly userModules = signal<UserModule[]>([]);
@@ -46,7 +47,12 @@ export class Modules implements OnInit {
     });
 
     async ngOnInit(): Promise<void> {
+        await this.loadData();
+    }
+
+    private async loadData(): Promise<void> {
         try {
+            this.isLoading.set(true);
             const [modules, userModules] = await Promise.all([
                 this.moduleService.getModules(),
                 this.userModuleService.getUserModules(),
@@ -57,6 +63,15 @@ export class Modules implements OnInit {
             this.error.set(err instanceof Error ? err.message : 'Erro ao carregar os módulos.');
         } finally {
             this.isLoading.set(false);
+        }
+    }
+
+    protected async onStartModule(moduleId: string, slug: string): Promise<void> {
+        try {
+            await this.userModuleService.startModule(moduleId);
+            await this.router.navigate(['/app/s', slug]);
+        } catch (err) {
+            console.error('Erro ao iniciar módulo:', err);
         }
     }
 }

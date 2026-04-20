@@ -117,9 +117,9 @@
                                     Continuar
                                 </button>
                             } @else {
-                                <button [routerLink]="['ss', item.submodule.slug]"
+                                <button (click)="onStartSubmodule(item.submodule.id, item.submodule.slug)"
                                     class="px-8 py-3 bg-gradient-to-r from-primary to-primary-container text-on-primary-container font-headline font-bold rounded-xl glow-primary hover:scale-105 active:scale-95 transition-all">
-                                    Começar
+                                    Iniciar
                                 </button>
                             }
                         </div>

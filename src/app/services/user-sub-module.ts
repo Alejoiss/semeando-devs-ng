@@ -30,4 +30,25 @@ export class UserSubModuleService {
 
         return (data ?? []) as unknown as UserSubModule[];
     }
+
+    async startSubModule(subModuleId: string): Promise<void> {
+        const { data: { user }, error: authError } = await this.supabase.auth.getUser();
+
+        if (authError || !user) {
+            throw new Error('User not authenticated');
+        }
+
+        const { error } = await this.supabase
+            .from('user_submodules')
+            .insert({
+                user_id: user.id,
+                sub_module_id: subModuleId,
+                completed: false,
+                completed_at: null
+            });
+
+        if (error) {
+            throw new Error(error.message);
+        }
+    }
 }

@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, computed, inject, OnInit, signal } from '@angular/core';
-import { ActivatedRoute, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { SubModuleService } from '../../../services/sub-module';
 import { LessonService } from '../../../services/lesson';
 import { UserLessonService } from '../../../services/user-lesson';
@@ -25,6 +25,7 @@ export class SubmoduleDetail implements OnInit {
     private subModuleService = inject(SubModuleService);
     private lessonService = inject(LessonService);
     private userLessonService = inject(UserLessonService);
+    private router = inject(Router);
 
     submodule = signal<SubModule | null>(null);
     slug = signal<string>('');
@@ -102,6 +103,15 @@ export class SubmoduleDetail implements OnInit {
             this.error.set(err instanceof Error ? err.message : 'Erro ao carregar os dados.');
         } finally {
             this.isLoading.set(false);
+        }
+    }
+
+    protected async onStartLesson(lessonId: string): Promise<void> {
+        try {
+            await this.userLessonService.startLesson(lessonId);
+            await this.router.navigate(['lesson', lessonId], { relativeTo: this.route });
+        } catch (err) {
+            console.error('Erro ao iniciar lição:', err);
         }
     }
 }

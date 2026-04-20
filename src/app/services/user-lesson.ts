@@ -31,4 +31,25 @@ export class UserLessonService {
 
         return (data ?? []) as unknown as UserLesson[];
     }
+
+    async startLesson(lessonId: string): Promise<void> {
+        const { data: { user }, error: authError } = await this.supabase.auth.getUser();
+
+        if (authError || !user) {
+            throw new Error('User not authenticated');
+        }
+
+        const { error } = await this.supabase
+            .from('user_lessons')
+            .insert({
+                user_id: user.id,
+                lesson_id: lessonId,
+                completed: false,
+                completed_at: null
+            });
+
+        if (error) {
+            throw new Error(error.message);
+        }
+    }
 }

@@ -111,15 +111,23 @@
                             <p class="text-on-surface-variant text-sm mb-4">{{ item.lesson.description }}</p>
 
                             @if (!isBlocked && (isCompleted || isInProgress || notStarted)) {
-                                <a [routerLink]="['lesson', item.lesson.id]"
-                                   [class]="
-                                    isCompleted
-                                        ? 'flex items-center gap-2 font-label text-sm font-bold ' + (isEven ? '' : 'ml-auto justify-end ') + (isChallenge ? 'text-secondary' : 'text-primary')
-                                        : 'px-6 py-2 bg-gradient-to-r from-primary to-primary-dim text-on-primary-container font-headline font-bold rounded-lg inline-flex items-center gap-2 ' + (isEven ? '' : 'ml-auto justify-end')
-                                ">
-                                    {{ isCompleted ? 'Rever Aula' : isInProgress ? 'Continuar Agora' : 'Começar Agora' }}
-                                    <span class="material-symbols-outlined text-sm">arrow_forward</span>
-                                </a>
+                                @if (notStarted) {
+                                    <button (click)="onStartLesson(item.lesson.id)"
+                                       [class]="'px-6 py-2 bg-gradient-to-r from-primary to-primary-dim text-on-primary-container font-headline font-bold rounded-lg inline-flex items-center gap-2 ' + (isEven ? '' : 'ml-auto justify-end')">
+                                        Iniciar
+                                        <span class="material-symbols-outlined text-sm">arrow_forward</span>
+                                    </button>
+                                } @else {
+                                    <a [routerLink]="['lesson', item.lesson.id]"
+                                       [class]="
+                                        isCompleted
+                                            ? 'flex items-center gap-2 font-label text-sm font-bold ' + (isEven ? '' : 'ml-auto justify-end ') + (isChallenge ? 'text-secondary' : 'text-primary')
+                                            : 'px-6 py-2 bg-gradient-to-r from-primary to-primary-dim text-on-primary-container font-headline font-bold rounded-lg inline-flex items-center gap-2 ' + (isEven ? '' : 'ml-auto justify-end')
+                                    ">
+                                        {{ isCompleted ? 'Rever Aula' : 'Continuar' }}
+                                        <span class="material-symbols-outlined text-sm">arrow_forward</span>
+                                    </a>
+                                }
                             } @else if (isBlocked) {
                                 <div [class]="'flex items-center gap-2 font-label text-sm font-bold text-on-surface-variant/50 ' + (isEven ? '' : 'ml-auto justify-end')">
                                     <span class="material-symbols-outlined text-sm">lock</span>
