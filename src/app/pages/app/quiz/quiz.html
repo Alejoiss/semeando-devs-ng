@@ -1,4 +1,24 @@
+@if (noQuestionsAvailable()) {
+    <div class="min-h-screen bg-background text-on-surface p-6 lg:p-12 flex items-center justify-center">
+        <div class="max-w-md w-full text-center flex flex-col items-center gap-6">
+            <div class="w-20 h-20 rounded-full bg-surface-container-high flex items-center justify-center">
+                <span class="material-symbols-outlined text-4xl text-on-surface-variant">quiz</span>
+            </div>
+            <h2 class="text-2xl font-headline font-bold text-on-surface">Nenhuma questão disponível</h2>
+            <p class="text-on-surface-variant text-sm leading-relaxed">
+                Ainda não há questões de lições anteriores para revisar neste submódulo.
+                Complete algumas lições com quiz primeiro!
+            </p>
+            <a [routerLink]="['/app/s', route.snapshot.params['slug'], 'ss', route.snapshot.params['slugSubmodule']]"
+               class="px-8 py-3 bg-gradient-to-r from-primary to-primary-dim text-on-primary-container font-headline font-bold rounded-lg inline-flex items-center gap-2">
+                <span class="material-symbols-outlined text-sm">arrow_back</span>
+                Voltar para o Submódulo
+            </a>
+        </div>
+    </div>
+} @else {
 <div class="min-h-screen bg-background text-on-surface p-6 lg:p-12">
+
     <section class="max-w-5xl mx-auto bg-surface-container rounded-2xl border border-outline-variant/20 p-8 shadow-lg">
         @if (!finished()) {
             <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-6">
@@ -286,3 +306,4 @@
         }
     </section>
 </div>
+}

@@ -26,4 +26,28 @@ export class LessonService {
 
         return (data ?? []) as unknown as Lesson[];
     }
+
+    async getLessonById(lessonId: string): Promise<Lesson | null> {
+        const { data, error } = await this.supabase
+            .from('lessons')
+            .select('*')
+            .eq('id', lessonId)
+            .single();
+
+        if (error && error.code !== 'PGRST116') {
+            throw new Error(error.message);
+        }
+
+        if (!data) return null;
+
+        return {
+            id: data.id,
+            title: data.title,
+            description: data.description,
+            type: data.type,
+            order: data.order,
+            subModuleId: data.sub_module_id,
+            xp: data.xp,
+        } as Lesson;
+    }
 }

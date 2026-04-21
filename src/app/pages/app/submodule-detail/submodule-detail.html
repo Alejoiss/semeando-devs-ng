@@ -123,13 +123,13 @@
 
                             @if (!isBlocked && (isCompleted || isInProgress || notStarted)) {
                                 @if (notStarted) {
-                                    <button (click)="onStartLesson(item.lesson.id)"
+                                    <button (click)="onStartLesson(item.lesson)"
                                        [class]="'px-6 py-2 bg-gradient-to-r from-primary to-primary-dim text-on-primary-container font-headline font-bold rounded-lg inline-flex items-center gap-2 ' + (isEven ? '' : 'ml-auto justify-end')">
                                         Iniciar
                                         <span class="material-symbols-outlined text-sm">arrow_forward</span>
                                     </button>
                                 } @else {
-                                    <a [routerLink]="['lesson', item.lesson.id]"
+                                    <a [routerLink]="isRevision ? ['lesson', item.lesson.id, 'quiz'] : ['lesson', item.lesson.id]"
                                        [class]="
                                         isCompleted
                                             ? 'flex items-center gap-2 font-label text-sm font-bold ' + (isEven ? '' : 'ml-auto justify-end ') + (isChallenge ? 'text-secondary' : 'text-primary')

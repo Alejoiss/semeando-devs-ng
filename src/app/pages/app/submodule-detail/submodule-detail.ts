@@ -5,7 +5,7 @@ import { SubModuleService } from '../../../services/sub-module';
 import { LessonService } from '../../../services/lesson';
 import { UserLessonService } from '../../../services/user-lesson';
 import { SubModule } from '../../../../models/sub-module/sub-module';
-import { Lesson } from '../../../../models/lesson/lesson';
+import { Lesson, LessonType } from '../../../../models/lesson/lesson';
 import { UserLesson } from '../../../../models/user-lesson/user-lesson';
 import { UserQuizService } from '../../../services/user-quiz';
 import { UserQuiz } from '../../../../models/user-quiz/user-quiz';
@@ -59,18 +59,18 @@ export class SubmoduleDetail implements OnInit {
             this.userLessons().map(ul => [ul.lesson?.id, ul])
         );
         const sortedLessons = [...this.lessons()].sort((a, b) => (a.order || 0) - (b.order || 0));
-        
+
         let previousCompleted = true;
         return sortedLessons.map(lesson => {
             const userLesson = userLessonMap.get(lesson.id);
             let progressState: 'not-started' | 'in-progress' | 'completed' | 'blocked' = 'not-started';
-            
+
             if (userLesson) {
                 progressState = userLesson.completed ? 'completed' : 'in-progress';
             } else if (!previousCompleted) {
                 progressState = 'blocked';
             }
-            
+
             previousCompleted = progressState === 'completed';
             return { lesson, progressState };
         });
@@ -119,7 +119,7 @@ export class SubmoduleDetail implements OnInit {
                 const quizzes = await this.userQuizService.getUserQuizzesBySubModule(submodule.id);
                 this.userQuizzes.set(quizzes);
             }
-            
+
             this.error.set(null);
         } catch (err: unknown) {
             this.error.set(err instanceof Error ? err.message : 'Erro ao carregar os dados.');
@@ -128,10 +128,14 @@ export class SubmoduleDetail implements OnInit {
         }
     }
 
-    protected async onStartLesson(lessonId: string): Promise<void> {
+    protected async onStartLesson(lesson: Lesson): Promise<void> {
         try {
-            await this.userLessonService.startLesson(lessonId);
-            await this.router.navigate(['lesson', lessonId], { relativeTo: this.route });
+            await this.userLessonService.startLesson(lesson.id);
+            if (lesson.type === LessonType.REVISION) {
+                await this.router.navigate(['lesson', lesson.id, 'quiz'], { relativeTo: this.route });
+                return;
+            }
+            await this.router.navigate(['lesson', lesson.id], { relativeTo: this.route });
         } catch (err) {
             console.error('Erro ao iniciar lição:', err);
         }

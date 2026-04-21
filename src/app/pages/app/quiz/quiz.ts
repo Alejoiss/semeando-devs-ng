@@ -4,8 +4,10 @@ import { ActivatedRoute, RouterLink } from '@angular/router';
 import { Answer } from '../../../../models/answer/answer';
 import { Question } from '../../../../models/question/question';
 import { Quiz as QuizModel } from '../../../../models/quiz/quiz';
+import { LessonType } from '../../../../models/lesson/lesson';
 import { UserQuiz } from '../../../../models/user-quiz/user-quiz';
 import { AnswerService } from '../../../services/answer';
+import { LessonService } from '../../../services/lesson';
 import { QuestionService } from '../../../services/question';
 import { QuizService } from '../../../services/quiz';
 import { UserService } from '../../../services/user';
@@ -31,6 +33,7 @@ interface QuizResult {
 export class Quiz implements OnInit {
     public route = inject(ActivatedRoute);
     private userService = inject(UserService);
+    private lessonService = inject(LessonService);
     private quizService = inject(QuizService);
     private questionService = inject(QuestionService);
     private answerService = inject(AnswerService);
@@ -47,6 +50,8 @@ export class Quiz implements OnInit {
     protected readonly finished = signal(false);
     protected readonly results = signal<QuizResult[]>([]);
     protected readonly spentTimeSeconds = signal(0);
+    protected readonly isRevisionMode = signal<boolean>(false);
+    protected readonly noQuestionsAvailable = signal<boolean>(false);
 
     private timerInterval: any;
     private userId: string | null = null;
@@ -88,20 +93,42 @@ export class Quiz implements OnInit {
             const user = await this.userService.getUserProfile();
             this.userId = user.id;
 
-            const quizData = await this.quizService.getQuizByLessonId(lessonId);
-            if (!quizData) return;
-            this.quiz.set(quizData);
+            const lesson = await this.lessonService.getLessonById(lessonId);
+            if (!lesson) return;
 
-            let questionsData = await this.questionService.getQuestionsByQuizId(quizData.id);
-            questionsData = this.shuffle(questionsData);
-            this.questions.set(questionsData);
+            if (lesson.type === LessonType.REVISION) {
+                const quizData = await this.quizService.getQuizByLessonId(lessonId);
+                if (!quizData) return;
+                this.isRevisionMode.set(true);
 
-            if (questionsData.length > 0) {
+                const revisionQuestions = await this.quizService.getRevisionQuestions(lessonId, lesson.subModuleId);
+
+                if (revisionQuestions.length === 0) {
+                    this.noQuestionsAvailable.set(true);
+                    return;
+                }
+
+                this.questions.set(revisionQuestions);
                 await this.loadAnswersForCurrentQuestion();
                 this.startTimer();
 
-                // Opcional: criar tentativa inicial no banco
                 this.currentAttempt = await this.userQuizService.createAttempt(this.userId, quizData.id);
+            } else {
+                const quizData = await this.quizService.getQuizByLessonId(lessonId);
+                if (!quizData) return;
+                this.quiz.set(quizData);
+
+                let questionsData = await this.questionService.getQuestionsByQuizId(quizData.id);
+                questionsData = this.shuffle(questionsData);
+                this.questions.set(questionsData);
+
+                if (questionsData.length > 0) {
+                    await this.loadAnswersForCurrentQuestion();
+                    this.startTimer();
+
+                    // Opcional: criar tentativa inicial no banco
+                    this.currentAttempt = await this.userQuizService.createAttempt(this.userId, quizData.id);
+                }
             }
         } catch (error) {
             console.error('Error loading quiz:', error);
@@ -200,7 +227,6 @@ export class Quiz implements OnInit {
     }
 
     protected restart() {
-        // Simple recharge or reload? Local restart:
         this.currentIndex.set(0);
         this.selectedOptionId.set(null);
         this.confirmed.set(false);
