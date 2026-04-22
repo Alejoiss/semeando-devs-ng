@@ -4,7 +4,7 @@ import { ActivatedRoute, RouterLink } from '@angular/router';
 import { Answer } from '../../../../models/answer/answer';
 import { Question } from '../../../../models/question/question';
 import { Quiz as QuizModel } from '../../../../models/quiz/quiz';
-import { LessonType } from '../../../../models/lesson/lesson';
+import { Lesson, LessonType } from '../../../../models/lesson/lesson';
 import { UserQuiz } from '../../../../models/user-quiz/user-quiz';
 import { AnswerService } from '../../../services/answer';
 import { LessonService } from '../../../services/lesson';
@@ -29,6 +29,9 @@ interface QuizResult {
     templateUrl: './quiz.html',
     styleUrls: ['./quiz.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    host: {
+        '(window:keydown)': 'handleKeyboardEvent($event)'
+    }
 })
 export class Quiz implements OnInit {
     public route = inject(ActivatedRoute);
@@ -41,6 +44,7 @@ export class Quiz implements OnInit {
     private userQuestionService = inject(UserQuestionService);
     private xpService = inject(XpService);
 
+    protected readonly lesson = signal<Lesson | null>(null);
     protected readonly quiz = signal<QuizModel | null>(null);
     protected readonly questions = signal<Question[]>([]);
     protected readonly currentAnswers = signal<Answer[]>([]);
@@ -95,6 +99,7 @@ export class Quiz implements OnInit {
 
             const lesson = await this.lessonService.getLessonById(lessonId);
             if (!lesson) return;
+            this.lesson.set(lesson);
 
             if (lesson.type === LessonType.REVISION) {
                 const quizData = await this.quizService.getQuizByLessonId(lessonId);
@@ -251,5 +256,29 @@ export class Quiz implements OnInit {
         const mins = Math.floor(seconds / 60);
         const secs = seconds % 60;
         return `${mins}:${secs.toString().padStart(2, '0')}`;
+    }
+
+    protected handleKeyboardEvent(event: KeyboardEvent) {
+        if (this.finished() || this.noQuestionsAvailable()) return;
+
+        const key = event.key.toLowerCase();
+
+        // Shortcuts for options (a, b, c, d, e)
+        const optionKeys = ['a', 'b', 'c', 'd', 'e'];
+        const index = optionKeys.indexOf(key);
+
+        if (index !== -1 && index < this.currentAnswers().length) {
+            this.answer(this.currentAnswers()[index].id);
+            return;
+        }
+
+        // Shortcut for Enter (Confirm or Next)
+        if (event.key === 'Enter') {
+            if (this.confirmed()) {
+                this.next();
+            } else if (this.selectedOptionId()) {
+                this.confirmAnswer();
+            }
+        }
     }
 }
