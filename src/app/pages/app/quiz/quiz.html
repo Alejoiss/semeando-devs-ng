@@ -166,10 +166,16 @@
                 </div>
                 <!-- Action Buttons -->
                 <div class="flex flex-col sm:flex-row gap-4 w-full mt-12 justify-center items-center">
-                    <button [routerLink]="['/app/s', route.snapshot.params['slug'], 'ss', route.snapshot.params['slugSubmodule']]"
-                        class="w-full sm:w-auto px-10 py-4 bg-gradient-to-r from-primary to-primary-container text-on-primary-container font-headline font-extrabold rounded-DEFAULT shadow-[0_0_20px_rgba(63,194,251,0.3)] hover:scale-105 active:scale-95 transition-all flex items-center justify-center gap-2">
-                        Continuar
-                        <span class="material-symbols-outlined">arrow_forward</span>
+                    <button (click)="continueQuiz()"
+                        [disabled]="isProcessingCompleteQuiz()"
+                        class="w-full sm:w-auto px-10 py-4 bg-gradient-to-r from-primary to-primary-container text-on-primary-container font-headline font-extrabold rounded-DEFAULT shadow-[0_0_20px_rgba(63,194,251,0.3)] hover:scale-105 active:scale-95 transition-all flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed disabled:hover:scale-100 disabled:active:scale-100">
+                        @if (isProcessingCompleteQuiz()) {
+                            <span class="material-symbols-outlined animate-spin">progress_activity</span>
+                            Salvando...
+                        } @else {
+                            Continuar
+                            <span class="material-symbols-outlined">arrow_forward</span>
+                        }
                     </button>
                     <button (click)="restart()"
                         class="w-full sm:w-auto px-10 py-4 border border-secondary/30 bg-secondary/5 text-secondary font-headline font-bold rounded-DEFAULT hover:bg-secondary/10 transition-all flex items-center justify-center gap-2">
@@ -263,7 +269,7 @@
                         <span class="material-symbols-outlined">refresh</span>
                         Refazer Quiz
                     </button>
-                    <button [routerLink]="['/app/s', route.snapshot.params['slug'], 'ss', route.snapshot.params['slugSubmodule']]"
+                    <button (click)="continueQuiz()"
                         class="px-10 py-4 border-2 border-outline-variant hover:border-secondary hover:text-secondary text-on-surface-variant font-headline font-bold rounded-lg transition-all flex items-center justify-center gap-2 group">
                         <span
                             class="material-symbols-outlined group-hover:-translate-x-1 transition-transform">arrow_back</span>

@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, computed, inject, OnInit, signal } from '@angular/core';
-import { ActivatedRoute, RouterLink } from '@angular/router';
+import { ActivatedRoute, RouterLink, Router } from '@angular/router';
 import { Answer } from '../../../../models/answer/answer';
 import { Question } from '../../../../models/question/question';
 import { Quiz as QuizModel } from '../../../../models/quiz/quiz';
@@ -35,6 +35,7 @@ interface QuizResult {
 })
 export class Quiz implements OnInit {
     public route = inject(ActivatedRoute);
+    private router = inject(Router);
     private userService = inject(UserService);
     private lessonService = inject(LessonService);
     private quizService = inject(QuizService);
@@ -56,6 +57,8 @@ export class Quiz implements OnInit {
     protected readonly spentTimeSeconds = signal(0);
     protected readonly isRevisionMode = signal<boolean>(false);
     protected readonly noQuestionsAvailable = signal<boolean>(false);
+    protected readonly isProcessingCompleteQuiz = signal<boolean>(false);
+    protected readonly quizCompletionResult = signal<any>(null);
 
     private timerInterval: any;
     private userId: string | null = null;
@@ -216,17 +219,21 @@ export class Quiz implements OnInit {
         const lessonId = this.route.snapshot.paramMap.get('lessonId');
 
         if (this.currentAttempt && lessonId) {
+            this.isProcessingCompleteQuiz.set(true);
             try {
-                await this.quizService.completeQuiz(
+                const result = await this.quizService.completeQuiz(
                     this.currentAttempt.id,
                     lessonId,
                     this.correctCount(),
                     this.totalQuestions(),
                     this.spentTimeSeconds()
                 );
+                this.quizCompletionResult.set(result);
                 await this.xpService.refreshXp();
             } catch (error) {
                 console.error('Error completing quiz via Edge Function:', error);
+            } finally {
+                this.isProcessingCompleteQuiz.set(false);
             }
         }
     }
@@ -279,6 +286,30 @@ export class Quiz implements OnInit {
             } else if (this.selectedOptionId()) {
                 this.confirmAnswer();
             }
+        }
+    }
+
+    protected continueQuiz() {
+        if (this.isProcessingCompleteQuiz()) return;
+
+        const slug = this.route.snapshot.params['slug'];
+        const slugSubmodule = this.route.snapshot.params['slugSubmodule'];
+        const lessonId = this.route.snapshot.paramMap.get('lessonId');
+
+        if (!this.passed()) {
+            this.router.navigate(['/app/s', slug, 'ss', slugSubmodule, 'lesson', lessonId]);
+            return;
+        }
+
+        const result = this.quizCompletionResult();
+        if (!result) return; // Still processing or failed to process
+
+        if (result.moduleCompleted) {
+            this.router.navigate(['/app/s', slug, 'finished']);
+        } else if (result.subModuleCompleted) {
+            this.router.navigate(['/app/s', slug]);
+        } else {
+            this.router.navigate(['/app/s', slug, 'ss', slugSubmodule]);
         }
     }
 }
