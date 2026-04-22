@@ -52,7 +52,7 @@ export class Register {
         try {
             const { name, email, password } = this.registerForm.value;
             await this.userService.register({ name, email, password });
-            this.router.navigate(['/login']);
+            this.router.navigate(['/auth/login']);
         } catch (error: any) {
             this.registerError = error.message || 'Erro ao criar conta. Tente novamente.';
         } finally {

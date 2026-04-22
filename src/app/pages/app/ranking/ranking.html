@@ -8,218 +8,155 @@
             <h1 class="text-5xl font-extrabold font-headline tracking-tight text-on-surface">Ranking da Comunidade</h1>
         </div>
         <!-- Filters -->
-        <div
-            class="bg-surface-container-low p-1.5 rounded-xl flex items-center gap-1 font-headline font-bold text-sm border border-outline-variant/10">
-            <button
-                class="px-6 py-2.5 rounded-lg text-on-surface-variant hover:bg-surface-container transition-all">Geral</button>
-            <button class="px-6 py-2.5 rounded-lg bg-primary text-on-primary-container shadow-lg">Semanal</button>
-            <button
-                class="px-6 py-2.5 rounded-lg text-on-surface-variant hover:bg-surface-container transition-all">Amigos</button>
+        <div class="bg-surface-container-low p-1.5 rounded-xl flex items-center gap-1 font-headline font-bold text-sm border border-outline-variant/10">
+            <button (click)="switchTab('geral')" [class]="activeTab() === 'geral' ? 'px-6 py-2.5 rounded-lg bg-primary text-on-primary-container shadow-lg' : 'px-6 py-2.5 rounded-lg text-on-surface-variant hover:bg-surface-container transition-all'">Geral</button>
+            <button (click)="switchTab('mensal')" [class]="activeTab() === 'mensal' ? 'px-6 py-2.5 rounded-lg bg-primary text-on-primary-container shadow-lg' : 'px-6 py-2.5 rounded-lg text-on-surface-variant hover:bg-surface-container transition-all'">Mensal</button>
+            <button (click)="switchTab('semanal')" [class]="activeTab() === 'semanal' ? 'px-6 py-2.5 rounded-lg bg-primary text-on-primary-container shadow-lg' : 'px-6 py-2.5 rounded-lg text-on-surface-variant hover:bg-surface-container transition-all'">Semanal</button>
         </div>
     </header>
-    <!-- Podium Section -->
-    <section class="max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8 items-end mb-16 px-4">
-        <!-- 2nd Place -->
-        <div class="order-2 md:order-1 flex flex-col items-center">
-            <div class="relative group">
-                <div
-                    class="absolute -inset-1 bg-gradient-to-t from-primary/50 to-transparent rounded-full blur opacity-25">
-                </div>
-                <img alt="Avatar" class="w-24 h-24 rounded-full border-4 border-surface-container-high relative"
-                    data-alt="avatar of a high-level developer, modern digital art style with cyan accents"
-                    src="https://lh3.googleusercontent.com/aida-public/AB6AXuCWyiFUFM5Bz-m-Mi54fburoWkWzK3afyAGbVSzkhCHYqpY26vAO9GJYngxI9gj_fHxrVfUfVOiXyiTqMeuTWjICmiTE9HHwLVhb-BUau5qMuGKVPhhqmaSdrYCacIfk8zlvNiDGJGo1Xbz07k6JdzYsYFyuY9UsiSppeD0kEM9r1a3wTTO8v4Apu2gfIiDg_EKliYidtLYo8us3tpVRmfK29oNgKIttWfvF9pgV1jDsgLm-VPUVia9lqKrbgh1NiRKR1WnFUmhtxM" />
-                <div
-                    class="absolute -bottom-2 -right-2 w-10 h-10 bg-surface-container-high rounded-full flex items-center justify-center border-2 border-surface shadow-xl">
-                    <span class="text-on-surface-variant font-label font-bold text-lg">2</span>
-                </div>
-            </div>
-            <div
-                class="mt-6 text-center bg-surface-container-low/50 p-6 rounded-t-3xl w-full border-x border-t border-outline-variant/10">
-                <h3 class="font-headline font-bold text-lg mb-1">Lucas Silva</h3>
-                <p class="text-primary font-label text-xs uppercase tracking-tighter mb-4">Nível 68 • Specialist</p>
-                <div class="flex items-center justify-center gap-2 text-on-surface">
-                    <span class="material-symbols-outlined text-primary scale-75" data-icon="bolt"
-                        style="font-variation-settings: 'FILL' 1;">bolt</span>
-                    <span class="font-label font-bold text-xl tracking-tight">28.450 XP</span>
-                </div>
-            </div>
+
+    @if (isLoading()) {
+        <div class="flex justify-center items-center py-20">
+            <div class="animate-spin w-12 h-12 border-4 border-primary border-t-transparent rounded-full"></div>
         </div>
-        <!-- 1st Place -->
-        <div class="order-1 md:order-2 flex flex-col items-center -translate-y-8">
-            <div class="relative group">
-                <div class="absolute -inset-4 bg-primary/20 rounded-full blur-2xl animate-pulse"></div>
-                <div class="absolute -top-12 left-1/2 -translate-x-1/2">
-                    <span
-                        class="material-symbols-outlined text-secondary text-5xl drop-shadow-[0_0_10px_rgba(254,105,172,0.8)]"
-                        data-icon="workspace_premium"
-                        style="font-variation-settings: 'FILL' 1;">workspace_premium</span>
-                </div>
-                <img alt="Avatar" class="w-36 h-36 rounded-full border-4 border-secondary glow-secondary relative"
-                    data-alt="heroic avatar of a female senior developer, stylized with pink neon highlights and golden lighting"
-                    src="https://lh3.googleusercontent.com/aida-public/AB6AXuBkJLNmrpZUoy-_aY1P9-z7LMMhc8iVmfeUyfGdtuEj3IccsvBUhJKNM7b02DtAMzBNUiovWdDm3jhv8Mmd8msCZSNCsgj_k_Med8Vk6Bz6HoJow9k5HYKIT1AoopmyjMq8gmS1yhgvc7bEcwJsXJYZY7h0bl2j5aXBfi0yt64R_YmsZRyu4EvNnxtU9xxSIppcioyV9R3ljlXeRsloPunMaS97HTQ2qYNtEgo2_TQ7EcgPLZVDVKX81oMvoCn-Z056Qcl_7TDV_GM" />
-                <div
-                    class="absolute -bottom-4 -right-2 w-12 h-12 bg-secondary rounded-full flex items-center justify-center border-4 border-surface shadow-2xl">
-                    <span class="text-white font-label font-black text-xl">1</span>
-                </div>
-            </div>
-            <div
-                class="mt-8 text-center bg-surface-container p-8 rounded-t-[3rem] w-full border-x border-t border-secondary/20 shadow-[0_-10px_40px_rgba(63,194,251,0.1)]">
-                <h3 class="font-headline font-black text-2xl mb-1 text-on-surface">Beatriz Tech</h3>
-                <p class="text-secondary font-label text-sm uppercase tracking-widest mb-4">Nível 82 • Architect</p>
-                <div class="flex items-center justify-center gap-2 text-on-surface">
-                    <span class="material-symbols-outlined text-secondary" data-icon="stars"
-                        style="font-variation-settings: 'FILL' 1;">stars</span>
-                    <span class="font-label font-bold text-3xl tracking-tighter text-secondary">42.900 XP</span>
-                </div>
-            </div>
-        </div>
-        <!-- 3rd Place -->
-        <div class="order-3 flex flex-col items-center">
-            <div class="relative group">
-                <div
-                    class="absolute -inset-1 bg-gradient-to-t from-tertiary/30 to-transparent rounded-full blur opacity-25">
-                </div>
-                <img alt="Avatar" class="w-24 h-24 rounded-full border-4 border-surface-container-high relative"
-                    data-alt="avatar of a creative developer, modern flat design with subtle green neon glow"
-                    src="https://lh3.googleusercontent.com/aida-public/AB6AXuA27BXOy7Z_LjM4h-ZpnVyQM1fa1u9RE-i7U5dk8SA6wRKYE02Ej6NpnLrYCV8S_CF3CWNgN5wEZqLCaAWD-Ap09nhwtFJf86tUxxpHAkCw52KGECatd2nXa0rOSuQpCjdBrL40xTrLqwnKcFycjCw1c4OAyA2F9gYv-7S3eVn9M95LURM2q6CdgUvC5ecqRVq_MsZevM_bOMetTqgYjhePLwMaIJC4E-g-mOkaQEGXWKE5IyaXK2bvAgU-2AoljT6salASdyWpHpk" />
-                <div
-                    class="absolute -bottom-2 -right-2 w-10 h-10 bg-surface-container-high rounded-full flex items-center justify-center border-2 border-surface shadow-xl">
-                    <span class="text-on-surface-variant font-label font-bold text-lg">3</span>
-                </div>
-            </div>
-            <div
-                class="mt-6 text-center bg-surface-container-low/50 p-6 rounded-t-3xl w-full border-x border-t border-outline-variant/10">
-                <h3 class="font-headline font-bold text-lg mb-1">Dev André</h3>
-                <p class="text-tertiary font-label text-xs uppercase tracking-tighter mb-4">Nível 55 • Expert</p>
-                <div class="flex items-center justify-center gap-2 text-on-surface">
-                    <span class="material-symbols-outlined text-tertiary scale-75" data-icon="electric_bolt"
-                        style="font-variation-settings: 'FILL' 1;">electric_bolt</span>
-                    <span class="font-label font-bold text-xl tracking-tight">21.120 XP</span>
-                </div>
-            </div>
-        </div>
-    </section>
-    <!-- Ranking List (Scrollable 4 to 100) -->
-    <section class="max-w-4xl mx-auto space-y-4 pb-12">
-        <!-- Rank Header -->
-        <div class="px-8 flex items-center text-on-surface-variant font-label text-xs uppercase tracking-widest mb-4">
-            <div class="w-12">#</div>
-            <div class="flex-1">Usuário</div>
-            <div class="w-32 text-center">Nível</div>
-            <div class="w-32 text-right">XP Total</div>
-        </div>
-        <!-- Rank Items -->
-        <div class="space-y-3">
-            <!-- Rank 4 -->
-            <div
-                class="bg-surface-container-low/40 hover:bg-surface-container transition-colors p-4 px-8 rounded-2xl flex items-center group">
-                <div class="w-12 font-label font-bold text-lg text-on-surface-variant group-hover:text-primary">04</div>
-                <div class="flex-1 flex items-center gap-4">
-                    <img alt="User" class="w-10 h-10 rounded-full"
-                        data-alt="minimalist avatar of a male programmer, clean line art with subtle blue background"
-                        src="https://lh3.googleusercontent.com/aida-public/AB6AXuBITeaCOCEqcXXnk_5JDu_ynMSbQayRmJV2YDFqa1ApIopi3WXyI8vAt1TQA_TRjVfRtRSRDeb88Gp0U8cMEMuQXjBREuiMOnnvSZxOMOkGp_7qRYFS14xMdxcY44Gfhcz_tiKzHGjrZgYP2MaIrSSO8ono6UHEzizjpfk8B7Z0mQrgU0eBHtwjNo-ElJ6ECQJZYqSIktiWAQaFvtR08dWhqoZN-jb6jGrg-Fx6Nn5930VK8vD7n8rF6eFx2bH1wh_HioMHTJnF9LU" />
-                    <span class="font-headline font-semibold text-on-surface">Gabriel Martins</span>
-                </div>
-                <div class="w-32 text-center font-label text-sm text-on-surface-variant">Nível 49</div>
-                <div class="w-32 text-right font-label font-bold text-primary">18.400</div>
-            </div>
-            <!-- Rank 5 -->
-            <div
-                class="bg-surface-container-low/40 hover:bg-surface-container transition-colors p-4 px-8 rounded-2xl flex items-center group">
-                <div class="w-12 font-label font-bold text-lg text-on-surface-variant group-hover:text-primary">05</div>
-                <div class="flex-1 flex items-center gap-4">
-                    <img alt="User" class="w-10 h-10 rounded-full"
-                        data-alt="female software engineer avatar, contemporary digital illustration with vibrant colors"
-                        src="https://lh3.googleusercontent.com/aida-public/AB6AXuBoLa0-P33XtMGG6QEJt6cBE4k-4KX6Kcn3PYcAeYdJeEKkhpRA013OMVJ3yR3M6PZTLkAJg1C8H-BroKV-4CSTcFyU6EstgzQm5qhKxaGmkmiqxdmAf68OF5vR6xWmJebsyQMOWWguaOe8Q4e3byJ1BolVKkrk_Ara8koGcHM9YfmkNK1L8xCJV-GIHStb6Ux6ZkEiQEXD1bAEv7tkuSb9LV8nxPljVp9SJmY6KOHvdLK4uVLtwINVBkPTs-aniev0eI6QZs_ANzA" />
-                    <span class="font-headline font-semibold text-on-surface">Mariana Costa</span>
-                </div>
-                <div class="w-32 text-center font-label text-sm text-on-surface-variant">Nível 45</div>
-                <div class="w-32 text-right font-label font-bold text-primary">16.920</div>
-            </div>
-            <!-- Rank 6 -->
-            <div
-                class="bg-surface-container-low/40 hover:bg-surface-container transition-colors p-4 px-8 rounded-2xl flex items-center group">
-                <div class="w-12 font-label font-bold text-lg text-on-surface-variant group-hover:text-primary">06</div>
-                <div class="flex-1 flex items-center gap-4">
-                    <img alt="User" class="w-10 h-10 rounded-full"
-                        data-alt="young male tech enthusiast avatar, artistic digital painting with blue and purple tones"
-                        src="https://lh3.googleusercontent.com/aida-public/AB6AXuC0kbXVRMFdppDy56IaFcgmAymqCffFQTMQ9P0BdJXOKL7czLT-kYIyeUV-O96ZwdPF2ZVaLFR8egoeOHXpPg4Z2H2xtGxPcMdAVVPgPvWpAPDZYpxi76ishy4_q3xd_-QXBNhNNMS7SaQueqChh2TQMDyPl0ClcYK-nQri_AmCJfdz1H6YYsbJkjkuEErkHVEEMovR3jTml1B0HnRZZrswnrY2bl452YRtGvSyK5g3-6nJTumGFsU4aR0K1wvHnur8YjJV0O82mwg" />
-                    <span class="font-headline font-semibold text-on-surface">Ricardo Gomes</span>
-                </div>
-                <div class="w-32 text-center font-label text-sm text-on-surface-variant">Nível 41</div>
-                <div class="w-32 text-right font-label font-bold text-primary">15.100</div>
-            </div>
-            <!-- Rank 7 -->
-            <div
-                class="bg-surface-container-low/40 hover:bg-surface-container transition-colors p-4 px-8 rounded-2xl flex items-center group">
-                <div class="w-12 font-label font-bold text-lg text-on-surface-variant group-hover:text-primary">07</div>
-                <div class="flex-1 flex items-center gap-4">
-                    <img alt="User" class="w-10 h-10 rounded-full"
-                        data-alt="professional female programmer avatar, elegant vector art style with soft glow"
-                        src="https://lh3.googleusercontent.com/aida-public/AB6AXuAdAsKO5_ktimUMWyY7mlq9bOunaKlFtqVJ7tWHVvEF_CiiHYxWf4NP1VP1qXSpJNvwPlIgl8j7KQvu4RGBZs7Gx6ZWG-GUEQ9lL5Yyp8CRGvFAya-tFHWKqMZgS3tLY12LwT3aSbtr8cIS7OVNHHqPfeLnXPJXJWNbViVBCOltVy0swovGibSsdVeYkHsHqBW7JtM0gohDLxe9oV5xUP94G_24S6FDUVEtPngVqaSRfvZpdVhl527k5f89LXwqLlXRDxhLiw1m3gM" />
-                    <span class="font-headline font-semibold text-on-surface">Carla Oliveira</span>
-                </div>
-                <div class="w-32 text-center font-label text-sm text-on-surface-variant">Nível 39</div>
-                <div class="w-32 text-right font-label font-bold text-primary">14.850</div>
-            </div>
-            <!-- Rank 8-100 placeholder items -->
-            <div class="bg-surface-container-low/40 p-4 px-8 rounded-2xl flex items-center opacity-80">
-                <div class="w-12 font-label font-bold text-lg text-on-surface-variant">08</div>
-                <div class="flex-1 flex items-center gap-4">
-                    <div class="w-10 h-10 rounded-full bg-surface-container flex items-center justify-center text-xs">JD
+    } @else {
+        <!-- Podium Section -->
+        <section class="max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8 items-end mb-16 px-4 mt-[120px]">
+            @if (podiumUsers().length >= 2) {
+                <!-- 2nd Place -->
+                <div class="order-2 md:order-1 flex flex-col items-center">
+                    <div class="relative group">
+                        <div class="absolute -inset-1 bg-gradient-to-t from-primary/50 to-transparent rounded-full blur opacity-25"></div>
+                        @if (podiumUsers()[1].avatar) {
+                            <img alt="Avatar" class="w-24 h-24 rounded-full border-4 border-surface-container-high relative object-cover" [src]="podiumUsers()[1].avatar" />
+                        } @else {
+                            <div class="w-24 h-24 rounded-full border-4 border-surface-container-high relative flex items-center justify-center bg-surface-container text-primary font-headline font-bold text-3xl">{{ getInitials(podiumUsers()[1].name) }}</div>
+                        }
+                        <div class="absolute -bottom-2 -right-2 w-10 h-10 bg-surface-container-high rounded-full flex items-center justify-center border-2 border-surface shadow-xl">
+                            <span class="text-on-surface-variant font-label font-bold text-lg">2</span>
+                        </div>
                     </div>
-                    <span class="font-headline font-semibold text-on-surface">João Diniz</span>
-                </div>
-                <div class="w-32 text-center font-label text-sm text-on-surface-variant">Nível 38</div>
-                <div class="w-32 text-right font-label font-bold text-primary">13.200</div>
-            </div>
-            <div class="bg-surface-container-low/40 p-4 px-8 rounded-2xl flex items-center opacity-60">
-                <div class="w-12 font-label font-bold text-lg text-on-surface-variant">09</div>
-                <div class="flex-1 flex items-center gap-4">
-                    <div class="w-10 h-10 rounded-full bg-surface-container flex items-center justify-center text-xs">AS
+                    <div class="mt-6 text-center bg-surface-container-low/50 p-6 rounded-t-3xl w-full border-x border-t border-outline-variant/10">
+                        <h3 class="font-headline font-bold text-lg mb-1">{{ podiumUsers()[1].name || 'Usuário' }}</h3>
+                        <div class="flex items-center justify-center gap-2 text-on-surface">
+                            <span class="material-symbols-outlined text-primary scale-75" data-icon="bolt" style="font-variation-settings: 'FILL' 1;">bolt</span>
+                            <span class="font-label font-bold text-xl tracking-tight">{{ podiumUsers()[1].xp }} XP</span>
+                        </div>
                     </div>
-                    <span class="font-headline font-semibold text-on-surface">Aline Santos</span>
                 </div>
-                <div class="w-32 text-center font-label text-sm text-on-surface-variant">Nível 36</div>
-                <div class="w-32 text-right font-label font-bold text-primary">12.950</div>
-            </div>
-        </div>
-    </section>
+            }
+
+            @if (podiumUsers().length >= 1) {
+                <!-- 1st Place -->
+                <div class="order-1 md:order-2 flex flex-col items-center -translate-y-8">
+                    <div class="relative group">
+                        <div class="absolute -inset-4 bg-primary/20 rounded-full blur-2xl animate-pulse"></div>
+                        <div class="absolute -top-12 left-1/2 -translate-x-1/2">
+                            <span class="material-symbols-outlined text-secondary text-5xl drop-shadow-[0_0_10px_rgba(254,105,172,0.8)]" data-icon="workspace_premium" style="font-variation-settings: 'FILL' 1;">workspace_premium</span>
+                        </div>
+                        @if (podiumUsers()[0].avatar) {
+                            <img alt="Avatar" class="w-36 h-36 rounded-full border-4 border-secondary glow-secondary relative object-cover" [src]="podiumUsers()[0].avatar" />
+                        } @else {
+                            <div class="w-36 h-36 rounded-full border-4 border-secondary glow-secondary relative flex items-center justify-center bg-surface-container text-secondary font-headline font-bold text-5xl">{{ getInitials(podiumUsers()[0].name) }}</div>
+                        }
+                        <div class="absolute -bottom-4 -right-2 w-12 h-12 bg-secondary rounded-full flex items-center justify-center border-4 border-surface shadow-2xl">
+                            <span class="text-white font-label font-black text-xl">1</span>
+                        </div>
+                    </div>
+                    <div class="mt-8 text-center bg-surface-container p-8 rounded-t-[3rem] w-full border-x border-t border-secondary/20 shadow-[0_-10px_40px_rgba(63,194,251,0.1)]">
+                        <h3 class="font-headline font-black text-2xl mb-1 text-on-surface">{{ podiumUsers()[0].name || 'Usuário' }}</h3>
+                        <div class="flex items-center justify-center gap-2 text-on-surface">
+                            <span class="material-symbols-outlined text-secondary" data-icon="stars" style="font-variation-settings: 'FILL' 1;">stars</span>
+                            <span class="font-label font-bold text-3xl tracking-tighter text-secondary">{{ podiumUsers()[0].xp }} XP</span>
+                        </div>
+                    </div>
+                </div>
+            }
+
+            @if (podiumUsers().length >= 3) {
+                <!-- 3rd Place -->
+                <div class="order-3 flex flex-col items-center">
+                    <div class="relative group">
+                        <div class="absolute -inset-1 bg-gradient-to-t from-tertiary/30 to-transparent rounded-full blur opacity-25"></div>
+                        @if (podiumUsers()[2].avatar) {
+                            <img alt="Avatar" class="w-24 h-24 rounded-full border-4 border-surface-container-high relative object-cover" [src]="podiumUsers()[2].avatar" />
+                        } @else {
+                            <div class="w-24 h-24 rounded-full border-4 border-surface-container-high relative flex items-center justify-center bg-surface-container text-tertiary font-headline font-bold text-3xl">{{ getInitials(podiumUsers()[2].name) }}</div>
+                        }
+                        <div class="absolute -bottom-2 -right-2 w-10 h-10 bg-surface-container-high rounded-full flex items-center justify-center border-2 border-surface shadow-xl">
+                            <span class="text-on-surface-variant font-label font-bold text-lg">3</span>
+                        </div>
+                    </div>
+                    <div class="mt-6 text-center bg-surface-container-low/50 p-6 rounded-t-3xl w-full border-x border-t border-outline-variant/10">
+                        <h3 class="font-headline font-bold text-lg mb-1">{{ podiumUsers()[2].name || 'Usuário' }}</h3>
+                        <div class="flex items-center justify-center gap-2 text-on-surface">
+                            <span class="material-symbols-outlined text-tertiary scale-75" data-icon="electric_bolt" style="font-variation-settings: 'FILL' 1;">electric_bolt</span>
+                            <span class="font-label font-bold text-xl tracking-tight">{{ podiumUsers()[2].xp }} XP</span>
+                        </div>
+                    </div>
+                </div>
+            }
+        </section>
+
+        <!-- Ranking List (Scrollable 4 to 50) -->
+        @if (rankedUsers().length > 0) {
+            <section class="max-w-4xl mx-auto space-y-4 pb-12">
+                <!-- Rank Header -->
+                <div class="px-8 flex items-center text-on-surface-variant font-label text-xs uppercase tracking-widest mb-4">
+                    <div class="w-12">#</div>
+                    <div class="flex-1">Usuário</div>
+                    <div class="w-32 text-right">XP Total</div>
+                </div>
+                <!-- Rank Items -->
+                <div class="space-y-3">
+                    @for (user of rankedUsers(); track user.userId) {
+                        <div class="bg-surface-container-low/40 hover:bg-surface-container transition-colors p-4 px-8 rounded-2xl flex items-center group">
+                            <div class="w-12 font-label font-bold text-lg text-on-surface-variant group-hover:text-primary">{{ user.position < 10 ? '0' + user.position : user.position }}</div>
+                            <div class="flex-1 flex items-center gap-4">
+                                @if (user.avatar) {
+                                    <img alt="User" class="w-10 h-10 rounded-full object-cover" [src]="user.avatar" />
+                                } @else {
+                                    <div class="w-10 h-10 rounded-full bg-surface-container flex items-center justify-center text-xs text-on-surface-variant font-bold">{{ getInitials(user.name) }}</div>
+                                }
+                                <span class="font-headline font-semibold text-on-surface">{{ user.name || 'Usuário' }}</span>
+                            </div>
+                            <div class="w-32 text-right font-label font-bold text-primary">{{ user.xp }}</div>
+                        </div>
+                    }
+                </div>
+            </section>
+        }
+    }
 </div>
+
 <!-- Fixed User Rank Bar (Sticky/Docked at the bottom) -->
-<div
-    class="fixed bottom-0 right-0 w-full md:w-[calc(100%-16rem)] shrink-0 bg-surface-container-high/90 backdrop-blur-xl border-t border-secondary/30 px-8 py-4 z-50">
+<div class="fixed bottom-0 right-0 w-full md:w-[calc(100%-16rem)] shrink-0 bg-surface-container-high/90 backdrop-blur-xl border-t border-secondary/30 px-8 py-4 z-50">
     <div class="max-w-4xl mx-auto flex items-center justify-between">
         <div class="flex items-center gap-6">
             <div class="flex items-center gap-3">
-                <div
-                    class="w-10 h-10 rounded-full border-2 border-secondary overflow-hidden shrink-0 shadow-[0_0_15px_rgba(254,105,172,0.3)]">
-                    <img alt="Seu Avatar" class="w-full h-full object-cover"
-                        data-alt="profile picture of the current user, a creative developer with a friendly expression and cool tech background"
-                        src="https://lh3.googleusercontent.com/aida-public/AB6AXuDiPWDgVsV57S9CrgjsRzRKn4tbAtVze_plbfKCGw1m63I5gvEFnN6QB88kBZ9mQx_dSO5rbnm7QUQ2-o0DCcXV1QXJa81uFJ0ON7bqXJYFJEQfq9AiUUWt-7rMAlxaCOsMgdqrxrYfa0GKSr7ZwQngVbNCCDyNKC4RTSTxknen8ueM3uo3Tzs6iq3hiWCK5E5BR3d4PdHuYojJESg_ZTp21uT6CuboUKJCHjE1Mbd1Lq3XCaoqdu8_435xaKLmEkfC5YDFBz-CoKo" />
+                <div class="w-10 h-10 rounded-full border-2 border-secondary overflow-hidden shrink-0 shadow-[0_0_15px_rgba(254,105,172,0.3)] bg-surface-container flex items-center justify-center">
+                    @if (currentUserAvatar()) {
+                        <img alt="Seu Avatar" class="w-full h-full object-cover" [src]="currentUserAvatar()" />
+                    } @else {
+                        <span class="text-secondary font-headline font-bold text-sm">{{ getInitials(currentUserName()) }}</span>
+                    }
                 </div>
                 <div>
                     <div class="flex items-center gap-2">
                         <p class="font-headline font-bold text-on-surface">Você</p>
-                        <span
-                            class="bg-secondary/20 text-secondary text-[10px] px-2 py-0.5 rounded-full font-label font-bold uppercase tracking-tighter">Subindo!</span>
                     </div>
-                    <p class="font-label text-secondary text-sm font-bold">Sua Posição: 42º</p>
+                    <p class="font-label text-secondary text-sm font-bold">
+                        Sua Posição: {{ currentUserPosition() ? currentUserPosition() + 'º' : 'Sem Rank' }}
+                    </p>
                 </div>
             </div>
         </div>
         <div class="flex items-center gap-12">
-            <div class="text-center">
-                <p class="text-[10px] text-on-surface-variant uppercase tracking-widest font-label mb-0.5">Nível Atual
-                </p>
-                <p class="font-headline font-bold text-on-surface">Nível 42</p>
-            </div>
             <div class="text-right">
                 <p class="text-[10px] text-on-surface-variant uppercase tracking-widest font-label mb-0.5">Pontuação</p>
                 <div class="flex items-center gap-1.5 justify-end">
-                    <span class="material-symbols-outlined text-secondary text-base" data-icon="stars"
-                        style="font-variation-settings: 'FILL' 1;">stars</span>
-                    <p class="font-label font-bold text-secondary text-xl tracking-tight">12.450 XP</p>
+                    <span class="material-symbols-outlined text-secondary text-base" data-icon="stars" style="font-variation-settings: 'FILL' 1;">stars</span>
+                    <p class="font-label font-bold text-secondary text-xl tracking-tight">{{ currentUserXp() }} XP</p>
                 </div>
             </div>
         </div>
