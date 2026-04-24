@@ -1,5 +1,6 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2"
+import { evaluateAchievements } from "./achievements.ts"
 
 const corsHeaders = {
     'Access-Control-Allow-Origin': '*',
@@ -40,6 +41,15 @@ serve(async (req) => {
                 headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
             })
         }
+
+        // Fetch lesson info (xp, sub_module_id, type)
+        const { data: lessonData, error: lessonDataError } = await serviceRoleClient
+            .from('lessons')
+            .select('sub_module_id, xp, type')
+            .eq('id', lessonId)
+            .single()
+
+        if (lessonDataError) throw lessonDataError
 
         const passed = (correctCount / totalCount) >= 0.7
         const now = new Date().toISOString()
@@ -87,14 +97,6 @@ serve(async (req) => {
 
         if (passed) {
             // --- 2.3 Submodule Completion Cascade ---
-            // Get submodule info and lesson info (xp)
-            const { data: lessonData, error: lessonDataError } = await serviceRoleClient
-                .from('lessons')
-                .select('sub_module_id, xp')
-                .eq('id', lessonId)
-                .single()
-
-            if (lessonDataError) throw lessonDataError
             const subModuleId = lessonData.sub_module_id
 
             // Check if all lessons in this submodule are completed by this user
@@ -265,13 +267,41 @@ serve(async (req) => {
             }
         }
 
-        // --- 2.6 Success Response ---
+        // --- 2.6 Achievements Evaluation ---
+        // Fetch moduleId for achievement rules
+        const { data: subModuleData } = await serviceRoleClient
+            .from('submodules')
+            .select('module_id')
+            .eq('id', lessonData.sub_module_id)
+            .single()
+        
+        const moduleId = subModuleData?.module_id
+
+        const { totalXpAwarded: achXp, earnedAchievements } = await evaluateAchievements(
+            serviceRoleClient,
+            user.id,
+            {
+                lessonId,
+                subModuleId: lessonData.sub_module_id,
+                moduleId,
+                lessonType: lessonData.type,
+                score: (correctCount / totalCount) * 10,
+                passed,
+                subModuleCompleted,
+                moduleCompleted
+            }
+        )
+
+        xpAwardedTotal += achXp
+
+        // --- 2.7 Success Response ---
         return new Response(
             JSON.stringify({ 
                 passed,
                 subModuleCompleted,
                 moduleCompleted,
-                xpAwarded: xpAwardedTotal
+                xpAwarded: xpAwardedTotal,
+                earnedAchievements
             }),
             { headers: { ...corsHeaders, "Content-Type": "application/json" } },
         )

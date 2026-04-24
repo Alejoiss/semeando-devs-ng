@@ -1,0 +1,25 @@
+.custom-scrollbar {
+    &::-webkit-scrollbar {
+        width: 4px;
+    }
+
+    &::-webkit-scrollbar-track {
+        background: transparent;
+    }
+
+    &::-webkit-scrollbar-thumb {
+        background: var(--outline-variant);
+        border-radius: 10px;
+        opacity: 0.2;
+
+        &:hover {
+            background: var(--primary);
+        }
+    }
+}
+
+// Ensure the image doesn't distort
+img {
+    user-select: none;
+    -webkit-user-drag: none;
+}

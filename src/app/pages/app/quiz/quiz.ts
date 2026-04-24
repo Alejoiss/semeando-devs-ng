@@ -14,6 +14,7 @@ import { UserService } from '../../../services/user';
 import { UserQuestionService } from '../../../services/user-question';
 import { UserQuizService } from '../../../services/user-quiz';
 import { XpService } from '../../../services/xp';
+import { AchievementsService } from '../../../services/achievements';
 import { MarkdownModule } from 'ngx-markdown';
 
 interface QuizResult {
@@ -44,6 +45,7 @@ export class Quiz implements OnInit {
     private userQuizService = inject(UserQuizService);
     private userQuestionService = inject(UserQuestionService);
     private xpService = inject(XpService);
+    private achievementsService = inject(AchievementsService);
 
     protected readonly lesson = signal<Lesson | null>(null);
     protected readonly quiz = signal<QuizModel | null>(null);
@@ -230,6 +232,7 @@ export class Quiz implements OnInit {
                 );
                 this.quizCompletionResult.set(result);
                 await this.xpService.refreshXp();
+                await this.achievementsService.checkUnseenAchievements();
             } catch (error) {
                 console.error('Error completing quiz via Edge Function:', error);
             } finally {
@@ -270,11 +273,15 @@ export class Quiz implements OnInit {
 
         const key = event.key.toLowerCase();
 
-        // Shortcuts for options (a, b, c, d, e)
-        const optionKeys = ['a', 'b', 'c', 'd', 'e'];
-        const index = optionKeys.indexOf(key);
+        // Shortcuts for options (a, b, c, d, 1, 2, 3, 4)
+        const optionKeys = ['a', 'b', 'c', 'd', '1', '2', '3', '4'];
+        let index = optionKeys.indexOf(key);
 
-        if (index !== -1 && index < this.currentAnswers().length) {
+        if (index !== -1) {
+            if (index >= 4) {
+                index = index - 4;
+            }
+
             this.answer(this.currentAnswers()[index].id);
             return;
         }
@@ -303,6 +310,8 @@ export class Quiz implements OnInit {
 
         const result = this.quizCompletionResult();
         if (!result) return; // Still processing or failed to process
+
+        this.achievementsService.checkUnseenAchievements();
 
         if (result.moduleCompleted) {
             this.router.navigate(['/app/s', slug, 'finished']);

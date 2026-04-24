@@ -1,0 +1,11 @@
+.achievement-bg {
+    background-size: 80%; // Adjust size since these are icons, not full backgrounds usually
+    background-repeat: no-repeat;
+    background-position: center;
+    width: 100%;
+    height: 100%;
+}
+
+.grayscale-achievement {
+    filter: grayscale(100%);
+}
