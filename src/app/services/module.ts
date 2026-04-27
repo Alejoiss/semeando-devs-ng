@@ -24,4 +24,22 @@ export class ModuleService {
 
         return data as Module[];
     }
+
+    async getModuleBySlug(slug: string): Promise<Module | null> {
+        try {
+            const { data, error } = await this.supabase
+                .from('modules')
+                .select('*')
+                .eq('slug', slug)
+                .single();
+
+            if (error) {
+                return null;
+            }
+
+            return data as Module;
+        } catch {
+            return null;
+        }
+    }
 }

@@ -48,10 +48,6 @@
             @for (item of modulesWithState(); track item.module.id) {
                 <div
                     class="group relative overflow-hidden bg-surface-container rounded-lg p-6 transition-all hover:bg-surface-container-high hover:translate-y-[-4px]">
-                    <div class="absolute top-0 right-0 p-8 opacity-5 group-hover:opacity-10 transition-opacity">
-                        <span class="material-symbols-outlined text-[120px]" [attr.data-icon]="item.module.icon">{{
-                            item.module.icon }}</span>
-                    </div>
                     <div class="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
                         <div class="flex gap-5">
                             <div
@@ -70,7 +66,7 @@
                                 <p class="text-on-surface-variant text-sm mb-4">{{ item.module.description }}</p>
                                 <div class="flex items-center gap-3">
                                     <div class="w-48 h-2 bg-surface-container-highest rounded-full overflow-hidden">
-                                        <div 
+                                        <div
                                             class="h-full bg-gradient-to-r from-primary to-tertiary shadow-[0_0_10px_rgba(63,194,251,0.5)] transition-all duration-500"
                                             [style.width.%]="item.progressPercentage">
                                         </div>

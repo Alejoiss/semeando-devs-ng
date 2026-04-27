@@ -54,12 +54,12 @@
                     @for (option of currentAnswers(); track option.id; let i = $index) {
                         <button
                             class="text-left p-4 rounded-lg border border-outline-variant/20 bg-surface-container-high transition-all duration-200"
-                            [class.border-primary]="selectedOptionId() === option.id && !confirmed()"
-                            [class.border-tertiary]="confirmed() && option.isCorrect"
-                            [class.border-error]="confirmed() && selectedOptionId() === option.id && !option.isCorrect"
-                            [class.bg-primary/10]="selectedOptionId() === option.id && !confirmed()"
-                            [class.bg-tertiary/20]="confirmed() && option.isCorrect"
-                            [class.bg-error/20]="confirmed() && selectedOptionId() === option.id && !option.isCorrect"
+                            [class.!border-primary]="selectedOptionId() === option.id && !confirmed()"
+                            [class.!border-tertiary]="confirmed() && option.isCorrect && selectedOptionId() === option.id"
+                            [class.!border-error]="confirmed() && selectedOptionId() === option.id && !option.isCorrect"
+                            [class.!bg-primary/10]="selectedOptionId() === option.id && !confirmed()"
+                            [class.!bg-tertiary/20]="confirmed() && option.isCorrect && selectedOptionId() === option.id"
+                            [class.!bg-error/20]="confirmed() && selectedOptionId() === option.id && !option.isCorrect"
                             (click)="answer(option.id)">
                             <span class="font-headline font-bold">{{ ['A','B','C','D','E'][i] }}.</span>
                             <span class="ml-2">{{ option.text }}</span>
@@ -92,14 +92,16 @@
                 }
 
                 @if (confirmed() && selectedAnswer()?.reason) {
-                    <div class="mt-6 p-4 rounded-lg bg-surface-container-highest border-l-4"
-                        [class.border-tertiary]="selectedAnswer()?.isCorrect"
-                        [class.border-error]="!selectedAnswer()?.isCorrect">
-                        <p class="text-sm font-bold mb-1" [class.text-tertiary]="selectedAnswer()?.isCorrect" [class.text-error]="!selectedAnswer()?.isCorrect">
-                            {{ selectedAnswer()?.isCorrect ? 'Correto!' : 'Incorreto' }}
-                        </p>
-                        <p class="text-on-surface-variant text-sm">{{ selectedAnswer()?.reason }}</p>
-                    </div>
+                    @if ((hintVisible() && !selectedAnswer()?.isCorrect) || !hintVisible()) {
+                            <div class="mt-6 p-4 rounded-lg bg-surface-container-highest border-l-4"
+                            [class.border-tertiary]="selectedAnswer()?.isCorrect"
+                            [class.border-error]="!selectedAnswer()?.isCorrect">
+                            <p class="text-sm font-bold mb-1" [class.text-tertiary]="selectedAnswer()?.isCorrect" [class.text-error]="!selectedAnswer()?.isCorrect">
+                                {{ selectedAnswer()?.isCorrect ? 'Correto!' : 'Incorreto' }}
+                            </p>
+                            <p class="text-on-surface-variant text-sm">{{ selectedAnswer()?.reason }}</p>
+                        </div>
+                    }
                 }
             </div>
 
@@ -112,7 +114,7 @@
                         </span>
                     </div>
                     @if (!confirmed() && !finished() && !hintVisible()) {
-                        <button (click)="requestHint()" 
+                        <button (click)="requestHint()"
                             [disabled]="totalSeeds() < 50"
                             class="flex items-center gap-2 text-xs font-bold font-label uppercase tracking-wider transition-colors text-left"
                             [class.text-secondary]="totalSeeds() >= 50"

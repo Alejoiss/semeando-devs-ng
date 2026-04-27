@@ -64,6 +64,11 @@ export const routes: Routes = [
                 title: 'Semeando Devs | Quiz'
             },
             {
+                path: 's/:slug/finished',
+                loadComponent: () => import('./pages/app/module-finished/module-finished/module-finished').then((m) => m.ModuleFinished),
+                title: 'Conclusão de Módulo - Semeando Devs'
+            },
+            {
                 path: 'ranking',
                 loadComponent: () => import('./pages/app/ranking/ranking').then((m) => m.Ranking),
                 title: 'Semeando Devs | Ranking'

@@ -60,9 +60,7 @@ module.exports = {
         },
         colors: {
             "background": "#060e20",
-            "primary": "#3fc2fb",
             "on-tertiary-container": "#3d5e00",
-            "secondary": "#fe69ac",
             "secondary-fixed": "#ffc1d6",
             "on-surface": "#dee5ff",
             "on-error": "#490006",
@@ -84,7 +82,6 @@ module.exports = {
             "on-secondary-fixed": "#6b003d",
             "surface-container-low": "#091328",
             "tertiary-fixed": "#b8fd4b",
-            "tertiary": "#e8ffc0",
             "surface-container": "#0f1930",
             "on-secondary-container": "#ffbfd5",
             "tertiary-container": "#b8fd4b",
@@ -96,7 +93,6 @@ module.exports = {
             "surface-bright": "#1f2b49",
             "primary-dim": "#1aafe7",
             "on-error-container": "#ffa8a3",
-            "error": "#ff716c",
             "on-tertiary-fixed": "#304a00",
             "on-secondary": "#460026",
             "on-background": "#dee5ff",
@@ -109,7 +105,12 @@ module.exports = {
             "on-primary-container": "#002e40",
             "primary-fixed-dim": "#1aafe7",
             "outline-variant": "#40485d",
-            "tertiary-fixed-dim": "#aaee3d"
+            "tertiary-fixed-dim": "#aaee3d",
+            // State colors moved to end for CSS utility priority
+            "primary": "#3fc2fb",
+            "secondary": "#fe69ac",
+            "tertiary": "#e8ffc0",
+            "error": "#ff716c"
         },
         fontFamily: {
             "headline": ["Plus Jakarta Sans"],

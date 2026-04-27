@@ -52,4 +52,25 @@ export class UserModuleService {
             throw new Error(error.message);
         }
     }
+
+    async isModuleCompleted(moduleId: string): Promise<boolean> {
+        const { data: { user }, error: authError } = await this.supabase.auth.getUser();
+
+        if (authError || !user) {
+            return false;
+        }
+
+        const { data, error } = await this.supabase
+            .from('user_modules')
+            .select('completed')
+            .eq('user_id', user.id)
+            .eq('module_id', moduleId)
+            .single();
+
+        if (error || !data) {
+            return false;
+        }
+
+        return (data as { completed: boolean }).completed === true;
+    }
 }
