@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { createClient, SupabaseClient } from '@supabase/supabase-js';
 import { environment } from '../../environments/environment';
 import { User } from '../../models/user/user';
+import { mapAuthError } from '../utils/auth-error-mapper';
 
 @Injectable({
     providedIn: 'root',
@@ -24,7 +25,7 @@ export class UserService {
         });
 
         if (error) {
-            throw new Error(error.message);
+            throw new Error(mapAuthError(error.message));
         }
     }
 
@@ -52,7 +53,7 @@ export class UserService {
         });
 
         if (error) {
-            throw new Error(error.message);
+            throw new Error(mapAuthError(error.message));
         }
     }
 
@@ -85,7 +86,7 @@ export class UserService {
         });
 
         if (error) {
-            throw new Error(error.message);
+            throw new Error(mapAuthError(error.message));
         }
     }
 }
