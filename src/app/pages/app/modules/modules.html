@@ -70,18 +70,16 @@
                                 <p class="text-on-surface-variant text-sm mb-4">{{ item.module.description }}</p>
                                 <div class="flex items-center gap-3">
                                     <div class="w-48 h-2 bg-surface-container-highest rounded-full overflow-hidden">
-                                        <div [class]="item.progressState === 'completed'
-                                            ? 'w-full h-full bg-gradient-to-r from-primary to-tertiary shadow-[0_0_10px_rgba(63,194,251,0.5)]'
-                                            : item.progressState === 'in-progress'
-                                            ? 'w-1/2 h-full bg-gradient-to-r from-primary to-tertiary shadow-[0_0_10px_rgba(63,194,251,0.5)]'
-                                            : 'w-0 h-full'">
+                                        <div 
+                                            class="h-full bg-gradient-to-r from-primary to-tertiary shadow-[0_0_10px_rgba(63,194,251,0.5)] transition-all duration-500"
+                                            [style.width.%]="item.progressPercentage">
                                         </div>
                                     </div>
                                     <span class="font-label text-xs text-on-surface-variant">
                                         @if (item.progressState === 'completed') {
                                             Concluído
                                         } @else if (item.progressState === 'in-progress') {
-                                            Em andamento
+                                            {{ item.progressPercentage }}% concluído
                                         } @else {
                                             Não iniciado
                                         }
@@ -147,27 +145,29 @@
                         exclusivas em seu perfil.
                     </p>
                     <div class="space-y-3 mb-6">
-                        <div class="flex items-center justify-between p-3 bg-background/40 rounded-xl">
-                            <div class="flex items-center gap-3">
-                                <span class="text-primary font-bold">1º</span>
-                                <span class="text-sm">Alex Chen</span>
+                        @for (user of podiumUsers(); track user.userId) {
+                            <div class="flex items-center justify-between p-3 bg-background/40 rounded-xl transition-all hover:bg-background/60">
+                                <div class="flex items-center gap-3">
+                                    <span [class]="$index === 0 ? 'text-primary font-bold' : $index === 1 ? 'text-secondary font-bold' : 'text-tertiary font-bold'">
+                                        {{ user.position }}º
+                                    </span>
+                                    <span class="text-sm text-on-surface">{{ user.name }}</span>
+                                </div>
+                                <span class="text-xs text-on-surface-variant font-label">{{ user.xp | number:'1.0-0' }} XP</span>
                             </div>
-                            <span class="text-xs text-on-surface-variant font-label">12,450 XP</span>
-                        </div>
-                        <div class="flex items-center justify-between p-3 bg-background/40 rounded-xl">
-                            <div class="flex items-center gap-3">
-                                <span class="text-secondary font-bold">2º</span>
-                                <span class="text-sm">Beatriz Lima</span>
+                        }
+
+                        @if (currentUserPosition()) {
+                            <div class="pt-2 border-t border-surface-container-highest/50">
+                                <div class="flex items-center justify-between p-3 bg-primary/10 rounded-xl border border-primary/20">
+                                    <div class="flex items-center gap-3">
+                                        <span class="text-primary font-bold">{{ currentUserPosition() }}º</span>
+                                        <span class="text-sm font-bold text-on-surface">Você</span>
+                                    </div>
+                                    <span class="text-xs text-primary font-bold font-label">{{ currentUserXp() | number:'1.0-0' }} XP</span>
+                                </div>
                             </div>
-                            <span class="text-xs text-on-surface-variant font-label">10,200 XP</span>
-                        </div>
-                        <div class="flex items-center justify-between p-3 bg-background/40 rounded-xl">
-                            <div class="flex items-center gap-3">
-                                <span class="text-tertiary font-bold">3º</span>
-                                <span class="text-sm">Marcos Silva</span>
-                            </div>
-                            <span class="text-xs text-on-surface-variant font-label">9,850 XP</span>
-                        </div>
+                        }
                     </div>
                     <button routerLink="/app/ranking"
                         class="w-full py-3 bg-surface-container-highest hover:bg-surface-bright text-on-surface font-headline font-bold rounded-xl transition-all flex items-center justify-center gap-2">

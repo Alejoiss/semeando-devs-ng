@@ -27,6 +27,18 @@ export class LessonService {
         return (data ?? []) as unknown as Lesson[];
     }
 
+    async getAllLessons(): Promise<Lesson[]> {
+        const { data, error } = await this.supabase
+            .from('lessons')
+            .select('*, subModule:submodules(*, module:modules(*))');
+
+        if (error) {
+            throw new Error(error.message);
+        }
+
+        return (data ?? []) as unknown as Lesson[];
+    }
+
     async getLessonById(lessonId: string): Promise<Lesson | null> {
         const { data, error } = await this.supabase
             .from('lessons')
