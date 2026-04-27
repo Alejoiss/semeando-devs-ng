@@ -14,6 +14,7 @@ import { UserService } from '../../../services/user';
 import { UserQuestionService } from '../../../services/user-question';
 import { UserQuizService } from '../../../services/user-quiz';
 import { XpService } from '../../../services/xp';
+import { SeedService } from '../../../services/seed';
 import { AchievementsService } from '../../../services/achievements';
 import { MarkdownModule } from 'ngx-markdown';
 
@@ -45,6 +46,7 @@ export class Quiz implements OnInit {
     private userQuizService = inject(UserQuizService);
     private userQuestionService = inject(UserQuestionService);
     private xpService = inject(XpService);
+    private seedService = inject(SeedService);
     private achievementsService = inject(AchievementsService);
 
     protected readonly lesson = signal<Lesson | null>(null);
@@ -62,12 +64,18 @@ export class Quiz implements OnInit {
     protected readonly isProcessingCompleteQuiz = signal<boolean>(false);
     protected readonly quizCompletionResult = signal<any>(null);
 
+    protected readonly totalSeeds = this.seedService.totalSeeds;
+    protected readonly earnedSeeds = signal<number>(0);
+    protected readonly showHintConfirm = signal(false);
+    protected readonly hintVisible = signal(false);
+
     private timerInterval: any;
     private userId: string | null = null;
     private currentAttempt: UserQuiz | null = null;
 
     protected readonly currentQuestion = computed(() => this.questions()[this.currentIndex()]);
     protected readonly selectedAnswer = computed(() => this.currentAnswers().find(a => a.id === this.selectedOptionId()));
+    protected readonly correctReason = computed(() => this.currentAnswers().find(a => a.isCorrect)?.reason);
 
     protected readonly progress = computed(() => this.currentIndex() + 1);
     protected readonly totalQuestions = computed(() => this.questions().length);
@@ -208,6 +216,8 @@ export class Quiz implements OnInit {
             this.currentIndex.update(i => i + 1);
             this.selectedOptionId.set(null);
             this.confirmed.set(false);
+            this.hintVisible.set(false);
+            this.showHintConfirm.set(false);
             await this.loadAnswersForCurrentQuestion();
         } else {
             await this.finishQuiz();
@@ -231,6 +241,13 @@ export class Quiz implements OnInit {
                     this.spentTimeSeconds()
                 );
                 this.quizCompletionResult.set(result);
+
+                if (this.passed()) {
+                    const amount = Math.ceil((this.lesson()?.xp ?? 0) * 0.1);
+                    await this.seedService.creditSeeds(amount);
+                    this.earnedSeeds.set(amount);
+                }
+
                 await this.xpService.refreshXp();
                 await this.achievementsService.checkUnseenAchievements();
             } catch (error) {
@@ -241,6 +258,25 @@ export class Quiz implements OnInit {
         }
     }
 
+    protected requestHint() {
+        if (this.confirmed() || this.finished() || this.totalSeeds() < 50) return;
+        this.showHintConfirm.set(true);
+    }
+
+    protected cancelHint() {
+        this.showHintConfirm.set(false);
+    }
+
+    protected async confirmHint() {
+        if (this.confirmed() || this.finished() || this.totalSeeds() < 50) return;
+
+        const success = await this.seedService.spendSeeds(50);
+        if (success) {
+            this.hintVisible.set(true);
+            this.showHintConfirm.set(false);
+        }
+    }
+
     protected restart() {
         this.currentIndex.set(0);
         this.selectedOptionId.set(null);
@@ -248,6 +284,9 @@ export class Quiz implements OnInit {
         this.finished.set(false);
         this.results.set([]);
         this.spentTimeSeconds.set(0);
+        this.earnedSeeds.set(0);
+        this.hintVisible.set(false);
+        this.showHintConfirm.set(false);
         this.questions.update(q => this.shuffle(q));
         this.loadAnswersForCurrentQuestion();
         this.startTimer();
