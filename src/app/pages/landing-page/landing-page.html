@@ -2,192 +2,357 @@
     <app-header></app-header>
 
     <main class="pt-24">
-        <section class="hero-section">
-            <div class="hero-backdrop"></div>
-            <img class="hero-logo" src="assets/logos/semeando.devs.horizontal.darkbg.svg" alt="Logo Semeando Devs" />
-            <h1 class="headline">Aprenda a Programar <span class="gradient-text">Jogando</span></h1>
-            <p class="subheadline">Transforme sua jornada no desenvolvimento web em uma aventura épica.
-                Domine linguagens de desenvolvimento com desafios gamificados e mentoria por IA.
-            </p>
-            <div class="actions">
-                <button class="btn-primary">Começar Agora</button>
-                <button class="btn-secondary">Ver Trilhas</button>
-            </div>
-
-            <div class="dashboard-preview">
-                <div class="dashboard-overlay"></div>
-                <img class="dashboard-img"
-                    src="https://lh3.googleusercontent.com/aida-public/AB6AXuALL_b5BbTUPfQx5OUCTqaKrS1mL0gaU46dvefkTHUubuChtyUQ61Kgbl3WPpB6_YLcRGkMdMBZYs7vMHAHj7o_uPRtAbdWFxSkADwMt161Ul_I3ltQjj5PdiEtsE5-mMbJ1fIygWaTkUGVi33c7iTHRJRbSzVoBAXHw3zNgT0bPPx6eOKs9D6GGXUBDw1xh48aevWzIvUkPLlhGQbravGdTb1BXH8ZA2cCdaP9fKqKv3fkOCNcHAtID8y4bBT_TEH5g7N5tXbriI8"
-                    alt="Dashboard preview" />
-            </div>
-        </section>
-
-        <section class="tracks-section">
-            <div class="tracks-inner">
-                <div class="tracks-title">
-                    <span>Sua Jornada Começa Aqui</span>
-                    <h2>Trilhas de Aprendizado</h2>
+        <!-- Hero Section -->
+        <section id="hero" class="relative py-24 md:py-40 px-6 text-center overflow-hidden">
+            <div class="hero-backdrop absolute inset-0 -z-10 opacity-50"></div>
+            <div class="max-w-4xl mx-auto space-y-8 relative z-10">
+                <div class="inline-block px-4 py-1.5 rounded-full bg-primary/10 border border-primary/20 text-primary text-xs font-bold tracking-widest uppercase mb-4">
+                    Gamified Learning Platform
                 </div>
-
-                <div class="tracks-grid">
-                    <article class="track-card html">
-                        <div class="card-icon"><span class="material-symbols-outlined">html</span></div>
-                        <h3>Estrutura: HTML</h3>
-                        <p>O alicerce da web. Aprenda a estruturar páginas com semântica e acessibilidade.</p>
-                        <div class="progress">0/50 LIÇÕES</div>
-                        <div class="progress-bar">
-                            <div></div>
-                        </div>
-                    </article>
-
-                    <article class="track-card css">
-                        <div class="card-icon"><span class="material-symbols-outlined">palette</span></div>
-                        <h3>Estilo: CSS</h3>
-                        <p>Dê vida ao seu código. Domine Flexbox, Grid e animações modernas.</p>
-                        <div class="progress">0/75 LIÇÕES</div>
-                        <div class="progress-bar">
-                            <div></div>
-                        </div>
-                    </article>
-
-                    <article class="track-card js">
-                        <div class="card-icon"><span class="material-symbols-outlined">javascript</span></div>
-                        <h3>Lógica: JavaScript</h3>
-                        <p>A inteligência por trás da web. Aprenda lógica, funções e manipulação de DOM.</p>
-                        <div class="progress">0/120 LIÇÕES</div>
-                        <div class="progress-bar">
-                            <div></div>
-                        </div>
-                    </article>
+                <h1 class="font-headline text-5xl md:text-7xl font-extrabold leading-tight tracking-tighter">
+                    Semeie seu futuro no <br>
+                    <span class="gradient-text">Desenvolvimento Web</span>
+                </h1>
+                <p class="text-on-surface-variant text-lg md:text-xl max-w-2xl mx-auto leading-relaxed">
+                    Transforme o aprendizado de código em uma jornada épica. Domine as tecnologias mais quentes do mercado com desafios práticos e feedback de IA em tempo real.
+                </p>
+                <div class="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4">
+                    <button class="btn-primary w-full sm:w-auto text-lg px-8 py-4 shadow-primary/20">
+                        Começar Minha Jornada
+                    </button>
+                    <button class="btn-secondary w-full sm:w-auto text-lg px-8 py-4">
+                        Explorar Cursos
+                    </button>
+                </div>
+            </div>
+            
+            <div class="mt-20 relative max-w-5xl mx-auto px-4">
+                <div class="glass-card rounded-2xl overflow-hidden border border-outline-variant/10 shadow-2xl">
+                    <img 
+                        src="https://lh3.googleusercontent.com/aida-public/AB6AXuALL_b5BbTUPfQx5OUCTqaKrS1mL0gaU46dvefkTHUubuChtyUQ61Kgbl3WPpB6_YLcRGkMdMBZYs7vMHAHj7o_uPRtAbdWFxSkADwMt161Ul_I3ltQjj5PdiEtsE5-mMbJ1fIygWaTkUGVi33c7iTHRJRbSzVoBAXHw3zNgT0bPPx6eOKs9D6GGXUBDw1xh48aevWzIvUkPLlhGQbravGdTb1BXH8ZA2cCdaP9fKqKv3fkOCNcHAtID8y4bBT_TEH5g7N5tXbriI8" 
+                        alt="Plataforma Semeando Devs" 
+                        class="w-full h-auto opacity-90 hover:scale-[1.02] transition-transform duration-700"
+                    />
                 </div>
             </div>
         </section>
 
-        <section class="py-32 px-6 overflow-hidden">
-            <div class="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-20 items-center">
-                <div class="relative">
-                    <div class="relative z-10 space-y-6">
-                        <div
-                            class="glass-card p-6 rounded-2xl flex items-center gap-6 border border-white/5 secondary-glow max-w-sm -rotate-2 hover:rotate-0 transition-transform">
-                            <div
-                                class="w-14 h-14 bg-gradient-to-br from-secondary to-secondary-container rounded-full flex items-center justify-center shadow-lg">
-                                <span class="material-symbols-outlined text-white text-3xl"
-                                    style="font-variation-settings: 'FILL' 1;">rewarded_ads</span>
-                            </div>
-                            <div>
-                                <h4 class="font-bold text-lg">Nota 10</h4>
-                                <p class="text-sm text-on-surface-variant">Completou a primeira trilha sem erros!</p>
-                            </div>
+        <!-- Courses Showcase -->
+        <section id="courses" class="py-24 px-6 max-w-7xl mx-auto">
+            <div class="section-title text-center mb-16">
+                <span>Sua Jornada Começa Aqui</span>
+                <h2>Trilhas de Aprendizado</h2>
+                <p class="text-on-surface-variant max-w-2xl mx-auto">
+                    Escolha sua porta de entrada para o mundo do desenvolvimento. Nossas trilhas são estruturadas para levar você do zero ao domínio total.
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <!-- HTML -->
+                <article class="track-card">
+                    <div class="card-icon bg-orange-500/10 text-orange-500">
+                        <span class="material-symbols-outlined text-4xl">html</span>
+                    </div>
+                    <h3>Estrutura: HTML</h3>
+                    <p>O alicerce da web. Aprenda a estruturar páginas com semântica, SEO e acessibilidade moderna.</p>
+                    <div class="space-y-4">
+                        <div class="flex justify-between text-xs font-bold uppercase tracking-wider">
+                            <span class="text-on-surface-variant">50 Lições</span>
+                            <span class="text-primary">Disponível</span>
                         </div>
-                        <div
-                            class="glass-card p-6 rounded-2xl flex items-center gap-6 border border-white/5 primary-glow max-w-sm ml-12 rotate-2 hover:rotate-0 transition-transform">
-                            <div
-                                class="w-14 h-14 bg-gradient-to-br from-primary to-primary-container rounded-full flex items-center justify-center shadow-lg">
-                                <span class="material-symbols-outlined text-white text-3xl"
-                                    style="font-variation-settings: 'FILL' 1;">bolt</span>
-                            </div>
-                            <div>
-                                <h4 class="font-bold text-lg">Iniciante Nível 5</h4>
-                                <p class="text-sm text-on-surface-variant">2,450 XP acumulados hoje</p>
-                            </div>
+                        <div class="progress-track">
+                            <div class="progress-fill bg-primary w-0"></div>
                         </div>
                     </div>
-                    <div
-                        class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[120%] h-[120%] bg-primary/5 rounded-full blur-3xl -z-10">
+                </article>
+
+                <!-- CSS -->
+                <article class="track-card">
+                    <div class="card-icon bg-blue-500/10 text-blue-500">
+                        <span class="material-symbols-outlined text-4xl">palette</span>
                     </div>
-                </div>
-                <div>
-                    <span class="label-font text-tertiary font-bold tracking-[0.2em] uppercase text-sm">
-                        Experiência de Jogo
-                    </span>
-                    <h2 class="headline-font text-5xl font-bold mt-4 mb-8 leading-tight">
-                        Ganhe XP, Suba de Nível, Conquiste a Web
-                    </h2>
-                    <p class="text-lg text-on-surface-variant mb-10 leading-relaxed">
-                        Cada lição completada gera cristais de XP. Use seus cristais para desbloquear dicas da nossa IA
-                        Mentora quando estiver travado em um desafio complexo.</p>
-                    <div class="space-y-8">
-                        <div class="flex items-start gap-4">
-                            <div class="p-2 bg-primary/10 rounded-lg text-primary"><span
-                                    class="material-symbols-outlined">rocket_launch</span></div>
-                            <div>
-                                <h5 class="font-bold">Desafios Diários</h5>
-                                <p class="text-on-surface-variant text-sm">
-                                    Mantenha sua ofensiva e ganhe bônus de XP diários.
-                                </p>
-                            </div>
+                    <h3>Estilo: CSS</h3>
+                    <p>Dê vida ao seu código. Domine Flexbox, Grid, animações e o poder do design responsivo.</p>
+                    <div class="space-y-4">
+                        <div class="flex justify-between text-xs font-bold uppercase tracking-wider">
+                            <span class="text-on-surface-variant">75 Lições</span>
+                            <span class="text-primary">Disponível</span>
                         </div>
-                        <div class="flex items-start gap-4">
-                            <div class="p-2 bg-secondary/10 rounded-lg text-secondary"><span
-                                    class="material-symbols-outlined">
-                                    psychology
-                                </span>
-                            </div>
-                            <div>
-                                <h5 class="font-bold">IA Mentora</h5>
-                                <p class="text-on-surface-variant text-sm">
-                                    Feedback instantâneo e personalizado para cada linha de código.
-                                </p>
-                            </div>
+                        <div class="progress-track">
+                            <div class="progress-fill bg-secondary w-0"></div>
                         </div>
                     </div>
-                </div>
+                </article>
+
+                <!-- JS -->
+                <article class="track-card">
+                    <div class="card-icon bg-yellow-500/10 text-yellow-500">
+                        <span class="material-symbols-outlined text-4xl">javascript</span>
+                    </div>
+                    <h3>Lógica: JavaScript</h3>
+                    <p>A inteligência da web. Aprenda lógica, funções, APIs e manipulação dinâmica do DOM.</p>
+                    <div class="space-y-4">
+                        <div class="flex justify-between text-xs font-bold uppercase tracking-wider">
+                            <span class="text-on-surface-variant">120 Lições</span>
+                            <span class="text-primary">Disponível</span>
+                        </div>
+                        <div class="progress-track">
+                            <div class="progress-fill bg-tertiary w-0"></div>
+                        </div>
+                    </div>
+                </article>
+
+                <!-- Upcoming: Python -->
+                <article class="track-card opacity-60 grayscale-[0.5] hover:grayscale-0">
+                    <div class="card-icon bg-sky-500/10 text-sky-500">
+                        <span class="material-symbols-outlined text-4xl">terminal</span>
+                    </div>
+                    <h3>Backend: Python</h3>
+                    <p>A versatilidade em forma de código. Da automação à ciência de dados e desenvolvimento web.</p>
+                    <div class="mt-auto">
+                        <span class="px-3 py-1 rounded-full bg-surface-container-highest text-[10px] font-bold uppercase tracking-[0.2em]">Em Breve</span>
+                    </div>
+                </article>
+
+                <!-- Upcoming: Angular -->
+                <article class="track-card opacity-60 grayscale-[0.5] hover:grayscale-0">
+                    <div class="card-icon bg-red-500/10 text-red-500">
+                        <span class="material-symbols-outlined text-4xl">deployed_code</span>
+                    </div>
+                    <h3>Frontend: Angular</h3>
+                    <p>Crie aplicações web escaláveis e robustas com um dos frameworks mais poderosos do Google.</p>
+                    <div class="mt-auto">
+                        <span class="px-3 py-1 rounded-full bg-surface-container-highest text-[10px] font-bold uppercase tracking-[0.2em]">Em Breve</span>
+                    </div>
+                </article>
+
+                <!-- Upcoming: Node.js -->
+                <article class="track-card opacity-60 grayscale-[0.5] hover:grayscale-0">
+                    <div class="card-icon bg-green-500/10 text-green-500">
+                        <span class="material-symbols-outlined text-4xl">dns</span>
+                    </div>
+                    <h3>Runtime: Node.js</h3>
+                    <p>Escalabilidade e alta performance no lado do servidor usando o ecossistema do JavaScript.</p>
+                    <div class="mt-auto">
+                        <span class="px-3 py-1 rounded-full bg-surface-container-highest text-[10px] font-bold uppercase tracking-[0.2em]">Em Breve</span>
+                    </div>
+                </article>
             </div>
         </section>
 
-        <section class="py-24 px-6 bg-surface-container-lowest">
+        <!-- Methodology Section -->
+        <section id="methodology" class="py-24 px-6 bg-surface-container-low">
             <div class="max-w-7xl mx-auto">
-                <div class="text-center mb-16">
-                    <h2 class="headline-font text-4xl font-bold">Desafios com IA</h2>
-                    <p class="text-on-surface-variant mt-4">Pratique no mundo real com nosso editor interativo</p>
+                <div class="section-title text-center mb-16">
+                    <span>Metodologia Semeando</span>
+                    <h2>Aprenda, Revise e Desafie-se</h2>
+                    <p class="text-on-surface-variant max-w-2xl mx-auto">
+                        Nossa abordagem é focada na retenção de conhecimento e na prática real. Você não apenas assiste, você constrói.
+                    </p>
                 </div>
-                <div
-                    class="bg-surface-container rounded-2xl overflow-hidden border border-outline-variant/30 flex flex-col md:flex-row shadow-2xl">
-                    <div class="flex-1 p-6 font-mono text-sm leading-relaxed bg-[#0d1425]">
-                        <div class="flex gap-2 mb-4">
-                            <div class="w-3 h-3 rounded-full bg-error"></div>
-                            <div class="w-3 h-3 rounded-full bg-tertiary"></div>
-                            <div class="w-3 h-3 rounded-full bg-primary"></div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-20">
+                    <!-- Normal Lesson -->
+                    <div class="p-8 rounded-[2rem] bg-surface-container hover:bg-surface-container-high transition-colors">
+                        <div class="w-12 h-12 rounded-xl bg-primary/10 text-primary flex items-center justify-center mb-6">
+                            <span class="material-symbols-outlined">menu_book</span>
                         </div>
-                        <pre class="text-[#89ddff]"><span class="text-[#c792ea]">const</span> <span
-                                class="text-[#82aaff]">helloDev</span> = () => "{{ '{' }}"</pre>
-                        <pre class="text-[#89ddff] pl-4"> <span class="text-[#c792ea]">console</span>.<span
-                                class="text-[#82aaff]">log</span>(<span class="text-[#c3e88d]">"Bem-vindo ao Semeando
-                                Devs!"</span>);</pre>
-                        <pre class="text-[#89ddff] pl-4"> <span class="text-[#c792ea]">return</span> <span
-                                class="text-[#f78c6c]">true</span>;</pre>
-                        <pre class="text-[#89ddff]">"{{ '}' }}"</pre>
-                        <div class="mt-8 pt-4 border-t border-outline-variant/20 flex gap-4">
-                            <span class="text-[#676e95]">12 |</span>
-                            <span
-                                class="animate-pulse bg-primary/40 px-1 text-on-surface">document.querySelector(".btn")...</span>
-                        </div>
+                        <h3 class="text-xl font-bold mb-4 font-headline">1. Teoria & Quiz</h3>
+                        <p class="text-on-surface-variant text-sm leading-relaxed">
+                            Conteúdo direto ao ponto com textos, vídeos e códigos. Valide seu conhecimento com quizes e avance apenas quando estiver pronto.
+                        </p>
                     </div>
-                    <div class="w-full md:w-80 bg-surface-container-high p-8 flex flex-col items-center text-center">
+
+                    <!-- Review Lesson -->
+                    <div class="p-8 rounded-[2rem] bg-surface-container hover:bg-surface-container-high transition-colors">
+                        <div class="w-12 h-12 rounded-xl bg-secondary/10 text-secondary flex items-center justify-center mb-6">
+                            <span class="material-symbols-outlined">history</span>
+                        </div>
+                        <h3 class="text-xl font-bold mb-4 font-headline">2. Revisão Inteligente</h3>
+                        <p class="text-on-surface-variant text-sm leading-relaxed">
+                            Não esqueça o que aprendeu. Nossas lições de revisão compilam os pontos mais importantes e as questões que você mais precisa praticar.
+                        </p>
+                    </div>
+
+                    <!-- Challenge Lesson -->
+                    <div class="p-8 rounded-[2rem] bg-surface-container hover:bg-surface-container-high transition-colors border-2 border-tertiary/20">
+                        <div class="w-12 h-12 rounded-xl bg-tertiary/10 text-tertiary flex items-center justify-center mb-6">
+                            <span class="material-symbols-outlined">code</span>
+                        </div>
+                        <h3 class="text-xl font-bold mb-4 font-headline">3. Desafios de Código</h3>
+                        <p class="text-on-surface-variant text-sm leading-relaxed">
+                            Mão na massa! Resolva problemas reais escrevendo código diretamente na plataforma e receba feedback imediato.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- AI Mentor Feature Block -->
+                <div class="ia-challenge-container shadow-2xl border border-outline-variant/10">
+                    <div class="code-editor hidden md:block">
+                        <div class="flex items-center gap-2 mb-6 opacity-50">
+                            <div class="w-3 h-3 rounded-full bg-error"></div>
+                            <div class="w-3 h-3 rounded-full bg-yellow-500"></div>
+                            <div class="w-3 h-3 rounded-full bg-tertiary"></div>
+                            <span class="ml-4 text-[10px] uppercase tracking-widest font-label">challenge.js — Semeando Devs</span>
+                        </div>
+                        <markdown [data]="codeSnippet()" class="text-on-surface/80 prose prose-invert max-w-none"></markdown>
+                    </div>
+                    <div class="mentor-panel">
                         <div class="relative mb-6">
-                            <div
-                                class="w-20 h-20 bg-gradient-to-tr from-primary to-tertiary rounded-full p-1 shadow-lg">
-                                <div
-                                    class="w-full h-full bg-surface-container-high rounded-full flex items-center justify-center overflow-hidden">
-                                    <img class="w-16 h-16 object-contain"
-                                        src="https://lh3.googleusercontent.com/aida-public/AB6AXuD497IBpO9a7XmPt_mbfioJNzYteK_GD-vDVFCnmGOxZyM87q1wHiyydDEngA110rL5lTb64Kiqh5QVNVmaqX_w4PSt50XCTKHgvRU_WU9rbK68FQpKYB7NsD2ljxDDzLsQhMaex2qZGRIRswzmz0d54JlH7pc-nfZ2kjgJsy2n45Zh-hNOifwyWZI2JQPKidHxmuJYMJATR8QtbEjfcEaNJbfKDFScJNEippssqmczJ9dTzyyoyCylUKX3YcYM5Nz7VGDdfw2WW2c"
-                                        alt="Bot Semeador" />
+                            <div class="w-24 h-24 rounded-full bg-gradient-to-tr from-primary to-secondary p-1">
+                                <div class="w-full h-full rounded-full bg-surface-container flex items-center justify-center overflow-hidden">
+                                    <span class="material-symbols-outlined text-5xl text-primary">smart_toy</span>
                                 </div>
                             </div>
-                            <div
-                                class="absolute -bottom-2 -right-2 bg-tertiary text-on-tertiary-container text-[10px] font-bold px-2 py-1 rounded-full label-font">
-                                ONLINE
+                            <div class="absolute -bottom-2 -right-2 bg-tertiary text-on-tertiary p-1 rounded-lg">
+                                <span class="material-symbols-outlined text-sm">verified</span>
                             </div>
                         </div>
-                        <h4 class="font-bold mb-2">Bot Semeador</h4>
-                        <p class="text-xs text-on-surface-variant italic leading-relaxed">
-                            "Você está quase lá! Tente usar o seletor de ID para encontrar esse botão com mais
-                            precisão."
+                        <h4 class="text-2xl font-bold mb-4 font-headline">Feedback de IA</h4>
+                        <p class="text-on-surface-variant text-sm mb-8">
+                            "Excelente uso do `reduce`! Seu código está limpo e eficiente. Que tal tentar adicionar um valor padrão para o caso de a lista estar vazia?"
                         </p>
-                        <button
-                            class="mt-8 w-full py-3 bg-surface-container-highest hover:bg-surface-bright text-tertiary border border-tertiary/20 rounded-xl text-sm font-bold transition-all">
-                            Pedir Dica (50 XP)
-                        </button>
+                        <div class="w-full space-y-3">
+                            <div class="flex items-center gap-4 p-4 rounded-2xl bg-surface-container-highest text-left">
+                                <span class="material-symbols-outlined text-tertiary">check_circle</span>
+                                <span class="text-xs font-bold">Lógica Correta (+50 XP)</span>
+                            </div>
+                            <div class="flex items-center gap-4 p-4 rounded-2xl bg-surface-container-highest text-left">
+                                <span class="material-symbols-outlined text-primary">psychology</span>
+                                <span class="text-xs font-bold">Sugestão de Performance</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Gamification Section -->
+        <section id="gamification" class="py-24 px-6 overflow-hidden">
+            <div class="max-w-7xl mx-auto">
+                <div class="flex flex-col lg:flex-row items-center gap-16">
+                    <div class="flex-1 space-y-8">
+                        <div class="section-title">
+                            <span>Ecossistema de Progressão</span>
+                            <h2>Jogue enquanto aprende</h2>
+                            <p class="text-on-surface-variant">
+                                Transformamos o esforço em recompensa. Cada lição concluída, cada desafio vencido e cada conquista desbloqueada aproxima você do topo.
+                            </p>
+                        </div>
+
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                            <!-- XP Card -->
+                            <div class="p-6 rounded-2xl bg-surface-container-high flex gap-4 items-start">
+                                <div class="feature-badge">
+                                    <span class="material-symbols-outlined">bolt</span>
+                                </div>
+                                <div>
+                                    <h4 class="font-bold mb-1">XP & Evolução</h4>
+                                    <p class="text-xs text-on-surface-variant">Ganhe experiência em cada atividade e suba de nível no seu próprio ritmo.</p>
+                                </div>
+                            </div>
+
+                            <!-- Seeds Card -->
+                            <div class="p-6 rounded-2xl bg-surface-container-high flex gap-4 items-start">
+                                <div class="feature-badge text-secondary bg-secondary/10">
+                                    <span class="material-symbols-outlined">eco</span>
+                                </div>
+                                <div>
+                                    <h4 class="font-bold mb-1">Seeds (Moeda)</h4>
+                                    <p class="text-xs text-on-surface-variant">Acumule sementes e troque por dicas valiosas nos quizes mais difíceis.</p>
+                                </div>
+                            </div>
+
+                            <!-- Ranking Card -->
+                            <div class="p-6 rounded-2xl bg-surface-container-high flex gap-4 items-start">
+                                <div class="feature-badge text-tertiary bg-tertiary/10">
+                                    <span class="material-symbols-outlined">military_tech</span>
+                                </div>
+                                <div>
+                                    <h4 class="font-bold mb-1">Rankings</h4>
+                                    <p class="text-xs text-on-surface-variant">Dispute o topo com outros desenvolvedores em rankings semanais e mensais.</p>
+                                </div>
+                            </div>
+
+                            <!-- Achievements Card -->
+                            <div class="p-6 rounded-2xl bg-surface-container-high flex gap-4 items-start">
+                                <div class="feature-badge text-orange-400 bg-orange-400/10">
+                                    <span class="material-symbols-outlined">workspace_premium</span>
+                                </div>
+                                <div>
+                                    <h4 class="font-bold mb-1">Conquistas</h4>
+                                    <p class="text-xs text-on-surface-variant">Desbloqueie medalhas exclusivas por consistência, perfeição e maestria.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="flex-1 relative">
+                        <!-- Visual representation of ranking/achievements -->
+                        <div class="relative z-10 space-y-4 max-w-sm mx-auto">
+                            <div class="glass-card p-6 rounded-2xl shadow-xl transform hover:-translate-x-4 transition-transform duration-500">
+                                <div class="flex items-center gap-4">
+                                    <div class="w-10 h-10 rounded-full bg-secondary/20 flex items-center justify-center text-secondary font-bold">1</div>
+                                    <div class="flex-1">
+                                        <div class="text-sm font-bold">Você (Lendário)</div>
+                                        <div class="text-[10px] text-on-surface-variant uppercase">8.450 XP — 12 Conquistas</div>
+                                    </div>
+                                    <span class="material-symbols-outlined text-tertiary">trending_up</span>
+                                </div>
+                            </div>
+                            <div class="glass-card p-6 rounded-2xl shadow-lg opacity-80 scale-95">
+                                <div class="flex items-center gap-4">
+                                    <div class="w-10 h-10 rounded-full bg-surface-container flex items-center justify-center text-on-surface-variant font-bold">2</div>
+                                    <div class="flex-1">
+                                        <div class="text-sm font-bold">Ana Silva</div>
+                                        <div class="text-[10px] text-on-surface-variant uppercase">7.200 XP</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="glass-card p-6 rounded-2xl shadow-lg opacity-60 scale-90">
+                                <div class="flex items-center gap-4">
+                                    <div class="w-10 h-10 rounded-full bg-surface-container flex items-center justify-center text-on-surface-variant font-bold">3</div>
+                                    <div class="flex-1">
+                                        <div class="text-sm font-bold">Carlos Dev</div>
+                                        <div class="text-[10px] text-on-surface-variant uppercase">6.850 XP</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Decorative elements -->
+                        <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-primary/20 blur-[100px] -z-10 rounded-full"></div>
+                        <div class="absolute -top-10 -right-10 w-40 h-40 bg-secondary/10 blur-[80px] -z-10 rounded-full"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Final CTA Section -->
+        <section id="cta-final" class="py-24 px-6 relative overflow-hidden">
+            <div class="max-w-4xl mx-auto text-center relative z-10">
+                <div class="glass-card p-12 md:p-20 rounded-[3rem] border border-primary/10 shadow-2xl relative overflow-hidden">
+                    <!-- Background Glow -->
+                    <div class="absolute -top-24 -left-24 w-64 h-64 bg-primary/20 blur-[100px] rounded-full"></div>
+                    <div class="absolute -bottom-24 -right-24 w-64 h-64 bg-secondary/20 blur-[100px] rounded-full"></div>
+
+                    <div class="relative z-10 space-y-8">
+                        <h2 class="font-headline text-4xl md:text-6xl font-extrabold tracking-tighter leading-tight">
+                            Pronto para se tornar um <br>
+                            <span class="gradient-text">Desenvolvedor Lendário?</span>
+                        </h2>
+                        <p class="text-on-surface-variant text-lg max-w-xl mx-auto">
+                            Junte-se a milhares de outros estudantes e comece sua jornada hoje mesmo. O futuro do seu código começa aqui.
+                        </p>
+                        <div class="pt-4">
+                            <button class="btn-primary px-12 py-5 text-xl shadow-xl shadow-primary/20 group">
+                                Começar Agora — É Grátis
+                                <span class="material-symbols-outlined ml-2 group-hover:translate-x-1 transition-transform">arrow_forward</span>
+                            </button>
+                        </div>
+                        <p class="text-[10px] text-on-surface-variant uppercase tracking-[0.2em] pt-4">
+                            Acesso imediato • Sem cartão de crédito • 100% Gamificado
+                        </p>
                     </div>
                 </div>
             </div>
