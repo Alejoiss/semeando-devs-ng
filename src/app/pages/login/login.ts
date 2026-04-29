@@ -19,6 +19,11 @@ export class Login {
     public submitted = false;
     public authError = '';
     public loginTitle = 'Bem-vindo de volta, Dev!';
+    
+    public isEmailUnverified = false;
+    public resendBusy = false;
+    public resendSuccess = false;
+    public resendError = '';
 
     constructor(
         private fb: FormBuilder,
@@ -37,6 +42,9 @@ export class Login {
     async onSubmit(): Promise<void> {
         this.submitted = true;
         this.authError = '';
+        this.isEmailUnverified = false;
+        this.resendSuccess = false;
+        this.resendError = '';
 
         if (this.loginForm.invalid) {
             return;
@@ -48,9 +56,31 @@ export class Login {
             await this.userService.signIn(this.loginForm.value);
             this.router.navigate(['/app']);
         } catch (error: any) {
-            this.authError = error.message || 'Email ou senha incorretos. Tente novamente.';
+            if (error.code === 'email_not_confirmed') {
+                this.isEmailUnverified = true;
+                this.authError = 'Sua conta ainda não foi verificada. Verifique seu e-mail para confirmar seu acesso.';
+            } else {
+                this.authError = error.message || 'Email ou senha incorretos. Tente novamente.';
+            }
         } finally {
             this.busy = false;
+        }
+    }
+
+    async resendEmail(): Promise<void> {
+        if (!this.loginForm.value.email) return;
+
+        this.resendBusy = true;
+        this.resendError = '';
+        this.resendSuccess = false;
+
+        try {
+            await this.userService.resendConfirmationEmail(this.loginForm.value.email);
+            this.resendSuccess = true;
+        } catch (error: any) {
+            this.resendError = error.message || 'Falha ao reenviar o e-mail. Tente novamente.';
+        } finally {
+            this.resendBusy = false;
         }
     }
 }
