@@ -7,7 +7,7 @@ const corsHeaders = {
     'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 }
 
-serve(async (req) => {
+serve(async (req: { method: string; headers: { get: (arg0: string) => any }; json: () => any }) => {
     // Handle CORS preflight
     if (req.method === 'OPTIONS') {
         return new Response('ok', { headers: corsHeaders })
@@ -36,9 +36,9 @@ serve(async (req) => {
         const { attemptId, lessonId, correctCount, totalCount, spentTime } = body
 
         if (!attemptId || !lessonId || correctCount === undefined || !totalCount || spentTime === undefined) {
-            return new Response(JSON.stringify({ error: 'Missing required parameters' }), { 
-                status: 400, 
-                headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
+            return new Response(JSON.stringify({ error: 'Missing required parameters' }), {
+                status: 400,
+                headers: { ...corsHeaders, 'Content-Type': 'application/json' }
             })
         }
 
@@ -111,21 +111,21 @@ serve(async (req) => {
                 .from('user_lessons')
                 .select('lesson_id')
                 .eq('user_id', user.id)
-                .in('lesson_id', subModuleLessons.map(l => l.id))
+                .in('lesson_id', subModuleLessons.map((l: { id: any }) => l.id))
                 .eq('completed', true)
 
             if (uclError) throw uclError
 
             if (userCompletedLessons.length === subModuleLessons.length) {
                 // Mark submodule as complete
-                const { error: smUpdateError } = await userClient
+                const { error: smUpdateError } = await serviceRoleClient
                     .from('user_submodules')
-                    .update({
+                    .upsert({
+                        user_id: user.id,
+                        sub_module_id: subModuleId,
                         completed: true,
                         completed_at: now
-                    })
-                    .eq('sub_module_id', subModuleId)
-                    .eq('user_id', user.id)
+                    }, { onConflict: 'user_id,sub_module_id' })
 
                 if (smUpdateError) throw smUpdateError
                 subModuleCompleted = true
@@ -151,20 +151,20 @@ serve(async (req) => {
                     .from('user_submodules')
                     .select('sub_module_id')
                     .eq('user_id', user.id)
-                    .in('sub_module_id', moduleSubModules.map(sm => sm.id))
+                    .in('sub_module_id', moduleSubModules.map((sm: { id: any }) => sm.id))
                     .eq('completed', true)
 
                 if (ucsmError) throw ucsmError
 
                 if (userCompletedSubModules.length === moduleSubModules.length) {
-                    const { error: mUpdateError } = await userClient
+                    const { error: mUpdateError } = await serviceRoleClient
                         .from('user_modules')
-                        .update({
+                        .upsert({
+                            user_id: user.id,
+                            module_id: moduleId,
                             completed: true,
                             completed_at: now
-                        })
-                        .eq('module_id', moduleId)
-                        .eq('user_id', user.id)
+                        }, { onConflict: 'user_id,module_id' })
 
                     if (mUpdateError) throw mUpdateError
                     moduleCompleted = true
@@ -174,7 +174,7 @@ serve(async (req) => {
             // --- 2.5 XP Award ---
             if (!wasAlreadyCompleted && lessonData.xp > 0) {
                 const xpToAward = lessonData.xp
-                
+
                 // 1. Insert into xp_log
                 const { error: logError } = await serviceRoleClient
                     .from('xp_log')
@@ -183,7 +183,7 @@ serve(async (req) => {
                         amount: xpToAward,
                         reason: 'LESSON'
                     })
-                
+
                 if (logError) throw logError
 
                 // 2. Update lifetime XP (xp table)
@@ -274,7 +274,7 @@ serve(async (req) => {
             .select('module_id')
             .eq('id', lessonData.sub_module_id)
             .single()
-        
+
         const moduleId = subModuleData?.module_id
 
         const { totalXpAwarded: achXp, earnedAchievements } = await evaluateAchievements(
@@ -296,7 +296,7 @@ serve(async (req) => {
 
         // --- 2.7 Success Response ---
         return new Response(
-            JSON.stringify({ 
+            JSON.stringify({
                 passed,
                 subModuleCompleted,
                 moduleCompleted,
