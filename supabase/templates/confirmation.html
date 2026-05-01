@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <style>
+    body {
+      background-color: #060e20;
+      color: #dee5ff;
+      font-family: 'Inter', sans-serif;
+      margin: 0;
+      padding: 40px;
+    }
+    .container {
+      background-color: #091328;
+      border-radius: 16px;
+      padding: 40px;
+      max-width: 600px;
+      margin: 0 auto;
+      text-align: center;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+    }
+    .header {
+      color: #3fc2fb;
+      font-size: 24px;
+      font-weight: 800;
+      margin-bottom: 20px;
+    }
+    .content {
+      font-size: 16px;
+      line-height: 1.5;
+      margin-bottom: 30px;
+      color: #dee5ff;
+    }
+    .btn {
+      display: inline-block;
+      background: linear-gradient(90deg, #3fc2fb, #27b4ed);
+      color: #060e20;
+      text-decoration: none;
+      padding: 16px 32px;
+      border-radius: 24px;
+      font-weight: bold;
+      font-size: 16px;
+      box-shadow: 0 4px 15px rgba(63, 194, 251, 0.4);
+    }
+    .footer {
+      margin-top: 40px;
+      font-size: 12px;
+      color: #8892b0;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      Terminal Ativado 🚀
+    </div>
+    <div class="content">
+      <p>Olá desenvolvedor(a),</p>
+      <p>Sua jornada no <strong>Semeando Devs</strong> está quase pronta para começar. Para liberar seu acesso ao sistema e garantir a segurança da sua conta, por favor confirme seu e-mail abaixo:</p>
+    </div>
+    <a href="{{ .ConfirmationURL }}" class="btn">Confirmar E-mail</a>
+    <div class="footer">
+      Se você não solicitou este cadastro, pode ignorar esta mensagem de forma segura.
+    </div>
+  </div>
+</body>
+</html>

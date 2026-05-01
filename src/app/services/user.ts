@@ -25,7 +25,12 @@ export class UserService {
         });
 
         if (error) {
-            throw new Error(mapAuthError(error.message));
+            const mappedMessage = mapAuthError(error.message);
+            const err: any = new Error(mappedMessage);
+            if (error.message.includes('Email not confirmed')) {
+                err.code = 'email_not_confirmed';
+            }
+            throw err;
         }
     }
 
@@ -46,6 +51,7 @@ export class UserService {
             email: user.email,
             password: user.password,
             options: {
+                emailRedirectTo: 'http://localhost:4201/auth/login',
                 data: {
                     name: user.name,
                 }
@@ -83,6 +89,17 @@ export class UserService {
             ...(email && { email }),
             ...(password && { password }),
             data: metadataUpdates,
+        });
+
+        if (error) {
+            throw new Error(mapAuthError(error.message));
+        }
+    }
+
+    async resendConfirmationEmail(email: string): Promise<void> {
+        const { error } = await this.supabase.auth.resend({
+            type: 'signup',
+            email,
         });
 
         if (error) {
