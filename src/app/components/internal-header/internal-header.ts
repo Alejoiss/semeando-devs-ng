@@ -3,6 +3,7 @@ import { Component, effect, inject, OnInit, signal, untracked } from '@angular/c
 import { RouterLink } from '@angular/router';
 import { XpService } from '../../services/xp';
 import { SeedService } from '../../services/seed';
+import { UserService } from '../../services/user';
 
 @Component({
     selector: 'app-internal-header',
@@ -14,9 +15,11 @@ import { SeedService } from '../../services/seed';
 export class InternalHeader implements OnInit {
     private xpService = inject(XpService);
     private seedService = inject(SeedService);
+    private userService = inject(UserService);
 
     protected readonly totalXp = this.xpService.totalXp;
     protected readonly totalSeeds = this.seedService.totalSeeds;
+    protected readonly currentUser = this.userService.currentUser;
 
     protected displayXp = signal(0);
     protected displaySeeds = signal(0);

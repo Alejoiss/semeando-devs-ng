@@ -1,0 +1,158 @@
+<div class="min-h-screen pb-12 px-6 lg:px-12 bg-surface">
+    <header class="max-w-4xl mx-auto mb-12">
+        <h1 class="text-4xl md:text-5xl font-black tracking-tighter text-on-surface uppercase font-headline">
+            Meu <span class="text-primary">Perfil</span>
+        </h1>
+        <p class="text-on-surface-variant font-body text-lg mt-2">
+            Gerencie suas informações e personalize sua experiência.
+        </p>
+    </header>
+
+    <main class="max-w-4xl mx-auto space-y-8">
+        <!-- Profile Info Section -->
+        <section class="bg-surface-container-low rounded-2xl p-8 shadow-ambient transition-all duration-300">
+            <h2 class="text-xl font-bold text-on-surface mb-8 font-headline flex items-center gap-3">
+                <span class="material-symbols-outlined text-primary">person</span>
+                Informações Pessoais
+            </h2>
+
+            <div class="flex flex-col md:flex-row gap-12 items-start">
+                <!-- Avatar Upload -->
+                <div class="relative group">
+                    <div class="w-32 h-32 rounded-full overflow-hidden border-4 border-surface-container-high ring-4 ring-primary/20 shadow-lg relative bg-surface-container">
+                        @if (currentUser()?.avatar) {
+                            <img [src]="currentUser()?.avatar" alt="Avatar" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
+                        } @else {
+                            <div class="w-full h-full flex items-center justify-center">
+                                <span class="material-symbols-outlined text-4xl text-on-surface-variant">person</span>
+                            </div>
+                        }
+
+                        @if (isUploadingAvatar()) {
+                            <div class="absolute inset-0 bg-surface/60 backdrop-blur-sm flex items-center justify-center">
+                                <div class="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
+                            </div>
+                        }
+                    </div>
+
+                    <label for="avatar-upload" class="absolute -bottom-2 -right-2 bg-primary p-2 rounded-full cursor-pointer shadow-lg hover:scale-110 active:scale-95 transition-all duration-300">
+                        <span class="material-symbols-outlined text-surface text-xl">photo_camera</span>
+                        <input type="file" id="avatar-upload" class="hidden" (change)="onFileSelected($event)" accept="image/*" [disabled]="isUploadingAvatar()" />
+                    </label>
+                </div>
+
+                <!-- Name Form -->
+                <form [formGroup]="profileForm" (ngSubmit)="updateProfile()" class="flex-1 w-full space-y-6">
+                    <div class="space-y-2">
+                        <label class="text-xs font-bold uppercase tracking-widest text-on-surface-variant font-label">Nome de Exibição</label>
+                        <div class="relative">
+                            <input
+                                formControlName="name"
+                                type="text"
+                                placeholder="Seu nome completo"
+                                class="w-full bg-surface-container-lowest border-none rounded-xl px-4 py-3 text-on-surface focus:ring-2 focus:ring-primary/50 transition-all duration-300 font-body"
+                            />
+                        </div>
+                        @if (profileForm.get('name')?.invalid && profileForm.get('name')?.touched) {
+                            <span class="text-error text-xs font-medium">O nome deve ter pelo menos 3 caracteres.</span>
+                        }
+                    </div>
+
+                    <div class="space-y-2">
+                        <label class="text-xs font-bold uppercase tracking-widest text-on-surface-variant font-label">E-mail (Não alterável)</label>
+                        <input
+                            type="email"
+                            [value]="currentUser()?.email"
+                            disabled
+                            class="w-full bg-surface-container-lowest/50 border-none rounded-xl px-4 py-3 text-on-surface-variant/60 cursor-not-allowed font-body"
+                        />
+                    </div>
+
+                    <div class="flex items-center justify-between pt-4">
+                        @if (profileMessage()) {
+                            <span [class]="profileMessage()?.type === 'success' ? 'text-tertiary' : 'text-error'" class="text-sm font-medium animate-fade-in">
+                                {{ profileMessage()?.text }}
+                            </span>
+                        } @else { <div></div> }
+
+                        <button
+                            type="submit"
+                            [disabled]="profileForm.invalid || isUpdatingProfile()"
+                            class="bg-gradient-to-r from-primary to-primary-dim text-surface font-bold py-3 px-8 rounded-xl shadow-lg hover:shadow-primary/20 hover:scale-[1.02] active:scale-[0.98] transition-all duration-300 disabled:opacity-50 disabled:scale-100 flex items-center gap-2"
+                        >
+                            @if (isUpdatingProfile()) {
+                                <div class="w-4 h-4 border-2 border-surface border-t-transparent rounded-full animate-spin"></div>
+                            }
+                            Salvar Alterações
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </section>
+
+        <!-- Security Section -->
+        <section class="bg-surface-container-low rounded-2xl p-8 shadow-ambient transition-all duration-300">
+            <h2 class="text-xl font-bold text-on-surface mb-8 font-headline flex items-center gap-3">
+                <span class="material-symbols-outlined text-secondary">security</span>
+                Segurança da Conta
+            </h2>
+
+            <form [formGroup]="passwordForm" (ngSubmit)="updatePassword()" class="space-y-6">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="space-y-2 col-span-full">
+                        <label class="text-xs font-bold uppercase tracking-widest text-on-surface-variant font-label">Senha Atual</label>
+                        <input
+                            formControlName="currentPassword"
+                            type="password"
+                            placeholder="Digite sua senha atual"
+                            class="w-full bg-surface-container-lowest border-none rounded-xl px-4 py-3 text-on-surface focus:ring-2 focus:ring-secondary/50 transition-all duration-300 font-body"
+                        />
+                    </div>
+
+                    <div class="space-y-2 col-span-full">
+                        <label class="text-xs font-bold uppercase tracking-widest text-on-surface-variant font-label">Nova Senha</label>
+                        <input
+                            formControlName="newPassword"
+                            type="password"
+                            placeholder="Mínimo 6 caracteres"
+                            class="w-full bg-surface-container-lowest border-none rounded-xl px-4 py-3 text-on-surface focus:ring-2 focus:ring-secondary/50 transition-all duration-300 font-body"
+                        />
+                    </div>
+
+                    <div class="space-y-2 col-span-full">
+                        <label class="text-xs font-bold uppercase tracking-widest text-on-surface-variant font-label">Confirmar Nova Senha</label>
+                        <input
+                            formControlName="confirmPassword"
+                            type="password"
+                            placeholder="Repita a nova senha"
+                            class="w-full bg-surface-container-lowest border-none rounded-xl px-4 py-3 text-on-surface focus:ring-2 focus:ring-secondary/50 transition-all duration-300 font-body"
+                        />
+                    </div>
+                </div>
+
+                @if (passwordForm.hasError('mismatch') && passwordForm.get('confirmPassword')?.touched) {
+                    <p class="text-error text-xs font-medium">As senhas não coincidem.</p>
+                }
+
+                <div class="flex items-center justify-between pt-4">
+                    @if (passwordMessage()) {
+                        <span [class]="passwordMessage()?.type === 'success' ? 'text-tertiary' : 'text-error'" class="text-sm font-medium animate-fade-in">
+                            {{ passwordMessage()?.text }}
+                        </span>
+                    } @else { <div></div> }
+
+                    <button
+                        type="submit"
+                        [disabled]="passwordForm.invalid || isUpdatingPassword()"
+                        class="bg-transparent border-2 border-secondary/20 text-secondary hover:bg-secondary/10 font-bold py-3 px-8 rounded-xl transition-all duration-300 disabled:opacity-50 flex items-center gap-2"
+                    >
+                        @if (isUpdatingPassword()) {
+                            <div class="w-4 h-4 border-2 border-secondary border-t-transparent rounded-full animate-spin"></div>
+                        }
+                        Atualizar Senha
+                    </button>
+                </div>
+            </form>
+        </section>
+    </main>
+</div>

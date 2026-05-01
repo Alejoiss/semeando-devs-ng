@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, signal, computed } from '@angular/core';
 import { createClient, SupabaseClient } from '@supabase/supabase-js';
 import { environment } from '../../environments/environment';
 import { User } from '../../models/user/user';
@@ -9,9 +9,22 @@ import { mapAuthError } from '../utils/auth-error-mapper';
 })
 export class UserService {
     private supabase: SupabaseClient;
+    private userSignal = signal<User | null>(null);
+
+    readonly currentUser = computed(() => this.userSignal());
 
     constructor() {
         this.supabase = createClient(environment.supabaseUrl, environment.supabaseKey);
+        this.loadUserProfile();
+    }
+
+    private async loadUserProfile() {
+        try {
+            const user = await this.getUserProfile();
+            this.userSignal.set(user);
+        } catch (error) {
+            this.userSignal.set(null);
+        }
     }
 
     async signIn(user: Partial<User>): Promise<void> {
@@ -32,6 +45,13 @@ export class UserService {
             }
             throw err;
         }
+
+        await this.loadUserProfile();
+    }
+
+    async signOut(): Promise<void> {
+        await this.supabase.auth.signOut();
+        this.userSignal.set(null);
     }
 
     async getSession() {
@@ -70,7 +90,7 @@ export class UserService {
             throw new Error(error?.message || 'User not authenticated');
         }
 
-        return {
+        const profile: User = {
             id: user.id,
             email: user.email || '',
             name: user.user_metadata?.['name'] || '',
@@ -79,7 +99,9 @@ export class UserService {
             acceptedTermsAt: new Date(user.created_at),
             avatar: user.user_metadata?.['avatar'] || '',
             plan: user.user_metadata?.['plan'] || null,
-        } as User;
+        };
+
+        return profile;
     }
 
     async updateUserProfile(updates: Partial<User>): Promise<void> {
@@ -93,6 +115,53 @@ export class UserService {
 
         if (error) {
             throw new Error(mapAuthError(error.message));
+        }
+
+        await this.loadUserProfile();
+    }
+    async uploadAvatar(file: File): Promise<string> {
+        const user = this.userSignal();
+        if (!user) throw new Error('User not authenticated');
+
+        const fileExt = file.name.split('.').pop();
+        const fileName = `${user.id}-${Date.now()}.${fileExt}`;
+
+        const { error: uploadError } = await this.supabase.storage
+            .from('avatars')
+            .upload(fileName, file);
+
+        if (uploadError) {
+            throw new Error(uploadError.message);
+        }
+
+        const { data: { publicUrl } } = this.supabase.storage
+            .from('avatars')
+            .getPublicUrl(fileName);
+
+        await this.updateUserProfile({ avatar: publicUrl });
+
+        return publicUrl;
+    }
+
+    async updatePassword(currentPassword: string, newPassword: string): Promise<void> {
+        const user = this.userSignal();
+        if (!user || !user.email) throw new Error('Usuário não autenticado ou sem e-mail.');
+
+        const { error: signInError } = await this.supabase.auth.signInWithPassword({
+            email: user.email,
+            password: currentPassword,
+        });
+
+        if (signInError) {
+            throw new Error('A senha atual está incorreta.');
+        }
+
+        const { error: updateError } = await this.supabase.auth.updateUser({
+            password: newPassword,
+        });
+
+        if (updateError) {
+            throw new Error(mapAuthError(updateError.message));
         }
     }
 

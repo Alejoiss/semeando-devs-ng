@@ -1,0 +1,21 @@
+.shadow-ambient {
+    box-shadow: 0 12px 24px -10px rgba(222, 229, 255, 0.06), 0 24px 48px -15px rgba(222, 229, 255, 0.04);
+}
+
+.animate-fade-in {
+    animation: fadeIn 0.5s ease-out forwards;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+:host {
+    display: block;
+    background-color: var(--surface);
+}
+
+input:focus {
+    outline: none;
+}

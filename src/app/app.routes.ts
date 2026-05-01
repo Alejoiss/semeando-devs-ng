@@ -89,6 +89,11 @@ export const routes: Routes = [
                 title: 'Semeando Devs | Conquistas'
             },
             {
+                path: 'perfil',
+                loadComponent: () => import('./pages/app/profile/profile').then((m) => m.Profile),
+                title: 'Meu Perfil - Semeando Devs'
+            },
+            {
                 path: 'upgrade',
                 loadComponent: () => import('./pages/app/upgrade/upgrade').then((m) => m.Upgrade),
                 title: 'Semeando Devs | Assinatura PRO'
