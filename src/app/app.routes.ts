@@ -23,6 +23,16 @@ export const routes: Routes = [
         title: 'Semeando Devs | Cadastro'
     },
     {
+        path: 'recuperar-senha',
+        loadComponent: () => import('./pages/forgot-password/forgot-password').then((m) => m.ForgotPassword),
+        title: 'Recuperar Senha - Semeando Devs'
+    },
+    {
+        path: 'redefinir-senha',
+        loadComponent: () => import('./pages/reset-password/reset-password').then((m) => m.ResetPassword),
+        title: 'Redefinir Senha - Semeando Devs'
+    },
+    {
         path: 'support/contact',
         loadComponent: () => import('./pages/contact/contact').then((m) => m.Contact),
         title: 'Semeando Devs | Contato'

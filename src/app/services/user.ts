@@ -106,4 +106,14 @@ export class UserService {
             throw new Error(mapAuthError(error.message));
         }
     }
+
+    async sendPasswordResetEmail(email: string): Promise<void> {
+        const { error } = await this.supabase.auth.resetPasswordForEmail(email, {
+            redirectTo: 'http://localhost:4201/redefinir-senha',
+        });
+
+        if (error) {
+            throw new Error(mapAuthError(error.message));
+        }
+    }
 }
