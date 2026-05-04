@@ -29,11 +29,11 @@ CREATE POLICY "Users can read own user_achievements" ON public.user_achievements
 
 -- Seed achievements
 INSERT INTO public.achievements (name, icon, identification, requirement, xp_amount) VALUES
-('Aprendiz de tags', 'aprendiz-de-tags.png', 'APRENDIZ_DE_TAGS', 'Concluir o módulo de HTML', 200),
-('Combo insano', 'combo-insano.png', 'COMBO_INSANO', 'Fazer 10 lições perfeitas seguidas', 100),
-('Estilista da Web', 'estilista-da-web.png', 'ESTILISTA_DA_WEB', 'Concluir o módulo de CSS', 200),
+('Aprendiz de tags', 'aprendiz-de-tags.png', 'APRENDIZ_DE_TAGS', 'Concluir o módulo de HTML', 500),
+('Combo insano', 'combo-insano.png', 'COMBO_INSANO', 'Fazer 10 lições perfeitas seguidas', 200),
+('Estilista da Web', 'estilista-da-web.png', 'ESTILISTA_DA_WEB', 'Concluir o módulo de CSS', 500),
 ('Imparável', 'imparavel.png', 'IMPARAVEL', 'Fazer uma sequência de 10 dias seguidos.', 200),
-('Mago das funções', 'mago-das-funcoes.png', 'MAGO_DAS_FUNCOES', 'Concluir o módulo de JavaScript', 200),
+('Mago das funções', 'mago-das-funcoes.png', 'MAGO_DAS_FUNCOES', 'Concluir o módulo de JavaScript', 500),
 ('Maratonista do Código', 'maratonista-do-codigo.png', 'MARATONISTA_DO_CODIGO', 'Fazer uma sequência de 5 dias seguidos.', 100),
 ('Meu Primeiro Desafio', 'meu-primeiro-desafio.png', 'MEU_PRIMEIRO_DESAFIO', 'Concluir uma lição de desafio', 100),
 ('Minha Primeira Revisão', 'minha-primeira-revisao.png', 'MINHA_PRIMEIRA_REVISAO', 'Concluir uma lição de revisão', 50),

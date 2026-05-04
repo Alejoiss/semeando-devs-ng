@@ -74,6 +74,11 @@ export const routes: Routes = [
                 title: 'Semeando Devs - Quiz'
             },
             {
+                path: 's/:slug/ss/:slugSubmodule/lesson/:lessonId/challenge',
+                loadComponent: () => import('./pages/app/lesson/challenge/challenge').then((m) => m.Challenge),
+                title: 'Semeando Devs - Desafio'
+            },
+            {
                 path: 's/:slug/finished',
                 loadComponent: () => import('./pages/app/module-finished/module-finished/module-finished').then((m) => m.ModuleFinished),
                 title: 'Semeando Devs - Conclusão de Módulo'

@@ -1,0 +1,43 @@
+.glass {
+    background: rgba(15, 25, 48, 0.6);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+}
+
+.fancy-scrollbar {
+    &::-webkit-scrollbar {
+        width: 6px;
+    }
+    
+    &::-webkit-scrollbar-track {
+        background: transparent;
+    }
+    
+    &::-webkit-scrollbar-thumb {
+        background: rgba(var(--outline-variant), 0.2);
+        border-radius: 10px;
+        
+        &:hover {
+            background: rgba(var(--outline-variant), 0.4);
+        }
+    }
+}
+
+.neon-glow-primary {
+    box-shadow: 0 0 20px rgba(63, 194, 251, 0.2);
+}
+
+.animate-fade-in {
+    animation: fadeIn 0.5s ease-out forwards;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}

@@ -12,4 +12,6 @@ export interface Lesson {
     order: number;
     subModuleId: string;
     xp: number;
+    language?: string;
+    initialCode?: string;
 }

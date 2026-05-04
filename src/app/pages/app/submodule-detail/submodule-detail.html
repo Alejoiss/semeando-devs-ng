@@ -129,7 +129,7 @@
                                         <span class="material-symbols-outlined text-sm">arrow_forward</span>
                                     </button>
                                 } @else {
-                                    <a [routerLink]="isRevision ? ['lesson', item.lesson.id, 'quiz'] : ['lesson', item.lesson.id]"
+                                    <a [routerLink]="isRevision ? ['lesson', item.lesson.id, 'quiz'] : (isChallenge ? ['lesson', item.lesson.id, 'challenge'] : ['lesson', item.lesson.id])"
                                        [class]="
                                         isCompleted
                                             ? 'flex items-center gap-2 font-label text-sm font-bold ' + (isEven ? '' : 'ml-auto justify-end ') + (isChallenge ? 'text-secondary' : 'text-primary')

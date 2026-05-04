@@ -1,0 +1,161 @@
+@if (isLoading()) {
+    <main class="flex-1 p-6 lg:p-10 max-w-6xl mx-auto min-h-screen animate-pulse">
+        <div class="mb-10">
+            <div class="h-5 w-48 bg-surface-container-high rounded-full mb-6"></div>
+            <div class="h-10 w-3/4 bg-surface-container-high rounded-2xl mb-4"></div>
+            <div class="h-5 w-full max-w-xl bg-surface-container rounded-full mb-2"></div>
+        </div>
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <div class="h-96 rounded-3xl bg-surface-container-high"></div>
+            <div class="h-96 rounded-3xl bg-surface-container-high"></div>
+        </div>
+    </main>
+} @else if (error()) {
+    <main class="flex-1 p-6 lg:p-10 max-w-6xl mx-auto min-h-screen flex flex-col items-center justify-center gap-4">
+        <span class="material-symbols-outlined text-5xl text-error">error</span>
+        <p class="text-on-surface-variant text-lg text-center">{{ error() }}</p>
+    </main>
+} @else {
+    <main class="flex-1 p-6 lg:p-10 max-w-[1400px] mx-auto min-h-screen flex flex-col">
+        <header class="mb-8 flex flex-col md:flex-row md:items-end justify-between gap-6">
+            <div class="flex-1 text-left">
+                <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-secondary-container/30 border border-secondary/20 mb-4">
+                    <span class="w-1.5 h-1.5 rounded-full bg-secondary"></span>
+                    <span class="font-label text-[10px] uppercase tracking-widest text-secondary-fixed">{{ slugSubmodule() }} • Desafio Prático</span>
+                </div>
+                <h1 class="text-4xl md:text-5xl font-black text-on-surface tracking-tight mb-4">
+                    {{ lesson()?.title }}
+                </h1>
+                <p class="text-on-surface-variant text-lg max-w-2xl leading-relaxed">
+                    {{ lesson()?.description }}
+                </p>
+            </div>
+        </header>
+
+        <div class="flex-1 flex flex-col gap-8 mb-8">
+            
+            <!-- Left Side: Instructions -->
+            <div class="space-y-6 flex flex-col">
+                <div class="glass flex-1 rounded-3xl p-6 md:p-8 border border-outline-variant/10">
+                    <h2 class="text-xl font-bold text-primary mb-6 flex items-center gap-2">
+                        <span class="material-symbols-outlined">description</span>
+                        Instruções do Desafio
+                    </h2>
+                    
+                    @for (section of sectionContents(); track section.id) {
+                        <div class="mb-8 last:mb-0">
+                            @switch (section.type) {
+                                @case ('TEXT') {
+                                    <div class="prose prose-invert max-w-none">
+                                        <p class="text-on-surface-variant leading-relaxed">
+                                            {{ section.content }}
+                                        </p>
+                                    </div>
+                                }
+                                @case ('MARKDOWN') {
+                                    <div class="prose prose-invert prose-blue max-w-none">
+                                        <markdown [data]="section.content"></markdown>
+                                    </div>
+                                }
+                                @case ('IMAGE') {
+                                    <div class="rounded-2xl overflow-hidden bg-surface-container-highest border border-outline-variant/10 my-4">
+                                        <img [src]="section.file" [alt]="section.fileDescription || 'Lesson image'" class="w-full h-auto object-cover" />
+                                    </div>
+                                }
+                            }
+                        </div>
+                    } @empty {
+                        <p class="text-on-surface-variant italic">Nenhuma instrução disponível para este desafio.</p>
+                    }
+                </div>
+                
+                <!-- Feedback Box (Shows after evaluation) -->
+                @if (aiFeedback()) {
+                    <div class="glass rounded-3xl p-6 border border-tertiary/20 relative overflow-hidden animate-fade-in">
+                        <div class="absolute top-0 right-0 p-4 opacity-10">
+                            <span class="material-symbols-outlined text-6xl text-tertiary">smart_toy</span>
+                        </div>
+                        <h3 class="font-headline font-bold text-on-surface text-lg mb-4 flex items-center gap-2">
+                            <span class="material-symbols-outlined text-tertiary">check_circle</span>
+                            Feedback da IA
+                        </h3>
+                        <div class="prose prose-invert max-w-none prose-sm text-on-surface-variant">
+                            <markdown [data]="aiFeedback() || ''"></markdown>
+                        </div>
+                        
+                        @if (xpAwarded() > 0) {
+                            <div class="mt-4 inline-flex items-center gap-2 px-3 py-1 rounded-full bg-tertiary/10 border border-tertiary/30">
+                                <span class="material-symbols-outlined text-tertiary text-sm">bolt</span>
+                                <span class="text-xs font-bold text-tertiary">+{{ xpAwarded() }} XP Recebido</span>
+                            </div>
+                        }
+                    </div>
+                }
+            </div>
+
+            <!-- Right Side: Code Editor -->
+            <div class="flex flex-col rounded-3xl overflow-hidden border border-outline-variant/10 bg-surface-container-lowest h-[500px] shadow-2xl relative group">
+                <div class="bg-surface-container px-4 py-3 flex items-center justify-between border-b border-outline-variant/10">
+                    <div class="flex items-center gap-2">
+                        <span class="material-symbols-outlined text-primary text-sm">code</span>
+                        <span class="font-label text-xs uppercase tracking-widest text-on-surface-variant">Seu Código</span>
+                    </div>
+                    @if (isSubmitting()) {
+                        <div class="flex items-center gap-2 text-primary">
+                            <span class="material-symbols-outlined animate-spin text-sm">sync</span>
+                            <span class="text-xs font-medium">Avaliando...</span>
+                        </div>
+                    } @else if (passed()) {
+                        <div class="flex items-center gap-2 text-tertiary">
+                            <span class="material-symbols-outlined text-sm">done_all</span>
+                            <span class="text-xs font-medium">Concluído</span>
+                        </div>
+                    }
+                </div>
+                
+                <div class="flex-1 relative">
+                    <ngs-code-editor
+                        [theme]="theme"
+                        [codeModel]="codeModel()"
+                        [options]="options"
+                        (valueChanged)="onCodeChanged($event)"
+                        [readOnly]="passed() || isSubmitting()"
+                        class="absolute inset-0 w-full h-full"
+                    ></ngs-code-editor>
+                </div>
+            </div>
+        </div>
+
+        <!-- Action Bar -->
+        <footer class="flex items-center justify-end gap-4 p-6 rounded-3xl bg-surface-container-low border border-outline-variant/5">
+            @if (!passed()) {
+                <button 
+                    (click)="saveDraft()"
+                    [disabled]="isSubmitting()"
+                    class="px-6 py-3 rounded-2xl font-headline font-bold text-sm bg-surface border border-outline-variant/20 text-on-surface hover:bg-surface-bright transition-all disabled:opacity-50">
+                    Salvar Rascunho
+                </button>
+                
+                <button 
+                    (click)="submitChallenge()"
+                    [disabled]="isSubmitting()"
+                    class="px-8 py-3 rounded-2xl font-headline font-bold text-sm bg-gradient-to-r from-primary to-primary-container text-on-primary-container flex items-center gap-2 neon-glow-primary hover:brightness-110 active:scale-95 transition-all disabled:opacity-50 disabled:pointer-events-none">
+                    @if (isSubmitting()) {
+                        <span class="material-symbols-outlined animate-spin">refresh</span>
+                        Enviando...
+                    } @else {
+                        Enviar Código
+                        <span class="material-symbols-outlined">send</span>
+                    }
+                </button>
+            } @else {
+                <button 
+                    (click)="continueChallenge()"
+                    class="px-8 py-3 rounded-2xl font-headline font-bold text-sm bg-gradient-to-r from-tertiary to-tertiary-container text-on-tertiary-container flex items-center gap-2 hover:brightness-110 active:scale-95 transition-all">
+                    Continuar
+                    <span class="material-symbols-outlined">arrow_forward</span>
+                </button>
+            }
+        </footer>
+    </main>
+}

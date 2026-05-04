@@ -60,6 +60,8 @@ export class LessonService {
             order: data.order,
             subModuleId: data.sub_module_id,
             xp: data.xp,
+            language: data.language,
+            initialCode: data.initial_code,
         } as Lesson;
     }
 }

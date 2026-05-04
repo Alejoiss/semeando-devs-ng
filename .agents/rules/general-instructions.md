@@ -48,7 +48,7 @@ trigger: always_on
         <p>Bem-vindo, usuário!</p>
     }
     ```
-- **Integração com Supabase:** Sempre utilize o MCP do Supabase para integrações. Utilize SEMPRE services para para a integração, NUNCA nos componentes.
+- **Integração com Supabase:** Sempre utilize o MCP do Supabase para integrações. Utilize SEMPRE services para para a integração, NUNCA nos componentes. NUNCA rode `npx supabase db reset`, rode SEMPRE `npx supabase db up`.
 
 ## Fluxos de Trabalho do Desenvolvedor
 - **Iniciar Servidor de Dev:** `ng serve` (ou `npm start`)

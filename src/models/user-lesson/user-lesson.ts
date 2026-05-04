@@ -7,4 +7,7 @@ export interface UserLesson {
     lesson: Lesson;
     completed: boolean;
     completedAt: Date;
+    savedCode?: string;
+    submittedCode?: string;
+    aiFeedback?: string;
 }

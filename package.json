@@ -30,6 +30,7 @@
     "@angular/forms": "^20.2.0",
     "@angular/platform-browser": "^20.2.0",
     "@angular/router": "^20.2.0",
+    "@ngstack/code-editor": "^9.0.0",
     "@supabase/supabase-js": "^2.103.0",
     "marked": "^16.4.2",
     "material-symbols": "^0.42.3",

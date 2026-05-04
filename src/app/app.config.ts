@@ -8,6 +8,7 @@ import {
 import { provideAnimations } from '@angular/platform-browser/animations';
 import { provideRouter } from '@angular/router';
 import { MarkdownModule } from 'ngx-markdown';
+import { CodeEditorModule } from '@ngstack/code-editor';
 
 import { routes } from './app.routes';
 
@@ -18,6 +19,6 @@ export const appConfig: ApplicationConfig = {
         provideRouter(routes),
         provideHttpClient(),
         provideAnimations(),
-        importProvidersFrom(MarkdownModule.forRoot())
+        importProvidersFrom(MarkdownModule.forRoot(), CodeEditorModule.forRoot())
     ]
 };

@@ -135,6 +135,10 @@ export class SubmoduleDetail implements OnInit {
                 await this.router.navigate(['lesson', lesson.id, 'quiz'], { relativeTo: this.route });
                 return;
             }
+            if (lesson.type === LessonType.CHALLENGE) {
+                await this.router.navigate(['lesson', lesson.id, 'challenge'], { relativeTo: this.route });
+                return;
+            }
             await this.router.navigate(['lesson', lesson.id], { relativeTo: this.route });
         } catch (err) {
             console.error('Erro ao iniciar lição:', err);
