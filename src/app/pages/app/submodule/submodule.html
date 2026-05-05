@@ -140,23 +140,29 @@
         }
     </div>
 
-    <section class="mt-16 glass-panel rounded-xl p-8 flex flex-col md:flex-row items-center justify-between gap-8 border border-primary/10 relative overflow-hidden">
-        <div class="absolute top-0 right-0 w-32 h-32 bg-secondary/5 rounded-full blur-3xl"></div>
-        <div class="relative z-10 text-center md:text-left">
-            <h4 class="text-secondary font-headline font-bold text-xl mb-2 flex items-center gap-2 justify-center md:justify-start">
-                <span class="material-symbols-outlined" data-icon="rewarded_ads">rewarded_ads</span>
-                Bônus de Conclusão
-            </h4>
-            <p class="text-on-surface-variant font-body">Complete os submódulos para ganhar emblemas e +500 XP de Milestone.</p>
-        </div>
-        <div class="flex items-center gap-4 relative z-10">
-            <div class="w-20 h-20 rounded-full bg-surface-container flex items-center justify-center border-2 border-secondary/20 shadow-[0_0_20px_rgba(254,105,172,0.15)]">
-                <span class="material-symbols-outlined text-3xl text-secondary" data-icon="emoji_events">emoji_events</span>
+    @if (achievement()) {
+        <section class="mt-16 glass-panel rounded-xl p-8 flex flex-col md:flex-row items-center justify-between gap-8 border border-primary/10 relative overflow-hidden">
+            <div class="absolute top-0 right-0 w-32 h-32 bg-secondary/5 rounded-full blur-3xl"></div>
+            <div class="relative z-10 text-center md:text-left">
+                <h4 class="text-secondary font-headline font-bold text-xl mb-2 flex items-center gap-2 justify-center md:justify-start">
+                    <span class="material-symbols-outlined" data-icon="rewarded_ads">rewarded_ads</span>
+                    Bônus de Conclusão
+                </h4>
+                <p class="text-on-surface-variant font-body">{{ achievement()?.requirement }} para ganhar este emblema e +{{ achievement()?.xpAmount }} XP de Milestone.</p>
             </div>
-            <div class="text-center md:text-left">
-                <div class="text-on-surface font-headline font-black text-2xl">Recompensas</div>
-                <div class="font-label text-xs text-secondary tracking-widest uppercase">Pela trilha!</div>
+            <div class="flex items-center gap-4 relative z-10">
+                <div class="w-20 h-20 rounded-full bg-surface-container flex items-center justify-center border-2 border-secondary/20 shadow-[0_0_20px_rgba(254,105,172,0.15)] overflow-hidden">
+                    @if (achievement()?.icon) {
+                        <img [src]="'assets/achievements/' + achievement()?.icon" [alt]="achievement()?.name" class="w-full h-full object-cover">
+                    } @else {
+                        <span class="material-symbols-outlined text-3xl text-secondary" data-icon="emoji_events">emoji_events</span>
+                    }
+                </div>
+                <div class="text-center md:text-left">
+                    <div class="text-on-surface font-headline font-black text-2xl">{{ achievement()?.name }}</div>
+                    <div class="font-label text-xs text-secondary tracking-widest uppercase">Pela trilha!</div>
+                </div>
             </div>
-        </div>
-    </section>
+        </section>
+    }
 </main>

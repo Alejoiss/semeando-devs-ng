@@ -52,7 +52,7 @@ serve(async (req: { method: string; headers: { get: (arg0: string) => any }; jso
                     "Content-Type": "application/json"
                 },
                 body: JSON.stringify({
-                    "model": "inclusionAI: Ling-2.6-1T",
+                    "model": "inclusionai/ling-2.6-1t:free",
                     "messages": [
                         {
                             "role": "system",
@@ -79,7 +79,7 @@ serve(async (req: { method: string; headers: { get: (arg0: string) => any }; jso
 
         // --- Completion Logic ---
         const now = new Date().toISOString()
-        
+
         // Fetch lesson info
         const { data: lessonData, error: lessonDataError } = await serviceRoleClient
             .from('lessons')

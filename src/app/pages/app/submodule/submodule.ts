@@ -5,7 +5,10 @@ import { SubModuleService } from '../../../services/sub-module';
 import { UserSubModuleService } from '../../../services/user-sub-module';
 import { LessonService } from '../../../services/lesson';
 import { UserLessonService } from '../../../services/user-lesson';
+import { ModuleService } from '../../../services/module';
+import { AchievementsService } from '../../../services/achievements';
 import { SubModule } from '../../../../models/sub-module/sub-module';
+import { Achievements } from '../../../../models/achievements/achievements';
 
 export interface SubmoduleWithState {
     submodule: SubModule;
@@ -29,8 +32,11 @@ export class Submodule implements OnInit {
     private userSubmoduleService = inject(UserSubModuleService);
     private lessonService = inject(LessonService);
     private userLessonService = inject(UserLessonService);
+    private moduleService = inject(ModuleService);
+    private achievementsService = inject(AchievementsService);
 
     submodulesWithState = signal<SubmoduleWithState[]>([]);
+    achievement = signal<Achievements | null>(null);
     isLoading = signal<boolean>(true);
     error = signal<string | null>(null);
 
@@ -114,6 +120,14 @@ export class Submodule implements OnInit {
             }
 
             this.submodulesWithState.set(withState);
+
+            // Fetch achievement for the module
+            const module = await this.moduleService.getModuleBySlug(slug);
+            if (module) {
+                const achievement = await this.achievementsService.getAchievementByModuleId(module.id);
+                this.achievement.set(achievement);
+            }
+
             this.error.set(null);
         } catch (err: any) {
             this.error.set(err.message || 'Erro ao carregar os submódulos.');

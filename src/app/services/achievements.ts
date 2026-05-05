@@ -36,6 +36,26 @@ export class AchievementsService {
         }
     }
 
+    async getAchievementByModuleId(moduleId: string): Promise<Achievements | null> {
+        try {
+            const { data, error } = await this.supabase
+                .from('achievements')
+                .select('*')
+                .eq('module_id', moduleId)
+                .single();
+
+            if (error) {
+                if (error.code === 'PGRST116') return null;
+                throw new Error(error.message);
+            }
+
+            return new Achievements(data);
+        } catch (error) {
+            console.error('Error fetching achievement by module id:', error);
+            return null;
+        }
+    }
+
     async getUserAchievements(): Promise<UserAchievement[]> {
         try {
             const user = await this.userService.getUserProfile();
