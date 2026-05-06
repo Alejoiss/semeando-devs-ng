@@ -1,4 +1,5 @@
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
+import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { PlanService } from '../../../services/plan';
@@ -17,12 +18,15 @@ import { Coupon } from '../../../../models/coupon/coupon';
 export class Upgrade {
     private readonly planService = inject(PlanService);
     private readonly couponService = inject(CouponService);
+    private readonly router = inject(Router);
 
     protected readonly plan = signal<Plan | null>(null);
     protected readonly coupon = signal<Coupon | null>(null);
     protected readonly couponCode = signal('');
     protected readonly couponError = signal<string | null>(null);
     protected readonly isLoading = signal(true);
+    protected readonly isSubscribing = signal(false);
+    protected readonly subscriptionError = signal<string | null>(null);
 
     protected readonly discountedMonthlyPrice = computed(() => {
         const p = this.plan();
@@ -75,5 +79,18 @@ export class Upgrade {
             this.coupon.set(null);
             this.couponError.set('Cupom inválido ou expirado');
         }
+    }
+
+    async subscribe(cycle: 'monthly' | 'yearly') {
+        const currentPlan = this.plan();
+        if (!currentPlan) return;
+
+        this.router.navigate(['/app/checkout'], {
+            queryParams: {
+                planId: currentPlan.id,
+                cycle: cycle,
+                couponCode: this.coupon()?.code || undefined
+            }
+        });
     }
 }

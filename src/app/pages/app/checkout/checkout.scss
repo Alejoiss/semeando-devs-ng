@@ -1,0 +1,13 @@
+#cardNumber, #expirationDate, #securityCode {
+    cursor: text;
+    transition: all 0.2s ease-in-out;
+
+    &:hover {
+        border-color: rgba(63, 194, 251, 0.4);
+    }
+
+    &.mp-focused {
+        border-color: #3fc2fb; // primary
+        box-shadow: 0 0 0 4px rgba(63, 194, 251, 0.1);
+    }
+}

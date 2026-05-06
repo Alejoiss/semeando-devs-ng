@@ -1,0 +1,176 @@
+<div class="min-h-[calc(100vh-80px)] p-6 bg-surface">
+    <div class="max-w-4xl mx-auto">
+        <h1 class="font-display font-extrabold text-3xl text-on-surface mb-8">Finalizar Assinatura</h1>
+
+        @if (isLoading()) {
+            <div class="flex items-center justify-center h-64">
+                <span class="animate-spin inline-block w-8 h-8 border-4 border-primary border-t-transparent rounded-full"></span>
+            </div>
+        } @else if (success()) {
+            <div class="bg-surface-container rounded-2xl p-8 shadow-2xl shadow-primary/5 text-center relative overflow-hidden">
+                <div class="absolute inset-0 bg-gradient-to-tr from-primary/10 to-transparent pointer-events-none"></div>
+                
+                <span class="material-symbols-outlined text-6xl text-tertiary mb-4">check_circle</span>
+                <h2 class="font-display font-bold text-2xl text-on-surface mb-2">
+                    {{ paymentMethod() === 'pix' ? 'Pagamento PIX Gerado!' : 'Pagamento Aprovado!' }}
+                </h2>
+                
+                @if (paymentMethod() === 'pix' && pixQrCodeBase64() && pixQrCode()) {
+                    <p class="text-on-surface-variant font-body mb-8">Escaneie o QR Code abaixo no aplicativo do seu banco ou copie o código "PIX Copia e Cola".</p>
+                    
+                    <div class="flex flex-col items-center gap-6">
+                        <img [src]="'data:image/jpeg;base64,' + pixQrCodeBase64()" alt="QR Code PIX" class="w-48 h-48 rounded-xl border border-outline-variant p-2 bg-white">
+                        
+                        <div class="w-full max-w-md">
+                            <label class="block text-sm font-label text-on-surface-variant mb-2 text-left">Código PIX Copia e Cola</label>
+                            <div class="flex gap-2">
+                                <input type="text" [value]="pixQrCode()" readonly class="w-full bg-surface-container-low text-on-surface rounded-lg px-4 py-3 border border-outline-variant focus:outline-none focus:border-primary font-body">
+                                <button (click)="copyPixCode()" class="bg-primary text-on-primary px-4 py-2 rounded-lg font-headline font-bold hover:bg-primary-dim transition-colors flex items-center gap-2">
+                                    <span class="material-symbols-outlined">content_copy</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                } @else {
+                    <p class="text-on-surface-variant font-body mb-8">Sua assinatura foi processada com sucesso. Você já pode acessar todos os benefícios PRO.</p>
+                    <button routerLink="/app/home" class="bg-primary text-on-primary px-8 py-3 rounded-lg font-headline font-bold hover:bg-primary-dim transition-colors inline-block mt-4">
+                        Acessar a Plataforma
+                    </button>
+                }
+            </div>
+        } @else {
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <!-- Resumo do Pedido -->
+                <div class="lg:col-span-1 order-2 lg:order-1">
+                    <div class="bg-surface-container rounded-2xl p-6 shadow-2xl shadow-primary/5 sticky top-8">
+                        <h2 class="font-headline font-bold text-lg text-on-surface mb-6 border-b border-outline-variant/50 pb-4">Resumo do Pedido</h2>
+                        
+                        <div class="space-y-4 mb-6">
+                            <div>
+                                <span class="text-sm font-label text-on-surface-variant">Plano</span>
+                                <p class="font-headline font-bold text-on-surface">{{ plan()?.name }}</p>
+                            </div>
+                            <div>
+                                <span class="text-sm font-label text-on-surface-variant">Ciclo de Cobrança</span>
+                                <p class="font-headline font-bold text-on-surface capitalize">{{ cycle() === 'monthly' ? 'Mensal' : 'Anual' }}</p>
+                            </div>
+                            @if (coupon()) {
+                                <div>
+                                    <span class="text-sm font-label text-tertiary">Cupom Aplicado</span>
+                                    <p class="font-headline font-bold text-tertiary">{{ coupon()?.code }} ({{ coupon()?.discountType === 'percentage' ? coupon()?.discountValue + '%' : 'R$ ' + coupon()?.discountValue }})</p>
+                                </div>
+                            }
+                        </div>
+                        
+                        <div class="border-t border-outline-variant/50 pt-4 mt-6">
+                            <div class="flex justify-between items-center">
+                                <span class="font-headline font-bold text-on-surface">Total</span>
+                                <span class="font-display font-extrabold text-2xl text-primary">R$ {{ finalPrice() | number:'1.2-2' }}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Formulário de Pagamento -->
+                <div class="lg:col-span-2 order-1 lg:order-2">
+                    <div class="bg-surface-container rounded-2xl p-6 shadow-2xl shadow-primary/5">
+                        
+                        <!-- Tabs -->
+                        <div class="flex gap-4 mb-8 border-b border-outline-variant/50">
+                            <button 
+                                (click)="setPaymentMethod('card')"
+                                [class.border-primary]="paymentMethod() === 'card'"
+                                [class.text-primary]="paymentMethod() === 'card'"
+                                [class.border-transparent]="paymentMethod() !== 'card'"
+                                [class.text-on-surface-variant]="paymentMethod() !== 'card'"
+                                class="flex items-center gap-2 pb-4 px-2 border-b-2 font-headline font-bold transition-colors">
+                                <span class="material-symbols-outlined">credit_card</span>
+                                Cartão de Crédito
+                            </button>
+                            <!--
+                            <button 
+                                (click)="setPaymentMethod('pix')"
+                                [class.border-primary]="paymentMethod() === 'pix'"
+                                [class.text-primary]="paymentMethod() === 'pix'"
+                                [class.border-transparent]="paymentMethod() !== 'pix'"
+                                [class.text-on-surface-variant]="paymentMethod() !== 'pix'"
+                                class="flex items-center gap-2 pb-4 px-2 border-b-2 font-headline font-bold transition-colors">
+                                <span class="material-symbols-outlined">qr_code</span>
+                                PIX
+                            </button>
+                            -->
+                        </div>
+
+                        @if (error()) {
+                            <div class="mb-6 p-4 rounded-xl bg-error/10 flex items-center gap-3">
+                                <span class="material-symbols-outlined text-error">error</span>
+                                <p class="text-error font-label text-sm">{{ error() }}</p>
+                            </div>
+                        }
+
+                        <form (ngSubmit)="processPayment()" class="space-y-6">
+                            
+                            <!-- Fields para Cartão -->
+                            <div [class.hidden]="paymentMethod() !== 'card'" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div class="md:col-span-2">
+                                    <label class="block text-sm font-label text-on-surface-variant mb-2">Número do Cartão</label>
+                                    <div id="cardNumber" class="w-full h-[50px] bg-surface-container-lowest text-on-surface rounded-lg px-4 py-3 border border-outline-variant focus-within:border-primary font-body"></div>
+                                </div>
+
+                                <div>
+                                    <label class="block text-sm font-label text-on-surface-variant mb-2">Data de Expiração</label>
+                                    <div id="expirationDate" class="w-full h-[50px] bg-surface-container-lowest text-on-surface rounded-lg px-4 py-3 border border-outline-variant focus-within:border-primary font-body"></div>
+                                </div>
+                                
+                                <div>
+                                    <label class="block text-sm font-label text-on-surface-variant mb-2">Código de Segurança (CVV)</label>
+                                    <div id="securityCode" class="w-full h-[50px] bg-surface-container-lowest text-on-surface rounded-lg px-4 py-3 border border-outline-variant focus-within:border-primary font-body"></div>
+                                </div>
+
+                                <div class="md:col-span-2">
+                                    <label class="block text-sm font-label text-on-surface-variant mb-2">Nome do Titular impresso no cartão</label>
+                                    <input type="text" [ngModel]="cardholderName()" (ngModelChange)="cardholderName.set($event)" name="cardName" class="w-full bg-surface-container-lowest text-on-surface rounded-lg px-4 py-3 border border-outline-variant focus:outline-none focus:border-primary font-body" placeholder="NOME DO TITULAR">
+                                </div>
+
+                                <div>
+                                    <label class="block text-sm font-label text-on-surface-variant mb-2">Tipo de Documento</label>
+                                    <select [ngModel]="identificationType()" (ngModelChange)="identificationType.set($event)" name="docType" class="w-full bg-surface-container-lowest text-on-surface rounded-lg px-4 py-3 border border-outline-variant focus:outline-none focus:border-primary font-body">
+                                        <option value="CPF">CPF</option>
+                                        <option value="CNPJ">CNPJ</option>
+                                    </select>
+                                </div>
+                                
+                                <div>
+                                    <label class="block text-sm font-label text-on-surface-variant mb-2">Número do Documento</label>
+                                    <input type="text" [ngModel]="identificationNumber()" (ngModelChange)="identificationNumber.set($event)" name="docNumber" class="w-full bg-surface-container-lowest text-on-surface rounded-lg px-4 py-3 border border-outline-variant focus:outline-none focus:border-primary font-body" placeholder="000.000.000-00">
+                                </div>
+                            </div>
+
+                            <div [class.hidden]="paymentMethod() !== 'pix'" class="text-center py-8">
+                                <span class="material-symbols-outlined text-6xl text-primary mb-4 opacity-50">qr_code_2</span>
+                                <h3 class="font-headline font-bold text-xl text-on-surface mb-2">Pagamento via PIX</h3>
+                                <p class="text-on-surface-variant font-body">Ao clicar em "Gerar Pagamento", um QR Code exclusivo será criado para sua assinatura. O acesso será liberado assim que o pagamento for confirmado.</p>
+                            </div>
+
+
+                            <div class="pt-6">
+                                <button 
+                                    type="submit" 
+                                    [disabled]="isProcessing()"
+                                    class="w-full py-4 bg-gradient-to-r from-primary to-primary-container text-on-primary font-headline font-extrabold rounded-lg shadow-lg shadow-primary/20 hover:shadow-primary/40 transition-all flex justify-center items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed">
+                                    @if (isProcessing()) {
+                                        <span class="animate-spin inline-block w-5 h-5 border-2 border-on-primary border-t-transparent rounded-full"></span>
+                                        Processando...
+                                    } @else {
+                                        {{ paymentMethod() === 'pix' ? 'Gerar PIX' : 'Confirmar Pagamento' }}
+                                    }
+                                </button>
+                            </div>
+                        </form>
+
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>
