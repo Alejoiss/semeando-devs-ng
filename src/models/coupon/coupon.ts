@@ -6,6 +6,7 @@ export class Coupon {
     public usageLimit: number | null;
     public usedCount: number;
     public expirationDate: Date | null;
+    public durationMonths: number | null;
     public createdAt: Date;
 
     constructor(data: any = {}) {
@@ -16,6 +17,7 @@ export class Coupon {
         this.usageLimit = data.usage_limit || null;
         this.usedCount = data.used_count || 0;
         this.expirationDate = data.expiration_date ? new Date(data.expiration_date) : null;
+        this.durationMonths = data.duration_months || null;
         this.createdAt = data.created_at ? new Date(data.created_at) : new Date();
     }
 }

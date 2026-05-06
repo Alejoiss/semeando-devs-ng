@@ -60,10 +60,17 @@
             </p>
         }
         @if (coupon()) {
-            <p class="text-tertiary text-xs mt-2 font-label flex items-center gap-1">
-                <span class="material-symbols-outlined text-sm">check_circle</span>
-                Cupom aplicado: <span class="font-bold">{{ coupon()?.code }}</span>
-            </p>
+            <div class="mt-2">
+                <p class="text-tertiary text-xs font-label flex items-center gap-1">
+                    <span class="material-symbols-outlined text-sm">check_circle</span>
+                    Cupom aplicado: <span class="font-bold">{{ coupon()?.code }}</span>
+                </p>
+                @if (coupon()?.durationMonths) {
+                    <p class="text-tertiary/80 text-xs mt-1 font-body ml-5">
+                        * O desconto é válido por {{ coupon()?.durationMonths }} meses. Após este período, a assinatura voltará ao valor original do plano.
+                    </p>
+                }
+            </div>
         }
     </div>
 

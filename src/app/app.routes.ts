@@ -107,6 +107,11 @@ export const routes: Routes = [
                 path: 'checkout',
                 loadComponent: () => import('./pages/app/checkout/checkout').then((m) => m.Checkout),
                 title: 'Semeando Devs - Checkout'
+            },
+            {
+                path: 'gerenciar-assinatura',
+                loadComponent: () => import('./pages/app/subscription-management/subscription-management').then((m) => m.SubscriptionManagement),
+                title: 'Gerenciar Assinatura - Semeando Devs'
             }
         ]
     }
