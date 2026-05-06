@@ -125,8 +125,9 @@
                         </div>
                     } @else if (item.progressState === 'blocked') {
                         <div class="mt-6 flex justify-end">
-                            <button disabled class="flex items-center gap-2 px-8 py-3 bg-surface-container text-on-surface-variant font-headline font-bold rounded-xl cursor-not-allowed">
-                                Bloqueado
+                            <button routerLink="/app/upgrade" class="flex items-center gap-2 px-8 py-3 bg-gradient-to-r from-secondary to-primary-container text-on-primary-container font-headline font-bold rounded-xl hover:scale-105 active:scale-95 transition-all">
+                                <span class="material-symbols-outlined text-sm" data-icon="rocket_launch">rocket_launch</span>
+                                Liberar com PRO
                             </button>
                         </div>
                     }

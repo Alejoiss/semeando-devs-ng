@@ -22,10 +22,12 @@
             <img src="assets/seed/seed.png" alt="Seeds" class="w-4 h-4 object-contain" />
             <span class="font-label text-xs font-bold text-tertiary">{{ displaySeeds() | number:'1.0-0' }} Seeds</span>
         </div>
-        <div class="flex items-center gap-2">
-            <!-- <button class="p-2 text-on-surface-variant hover:text-primary transition-colors">
-                <span class="material-symbols-outlined" data-icon="notifications">notifications</span>
-            </button> -->
+        <div class="flex items-center gap-2 relative">
+            @if (currentUser()?.isPro) {
+                <div class="absolute -top-1 -right-1 z-10 bg-secondary rounded-full p-0.5 shadow-[0_0_10px_rgba(254,105,172,0.5)] flex items-center justify-center">
+                    <span class="material-symbols-outlined text-[10px] text-white font-black" data-icon="star">star</span>
+                </div>
+            }
             <a routerLink="/app/perfil" class="h-10 w-10 rounded-full overflow-hidden border-2 border-primary/20 ring-2 ring-background ring-offset-2 ring-offset-primary/10 hover:border-primary/50 transition-all duration-300 block">
                 @if (currentUser()?.avatar) {
                     <img [src]="currentUser()?.avatar" alt="User profile avatar" class="w-full h-full object-cover" />

@@ -21,12 +21,12 @@ serve(async (req: { method: string; headers: { get: (arg0: string) => any }; jso
         const supabaseServiceRoleKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
         const openRouterApiKey = Deno.env.get('OPENROUTER_API_KEY') ?? ''
 
-        // User client
+        // User client (to verify JWT and get user info)
         const userClient = createClient(supabaseUrl, supabaseServiceRoleKey, {
             global: { headers: { Authorization: authHeader } },
         })
 
-        // Service Role client
+        // Service Role client (to perform writes bypassing RLS for stability)
         const serviceRoleClient = createClient(supabaseUrl, supabaseServiceRoleKey)
 
         const { data: { user }, error: userError } = await userClient.auth.getUser()
@@ -90,7 +90,7 @@ serve(async (req: { method: string; headers: { get: (arg0: string) => any }; jso
         if (lessonDataError) throw lessonDataError
 
         // Fetch current status
-        const { data: currentLessonProgress, error: fetchLPError } = await userClient
+        const { data: currentLessonProgress, error: fetchLPError } = await serviceRoleClient
             .from('user_lessons')
             .select('completed')
             .eq('lesson_id', lessonId)
@@ -100,8 +100,8 @@ serve(async (req: { method: string; headers: { get: (arg0: string) => any }; jso
         if (fetchLPError && fetchLPError.code !== 'PGRST116') throw fetchLPError
         const wasAlreadyCompleted = currentLessonProgress?.completed ?? false
 
-        // Update user_lesson
-        const { error: lessonUpdateError } = await userClient
+        // Update user_lesson (using serviceRoleClient)
+        const { error: lessonUpdateError } = await serviceRoleClient
             .from('user_lessons')
             .upsert({
                 user_id: user.id,
@@ -129,7 +129,7 @@ serve(async (req: { method: string; headers: { get: (arg0: string) => any }; jso
 
         if (smlError) throw smlError
 
-        const { data: userCompletedLessons, error: uclError } = await userClient
+        const { data: userCompletedLessons, error: uclError } = await serviceRoleClient
             .from('user_lessons')
             .select('lesson_id')
             .eq('user_id', user.id)
@@ -167,7 +167,7 @@ serve(async (req: { method: string; headers: { get: (arg0: string) => any }; jso
 
             if (msmError) throw msmError
 
-            const { data: userCompletedSubModules, error: ucsmError } = await userClient
+            const { data: userCompletedSubModules, error: ucsmError } = await serviceRoleClient
                 .from('user_submodules')
                 .select('sub_module_id')
                 .eq('user_id', user.id)
@@ -291,7 +291,7 @@ serve(async (req: { method: string; headers: { get: (arg0: string) => any }; jso
                 subModuleId: lessonData.sub_module_id,
                 moduleId: subModData?.module_id,
                 lessonType: lessonData.type,
-                score: 10, // Max score for challenge
+                score: 10,
                 passed: true,
                 subModuleCompleted,
                 moduleCompleted

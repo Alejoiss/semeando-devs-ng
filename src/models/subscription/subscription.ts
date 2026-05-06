@@ -6,7 +6,7 @@ export class Subscription {
     public mpPreapprovalId: string;
     public billingCycle: 'monthly' | 'yearly';
     public transactionAmount: number;
-    public status: string;
+    public status: 'pending' | 'active' | 'cancelled' | 'payment_failed';
     public createdAt: Date;
 
     constructor(data: any = {}) {

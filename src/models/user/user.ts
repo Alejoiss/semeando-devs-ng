@@ -9,4 +9,5 @@ export interface User {
     acceptedTermsAt: Date;
     avatar: string;
     plan: Plan;
+    isPro: boolean;
 }

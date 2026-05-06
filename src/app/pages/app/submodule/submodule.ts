@@ -7,6 +7,7 @@ import { LessonService } from '../../../services/lesson';
 import { UserLessonService } from '../../../services/user-lesson';
 import { ModuleService } from '../../../services/module';
 import { AchievementsService } from '../../../services/achievements';
+import { UserService } from '../../../services/user';
 import { SubModule } from '../../../../models/sub-module/sub-module';
 import { Achievements } from '../../../../models/achievements/achievements';
 
@@ -34,6 +35,7 @@ export class Submodule implements OnInit {
     private userLessonService = inject(UserLessonService);
     private moduleService = inject(ModuleService);
     private achievementsService = inject(AchievementsService);
+    private userService = inject(UserService);
 
     submodulesWithState = signal<SubmoduleWithState[]>([]);
     achievement = signal<Achievements | null>(null);
@@ -56,6 +58,7 @@ export class Submodule implements OnInit {
 
             const submodules = await this.submoduleService.getSubModulesByModuleSlug(slug);
             const userSubmodules = await this.userSubmoduleService.getUserSubModules();
+            const isPro = this.userService.currentUser()?.isPro || false;
 
             let userLessons: any[] = [];
             try {
@@ -80,6 +83,10 @@ export class Submodule implements OnInit {
                 if (usm) {
                     state = usm.completed ? 'completed' : 'in-progress';
                 } else if (!previousCompleted) {
+                    state = 'blocked';
+                }
+
+                if ((sm.order ?? 0) > 1 && !isPro) {
                     state = 'blocked';
                 }
 

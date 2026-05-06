@@ -7,6 +7,7 @@ const corsHeaders = {
 }
 
 serve(async (req: { method: string; headers: { get: (arg0: string) => any }; json: () => any }) => {
+    // Handle CORS preflight
     if (req.method === 'OPTIONS') {
         return new Response('ok', { headers: corsHeaders })
     }
@@ -28,12 +29,15 @@ serve(async (req: { method: string; headers: { get: (arg0: string) => any }; jso
             throw new Error('ML_ACCESS_TOKEN not configured')
         }
 
+        // User client (to verify JWT)
         const userClient = createClient(supabaseUrl, supabaseServiceRoleKey, {
             global: { headers: { Authorization: authHeader } },
         })
 
+        // Service Role client (to perform writes bypassing RLS for stability)
         const serviceRoleClient = createClient(supabaseUrl, supabaseServiceRoleKey)
 
+        // Get the user from the JWT
         const { data: { user }, error: userError } = await userClient.auth.getUser()
         if (userError || !user) {
             return new Response(
@@ -52,27 +56,7 @@ serve(async (req: { method: string; headers: { get: (arg0: string) => any }; jso
             )
         }
 
-        if (!['card', 'pix'].includes(paymentMethod)) {
-            return new Response(
-                JSON.stringify({ error: 'paymentMethod deve ser "card" ou "pix"' }),
-                { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-            )
-        }
-
-        if (paymentMethod === 'card' && !cardTokenId) {
-            return new Response(
-                JSON.stringify({ error: 'cardTokenId é obrigatório para pagamentos com cartão' }),
-                { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-            )
-        }
-
-        if (!['monthly', 'yearly'].includes(billingCycle)) {
-            return new Response(
-                JSON.stringify({ error: 'billingCycle deve ser "monthly" ou "yearly"' }),
-                { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-            )
-        }
-
+        // 1. Fetch Plan
         const { data: planData, error: planError } = await serviceRoleClient
             .from('plans')
             .select('*')
@@ -92,9 +76,9 @@ serve(async (req: { method: string; headers: { get: (arg0: string) => any }; jso
 
         let couponId: string | null = null
 
+        // 2. Handle Coupon
         if (couponCode) {
             const normalizedCode = couponCode.trim().toUpperCase()
-
             const { data: couponData, error: couponError } = await serviceRoleClient
                 .from('coupons')
                 .select('*')
@@ -109,7 +93,6 @@ serve(async (req: { method: string; headers: { get: (arg0: string) => any }; jso
             }
 
             const now = new Date()
-
             if (couponData.expiration_date && new Date(couponData.expiration_date) < now) {
                 return new Response(
                     JSON.stringify({ error: 'Cupom expirado' }),
@@ -130,35 +113,29 @@ serve(async (req: { method: string; headers: { get: (arg0: string) => any }; jso
                 transactionAmount = transactionAmount - Number(couponData.discount_value)
             }
 
-            transactionAmount = Math.max(0, transactionAmount)
-            transactionAmount = Math.round(transactionAmount * 100) / 100
+            transactionAmount = Math.max(0, Math.round(transactionAmount * 100) / 100)
 
-            const { error: updateError } = await serviceRoleClient
+            await serviceRoleClient
                 .from('coupons')
                 .update({ used_count: (couponData.used_count || 0) + 1 })
                 .eq('id', couponData.id)
-
-            if (updateError) {
-                console.error('Error updating coupon used_count:', updateError)
-            }
 
             couponId = couponData.id
         }
 
         const frequency = billingCycle === 'monthly' ? 1 : 12
+        let mpPreapprovalId = ''
+        let subscriptionStatus = 'pending'
+        let responseData: any = {}
 
-        let mpData: any;
-        let mpPreapprovalId = '';
-        let subscriptionStatus = 'pending';
-        let responseData: any = {};
-
+        // 3. Process Payment with Mercado Pago
         if (paymentMethod === 'card') {
             const preapprovalPayload = {
                 reason: `Assinatura PRO - ${planData.name}`,
                 external_reference: `user_${user.id}_plan_${planId}`,
                 payer_email: user.email,
                 card_token_id: cardTokenId,
-                back_url: 'https://semeandodevs.com/app/home', // Required by MP even for transparent checkouts
+                back_url: 'https://semeandodevs.com/app/home',
                 auto_recurring: {
                     frequency,
                     frequency_type: 'months',
@@ -177,34 +154,26 @@ serve(async (req: { method: string; headers: { get: (arg0: string) => any }; jso
                 body: JSON.stringify(preapprovalPayload),
             })
 
-            mpData = await mpResponse.json()
-
+            const mpData = await mpResponse.json()
             if (!mpResponse.ok) {
-                console.error('Mercado Pago API error:', mpData)
                 return new Response(
                     JSON.stringify({
                         error: 'Erro ao processar pagamento.',
-                        code: mpData.code || mpData.cause?.[0]?.code || 'unknown',
                         details: mpData.message || mpData.error || 'Erro desconhecido',
                     }),
                     { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
                 )
             }
-            mpPreapprovalId = mpData.id;
-            subscriptionStatus = mpData.status === 'authorized' ? 'active' : 'pending';
-            responseData = {
-                status: subscriptionStatus,
-                preapproval_id: mpData.id,
-            };
+            mpPreapprovalId = mpData.id
+            subscriptionStatus = mpData.status === 'authorized' ? 'active' : 'pending'
+            responseData = { status: subscriptionStatus, preapproval_id: mpData.id }
 
         } else if (paymentMethod === 'pix') {
             const paymentPayload = {
                 transaction_amount: transactionAmount,
                 description: `Assinatura PRO - ${planData.name}`,
                 payment_method_id: 'pix',
-                payer: {
-                    email: user.email,
-                },
+                payer: { email: user.email },
                 external_reference: `user_${user.id}_plan_${planId}`
             }
 
@@ -218,10 +187,8 @@ serve(async (req: { method: string; headers: { get: (arg0: string) => any }; jso
                 body: JSON.stringify(paymentPayload),
             })
 
-            mpData = await mpResponse.json()
-
+            const mpData = await mpResponse.json()
             if (!mpResponse.ok) {
-                console.error('Mercado Pago API error:', mpData)
                 return new Response(
                     JSON.stringify({
                         error: 'Erro ao gerar PIX no Mercado Pago',
@@ -231,16 +198,17 @@ serve(async (req: { method: string; headers: { get: (arg0: string) => any }; jso
                 )
             }
             
-            mpPreapprovalId = mpData.id.toString(); // For /payments, id is a number
-            subscriptionStatus = 'pending'; // PIX is pending until paid
+            mpPreapprovalId = mpData.id.toString()
+            subscriptionStatus = 'pending'
             responseData = {
                 status: 'pending',
                 payment_id: mpData.id,
                 qr_code: mpData.point_of_interaction?.transaction_data?.qr_code,
                 qr_code_base64: mpData.point_of_interaction?.transaction_data?.qr_code_base64,
-            };
+            }
         }
 
+        // 4. Save Subscription (using serviceRoleClient)
         const { error: insertError } = await serviceRoleClient
             .from('subscriptions')
             .insert({
@@ -253,15 +221,21 @@ serve(async (req: { method: string; headers: { get: (arg0: string) => any }; jso
                 status: subscriptionStatus,
             })
 
-        if (insertError) {
-            console.error('Error inserting subscription record:', insertError)
+        if (insertError) throw insertError
+
+        // 5. Update Profile if Active
+        if (subscriptionStatus === 'active') {
+            await serviceRoleClient
+                .from('profiles')
+                .update({ is_pro: true })
+                .eq('id', user.id)
         }
 
         return new Response(
             JSON.stringify(responseData),
             { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
         )
-    } catch (error) {
+    } catch (error: any) {
         console.error('Error processing subscription:', error)
         return new Response(
             JSON.stringify({ error: error.message }),

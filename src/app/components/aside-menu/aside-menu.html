@@ -31,10 +31,15 @@
         </a>
     </nav>
     <div class="px-3 flex flex-col gap-1 mt-auto">
-        @if (!userService.currentUser()?.plan) {
+        @if (!userService.currentUser()?.isPro) {
             <button routerLink="/app/upgrade"
                 class="mt-4 w-full bg-surface-container-high hover:bg-surface-bright text-primary text-xs font-bold py-2 rounded-xl transition-all font-label uppercase tracking-widest">
                 Atualizar para pró
+            </button>
+        } @else {
+            <button routerLink="/app/perfil"
+                class="mt-4 w-full bg-surface-container-high hover:bg-surface-bright text-secondary text-xs font-bold py-2 rounded-xl transition-all font-label uppercase tracking-widest">
+                Gerenciar Assinatura
             </button>
         }
         <!-- <a class="flex items-center gap-4 text-[#dee5ff]/60 px-4 py-3 hover:bg-[#141f38] hover:text-[#3fc2fb] transition-all"

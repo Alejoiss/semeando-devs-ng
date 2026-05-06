@@ -8,6 +8,7 @@ import { UserModuleService } from '../../../services/user-module';
 import { LessonService } from '../../../services/lesson';
 import { UserLessonService } from '../../../services/user-lesson';
 import { RankingWeeklyService } from '../../../services/ranking-weekly';
+import { UserService } from '../../../services/user';
 import { Lesson } from '../../../../models/lesson/lesson';
 import { UserLesson } from '../../../../models/user-lesson/user-lesson';
 import { RankingEntry } from '../../../../models/ranking/ranking';
@@ -33,6 +34,7 @@ export class Modules implements OnInit {
     private readonly lessonService = inject(LessonService);
     private readonly userLessonService = inject(UserLessonService);
     private readonly rankingWeeklyService = inject(RankingWeeklyService);
+    protected readonly userService = inject(UserService);
     private readonly router = inject(Router);
 
     protected readonly modules = signal<Module[]>([]);

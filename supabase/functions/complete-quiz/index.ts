@@ -20,12 +20,12 @@ serve(async (req: { method: string; headers: { get: (arg0: string) => any }; jso
         const supabaseUrl = Deno.env.get('SUPABASE_URL') ?? ''
         const supabaseServiceRoleKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
 
-        // User client (scopes writes to user)
+        // User client (to verify JWT and get user info)
         const userClient = createClient(supabaseUrl, supabaseServiceRoleKey, {
             global: { headers: { Authorization: authHeader } },
         })
 
-        // Service Role client (for cross-user reads and bypassing RLS if needed)
+        // Service Role client (to perform writes bypassing RLS for stability)
         const serviceRoleClient = createClient(supabaseUrl, supabaseServiceRoleKey)
 
         // Get the user from the JWT
@@ -54,8 +54,8 @@ serve(async (req: { method: string; headers: { get: (arg0: string) => any }; jso
         const passed = (correctCount / totalCount) >= 0.7
         const now = new Date().toISOString()
 
-        // --- 2.1 Update user_quizzes ---
-        const { error: quizUpdateError } = await userClient
+        // --- 2.1 Update user_quizzes (using serviceRoleClient to bypass RLS) ---
+        const { error: quizUpdateError } = await serviceRoleClient
             .from('user_quizzes')
             .update({
                 score: correctCount,
@@ -70,7 +70,7 @@ serve(async (req: { method: string; headers: { get: (arg0: string) => any }; jso
 
         // --- 2.2 Update user_lessons + XP Guard ---
         // Fetch current status to see if it was already completed (idempotency guard for XP)
-        const { data: currentLessonProgress, error: fetchLPError } = await userClient
+        const { data: currentLessonProgress, error: fetchLPError } = await serviceRoleClient
             .from('user_lessons')
             .select('completed')
             .eq('lesson_id', lessonId)
@@ -80,7 +80,7 @@ serve(async (req: { method: string; headers: { get: (arg0: string) => any }; jso
         if (fetchLPError && fetchLPError.code !== 'PGRST116') throw fetchLPError
         const wasAlreadyCompleted = currentLessonProgress?.completed ?? false
 
-        const { error: lessonUpdateError } = await userClient
+        const { error: lessonUpdateError } = await serviceRoleClient
             .from('user_lessons')
             .update({
                 completed: passed,
@@ -107,7 +107,7 @@ serve(async (req: { method: string; headers: { get: (arg0: string) => any }; jso
 
             if (smlError) throw smlError
 
-            const { data: userCompletedLessons, error: uclError } = await userClient
+            const { data: userCompletedLessons, error: uclError } = await serviceRoleClient
                 .from('user_lessons')
                 .select('lesson_id')
                 .eq('user_id', user.id)
@@ -147,7 +147,7 @@ serve(async (req: { method: string; headers: { get: (arg0: string) => any }; jso
 
                 if (msmError) throw msmError
 
-                const { data: userCompletedSubModules, error: ucsmError } = await userClient
+                const { data: userCompletedSubModules, error: ucsmError } = await serviceRoleClient
                     .from('user_submodules')
                     .select('sub_module_id')
                     .eq('user_id', user.id)
@@ -187,7 +187,6 @@ serve(async (req: { method: string; headers: { get: (arg0: string) => any }; jso
                 if (logError) throw logError
 
                 // 2. Update lifetime XP (xp table)
-                // Since xp table doesn't have user_id as unique, we check first
                 const { data: existingXp, error: xpFetchError } = await serviceRoleClient
                     .from('xp')
                     .select('id, total_xp')
@@ -305,7 +304,7 @@ serve(async (req: { method: string; headers: { get: (arg0: string) => any }; jso
             }),
             { headers: { ...corsHeaders, "Content-Type": "application/json" } },
         )
-    } catch (error) {
+    } catch (error: any) {
         console.error('Error processing quiz completion:', error)
         return new Response(
             JSON.stringify({ error: error.message }),

@@ -16,11 +16,11 @@ export class Ranking implements OnInit {
     private rankingOverallService = inject(RankingOverallService);
     private rankingMonthlyService = inject(RankingMonthlyService);
     private rankingWeeklyService = inject(RankingWeeklyService);
-    private userService = inject(UserService);
+    protected userService = inject(UserService);
 
     activeTab = signal<'geral' | 'mensal' | 'semanal'>('geral');
     isLoading = signal<boolean>(true);
-    
+
     podiumUsers = signal<RankingEntry[]>([]);
     rankedUsers = signal<RankingEntry[]>([]);
     currentUserPosition = signal<number | null>(null);
@@ -32,7 +32,7 @@ export class Ranking implements OnInit {
         const user = await this.userService.getUserProfile();
         this.currentUserName.set(user.name || 'Usuário');
         this.currentUserAvatar.set(user.avatar || null);
-        
+
         await this.loadRanking();
     }
 
@@ -59,10 +59,10 @@ export class Ranking implements OnInit {
             }
 
             const ranking = result.ranking || [];
-            
+
             this.podiumUsers.set(ranking.slice(0, 3));
             this.rankedUsers.set(ranking.slice(3));
-            
+
             this.currentUserPosition.set(result.currentUser.position);
             this.currentUserXp.set(result.currentUser.xp);
 

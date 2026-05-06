@@ -4,6 +4,7 @@ export interface RankingEntry {
     name: string | null;
     avatar: string | null;
     xp: number;
+    is_pro: boolean;
 }
 
 export interface CurrentUserRanking {

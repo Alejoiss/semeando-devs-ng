@@ -2,6 +2,7 @@ import { Injectable, signal, computed } from '@angular/core';
 import { createClient, SupabaseClient } from '@supabase/supabase-js';
 import { environment } from '../../environments/environment';
 import { User } from '../../models/user/user';
+import { Profile } from '../../models/profile/profile';
 import { mapAuthError } from '../utils/auth-error-mapper';
 
 @Injectable({
@@ -90,6 +91,13 @@ export class UserService {
             throw new Error(error?.message || 'User not authenticated');
         }
 
+        const { data: profileData } = await this.supabase
+            .from('profiles')
+            .select('is_pro')
+            .eq('id', user.id)
+            .returns<Profile[]>()
+            .single();
+
         const profile: User = {
             id: user.id,
             email: user.email || '',
@@ -99,6 +107,7 @@ export class UserService {
             acceptedTermsAt: new Date(user.created_at),
             avatar: user.user_metadata?.['avatar'] || '',
             plan: user.user_metadata?.['plan'] || null,
+            isPro: profileData?.is_pro || false,
         };
 
         return profile;
