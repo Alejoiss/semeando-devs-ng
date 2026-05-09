@@ -7,3 +7,14 @@
 .neon-glow-primary {
     box-shadow: 0 0 20px rgba(63, 194, 251, 0.15);
 }
+
+[id] {
+    scroll-margin-top: 128px;
+}
+
+.visible-btn {
+    opacity: 1 !important;
+    scale: 1 !important;
+    pointer-events: auto !important;
+    transform: translateY(0) !important;
+}
