@@ -1,5 +1,6 @@
 import { inject, Injectable } from '@angular/core';
 import { SupabaseService } from './supabase';
+import { Coupon } from '../../models/coupon/coupon';
 
 @Injectable({
     providedIn: 'root'
@@ -78,5 +79,15 @@ export class SubscriptionService {
         }
 
         return data;
+    }
+
+    async activateProWithCoupon(coupon: Coupon): Promise<void> {
+        const { error } = await this.supabase.client.rpc('activate_pro_with_coupon_id', {
+            p_coupon_id: coupon.id
+        });
+
+        if (error) {
+            throw new Error(error.message || 'Erro ao ativar o plano Pro.');
+        }
     }
 }

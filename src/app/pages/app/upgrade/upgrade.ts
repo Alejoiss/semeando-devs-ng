@@ -4,6 +4,8 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { PlanService } from '../../../services/plan';
 import { CouponService } from '../../../services/coupon';
+import { SubscriptionService } from '../../../services/subscription';
+import { UserService } from '../../../services/user';
 import { Plan } from '../../../../models/plan/plan';
 import { Coupon } from '../../../../models/coupon/coupon';
 
@@ -18,6 +20,8 @@ import { Coupon } from '../../../../models/coupon/coupon';
 export class Upgrade {
     private readonly planService = inject(PlanService);
     private readonly couponService = inject(CouponService);
+    private readonly subscriptionService = inject(SubscriptionService);
+    private readonly userService = inject(UserService);
     private readonly router = inject(Router);
 
     protected readonly plan = signal<Plan | null>(null);
@@ -27,6 +31,7 @@ export class Upgrade {
     protected readonly isLoading = signal(true);
     protected readonly isSubscribing = signal(false);
     protected readonly subscriptionError = signal<string | null>(null);
+    protected readonly showConfirmation = signal(false);
 
     protected readonly discountedMonthlyPrice = computed(() => {
         const p = this.plan();
@@ -50,6 +55,11 @@ export class Upgrade {
             return p.yearlyPrice * (1 - c.discountValue / 100);
         }
         return Math.max(0, p.yearlyPrice - c.discountValue);
+    });
+
+    protected readonly isOneHundredPercentDiscount = computed(() => {
+        const c = this.coupon();
+        return c?.discountType === 'percentage' && c?.discountValue === 100;
     });
 
     constructor() {
@@ -85,6 +95,11 @@ export class Upgrade {
         const currentPlan = this.plan();
         if (!currentPlan) return;
 
+        if (this.isOneHundredPercentDiscount()) {
+            this.showConfirmation.set(true);
+            return;
+        }
+
         this.router.navigate(['/app/checkout'], {
             queryParams: {
                 planId: currentPlan.id,
@@ -92,5 +107,24 @@ export class Upgrade {
                 couponCode: this.coupon()?.code || undefined
             }
         });
+    }
+
+    async activatePro() {
+        const c = this.coupon();
+        if (!c || !this.isOneHundredPercentDiscount()) return;
+
+        this.isSubscribing.set(true);
+        this.subscriptionError.set(null);
+        this.showConfirmation.set(false);
+
+        try {
+            await this.subscriptionService.activateProWithCoupon(c);
+            await this.userService.loadUserProfile();
+            this.router.navigate(['/app/gerenciar-assinatura']);
+        } catch (error: any) {
+            this.subscriptionError.set(error.message || 'Erro ao ativar Pro');
+        } finally {
+            this.isSubscribing.set(false);
+        }
     }
 }

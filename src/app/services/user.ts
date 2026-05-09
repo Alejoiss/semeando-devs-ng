@@ -19,7 +19,7 @@ export class UserService {
         this.loadUserProfile();
     }
 
-    private async loadUserProfile() {
+    public async loadUserProfile() {
         try {
             const user = await this.getUserProfile();
             this.userSignal.set(user);
@@ -93,7 +93,7 @@ export class UserService {
 
         const { data: profileData } = await this.supabase
             .from('profiles')
-            .select('is_pro')
+            .select('is_pro, pro_until')
             .eq('id', user.id)
             .returns<Profile[]>()
             .single();
@@ -108,6 +108,7 @@ export class UserService {
             avatar: user.user_metadata?.['avatar'] || '',
             plan: user.user_metadata?.['plan'] || null,
             isPro: profileData?.is_pro || false,
+            proUntil: profileData?.pro_until ? new Date(profileData.pro_until) : null,
         };
 
         return profile;

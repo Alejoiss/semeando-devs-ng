@@ -136,8 +136,16 @@
                         </div>
                         <button
                             (click)="subscribe('monthly')"
-                            class="w-full py-4 bg-surface-container-highest text-primary font-headline font-extrabold rounded-lg hover:bg-primary hover:text-on-primary-container transition-all shadow-lg shadow-primary/10">
-                            Assinar Agora
+                            [disabled]="isSubscribing()"
+                            class="w-full py-4 bg-surface-container-highest text-primary font-headline font-extrabold rounded-lg hover:bg-primary hover:text-on-primary-container transition-all shadow-lg shadow-primary/10 disabled:opacity-50 disabled:cursor-not-allowed">
+                            @if (isSubscribing()) {
+                                <span class="flex items-center justify-center gap-2">
+                                    <div class="animate-spin rounded-full h-4 w-4 border-t-2 border-primary border-transparent"></div>
+                                    Processando...
+                                </span>
+                            } @else {
+                                {{ isOneHundredPercentDiscount() ? 'Ativar Plano Pro' : 'Assinar Agora' }}
+                            }
                         </button>
                     </div>
 
@@ -199,10 +207,54 @@
                         </div>
                         <button
                             (click)="subscribe('yearly')"
-                            class="w-full py-4 bg-gradient-to-r from-secondary to-secondary-dim text-on-secondary font-headline font-extrabold rounded-lg shadow-lg shadow-secondary/30 active:scale-95 transition-all">
-                            Assinar Plano Anual
+                            [disabled]="isSubscribing()"
+                            class="w-full py-4 bg-gradient-to-r from-secondary to-secondary-dim text-on-secondary font-headline font-extrabold rounded-lg shadow-lg shadow-secondary/30 active:scale-95 transition-all disabled:opacity-50 disabled:cursor-not-allowed">
+                            @if (isSubscribing()) {
+                                <span class="flex items-center justify-center gap-2">
+                                    <div class="animate-spin rounded-full h-4 w-4 border-t-2 border-on-secondary border-transparent"></div>
+                                    Processando...
+                                </span>
+                            } @else {
+                                {{ isOneHundredPercentDiscount() ? 'Ativar Plano Pro' : 'Assinar Plano Anual' }}
+                            }
                         </button>
                     </div>
+                </div>
+            </div>
+        </div>
+        @if (subscriptionError()) {
+            <div class="max-w-2xl mx-auto mt-8 p-4 bg-error/10 text-error rounded-xl text-sm font-label flex items-center gap-2">
+                <span class="material-symbols-outlined">error</span>
+                {{ subscriptionError() }}
+            </div>
+        }
+    }
+
+    <!-- Confirmation Modal -->
+    @if (showConfirmation()) {
+        <div class="fixed inset-0 z-[100] flex items-center justify-center p-6 bg-surface/80 backdrop-blur-md">
+            <div class="bg-surface-container-high max-w-md w-full p-8 rounded-2xl shadow-2xl ring-1 ring-white/10">
+                <div class="flex items-center gap-4 mb-6 text-secondary">
+                    <span class="material-symbols-outlined text-4xl">verified_user</span>
+                    <h2 class="text-2xl font-black font-headline text-on-surface">Confirmar Ativação</h2>
+                </div>
+                <p class="text-on-surface-variant mb-8 leading-relaxed font-body">
+                    Você está prestes a ativar o acesso <span class="text-primary font-bold">PRO</span> gratuitamente usando um cupom de 100% de desconto. 
+                    Confirmar ativação imediata?
+                </p>
+                <div class="flex flex-col gap-3">
+                    <button 
+                        (click)="activatePro()"
+                        class="w-full py-4 bg-secondary text-on-secondary font-headline font-extrabold rounded-xl shadow-lg shadow-secondary/20 hover:brightness-110 active:scale-[0.98] transition-all"
+                    >
+                        Sim, Ativar PRO Agora
+                    </button>
+                    <button 
+                        (click)="showConfirmation.set(false)"
+                        class="w-full py-4 bg-surface-container-highest text-on-surface-variant font-headline font-bold rounded-xl hover:bg-surface-bright transition-all"
+                    >
+                        Não, Cancelar
+                    </button>
                 </div>
             </div>
         </div>

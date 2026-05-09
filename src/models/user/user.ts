@@ -10,4 +10,5 @@ export interface User {
     avatar: string;
     plan: Plan;
     isPro: boolean;
+    proUntil?: Date | null;
 }
