@@ -72,7 +72,7 @@ export class UserService {
             email: user.email,
             password: user.password,
             options: {
-                emailRedirectTo: 'http://localhost:4201/auth/login',
+                emailRedirectTo: `${environment.urlBase}/auth/login`,
                 data: {
                     name: user.name,
                 }
@@ -93,7 +93,7 @@ export class UserService {
 
         const { data: profileData } = await this.supabase
             .from('profiles')
-            .select('is_pro, pro_until')
+            .select('is_pro, pro_until, newsletter_active')
             .eq('id', user.id)
             .returns<Profile[]>()
             .single();
@@ -109,22 +109,30 @@ export class UserService {
             plan: user.user_metadata?.['plan'] || null,
             isPro: profileData?.is_pro || false,
             proUntil: profileData?.pro_until ? new Date(profileData.pro_until) : null,
+            newsletter_active: profileData?.newsletter_active || false,
         };
 
         return profile;
     }
 
     async updateUserProfile(updates: Partial<User>): Promise<void> {
-        const { email, password, ...metadataUpdates } = updates;
+        const { email, password, newsletter_active, ...metadataUpdates } = updates;
 
         const { error } = await this.supabase.auth.updateUser({
             ...(email && { email }),
             ...(password && { password }),
-            data: metadataUpdates,
+            data: { ...metadataUpdates, newsletter_active },
         });
 
         if (error) {
             throw new Error(mapAuthError(error.message));
+        }
+
+        if (newsletter_active !== undefined) {
+            const user = this.userSignal();
+            if (user) {
+                await this.supabase.from('profiles').update({ newsletter_active }).eq('id', user.id);
+            }
         }
 
         await this.loadUserProfile();
@@ -188,7 +196,7 @@ export class UserService {
 
     async sendPasswordResetEmail(email: string): Promise<void> {
         const { error } = await this.supabase.auth.resetPasswordForEmail(email, {
-            redirectTo: 'http://localhost:4201/redefinir-senha',
+            redirectTo: `${environment.urlBase}/redefinir-senha`,
         });
 
         if (error) {

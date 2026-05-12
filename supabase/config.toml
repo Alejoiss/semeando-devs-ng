@@ -442,3 +442,14 @@ entrypoint = "./functions/cron-revert-coupon-discount/index.ts"
 # Specifies static files to be bundled with the function. Supports glob patterns.
 # For example, if you want to serve static HTML pages in your function:
 # static_files = [ "./functions/cron-revert-coupon-discount/*.html" ]
+
+[functions.dispatch-newsletter]
+enabled = true
+verify_jwt = true
+import_map = "./functions/dispatch-newsletter/deno.json"
+# Uncomment to specify a custom file path to the entrypoint.
+# Supported file extensions are: .ts, .js, .mjs, .jsx, .tsx
+entrypoint = "./functions/dispatch-newsletter/index.ts"
+# Specifies static files to be bundled with the function. Supports glob patterns.
+# For example, if you want to serve static HTML pages in your function:
+# static_files = [ "./functions/dispatch-newsletter/*.html" ]

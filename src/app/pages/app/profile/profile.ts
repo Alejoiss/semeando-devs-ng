@@ -35,6 +35,7 @@ export class Profile implements OnInit {
         const user = this.currentUser();
         this.profileForm = this.fb.group({
             name: [user?.name || '', [Validators.required, Validators.minLength(3)]],
+            newsletter_active: [user?.newsletter_active || false],
         });
 
         this.passwordForm = this.fb.group({

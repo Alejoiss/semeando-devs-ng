@@ -1,4 +1,4 @@
-# Instruções do Copilot para SeloClubeAdminNg
+# Instruções do Copilot para SemeandoDevsApp
 
 ## Visão Geral do Projeto
 - **Framework:** Angular 20+ (componentes standalone, Angular CLI). Sempre use o `angular-instructions.md` para detalhes específicos de Angular.

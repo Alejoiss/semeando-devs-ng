@@ -11,4 +11,5 @@ export interface User {
     plan: Plan;
     isPro: boolean;
     proUntil?: Date | null;
+    newsletter_active?: boolean;
 }

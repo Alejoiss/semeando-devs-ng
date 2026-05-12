@@ -32,12 +32,13 @@ export class Register {
             email: ['', [Validators.required, Validators.email]],
             password: ['', [Validators.required, Validators.minLength(6)]],
             confirmPassword: ['', [Validators.required]],
-            termsAccepted: [false, [Validators.requiredTrue]]
+            termsAccepted: [false, [Validators.requiredTrue]],
+            newsletterActive: [false]
         }, { validators: passwordMatchValidator });
     }
 
-    get f(): { name: AbstractControl; email: AbstractControl; password: AbstractControl; confirmPassword: AbstractControl; termsAccepted: AbstractControl } {
-        return this.registerForm.controls as { name: AbstractControl; email: AbstractControl; password: AbstractControl; confirmPassword: AbstractControl; termsAccepted: AbstractControl };
+    get f(): { name: AbstractControl; email: AbstractControl; password: AbstractControl; confirmPassword: AbstractControl; termsAccepted: AbstractControl; newsletterActive: AbstractControl } {
+        return this.registerForm.controls as { name: AbstractControl; email: AbstractControl; password: AbstractControl; confirmPassword: AbstractControl; termsAccepted: AbstractControl; newsletterActive: AbstractControl };
     }
 
     async onSubmit(): Promise<void> {
@@ -50,8 +51,8 @@ export class Register {
 
         this.busy = true;
         try {
-            const { name, email, password } = this.registerForm.value;
-            await this.userService.register({ name, email, password });
+            const { name, email, password, newsletterActive } = this.registerForm.value;
+            await this.userService.register({ name, email, password, newsletter_active: newsletterActive });
             this.router.navigate(['/auth/login']);
         } catch (error: any) {
             this.registerError = error.message || 'Erro ao criar conta. Tente novamente.';

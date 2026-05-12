@@ -133,6 +133,20 @@
                         }
                     </div>
 
+                    <div class="flex flex-col space-y-2">
+                        <label class="flex items-start gap-3 cursor-pointer group/check">
+                            <div class="relative flex items-center mt-1">
+                                <input id="newsletterActive" formControlName="newsletterActive" type="checkbox"
+                                    class="peer h-5 w-5 cursor-pointer appearance-none rounded border border-outline-variant bg-surface-container-lowest checked:bg-primary checked:border-primary transition-all" />
+                                <span
+                                    class="material-symbols-outlined absolute text-on-primary opacity-0 peer-checked:opacity-100 transition-opacity pointer-events-none text-base font-bold left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">check</span>
+                            </div>
+                            <span class="text-sm font-body text-on-surface-variant/90 leading-tight group-hover/check:text-on-surface transition-colors">
+                                Aceito receber novidades e e-mails promocionais (você pode cancelar a qualquer momento).
+                            </span>
+                        </label>
+                    </div>
+
                     <button type="submit" [disabled]="busy"
                         class="w-full group relative flex items-center justify-center py-4 bg-gradient-to-r from-primary to-primary-container text-on-primary font-headline font-bold rounded-DEFAULT overflow-hidden hover:shadow-[0_0_20px_rgba(63,194,251,0.4)] active:scale-[0.98] transition-all">
                         <span class="relative z-10 flex items-center gap-2">
