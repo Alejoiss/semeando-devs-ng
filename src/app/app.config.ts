@@ -3,7 +3,7 @@ import {
     ApplicationConfig,
     importProvidersFrom,
     provideBrowserGlobalErrorListeners,
-    provideZoneChangeDetection,
+    provideZoneChangeDetection, isDevMode,
 } from '@angular/core';
 import { provideAnimations } from '@angular/platform-browser/animations';
 import { provideRouter } from '@angular/router';
@@ -11,6 +11,7 @@ import { MarkdownModule } from 'ngx-markdown';
 import { CodeEditorModule } from '@ngstack/code-editor';
 
 import { routes } from './app.routes';
+import { provideServiceWorker } from '@angular/service-worker';
 
 export const appConfig: ApplicationConfig = {
     providers: [
@@ -19,6 +20,9 @@ export const appConfig: ApplicationConfig = {
         provideRouter(routes),
         provideHttpClient(),
         provideAnimations(),
-        importProvidersFrom(MarkdownModule.forRoot(), CodeEditorModule.forRoot())
+        importProvidersFrom(MarkdownModule.forRoot(), CodeEditorModule.forRoot()), provideServiceWorker('ngsw-worker.js', {
+            enabled: !isDevMode(),
+            registrationStrategy: 'registerWhenStable:30000'
+          })
     ]
 };

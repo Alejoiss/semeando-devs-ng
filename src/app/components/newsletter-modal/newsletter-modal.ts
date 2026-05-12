@@ -39,11 +39,7 @@ export class NewsletterModal implements OnInit {
   protected isLoading = signal(false);
 
   async ngOnInit() {
-    const data = await this.newsletterService.fetchUnviewedNewsletter();
-    if (data) {
-      this.newsletterData.set(data);
-      this.isVisible.set(true);
-    }
+    await this.checkNextNewsletter();
   }
 
   async closeAndAcknowledge() {
@@ -54,8 +50,22 @@ export class NewsletterModal implements OnInit {
     const success = await this.newsletterService.markAsViewed(data.newsletter_id);
     if (success) {
       this.isVisible.set(false);
-      // Optional: keep data around briefly for exit animation
-      setTimeout(() => this.newsletterData.set(null), 300);
+      // Wait for exit animation
+      setTimeout(async () => {
+        this.newsletterData.set(null);
+        await this.checkNextNewsletter();
+      }, 300);
+    } else {
+      this.isLoading.set(false);
+    }
+  }
+
+  private async checkNextNewsletter() {
+    this.isLoading.set(true);
+    const data = await this.newsletterService.fetchUnviewedNewsletter();
+    if (data) {
+      this.newsletterData.set(data);
+      this.isVisible.set(true);
     }
     this.isLoading.set(false);
   }

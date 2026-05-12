@@ -43,6 +43,11 @@ export const routes: Routes = [
         title: 'Semeando Devs - Termos de Uso'
     },
     {
+        path: 'cursos',
+        loadComponent: () => import('./pages/courses/courses').then((m) => m.Courses),
+        title: 'Cursos - Semeando Devs'
+    },
+    {
         path: 'app',
         canActivate: [authGuard],
         loadComponent: () => import('./pages/app/app').then((m) => m.App),

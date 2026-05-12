@@ -94,7 +94,7 @@ export class Modules implements OnInit {
                 this.lessonService.getAllLessons()
             ]);
 
-            this.modules.set(modules);
+            this.modules.set(modules.filter(m => !m.inRevision));
             this.userModules.set(userModules);
             this.userLessons.set(userLessons);
             this.lessons.set(lessons);

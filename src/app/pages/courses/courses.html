@@ -1,0 +1,82 @@
+<div class="courses-page bg-background text-on-background min-h-screen flex flex-col">
+    <app-header></app-header>
+
+    <main class="flex-grow pt-32 pb-24 px-6 max-w-5xl mx-auto w-full">
+        <div class="mb-16">
+            <h1 class="font-headline text-4xl md:text-5xl font-extrabold tracking-tighter mb-4">
+                Currículo dos <span class="gradient-text">Cursos</span>
+            </h1>
+            <p class="text-on-surface-variant text-lg">
+                Explore a estrutura completa da nossa formação.
+            </p>
+        </div>
+
+        <div class="space-y-6">
+            @for(module of curriculum(); track module.id) {
+                <div class="glass-card rounded-2xl overflow-hidden shadow-lg border border-outline-variant/10">
+                    <div class="p-6 cursor-pointer bg-surface-container hover:bg-surface-container-high transition-colors flex items-center justify-between"
+                         (click)="toggleModule(module)">
+                        <div class="flex items-center gap-4">
+                            <div class="w-12 h-12 rounded-xl bg-primary/10 text-primary flex items-center justify-center">
+                                <span class="material-symbols-outlined text-2xl">{{ module.icon }}</span>
+                            </div>
+                            <div>
+                                <h2 class="text-xl font-bold">{{ module.title }}</h2>
+                                <p class="text-xs text-on-surface-variant mt-1">{{ module.description }}</p>
+                            </div>
+                        </div>
+                        <span class="material-symbols-outlined text-on-surface-variant transition-transform"
+                              [class.rotate-180]="module.expanded">
+                            expand_more
+                        </span>
+                    </div>
+
+                    @if(module.expanded) {
+                        <div class="p-6 pt-0 bg-surface-container border-t border-outline-variant/10">
+                            <div class="space-y-4 mt-6">
+                                @for(sub of module.submodules; track sub.id) {
+                                    <div class="rounded-xl overflow-hidden border border-outline-variant/10 bg-surface-container-low">
+                                        <div class="p-4 cursor-pointer hover:bg-surface-container-high transition-colors flex items-center justify-between"
+                                             (click)="toggleSubmodule(sub)">
+                                            <div class="flex items-center gap-3">
+                                                <div class="w-8 h-8 rounded-lg bg-secondary/10 text-secondary flex items-center justify-center">
+                                                    <span class="material-symbols-outlined text-sm">{{ sub.icon || 'folder' }}</span>
+                                                </div>
+                                                <span class="font-semibold">{{ sub.title }}</span>
+                                            </div>
+                                            <span class="material-symbols-outlined text-on-surface-variant transition-transform"
+                                                  [class.rotate-180]="sub.expanded">
+                                                expand_more
+                                            </span>
+                                        </div>
+
+                                        @if(sub.expanded) {
+                                            <div class="px-4 pb-4 border-t border-outline-variant/10 pt-4">
+                                                <div class="flex flex-col space-y-2">
+                                                    @for(lesson of sub.lessons; track lesson.id) {
+                                                        <div class="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-surface-container-highest transition-colors">
+                                                            <span class="material-symbols-outlined text-tertiary text-sm">play_circle</span>
+                                                            <span class="text-sm text-on-surface-variant">{{ lesson.title }}</span>
+                                                        </div>
+                                                    }
+                                                    @if(sub.lessons.length === 0) {
+                                                        <p class="text-sm text-on-surface-variant/50 px-4 py-2 italic">Nenhuma lição disponível</p>
+                                                    }
+                                                </div>
+                                            </div>
+                                        }
+                                    </div>
+                                }
+                                @if(module.submodules.length === 0) {
+                                    <p class="text-sm text-on-surface-variant/50 italic text-center py-4">Módulo em construção</p>
+                                }
+                            </div>
+                        </div>
+                    }
+                </div>
+            }
+        </div>
+    </main>
+
+    <app-footer></app-footer>
+</div>

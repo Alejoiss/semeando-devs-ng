@@ -22,7 +22,10 @@ export class ModuleService {
             throw new Error(error.message);
         }
 
-        return data as Module[];
+        return (data || []).map(m => ({
+            ...m,
+            inRevision: m.in_revision
+        })) as Module[];
     }
 
     async getModuleBySlug(slug: string): Promise<Module | null> {
@@ -37,9 +40,34 @@ export class ModuleService {
                 return null;
             }
 
-            return data as Module;
+            return {
+                ...data,
+                inRevision: data.in_revision
+            } as Module;
         } catch {
             return null;
         }
+    }
+
+    async getCurriculum(): Promise<any[]> {
+        const { data, error } = await this.supabase
+            .from('modules')
+            .select(`
+                *,
+                submodules (
+                    *,
+                    lessons (
+                        *
+                    )
+                )
+            `)
+            .order('order', { foreignTable: 'submodules', ascending: true })
+            .order('order', { foreignTable: 'submodules.lessons', ascending: true });
+
+        if (error) {
+            throw new Error(error.message);
+        }
+
+        return data;
     }
 }

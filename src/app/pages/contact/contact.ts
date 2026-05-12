@@ -13,7 +13,7 @@ import { Header } from '../../components/header/header';
     styleUrls: ['./contact.scss'],
 })
 export class Contact {
-    supportEmail = 'suporte@semeandodevs.com.br';
+    supportEmail = 'contato@semeandodevs.com.br';
     copied = false;
 
     async copyEmail(): Promise<void> {

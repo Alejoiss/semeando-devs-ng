@@ -5,4 +5,5 @@ export interface Module {
     avatar: string;
     icon: string;
     slug: string;
+    inRevision: boolean;
 }

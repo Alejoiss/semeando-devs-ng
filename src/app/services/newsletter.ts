@@ -16,6 +16,7 @@ export class NewsletterService {
       .from('user_newsletter')
       .select('*, newsletter(*)')
       .eq('viewed', false)
+      .order('created_at', { ascending: true })
       .limit(1)
       .maybeSingle();
 

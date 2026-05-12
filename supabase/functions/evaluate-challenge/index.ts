@@ -52,7 +52,7 @@ serve(async (req: { method: string; headers: { get: (arg0: string) => any }; jso
                     "Content-Type": "application/json"
                 },
                 body: JSON.stringify({
-                    "model": "inclusionai/ling-2.6-1t:free",
+                    "model": "inclusionai/ring-2.6-1t:free",
                     "messages": [
                         {
                             "role": "system",
