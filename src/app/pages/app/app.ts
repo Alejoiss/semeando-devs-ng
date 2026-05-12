@@ -3,6 +3,7 @@ import { RouterModule } from '@angular/router';
 
 import { AsideMenu } from '../../components/aside-menu/aside-menu';
 import { InternalHeader } from '../../components/internal-header/internal-header';
+import { NewsletterModal } from '../../components/newsletter-modal/newsletter-modal';
 
 @Component({
     selector: 'app-app',
@@ -10,7 +11,8 @@ import { InternalHeader } from '../../components/internal-header/internal-header
     imports: [
         RouterModule,
         InternalHeader,
-        AsideMenu
+        AsideMenu,
+        NewsletterModal
     ],
     templateUrl: './app.html',
     styleUrl: './app.scss',
