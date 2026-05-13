@@ -1,5 +1,10 @@
 <div class="min-h-screen bg-background text-on-background font-body selection:bg-primary/30">
     <app-internal-header></app-internal-header>
+
+    @if (navigationService.isSidebarOpen()) {
+        <div (click)="navigationService.closeSidebar()" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-30 md:hidden"></div>
+    }
+
     <app-aside-menu></app-aside-menu>
 
     <main class="md:pl-64 pt-24 pb-24 min-h-screen">

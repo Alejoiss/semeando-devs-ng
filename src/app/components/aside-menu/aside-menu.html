@@ -1,5 +1,6 @@
 <aside
-    class="fixed left-0 top-0 h-full pt-24 pb-8 flex flex-col z-40 bg-[#091328] w-64 rounded-r-3xl shadow-[20px_0_30px_rgba(0,0,0,0.3)] hidden md:flex">
+    class="fixed left-0 top-0 h-full pt-24 pb-8 flex flex-col z-40 bg-[#091328] w-64 rounded-r-3xl shadow-[20px_0_30px_rgba(0,0,0,0.3)] transition-transform duration-300 -translate-x-full md:translate-x-0"
+    [class.translate-x-0]="navigationService.isSidebarOpen()">
     <!-- <div class="px-6 mb-8">
         <div class="flex flex-col gap-1">
             <span class="font-headline text-lg font-bold text-[#3fc2fb]">Nível 24</span>
@@ -8,6 +9,7 @@
     </div> -->
     <nav class="flex-1 flex flex-col px-3 gap-1">
         <a class="flex items-center gap-4 px-4 py-3 transition-transform transition-all" routerLink="/app"
+            (click)="navigationService.closeSidebar()"
             routerLinkActive="bg-[#0f1930] text-[#3fc2fb] rounded-xl border-l-4 border-[#fe69ac] translate-x-1"
             [routerLinkActiveOptions]="{exact: true}"
             [ngClass]="{'text-[#dee5ff]/60 hover:bg-[#141f38] hover:text-[#3fc2fb]': !rlaApp.isActive}"
@@ -16,6 +18,7 @@
             <span class="font-label whitespace-nowrap" [ngClass]="{'font-bold': rlaApp.isActive}">Módulos</span>
         </a>
         <a class="flex items-center gap-4 px-4 py-3 transition-transform transition-all" routerLink="/app/ranking"
+            (click)="navigationService.closeSidebar()"
             routerLinkActive="bg-[#0f1930] text-[#3fc2fb] rounded-xl border-l-4 border-[#fe69ac] translate-x-1"
             [ngClass]="{'text-[#dee5ff]/60 hover:bg-[#141f38] hover:text-[#3fc2fb]': !rlaRanking.isActive}"
             #rlaRanking="routerLinkActive">
@@ -23,6 +26,7 @@
             <span class="font-label whitespace-nowrap" [ngClass]="{'font-bold': rlaRanking.isActive}">Rankings</span>
         </a>
         <a class="flex items-center gap-4 px-4 py-3 transition-transform transition-all" routerLink="/app/conquistas"
+            (click)="navigationService.closeSidebar()"
             routerLinkActive="bg-[#0f1930] text-[#3fc2fb] rounded-xl border-l-4 border-[#fe69ac] translate-x-1"
             [ngClass]="{'text-[#dee5ff]/60 hover:bg-[#141f38] hover:text-[#3fc2fb]': !rlaConquistas.isActive}"
             #rlaConquistas="routerLinkActive">
@@ -30,6 +34,7 @@
             <span class="font-label whitespace-nowrap" [ngClass]="{'font-bold': rlaConquistas.isActive}">Minhas conquistas</span>
         </a>
         <a class="flex items-center gap-4 px-4 py-3 transition-transform transition-all" routerLink="/app/gerenciar-assinatura"
+            (click)="navigationService.closeSidebar()"
             routerLinkActive="bg-[#0f1930] text-[#3fc2fb] rounded-xl border-l-4 border-[#fe69ac] translate-x-1"
             [ngClass]="{'text-[#dee5ff]/60 hover:bg-[#141f38] hover:text-[#3fc2fb]': !rlaAssinatura.isActive}"
             #rlaAssinatura="routerLinkActive">
@@ -40,6 +45,7 @@
     <div class="px-3 flex flex-col gap-1 mt-auto">
         @if (!userService.currentUser()?.isPro) {
             <button routerLink="/app/upgrade"
+                (click)="navigationService.closeSidebar()"
                 class="mt-4 w-full bg-surface-container-high hover:bg-surface-bright text-primary text-xs font-bold py-2 rounded-xl transition-all font-label uppercase tracking-widest">
                 Atualizar para pró
             </button>
@@ -50,7 +56,7 @@
             <span class="font-label">Configurações</span>
         </a> -->
         <a class="flex items-center gap-4 text-error/60 px-4 py-3 hover:bg-error/10 hover:text-error transition-all"
-            routerLink="/">
+            routerLink="/" (click)="navigationService.closeSidebar()">
             <span class="material-symbols-outlined" data-icon="logout">logout</span>
             <span class="font-label">Sair</span>
         </a>

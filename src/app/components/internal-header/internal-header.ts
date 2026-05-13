@@ -4,6 +4,7 @@ import { RouterLink } from '@angular/router';
 import { XpService } from '../../services/xp';
 import { SeedService } from '../../services/seed';
 import { UserService } from '../../services/user';
+import { NavigationService } from '../../services/navigation';
 
 @Component({
     selector: 'app-internal-header',
@@ -16,6 +17,7 @@ export class InternalHeader implements OnInit {
     private xpService = inject(XpService);
     private seedService = inject(SeedService);
     private userService = inject(UserService);
+    protected readonly navigationService = inject(NavigationService);
 
     protected readonly totalXp = this.xpService.totalXp;
     protected readonly totalSeeds = this.seedService.totalSeeds;
