@@ -39,19 +39,54 @@ export class LandingPage implements OnInit {
     protected readonly faqItems = signal([
         {
             question: 'O que é o Semeando Devs?',
-            answer: 'É uma plataforma gamificada para aprendizado de desenvolvimento web, onde você aprende de forma prática e divertida.',
+            answer: 'É a sua nova forma de aprender programação: aulas curtas, quizzes interativos, desafios de código e um ranking que transforma estudo em competição saudável – tudo inspirado na experiência de outras plataformas já consolidadas no mercado.',
             expanded: false
         },
         {
-            question: 'A plataforma é totalmente gratuita?',
-            answer: 'Sim! Nosso objetivo é democratizar o acesso ao ensino de tecnologia de qualidade.',
+            question: 'Para quem a plataforma foi criada?',
+            answer: 'Para quem está começando do zero ou quer mudar de carreira. Não importa se você nunca escreveu uma linha de código; aqui o aprendizado acontece passo a passo, do jeito mais simples e motivador.',
             expanded: false
         },
         {
-            question: 'Preciso ter conhecimento prévio?',
-            answer: 'Não! Nossas trilhas começam do zero absoluto, ensinando desde a base até conceitos avançados.',
+            question: 'O que já está disponível no plano atual?',
+            answer: 'Você tem acesso completo a todos os módulos básicos, organizados em submódulos, lições, quizzes e desafios práticos.',
             expanded: false
-        }
+        },
+        {
+            question: 'Como funcionam as lições e os quizzes?',
+            answer: 'Cada lição traz vídeo e/ou texto, materiais extras e, ao final, um quiz de 10 questões. Acertando pelo menos 7 você avança para a próxima etapa.',
+            expanded: false
+        },
+        {
+            question: 'O que são as lições de desafio e de revisão?',
+            answer: 'Desafio: escreva código e receba avaliação automática de uma IA, que aponta o que está ótimo e o que pode melhorar. Revisão: 10 perguntas aleatórias das lições que você já completou, para reforçar o conhecimento e evitar o esquecimento.',
+            expanded: false
+        },
+        {
+            question: 'O que é XP e como eu uso?',
+            answer: 'XP é a pontuação que você ganha ao concluir lições. Ela serve para subir no ranking (geral, mensal e semanal) e para acompanhar a sua evolução.',
+            expanded: false
+        },
+        {
+            question: 'O que são seeds e como eu uso?',
+            answer: 'Seeds é a moeda oficial da plataforma e serve para você comprar dicas das perguntas que você estiver com dificuldades. Futuramente, iremos adicionar mais possibilidades para uso desta moeda.',
+            expanded: false
+        },
+        {
+            question: 'Preciso pagar para começar?',
+            answer: 'Não! Cadastre‑se gratuitamente e tenha acesso aos primeiros submódulos de todos os cursos. Quizzes, desafios, ranking, XP e a possibilidade de usar seeds para comprar dicas de IA também são gratuitos. Quando quiser avançar para o conteúdo completo de todos os módulos, basta assinar.',
+            expanded: false
+        },
+        {
+            question: 'Quanto custa a assinatura e o que inclui?',
+            answer: 'R$ 29,90 /mês – acesso ilimitado a todos os cursos básicos. Cancelamento a qualquer momento.',
+            expanded: false
+        },
+        {
+            question: 'Como funcionam os cupons de desconto?',
+            answer: 'Em campanhas nas redes sociais, nas parcerias com faculdades ou em eventos especiais, divulgamos códigos promocionais. Na tela de assinatura, basta inserir o cupom e o desconto é aplicado automaticamente.',
+            expanded: false
+        },
     ]);
 
     protected selectMethodology(type: 'teoria' | 'revisao' | 'desafio') {
