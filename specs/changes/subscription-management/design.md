@@ -62,7 +62,7 @@ sequenceDiagram
     App->>Func: Invoke Cancellation
     Func->>MP: Cancel preapproval
     MP-->>Func: Success
-    Func->>DB: Update subscription status to 'canceled'
+    Func->>DB: Update subscription status to 'cancelled'
     Func-->>App: Success
 ```
 

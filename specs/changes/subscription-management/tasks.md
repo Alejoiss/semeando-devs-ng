@@ -76,7 +76,7 @@ This implementation is organized into 5 phases:
   - _Implements: REQ-3.1, REQ-3.2, REQ-3.3_
 
 - [x] 4.4 Test: process cancellation and update status
-  - Verify the cancel action invokes the service and the state reflects the canceled status.
+  - Verify the cancel action invokes the service and the state reflects the cancelled status.
   - Test type: integration
   - _Depends: 3.4_
   - _Implements: REQ-4.1, REQ-4.2_

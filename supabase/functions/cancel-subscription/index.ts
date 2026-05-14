@@ -66,7 +66,7 @@ serve(async (req: { method: string; headers: { get: (arg0: string) => any }; jso
             )
         }
 
-        if (subscription.status === 'canceled') {
+        if (subscription.status === 'cancelled') {
             return new Response(
                 JSON.stringify({ error: 'Assinatura já está cancelada' }),
                 { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
@@ -100,7 +100,7 @@ serve(async (req: { method: string; headers: { get: (arg0: string) => any }; jso
         // Update database status
         const { error: updateError } = await serviceRoleClient
             .from('subscriptions')
-            .update({ status: 'canceled' })
+            .update({ status: 'cancelled' })
             .eq('id', subscriptionId)
 
         if (updateError) {
