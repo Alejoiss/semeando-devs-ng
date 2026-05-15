@@ -9,6 +9,7 @@ import { ModuleService } from '../../../services/module';
 import { AchievementsService } from '../../../services/achievements';
 import { UserService } from '../../../services/user';
 import { SubModule } from '../../../../models/sub-module/sub-module';
+import { Module } from '../../../../models/module/module';
 import { Achievements } from '../../../../models/achievements/achievements';
 
 export interface SubmoduleWithState {
@@ -37,6 +38,7 @@ export class Submodule implements OnInit {
     private achievementsService = inject(AchievementsService);
     private userService = inject(UserService);
 
+    module = signal<Module | null>(null);
     submodulesWithState = signal<SubmoduleWithState[]>([]);
     achievement = signal<Achievements | null>(null);
     isLoading = signal<boolean>(true);
@@ -131,6 +133,7 @@ export class Submodule implements OnInit {
             // Fetch achievement for the module
             const module = await this.moduleService.getModuleBySlug(slug);
             if (module) {
+                this.module.set(module);
                 const achievement = await this.achievementsService.getAchievementByModuleId(module.id);
                 this.achievement.set(achievement);
             }
