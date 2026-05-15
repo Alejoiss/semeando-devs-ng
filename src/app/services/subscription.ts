@@ -1,4 +1,5 @@
 import { inject, Injectable } from '@angular/core';
+import { RealtimeChannel } from '@supabase/supabase-js';
 import { SupabaseService } from './supabase';
 import { Coupon } from '../../models/coupon/coupon';
 
@@ -89,5 +90,30 @@ export class SubscriptionService {
         if (error) {
             throw new Error(error.message || 'Erro ao ativar o plano Pro.');
         }
+    }
+
+    watchSubscriptionStatus(
+        subscriptionId: string,
+        onActive: () => void,
+    ): RealtimeChannel {
+        const channel = this.supabase.client
+            .channel(`subscription-status-${subscriptionId}`)
+            .on(
+                'postgres_changes',
+                {
+                    event: 'UPDATE',
+                    schema: 'public',
+                    table: 'subscriptions',
+                    filter: `id=eq.${subscriptionId}`,
+                },
+                (payload) => {
+                    if (payload.new['status'] === 'active') {
+                        onActive();
+                    }
+                },
+            )
+            .subscribe();
+
+        return channel;
     }
 }

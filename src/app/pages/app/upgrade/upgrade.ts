@@ -54,7 +54,12 @@ export class Upgrade {
         if (c.discountType === 'percentage') {
             return p.yearlyPrice * (1 - c.discountValue / 100);
         }
-        return Math.max(0, p.yearlyPrice - c.discountValue);
+
+        // For fixed coupons: apply the monthly discount scaled to 12 months,
+        // then apply the same annual discount factor embedded in yearlyPrice.
+        const annualFactor = p.monthlyPrice > 0 ? p.yearlyPrice / (p.monthlyPrice * 12) : 1;
+        const discountedMonthly = Math.max(0, p.monthlyPrice - c.discountValue);
+        return Math.round(discountedMonthly * 12 * annualFactor * 100) / 100;
     });
 
     protected readonly isOneHundredPercentDiscount = computed(() => {

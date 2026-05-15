@@ -117,6 +117,11 @@ export const routes: Routes = [
                 path: 'gerenciar-assinatura',
                 loadComponent: () => import('./pages/app/subscription-management/subscription-management').then((m) => m.SubscriptionManagement),
                 title: 'Gerenciar Assinatura - Semeando Devs'
+            },
+            {
+                path: 'aguardando-pagamento',
+                loadComponent: () => import('./pages/app/payment-pending/payment-pending').then((m) => m.PaymentPending),
+                title: 'Aguardando Pagamento - Semeando Devs'
             }
         ]
     }

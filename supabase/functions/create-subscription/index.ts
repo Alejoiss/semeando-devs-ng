@@ -110,7 +110,16 @@ serve(async (req: { method: string; headers: { get: (arg0: string) => any }; jso
             if (couponData.discount_type === 'percentage') {
                 transactionAmount = transactionAmount * (1 - Number(couponData.discount_value) / 100)
             } else {
-                transactionAmount = transactionAmount - Number(couponData.discount_value)
+                // Fixed coupon: discount applies per month.
+                // For yearly billing, scale proportionally: (monthly - discount) * 12 * annual_factor
+                if (billingCycle === 'yearly') {
+                    const monthlyPrice = Number(planData.monthly_price)
+                    const annualFactor = monthlyPrice > 0 ? Number(planData.yearly_price) / (monthlyPrice * 12) : 1
+                    const discountedMonthly = Math.max(0, monthlyPrice - Number(couponData.discount_value))
+                    transactionAmount = discountedMonthly * 12 * annualFactor
+                } else {
+                    transactionAmount = transactionAmount - Number(couponData.discount_value)
+                }
             }
 
             transactionAmount = Math.max(0, Math.round(transactionAmount * 100) / 100)
@@ -125,7 +134,6 @@ serve(async (req: { method: string; headers: { get: (arg0: string) => any }; jso
 
         const frequency = billingCycle === 'monthly' ? 1 : 12
         let mpPreapprovalId = ''
-        let subscriptionStatus = 'pending'
         let responseData: any = {}
 
         // 3. Process Payment with Mercado Pago
@@ -165,8 +173,7 @@ serve(async (req: { method: string; headers: { get: (arg0: string) => any }; jso
                 )
             }
             mpPreapprovalId = mpData.id
-            subscriptionStatus = mpData.status === 'authorized' ? 'active' : 'pending'
-            responseData = { status: subscriptionStatus, preapproval_id: mpData.id }
+            responseData = { status: 'pending', preapproval_id: mpData.id }
 
         } else if (paymentMethod === 'pix') {
             const paymentPayload = {
@@ -209,7 +216,9 @@ serve(async (req: { method: string; headers: { get: (arg0: string) => any }; jso
         }
 
         // 4. Save Subscription (using serviceRoleClient)
-        const { error: insertError } = await serviceRoleClient
+        // Status is always 'pending' here — the mp-webhook is the sole authority
+        // for transitioning to 'active' and setting is_pro=true on the profile.
+        const { data: insertedSub, error: insertError } = await serviceRoleClient
             .from('subscriptions')
             .insert({
                 user_id: user.id,
@@ -218,21 +227,15 @@ serve(async (req: { method: string; headers: { get: (arg0: string) => any }; jso
                 mp_preapproval_id: mpPreapprovalId,
                 billing_cycle: billingCycle,
                 transaction_amount: transactionAmount,
-                status: subscriptionStatus,
+                status: 'pending',
             })
+            .select('id')
+            .single()
 
         if (insertError) throw insertError
 
-        // 5. Update Profile if Active
-        if (subscriptionStatus === 'active') {
-            await serviceRoleClient
-                .from('profiles')
-                .update({ is_pro: true })
-                .eq('id', user.id)
-        }
-
         return new Response(
-            JSON.stringify(responseData),
+            JSON.stringify({ ...responseData, subscription_id: insertedSub.id }),
             { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
         )
     } catch (error: any) {

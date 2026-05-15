@@ -33,9 +33,6 @@ export class Checkout implements OnInit, AfterViewInit {
     protected readonly isLoading = signal(true);
     protected readonly isProcessing = signal(false);
     protected readonly error = signal<string | null>(null);
-    protected readonly success = signal(false);
-    protected readonly pixQrCode = signal<string | null>(null);
-    protected readonly pixQrCodeBase64 = signal<string | null>(null);
 
     // Form inputs for Card Token
     protected cardholderName = signal('');
@@ -103,7 +100,7 @@ export class Checkout implements OnInit, AfterViewInit {
     }
 
     private async initializeMercadoPago() {
-        if (this.paymentMethod() !== 'card' || this.success()) return;
+        if (this.paymentMethod() !== 'card') return;
 
         try {
             await loadMercadoPago();
@@ -213,15 +210,21 @@ export class Checkout implements OnInit, AfterViewInit {
             );
 
             if (this.paymentMethod() === 'pix') {
-                this.pixQrCode.set(response.qr_code);
-                this.pixQrCodeBase64.set(response.qr_code_base64);
-                this.success.set(true);
+                this.router.navigate(['/app/aguardando-pagamento'], {
+                    queryParams: {
+                        sid: response.subscription_id,
+                        method: 'pix',
+                        qr_code: response.qr_code,
+                        qr_code_base64: response.qr_code_base64,
+                    }
+                });
             } else {
-                if (response.status === 'active' || response.status === 'authorized' || response.status === 'pending') {
-                    this.success.set(true);
-                } else {
-                    throw new Error('O pagamento não foi autorizado pelo banco.');
-                }
+                this.router.navigate(['/app/aguardando-pagamento'], {
+                    queryParams: {
+                        sid: response.subscription_id,
+                        method: 'card',
+                    }
+                });
             }
 
         } catch (err: any) {
@@ -254,14 +257,6 @@ export class Checkout implements OnInit, AfterViewInit {
             this.error.set(friendlyMessage);
         } finally {
             this.isProcessing.set(false);
-        }
-    }
-
-    protected copyPixCode() {
-        const code = this.pixQrCode();
-        if (code) {
-            navigator.clipboard.writeText(code);
-            alert('Código PIX copiado!');
         }
     }
 }

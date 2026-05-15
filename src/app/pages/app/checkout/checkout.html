@@ -6,38 +6,6 @@
             <div class="flex items-center justify-center h-64">
                 <span class="animate-spin inline-block w-8 h-8 border-4 border-primary border-t-transparent rounded-full"></span>
             </div>
-        } @else if (success()) {
-            <div class="bg-surface-container rounded-2xl p-8 shadow-2xl shadow-primary/5 text-center relative overflow-hidden">
-                <div class="absolute inset-0 bg-gradient-to-tr from-primary/10 to-transparent pointer-events-none"></div>
-                
-                <span class="material-symbols-outlined text-6xl text-tertiary mb-4">check_circle</span>
-                <h2 class="font-display font-bold text-2xl text-on-surface mb-2">
-                    {{ paymentMethod() === 'pix' ? 'Pagamento PIX Gerado!' : 'Pagamento Aprovado!' }}
-                </h2>
-                
-                @if (paymentMethod() === 'pix' && pixQrCodeBase64() && pixQrCode()) {
-                    <p class="text-on-surface-variant font-body mb-8">Escaneie o QR Code abaixo no aplicativo do seu banco ou copie o código "PIX Copia e Cola".</p>
-                    
-                    <div class="flex flex-col items-center gap-6">
-                        <img [src]="'data:image/jpeg;base64,' + pixQrCodeBase64()" alt="QR Code PIX" class="w-48 h-48 rounded-xl border border-outline-variant p-2 bg-white">
-                        
-                        <div class="w-full max-w-md">
-                            <label class="block text-sm font-label text-on-surface-variant mb-2 text-left">Código PIX Copia e Cola</label>
-                            <div class="flex gap-2">
-                                <input type="text" [value]="pixQrCode()" readonly class="w-full bg-surface-container-low text-on-surface rounded-lg px-4 py-3 border border-outline-variant focus:outline-none focus:border-primary font-body">
-                                <button (click)="copyPixCode()" class="bg-primary text-on-primary px-4 py-2 rounded-lg font-headline font-bold hover:bg-primary-dim transition-colors flex items-center gap-2">
-                                    <span class="material-symbols-outlined">content_copy</span>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                } @else {
-                    <p class="text-on-surface-variant font-body mb-8">Sua assinatura foi processada com sucesso. Você já pode acessar todos os benefícios PRO.</p>
-                    <button routerLink="/app/gerenciar-assinatura" class="bg-primary text-on-primary px-8 py-3 rounded-lg font-headline font-bold hover:bg-primary-dim transition-colors inline-block mt-4 text-sm uppercase tracking-widest">
-                        Gerenciar Assinatura
-                    </button>
-                }
-            </div>
         } @else {
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
                 <!-- Resumo do Pedido -->

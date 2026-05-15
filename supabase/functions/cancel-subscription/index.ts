@@ -6,6 +6,34 @@ const corsHeaders = {
     'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 }
 
+function calculateNextBillingDate(createdAt: string, billingCycle: string): Date {
+    const created = new Date(createdAt)
+    const now = new Date()
+    const nextDate = new Date(created)
+
+    if (billingCycle === 'monthly') {
+        // Find the next monthly billing date from today
+        let monthsDiff = (now.getFullYear() - created.getFullYear()) * 12 + now.getMonth() - created.getMonth()
+        if (now.getDate() >= created.getDate()) {
+            monthsDiff++
+        } else {
+            monthsDiff = Math.max(1, monthsDiff)
+        }
+        nextDate.setMonth(created.getMonth() + monthsDiff)
+    } else {
+        // yearly
+        let yearsDiff = now.getFullYear() - created.getFullYear()
+        const pastAnniversary =
+            now.getMonth() > created.getMonth() ||
+            (now.getMonth() === created.getMonth() && now.getDate() >= created.getDate())
+
+        yearsDiff = pastAnniversary ? yearsDiff + 1 : Math.max(1, yearsDiff)
+        nextDate.setFullYear(created.getFullYear() + yearsDiff)
+    }
+
+    return nextDate
+}
+
 serve(async (req: { method: string; headers: { get: (arg0: string) => any }; json: () => any }) => {
     if (req.method === 'OPTIONS') {
         return new Response('ok', { headers: corsHeaders })
@@ -73,7 +101,7 @@ serve(async (req: { method: string; headers: { get: (arg0: string) => any }; jso
             )
         }
 
-        // Cancel in Mercado Pago if preapproval ID exists
+        // Cancel in Mercado Pago to prevent future charges
         if (subscription.mp_preapproval_id) {
             const mpResponse = await fetch(`https://api.mercadopago.com/preapproval/${subscription.mp_preapproval_id}`, {
                 method: 'PUT',
@@ -97,24 +125,33 @@ serve(async (req: { method: string; headers: { get: (arg0: string) => any }; jso
             }
         }
 
-        // Update database status
+        // Calculate the last day of the already-paid billing period
+        const accessUntil = calculateNextBillingDate(subscription.created_at, subscription.billing_cycle)
+
+        // Mark subscription as cancelled but keep access until the paid period ends
         const { error: updateError } = await serviceRoleClient
             .from('subscriptions')
-            .update({ status: 'cancelled' })
+            .update({
+                status: 'cancelled',
+                access_until: accessUntil.toISOString(),
+            })
             .eq('id', subscriptionId)
 
         if (updateError) {
             throw updateError
         }
 
-        // Update profile
+        // Keep is_pro = true but set pro_until so the cron job can expire it automatically
         await serviceRoleClient
             .from('profiles')
-            .update({ is_pro: false })
+            .update({ pro_until: accessUntil.toISOString() })
             .eq('id', user.id)
 
         return new Response(
-            JSON.stringify({ message: 'Assinatura cancelada com sucesso' }),
+            JSON.stringify({
+                message: 'Assinatura cancelada com sucesso',
+                access_until: accessUntil.toISOString(),
+            }),
             { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
         )
 

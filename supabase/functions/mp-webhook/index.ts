@@ -1,6 +1,6 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2"
-import { handleAuthorizedPayment, handlePreapproval } from "./handlers.ts"
+import { handleAuthorizedPayment, handleClaim, handlePreapproval } from "./handlers.ts"
 
 const corsHeaders = {
     'Access-Control-Allow-Origin': '*',
@@ -96,6 +96,8 @@ serve(async (req: Request) => {
             await handleAuthorizedPayment(serviceRoleClient, event, mlAccessToken)
         } else if (topic === 'subscription_preapproval') {
             await handlePreapproval(serviceRoleClient, event, mlAccessToken)
+        } else if (topic === 'topic_claims_integration_wh') {
+            await handleClaim(serviceRoleClient, event, mlAccessToken)
         } else {
             console.log(`[mp-webhook] Unhandled topic received: ${topic}`)
         }

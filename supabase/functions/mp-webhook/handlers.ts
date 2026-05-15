@@ -159,3 +159,82 @@ export async function handlePreapproval(
         console.error('[mp-webhook] handlePreapproval error:', message)
     }
 }
+
+export async function handleClaim(
+    client: SupabaseClient,
+    event: MpEvent,
+    mlToken: string,
+): Promise<void> {
+    const claimId = event?.data?.id
+    if (!claimId) {
+        console.warn('[mp-webhook] handleClaim: missing data.id')
+        return
+    }
+
+    const billingResult = await insertBillingEvent(client, {
+        mpEventId: claimId,
+        topic: 'claims_integration',
+        payload: event,
+    })
+
+    if (billingResult.duplicate) {
+        console.log(`[mp-webhook] Duplicate claim event for id ${claimId}, skipping.`)
+        return
+    }
+
+    const billingEventId = billingResult.id
+
+    try {
+        const claim = await fetchFromMercadoPago(
+            `https://api.mercadopago.com/v1/claims/${claimId}`,
+            mlToken,
+        ) as Record<string, unknown>
+
+        const claimStatus = claim['status'] as string
+        const claimResolution = (claim['resolution'] as Record<string, unknown> | undefined)?.['reason'] as string | undefined
+        const payments = claim['payments'] as Array<Record<string, unknown>> | undefined
+        const preapprovalId = payments?.[0]?.['preapproval_id'] as string | undefined
+
+        if (!preapprovalId) {
+            await updateBillingEvent(client, billingEventId, { status: 'orphan', errorMessage: 'No preapproval_id found in claim payments' })
+            return
+        }
+
+        if (claimStatus === 'opened' || claimStatus === 'in_process') {
+            // Suspend PRO access preventively while dispute is open
+            const subscriptionId = await syncSubscriptionAndProfile(client, preapprovalId, 'payment_failed', false)
+            if (!subscriptionId) {
+                await updateBillingEvent(client, billingEventId, { status: 'orphan', errorMessage: `No subscription for preapproval_id ${preapprovalId}` })
+                return
+            }
+            await updateBillingEvent(client, billingEventId, { status: 'success', subscriptionId })
+            console.log(`[mp-webhook] Claim ${claimId} opened — PRO access suspended for preapproval ${preapprovalId}`)
+            return
+        }
+
+        if (claimStatus === 'resolved') {
+            if (claimResolution === 'seller') {
+                // Seller won — restore PRO access
+                const subscriptionId = await syncSubscriptionAndProfile(client, preapprovalId, 'active', true)
+                if (!subscriptionId) {
+                    await updateBillingEvent(client, billingEventId, { status: 'orphan', errorMessage: `No subscription for preapproval_id ${preapprovalId}` })
+                    return
+                }
+                await updateBillingEvent(client, billingEventId, { status: 'success', subscriptionId })
+                console.log(`[mp-webhook] Claim ${claimId} resolved for seller — PRO access restored for preapproval ${preapprovalId}`)
+            } else {
+                // Buyer won (refund issued) — subscription already cancelled by payment webhook
+                await updateBillingEvent(client, billingEventId, { status: 'success' })
+                console.log(`[mp-webhook] Claim ${claimId} resolved for buyer — no additional action needed`)
+            }
+            return
+        }
+
+        await updateBillingEvent(client, billingEventId, { status: 'success' })
+        console.log(`[mp-webhook] Informational claim status "${claimStatus}" for claim ${claimId}`)
+    } catch (err: unknown) {
+        const message = err instanceof Error ? err.message : String(err)
+        await updateBillingEvent(client, billingEventId, { status: 'failed', errorMessage: message })
+        console.error('[mp-webhook] handleClaim error:', message)
+    }
+}

@@ -98,6 +98,9 @@ export class UserService {
             .returns<Profile[]>()
             .single();
 
+        const proUntil = profileData?.pro_until ? new Date(profileData.pro_until) : null;
+        const isProActive = (profileData?.is_pro || false) && (proUntil === null || proUntil > new Date());
+
         const profile: User = {
             id: user.id,
             email: user.email || '',
@@ -107,8 +110,8 @@ export class UserService {
             acceptedTermsAt: new Date(user.created_at),
             avatar: user.user_metadata?.['avatar'] || '',
             plan: user.user_metadata?.['plan'] || null,
-            isPro: profileData?.is_pro || false,
-            proUntil: profileData?.pro_until ? new Date(profileData.pro_until) : null,
+            isPro: isProActive,
+            proUntil,
             newsletter_active: profileData?.newsletter_active || false,
         };
 
