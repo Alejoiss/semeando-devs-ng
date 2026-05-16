@@ -1,18 +1,21 @@
-import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import { RouterModule } from '@angular/router';
+import { NavigationService } from '../../../services/navigation';
+import { HeaderProfessor } from '../components/header-professor/header-professor';
+import { AsideProfessor } from '../components/aside-professor/aside-professor';
 
 @Component({
   selector: 'app-professor-app',
-  imports: [],
-  template: `
-    <div class="p-8">
-      <h1 class="text-3xl font-display text-primary">Área do Professor</h1>
-      <p class="text-on_surface/60 mt-4">
-        Bem-vindo à base da Área do Professor. Implementação em progresso.
-      </p>
-    </div>
-  `,
-  styles: ``,
+  standalone: true,
+  imports: [
+    RouterModule,
+    HeaderProfessor,
+    AsideProfessor
+  ],
+  templateUrl: './professor-app.html',
+  styleUrl: './professor-app.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ProfessorApp {
+  protected readonly navigationService = inject(NavigationService);
 }

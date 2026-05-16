@@ -130,6 +130,23 @@ export const routes: Routes = [
         path: 'professor',
         canActivate: [authGuard, teacherGuard],
         loadComponent: () => import('./pages/professor/professor-app/professor-app').then(m => m.ProfessorApp),
-        title: 'Área do Professor - Semeando Devs'
+        title: 'Área do Professor - Semeando Devs',
+        children: [
+            {
+                path: '',
+                pathMatch: 'full',
+                redirectTo: 'meus-cursos'
+            },
+            {
+                path: 'meus-cursos',
+                loadComponent: () => import('./pages/professor/professor-app/my-modules/my-modules').then(m => m.MyModules),
+                title: 'Meus Cursos - Semeando Devs'
+            },
+            {
+                path: 'criar-curso',
+                loadComponent: () => import('./pages/professor/professor-app/create-module/create-module').then(m => m.CreateModule),
+                title: 'Criar Curso - Semeando Devs'
+            }
+        ]
     }
 ];
