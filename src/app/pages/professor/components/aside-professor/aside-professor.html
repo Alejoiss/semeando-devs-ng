@@ -2,21 +2,21 @@
     class="fixed left-0 top-0 h-full pt-24 pb-8 flex flex-col z-40 bg-[#091328] w-64 rounded-r-3xl shadow-[20px_0_30px_rgba(0,0,0,0.3)] transition-transform duration-300 -translate-x-full md:translate-x-0"
     [class.translate-x-0]="navigationService.isSidebarOpen()">
     <nav class="flex-1 flex flex-col px-3 gap-1">
-        <a class="flex items-center gap-4 px-4 py-3 transition-transform transition-all" routerLink="/professor/meus-cursos"
+        <a class="flex items-center gap-4 px-4 py-3 transition-transform transition-all" routerLink="/professor/meus-modulos"
             (click)="navigationService.closeSidebar()"
             routerLinkActive="bg-[#0f1930] text-[#3fc2fb] rounded-xl border-l-4 border-[#fe69ac] translate-x-1"
             [ngClass]="{'text-[#dee5ff]/60 hover:bg-[#141f38] hover:text-[#3fc2fb]': !rlaMyModules.isActive}"
             #rlaMyModules="routerLinkActive">
             <span class="material-symbols-outlined" data-icon="account_tree">account_tree</span>
-            <span class="font-label whitespace-nowrap" [ngClass]="{'font-bold': rlaMyModules.isActive}">Meus cursos</span>
+            <span class="font-label whitespace-nowrap" [ngClass]="{'font-bold': rlaMyModules.isActive}">Meus módulos</span>
         </a>
-        <a class="flex items-center gap-4 px-4 py-3 transition-transform transition-all" routerLink="/professor/criar-curso"
+        <a class="flex items-center gap-4 px-4 py-3 transition-transform transition-all" routerLink="/professor/criar-modulo"
             (click)="navigationService.closeSidebar()"
             routerLinkActive="bg-[#0f1930] text-[#3fc2fb] rounded-xl border-l-4 border-[#fe69ac] translate-x-1"
             [ngClass]="{'text-[#dee5ff]/60 hover:bg-[#141f38] hover:text-[#3fc2fb]': !rlaCreateModule.isActive}"
             #rlaCreateModule="routerLinkActive">
             <span class="material-symbols-outlined" data-icon="add_circle">add_circle</span>
-            <span class="font-label whitespace-nowrap" [ngClass]="{'font-bold': rlaCreateModule.isActive}">Criar curso</span>
+            <span class="font-label whitespace-nowrap" [ngClass]="{'font-bold': rlaCreateModule.isActive}">Criar módulo</span>
         </a>
         <a class="flex items-center gap-4 px-4 py-3 transition-transform transition-all" routerLink="/app"
             (click)="navigationService.closeSidebar()"

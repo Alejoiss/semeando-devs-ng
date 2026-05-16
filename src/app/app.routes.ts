@@ -135,17 +135,22 @@ export const routes: Routes = [
             {
                 path: '',
                 pathMatch: 'full',
-                redirectTo: 'meus-cursos'
+                redirectTo: 'meus-modulos'
             },
             {
-                path: 'meus-cursos',
+                path: 'meus-modulos',
                 loadComponent: () => import('./pages/professor/professor-app/my-modules/my-modules').then(m => m.MyModules),
-                title: 'Meus Cursos - Semeando Devs'
+                title: 'Meus Módulos - Semeando Devs'
             },
             {
-                path: 'criar-curso',
+                path: 'criar-modulo',
                 loadComponent: () => import('./pages/professor/professor-app/create-module/create-module').then(m => m.CreateModule),
-                title: 'Criar Curso - Semeando Devs'
+                title: 'Criar Módulo - Semeando Devs'
+            },
+            {
+                path: 'editar-modulo/:id',
+                loadComponent: () => import('./pages/professor/professor-app/create-module/create-module').then(m => m.CreateModule),
+                title: 'Editar Módulo - Semeando Devs'
             }
         ]
     }

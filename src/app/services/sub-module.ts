@@ -26,4 +26,39 @@ export class SubModuleService {
 
         return data as unknown as SubModule[];
     }
+
+    async getSubModulesByModuleId(moduleId: string): Promise<SubModule[]> {
+        const { data, error } = await this.supabase
+            .from('submodules')
+            .select('*')
+            .eq('module_id', moduleId)
+            .order('order', { ascending: true });
+
+        if (error) {
+            throw new Error(error.message);
+        }
+
+        return data as unknown as SubModule[];
+    }
+
+    async updateSubModuleOrder(updates: { id: string; order: number }[]): Promise<void> {
+        const { error } = await this.supabase
+            .from('submodules')
+            .upsert(updates);
+
+        if (error) {
+            throw new Error(error.message);
+        }
+    }
+
+    async deleteSubModule(id: string): Promise<void> {
+        const { error } = await this.supabase
+            .from('submodules')
+            .delete()
+            .eq('id', id);
+
+        if (error) {
+            throw new Error(error.message);
+        }
+    }
 }

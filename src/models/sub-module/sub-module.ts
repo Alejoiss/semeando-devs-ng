@@ -4,8 +4,8 @@ export interface SubModule {
     id: string;
     title: string;
     description: string;
-    avatar: string;
-    icon: string;
+    avatar?: string;
+    icon?: string;
     order: number;
     slug: string;
     module: Module;

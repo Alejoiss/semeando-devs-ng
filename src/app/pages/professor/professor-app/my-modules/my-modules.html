@@ -1,1 +1,67 @@
-<p>my-modules works!</p>
+<div class="max-w-7xl mx-auto px-6 lg:px-12">
+    <!-- Header Section -->
+    <div class="mb-12">
+        <div class="flex items-center gap-2 mb-2">
+            <span class="h-1 w-8 bg-secondary rounded-full"></span>
+            <span class="font-label text-secondary uppercase tracking-[0.3em] text-[10px] font-bold">Professor</span>
+        </div>
+        <h2 class="text-4xl md:text-5xl font-black font-headline text-on-surface tracking-tight">
+            Meus Módulos
+        </h2>
+        <p class="text-on-surface-variant mt-4 max-w-2xl font-body leading-relaxed">
+            Gerencie seus conteúdos e acompanhe o progresso dos seus alunos nos módulos que você leciona.
+        </p>
+    </div>
+
+    <!-- Grid Layout -->
+    @if (isLoading()) {
+        <!-- Skeleton Loading -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            @for (_ of [1, 2, 3, 4]; track $index) {
+                <div class="bg-surface-container rounded-lg p-6 animate-pulse h-40"></div>
+            }
+        </div>
+    } @else if (error()) {
+        <div class="bg-surface-container rounded-lg p-8 flex flex-col items-center gap-4 text-center">
+            <span class="material-symbols-outlined text-5xl text-error">error</span>
+            <h3 class="text-lg font-bold font-headline text-on-surface">Erro ao carregar módulos</h3>
+            <p class="text-on-surface-variant text-sm font-body">{{ error() }}</p>
+        </div>
+    } @else {
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            @for (module of modules(); track module.id) {
+                <div class="group relative overflow-hidden bg-surface-container rounded-lg p-6 transition-all hover:bg-surface-container-high hover:translate-y-[-4px]">
+                    <div class="relative z-10 flex gap-5">
+                        <div class="h-16 w-16 shrink-0 flex items-center justify-center rounded-2xl bg-primary/10 text-primary">
+                            @if (module.icon) {
+                                <span class="material-symbols-outlined text-3xl">{{ module.icon }}</span>
+                            } @else {
+                                <img [src]="module.avatar" [alt]="module.title" class="w-full h-full object-cover rounded-2xl">
+                            }
+                        </div>
+                        <div class="flex-1 pr-16">
+                            <h3 class="text-xl font-bold font-headline mb-1 text-on-surface">{{ module.title }}</h3>
+                            <p class="text-on-surface-variant text-sm line-clamp-2">{{ module.description }}</p>
+                        </div>
+                    </div>
+
+                    <!-- Edit Button -->
+                    <div class="ml-auto mt-4 cursor-pointer w-fit">
+                        <a
+                            [routerLink]="['/professor/editar-modulo', module.slug]"
+                            class="flex items-center gap-2 px-6 py-2 bg-gradient-to-r from-primary to-primary-container text-on-primary-container font-headline font-bold rounded-xl glow-primary hover:scale-105 active:scale-95 transition-all text-sm no-underline"
+                            [attr.aria-label]="'Editar módulo ' + module.title">
+                            <span class="material-symbols-outlined text-sm">edit</span>
+                            Editar
+                        </a>
+                    </div>
+                </div>
+            } @empty {
+                <div class="col-span-full bg-surface-container rounded-lg p-12 flex flex-col items-center gap-4 text-center">
+                    <span class="material-symbols-outlined text-5xl text-on-surface-variant">inbox</span>
+                    <p class="text-on-surface-variant text-lg font-body">Você ainda não possui módulos vinculados.</p>
+                </div>
+            }
+        </div>
+    }
+</div>

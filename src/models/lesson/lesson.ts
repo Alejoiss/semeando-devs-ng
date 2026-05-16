@@ -15,4 +15,5 @@ export interface Lesson {
     ownerId: string;
     language?: string;
     initialCode?: string;
+    createdBy?: string;
 }
