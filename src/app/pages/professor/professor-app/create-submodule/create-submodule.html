@@ -146,10 +146,10 @@
         <div class="flex flex-col gap-6 surface_container p-6 md:p-8 rounded-2xl">
             <div class="flex items-center justify-between">
                 <h2 class="text-display-xs text-on_surface font-bold">Lições</h2>
-                <button type="button" class="bg-surface_container_highest hover:bg-surface_container_highest/80 text-primary font-bold py-2 px-6 rounded-xl transition-all flex items-center gap-2">
+                <a [routerLink]="['/professor/criar-licao', savedSubModuleId()]" class="bg-surface_container_highest hover:bg-surface_container_highest/80 text-primary font-bold py-2 px-6 rounded-xl transition-all flex items-center gap-2">
                     <span class="material-symbols-rounded text-sm">add</span>
                     Adicionar Lição
-                </button>
+                </a>
             </div>
 
             @if (lessonsLoading()) {
@@ -188,9 +188,9 @@
                             </div>
 
                             <div class="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                                <button type="button" class="p-2 text-on_surface_variant hover:text-primary transition-colors rounded-lg hover:bg-primary/10">
+                                <a [routerLink]="['/professor/editar-licao', lesson.id]" class="p-2 text-on_surface_variant hover:text-primary transition-colors rounded-lg hover:bg-primary/10">
                                     <span class="material-symbols-rounded text-sm">edit</span>
-                                </button>
+                                </a>
                                 <button type="button" (click)="deleteLesson(lesson.id)" class="p-2 text-on_surface_variant hover:text-error transition-colors rounded-lg hover:bg-error/10">
                                     <span class="material-symbols-rounded text-sm">delete</span>
                                 </button>

@@ -161,6 +161,16 @@ export const routes: Routes = [
                 path: 'editar-submodulo/:id',
                 loadComponent: () => import('./pages/professor/professor-app/create-submodule/create-submodule').then(m => m.CreateSubmodule),
                 title: 'Editar Submódulo - Semeando Devs'
+            },
+            {
+                path: 'criar-licao/:idSubModule',
+                loadComponent: () => import('./pages/professor/professor-app/create-lesson/create-lesson').then(m => m.CreateLesson),
+                title: 'Criar Lição - Semeando Devs'
+            },
+            {
+                path: 'editar-licao/:id',
+                loadComponent: () => import('./pages/professor/professor-app/create-lesson/create-lesson').then(m => m.CreateLesson),
+                title: 'Editar Lição - Semeando Devs'
             }
         ]
     }
