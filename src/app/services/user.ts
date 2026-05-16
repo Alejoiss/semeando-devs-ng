@@ -93,7 +93,7 @@ export class UserService {
 
         const { data: profileData } = await this.supabase
             .from('profiles')
-            .select('is_pro, pro_until, newsletter_active')
+            .select('is_pro, pro_until, newsletter_active, role')
             .eq('id', user.id)
             .returns<Profile[]>()
             .single();
@@ -111,6 +111,7 @@ export class UserService {
             avatar: user.user_metadata?.['avatar'] || '',
             plan: user.user_metadata?.['plan'] || null,
             isPro: isProActive,
+            role: profileData?.role || 'student',
             proUntil,
             newsletter_active: profileData?.newsletter_active || false,
         };

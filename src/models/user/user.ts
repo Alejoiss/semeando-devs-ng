@@ -10,6 +10,7 @@ export interface User {
     avatar: string;
     plan: Plan;
     isPro: boolean;
+    role: 'student' | 'teacher' | 'admin';
     proUntil?: Date | null;
     newsletter_active?: boolean;
 }

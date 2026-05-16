@@ -48,7 +48,7 @@ trigger: always_on
         <p>Bem-vindo, usuário!</p>
     }
     ```
-- **Integração com Supabase:** Sempre utilize o MCP do Supabase para integrações. Utilize SEMPRE services para para a integração, NUNCA nos componentes. NUNCA rode `npx supabase db reset`, rode SEMPRE `npx supabase db up`. Toda alteração ou criação de tabelas ou RLS no Supabase devem criar um arquivo de migration na pasta de migrations do Supabase e também atualizar ou criar o model correspondente na pasta de models. 
+- **Integração com Supabase:** Sempre utilize o MCP do Supabase para integrações. Utilize SEMPRE services para para a integração, NUNCA nos componentes. NUNCA rode `npx supabase db reset`e nem `npx supabase db up`. Eu mesmo irei executar os SQLs no banco. Toda alteração ou criação de tabelas ou RLS no Supabase devem criar um arquivo de migration na pasta de migrations do Supabase e também atualizar ou criar o model correspondente na pasta de models. 
 
 ## Fluxos de Trabalho do Desenvolvedor
 - **Iniciar Servidor de Dev:** `ng serve` (ou `npm start`)

@@ -41,6 +41,17 @@
             <span class="material-symbols-outlined" data-icon="manage_accounts">manage_accounts</span>
             <span class="font-label whitespace-nowrap" [ngClass]="{'font-bold': rlaAssinatura.isActive}">Gerenciar Assinatura</span>
         </a>
+
+        @if (isTeacherOrAdmin()) {
+            <a class="flex items-center gap-4 px-4 py-3 transition-transform transition-all" routerLink="/professor"
+                (click)="navigationService.closeSidebar()"
+                routerLinkActive="bg-[#0f1930] text-[#3fc2fb] rounded-xl border-l-4 border-[#fe69ac] translate-x-1"
+                [ngClass]="{'text-[#dee5ff]/60 hover:bg-[#141f38] hover:text-[#3fc2fb]': !rlaProfessor.isActive}"
+                #rlaProfessor="routerLinkActive">
+                <span class="material-symbols-outlined" data-icon="school">school</span>
+                <span class="font-label whitespace-nowrap" [ngClass]="{'font-bold': rlaProfessor.isActive}">Área do Professor</span>
+            </a>
+        }
     </nav>
     <div class="px-3 flex flex-col gap-1 mt-auto">
         @if (!userService.currentUser()?.isPro) {

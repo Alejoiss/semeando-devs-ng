@@ -1,5 +1,6 @@
 import { Routes } from '@angular/router';
 import { authGuard } from './components/guards/auth.guard';
+import { teacherGuard } from './components/guards/teacher.guard';
 
 export const routes: Routes = [
     {
@@ -124,5 +125,11 @@ export const routes: Routes = [
                 title: 'Aguardando Pagamento - Semeando Devs'
             }
         ]
+    },
+    {
+        path: 'professor',
+        canActivate: [authGuard, teacherGuard],
+        loadComponent: () => import('./pages/professor/professor-app/professor-app').then(m => m.ProfessorApp),
+        title: 'Área do Professor - Semeando Devs'
     }
 ];
