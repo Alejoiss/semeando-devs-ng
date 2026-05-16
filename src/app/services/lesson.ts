@@ -27,6 +27,41 @@ export class LessonService {
         return (data ?? []) as unknown as Lesson[];
     }
 
+    async getLessonsBySubModuleId(subModuleId: string): Promise<Lesson[]> {
+        const { data, error } = await this.supabase
+            .from('lessons')
+            .select('*')
+            .eq('sub_module_id', subModuleId)
+            .order('order', { ascending: true });
+
+        if (error) {
+            throw new Error(error.message);
+        }
+
+        return (data ?? []) as unknown as Lesson[];
+    }
+
+    async updateLessonOrder(updates: { id: string; order: number }[]): Promise<void> {
+        const { error } = await this.supabase
+            .from('lessons')
+            .upsert(updates);
+
+        if (error) {
+            throw new Error(error.message);
+        }
+    }
+
+    async deleteLesson(id: string): Promise<void> {
+        const { error } = await this.supabase
+            .from('lessons')
+            .delete()
+            .eq('id', id);
+
+        if (error) {
+            throw new Error(error.message);
+        }
+    }
+
     async getAllLessons(): Promise<Lesson[]> {
         const { data, error } = await this.supabase
             .from('lessons')

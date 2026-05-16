@@ -255,4 +255,15 @@ export class CreateModule {
             this.isSaving.set(false);
         }
     }
+
+    createSubModule() {
+        const moduleId = this.savedModuleId();
+        if (moduleId) {
+            this.router.navigate(['/professor/criar-submodulo', moduleId]);
+        }
+    }
+
+    editSubModule(subModuleId: string) {
+        this.router.navigate(['/professor/editar-submodulo', subModuleId]);
+    }
 }
