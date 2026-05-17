@@ -97,6 +97,89 @@ export class LessonService {
             xp: data.xp,
             language: data.language,
             initialCode: data.initial_code,
+            createdBy: data.created_by,
         } as Lesson;
+    }
+
+    async createLesson(lesson: Partial<Lesson>): Promise<Lesson> {
+        const { data, error } = await this.supabase
+            .from('lessons')
+            .insert({
+                title: lesson.title,
+                description: lesson.description,
+                type: lesson.type,
+                order: lesson.order,
+                sub_module_id: lesson.subModuleId,
+                xp: lesson.xp,
+                created_by: lesson.createdBy,
+            })
+            .select('*')
+            .single();
+
+        if (error) {
+            throw new Error(error.message);
+        }
+
+        return {
+            id: data.id,
+            title: data.title,
+            description: data.description,
+            type: data.type,
+            order: data.order,
+            subModuleId: data.sub_module_id,
+            xp: data.xp,
+            language: data.language,
+            initialCode: data.initial_code,
+            createdBy: data.created_by,
+        } as Lesson;
+    }
+
+    async updateLesson(id: string, lesson: Partial<Lesson>): Promise<Lesson> {
+        const payload: any = {};
+        if (lesson.title !== undefined) payload.title = lesson.title;
+        if (lesson.description !== undefined) payload.description = lesson.description;
+        if (lesson.type !== undefined) payload.type = lesson.type;
+        if (lesson.order !== undefined) payload.order = lesson.order;
+        if (lesson.subModuleId !== undefined) payload.sub_module_id = lesson.subModuleId;
+        if (lesson.xp !== undefined) payload.xp = lesson.xp;
+        if (lesson.language !== undefined) payload.language = lesson.language;
+        if (lesson.initialCode !== undefined) payload.initial_code = lesson.initialCode;
+
+        const { data, error } = await this.supabase
+            .from('lessons')
+            .update(payload)
+            .eq('id', id)
+            .select('*')
+            .single();
+
+        if (error) {
+            throw new Error(error.message);
+        }
+
+        return {
+            id: data.id,
+            title: data.title,
+            description: data.description,
+            type: data.type,
+            order: data.order,
+            subModuleId: data.sub_module_id,
+            xp: data.xp,
+            language: data.language,
+            initialCode: data.initial_code,
+            createdBy: data.created_by,
+        } as Lesson;
+    }
+
+    async getLessonCountBySubModuleId(subModuleId: string): Promise<number> {
+        const { count, error } = await this.supabase
+            .from('lessons')
+            .select('*', { count: 'exact', head: true })
+            .eq('sub_module_id', subModuleId);
+
+        if (error) {
+            throw new Error(error.message);
+        }
+
+        return count ?? 0;
     }
 }

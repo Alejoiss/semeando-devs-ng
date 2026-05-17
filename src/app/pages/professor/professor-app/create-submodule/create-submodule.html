@@ -18,20 +18,20 @@
                         <!-- Título -->
                         <div class="flex flex-col gap-2">
                             <label class="text-label-md text-on_surface_variant">Título do Submódulo *</label>
-                            <input type="text" formControlName="title" class="bg-surface_container_lowest text-on_surface border-none rounded-lg p-4 focus:ring-2 focus:ring-primary outline-none" placeholder="Ex: Componentes e Templates">
+                            <input type="text" formControlName="title" class="bg-surface_container_lowest text-on_surface border-none p-4 focus:ring-2 focus:ring-primary outline-none" placeholder="Ex: Componentes e Templates">
                         </div>
 
                         <!-- Slug (Readonly) -->
                         <div class="flex flex-col gap-2">
                             <label class="text-label-md text-on_surface_variant">Slug (URL)</label>
-                            <input type="text" [value]="slug()" readonly class="bg-surface_container_lowest/50 text-on_surface_variant border-none rounded-lg p-4 outline-none cursor-not-allowed">
+                            <input type="text" [value]="slug()" readonly class="bg-surface_container_lowest/50 text-on_surface_variant border-none p-4 outline-none cursor-not-allowed">
                         </div>
                     </div>
 
                     <!-- Descrição -->
                     <div class="flex flex-col gap-2">
                         <label class="text-label-md text-on_surface_variant">Descrição *</label>
-                        <textarea formControlName="description" rows="4" class="bg-surface_container_lowest text-on_surface border-none rounded-lg p-4 focus:ring-2 focus:ring-primary outline-none resize-none" placeholder="Uma breve descrição do que os alunos aprenderão neste submódulo..."></textarea>
+                        <textarea formControlName="description" rows="4" class="bg-surface_container_lowest text-on_surface border-none p-4 focus:ring-2 focus:ring-primary outline-none resize-none" placeholder="Uma breve descrição do que os alunos aprenderão neste submódulo..."></textarea>
                     </div>
 
                     <!-- Identidade Visual Toggle -->
@@ -57,7 +57,7 @@
                                 <!-- Input Ícone -->
                                 @if (visualMode() === 'icon') {
                                     <div class="flex flex-col gap-2">
-                                        <input type="text" [value]="iconName()" (input)="onIconNameChange($event)" class="bg-surface_container_lowest text-on_surface border-none rounded-lg p-4 focus:ring-2 focus:ring-primary outline-none w-full" placeholder="Ex: memory">
+                                        <input type="text" [value]="iconName()" (input)="onIconNameChange($event)" class="bg-surface_container_lowest text-on_surface border-none p-4 focus:ring-2 focus:ring-primary outline-none w-full" placeholder="Ex: memory">
                                         <a href="https://fonts.google.com/icons" target="_blank" class="text-label-sm text-primary hover:underline w-max">Ver ícones disponíveis no Google Fonts</a>
                                     </div>
                                 }
