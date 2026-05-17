@@ -1,5 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, computed, inject, OnInit, signal } from '@angular/core';
+import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { MarkdownModule } from 'ngx-markdown';
 import { LessonService } from '../../../services/lesson';
@@ -28,6 +29,11 @@ export class Lesson implements OnInit {
     private userLessonService = inject(UserLessonService);
     private sectionContentService = inject(SectionContentService);
     private extraMaterialService = inject(ExtraMaterialService);
+    private sanitizer = inject(DomSanitizer);
+
+    getSafeHtml(html: string | undefined): SafeHtml {
+        return this.sanitizer.bypassSecurityTrustHtml(html || '');
+    }
 
     lessonId = signal<string>('');
     slugSubmodule = signal<string>('');

@@ -106,8 +106,8 @@
                                 <div class="p-4 border-t border-outline-variant/15 flex flex-col gap-4 animate-fade-in bg-surface-container/20 rounded-b-2xl">
                                     @if (content.type === SectionContentType.VIDEO) {
                                         <div class="flex flex-col gap-2">
-                                            <label class="text-label-md font-bold text-on-surface">URL do Vídeo (YouTube)</label>
-                                            <input type="text" [value]="content.content" (input)="updateContent(i, {content: $any($event.target).value})" placeholder="Ex: https://youtube.com/..." class="w-full bg-surface-container-lowest border border-outline-variant/15 p-3 outline-none focus:ring-2 focus:ring-primary/20 text-on-surface">
+                                            <label class="text-label-md font-bold text-on-surface">Código Iframe do Vídeo (ex: YouTube/Vimeo)</label>
+                                            <textarea rows="4" [value]="content.content" (input)="updateContent(i, {content: $any($event.target).value})" placeholder="Ex: <iframe width=&quot;560&quot; height=&quot;315&quot; src=&quot;https://www.youtube.com/embed/...&quot; ...></iframe>" class="w-full bg-surface-container-lowest border border-outline-variant/15 p-3 outline-none focus:ring-2 focus:ring-primary/20 text-on-surface resize-none font-mono text-sm"></textarea>
                                         </div>
                                     }
                                     @if (content.type === SectionContentType.IMAGE) {
@@ -265,11 +265,15 @@
                                     </div>
                                 }
                                 @case ('VIDEO') {
-                                    <div class="relative group rounded-3xl overflow-hidden bg-black border border-outline-variant/10 shadow-2xl aspect-video">
-                                        <video [src]="section.file" controls preload="metadata"
-                                            class="w-full h-full object-contain">
-                                            Seu navegador não suporta a tag de vídeo.
-                                        </video>
+                                    <div class="relative group rounded-3xl overflow-hidden bg-black border border-outline-variant/10 shadow-2xl aspect-video flex items-center justify-center">
+                                        @if (section.content) {
+                                            <div [innerHTML]="getSafeHtml(section.content)" class="w-full h-full iframe-container animate-fade-in"></div>
+                                        } @else {
+                                            <div class="flex flex-col items-center justify-center text-on-surface-variant gap-2 p-6">
+                                                <span class="material-symbols-rounded text-4xl text-primary animate-pulse">play_circle</span>
+                                                <p class="text-label-md text-center">Nenhum vídeo configurado. Insira o código do iframe ao lado.</p>
+                                            </div>
+                                        }
                                     </div>
                                 }
                             }

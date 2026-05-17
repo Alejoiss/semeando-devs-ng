@@ -1,4 +1,5 @@
 import { ChangeDetectionStrategy, Component, effect, inject, input, signal } from '@angular/core';
+import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { LessonService } from '../../../../../services/lesson';
@@ -24,8 +25,13 @@ export class TabContent {
     private userService = inject(UserService);
     private router = inject(Router);
     private sectionContentService = inject(SectionContentService);
+    private sanitizer = inject(DomSanitizer);
 
     SectionContentType = SectionContentType; // Expose to template
+
+    getSafeHtml(html: string | undefined): SafeHtml {
+        return this.sanitizer.bypassSecurityTrustHtml(html || '');
+    }
 
     subModuleId = input<string | null>(null);
     lessonId = input<string | null>(null);

@@ -75,11 +75,15 @@
                                 </div>
                             }
                             @case ('VIDEO') {
-                                <div class="relative group rounded-3xl overflow-hidden bg-black border border-outline-variant/10 shadow-2xl aspect-video">
-                                    <video [src]="section.file" controls preload="metadata"
-                                        class="w-full h-full object-contain">
-                                        Seu navegador não suporta a tag de vídeo.
-                                    </video>
+                                <div class="relative group rounded-3xl overflow-hidden bg-black border border-outline-variant/10 shadow-2xl aspect-video flex items-center justify-center">
+                                    @if (section.content) {
+                                        <div [innerHTML]="getSafeHtml(section.content)" class="w-full h-full iframe-container"></div>
+                                    } @else {
+                                        <div class="flex flex-col items-center justify-center text-on-surface-variant gap-2 p-6">
+                                            <span class="material-symbols-outlined text-4xl text-secondary animate-pulse">play_circle</span>
+                                            <p class="text-label-md text-center">Vídeo não disponível.</p>
+                                        </div>
+                                    }
                                 </div>
                             }
                         }
