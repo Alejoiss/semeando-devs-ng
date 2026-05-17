@@ -252,6 +252,8 @@ export class CreateSubmodule {
                     throw new Error('ID do módulo não encontrado.');
                 }
 
+                const subModuleCount = await this.subModuleService.getSubModuleCountByModuleId(mId);
+
                 const payload = {
                     title: this.form.controls.title.value,
                     description: this.form.controls.description.value,
@@ -259,6 +261,7 @@ export class CreateSubmodule {
                     module_id: mId,
                     avatar: avatarUrl,
                     icon: iconValue,
+                    order: subModuleCount + 1,
                 };
 
                 const created = await this.subModuleService.createSubModule(payload);

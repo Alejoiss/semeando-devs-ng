@@ -41,10 +41,29 @@ export class SubModuleService {
         return data as unknown as SubModule[];
     }
 
-    async updateSubModuleOrder(updates: { id: string; order: number }[]): Promise<void> {
-        const { error } = await this.supabase
+    async getSubModuleCountByModuleId(moduleId: string): Promise<number> {
+        const { count, error } = await this.supabase
             .from('submodules')
-            .upsert(updates);
+            .select('*', { count: 'exact', head: true })
+            .eq('module_id', moduleId);
+
+        if (error) {
+            throw new Error(error.message);
+        }
+
+        return count ?? 0;
+    }
+
+    async updateSubModuleOrder(updates: { id: string; order: number }[]): Promise<void> {
+        const promises = updates.map(u =>
+            this.supabase
+                .from('submodules')
+                .update({ order: u.order })
+                .eq('id', u.id)
+        );
+
+        const results = await Promise.all(promises);
+        const error = results.find(r => r.error)?.error;
 
         if (error) {
             throw new Error(error.message);

@@ -42,9 +42,15 @@ export class LessonService {
     }
 
     async updateLessonOrder(updates: { id: string; order: number }[]): Promise<void> {
-        const { error } = await this.supabase
-            .from('lessons')
-            .upsert(updates);
+        const promises = updates.map(u =>
+            this.supabase
+                .from('lessons')
+                .update({ order: u.order })
+                .eq('id', u.id)
+        );
+
+        const results = await Promise.all(promises);
+        const error = results.find(r => r.error)?.error;
 
         if (error) {
             throw new Error(error.message);
