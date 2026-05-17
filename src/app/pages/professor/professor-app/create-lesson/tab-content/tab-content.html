@@ -29,7 +29,14 @@
                         />
                     </div>
                     @if (lessonForm.get('title')?.invalid && lessonForm.get('title')?.touched) {
-                        <span class="text-error text-label-sm font-medium animate-fade-in">O título é obrigatório.</span>
+                        <p class="text-error text-label-sm font-medium animate-fade-in mt-1">
+                            @if (lessonForm.get('title')?.hasError('required')) {
+                                <span>O título é obrigatório.</span>
+                            }
+                            @if (lessonForm.get('title')?.hasError('minlength')) {
+                                <span>O título precisa ter no mínimo 3 caracteres.</span>
+                            }
+                        </p>
                     }
                 </div>
 
@@ -49,7 +56,14 @@
                         ></textarea>
                     </div>
                     @if (lessonForm.get('description')?.invalid && lessonForm.get('description')?.touched) {
-                        <span class="text-error text-label-sm font-medium animate-fade-in">A descrição é obrigatória.</span>
+                        <p class="text-error text-label-sm font-medium animate-fade-in mt-1">
+                            @if (lessonForm.get('description')?.hasError('required')) {
+                                <span>A descrição é obrigatória.</span>
+                            }
+                            @if (lessonForm.get('description')?.hasError('minlength')) {
+                                <span>A descrição precisa ter no mínimo 10 caracteres.</span>
+                            }
+                        </p>
                     }
                 </div>
             </div>

@@ -19,6 +19,16 @@
                         <div class="flex flex-col gap-2">
                             <label class="text-label-md text-on-surface-variant">Título do Submódulo *</label>
                             <input type="text" formControlName="title" class="bg-surface-container-lowest text-on-surface border-none p-4 focus:ring-2 focus:ring-primary outline-none transition-all" placeholder="Ex: Componentes e Templates">
+                            @if (form.get('title')?.invalid && form.get('title')?.touched) {
+                                <p class="text-error text-label-sm mt-1 animate-fade-in">
+                                    @if (form.get('title')?.hasError('required')) {
+                                        <span>O título é obrigatório.</span>
+                                    }
+                                    @if (form.get('title')?.hasError('minlength')) {
+                                        <span>O título precisa ter no mínimo 3 caracteres.</span>
+                                    }
+                                </p>
+                            }
                         </div>
 
                         <!-- Slug (Readonly) -->
@@ -32,6 +42,16 @@
                     <div class="flex flex-col gap-2">
                         <label class="text-label-md text-on-surface-variant">Descrição *</label>
                         <textarea formControlName="description" rows="4" class="bg-surface-container-lowest text-on-surface border-none p-4 focus:ring-2 focus:ring-primary outline-none resize-none transition-all" placeholder="Uma breve descrição do que os alunos aprenderão neste submódulo..."></textarea>
+                        @if (form.get('description')?.invalid && form.get('description')?.touched) {
+                            <p class="text-error text-label-sm mt-1 animate-fade-in">
+                                @if (form.get('description')?.hasError('required')) {
+                                    <span>A descrição é obrigatória.</span>
+                                }
+                                @if (form.get('description')?.hasError('minlength')) {
+                                    <span>A descrição precisa ter no mínimo 10 caracteres.</span>
+                                }
+                            </p>
+                        }
                     </div>
 
                     <!-- Identidade Visual Toggle -->

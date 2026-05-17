@@ -59,8 +59,8 @@ export class TabContent {
     isUploadingImageMap = signal<Record<string, boolean>>({});
 
     lessonForm = this.fb.group({
-        title: ['', [Validators.required]],
-        description: ['', [Validators.required]],
+        title: ['', [Validators.required, Validators.minLength(3)]],
+        description: ['', [Validators.required, Validators.minLength(10)]],
     });
 
     constructor() {

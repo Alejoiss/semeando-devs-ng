@@ -23,8 +23,8 @@ export class CreateModule {
 
     // Form
     form = new FormGroup({
-        title: new FormControl('', { nonNullable: true, validators: [Validators.required] }),
-        description: new FormControl('', { nonNullable: true, validators: [Validators.required] })
+        title: new FormControl('', { nonNullable: true, validators: [Validators.required, Validators.minLength(2)] }),
+        description: new FormControl('', { nonNullable: true, validators: [Validators.required, Validators.minLength(10)] })
     });
 
     // Sub-modules
@@ -55,7 +55,7 @@ export class CreateModule {
                     title: module.title,
                     description: module.description
                 });
-                
+
                 if (module.icon && module.icon.trim()) {
                     this.visualMode.set('icon');
                     this.iconName.set(module.icon.trim());
@@ -179,7 +179,7 @@ export class CreateModule {
         const input = event.target as HTMLInputElement;
         if (input.files && input.files.length > 0) {
             const file = input.files[0];
-            
+
             if (file.size > 2 * 1024 * 1024) {
                 alert('A imagem não pode ter mais de 2MB.');
                 input.value = '';
