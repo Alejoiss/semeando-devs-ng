@@ -39,6 +39,82 @@ export class QuizService {
         } as Quiz;
     }
 
+    async getOrCreateQuiz(lessonId: string): Promise<Quiz> {
+        let quiz = await this.getQuizByLessonId(lessonId);
+        if (quiz) return quiz;
+
+        const { data, error } = await this.supabase
+            .from('quizzes')
+            .insert({ lesson_id: lessonId })
+            .select()
+            .single();
+
+        if (error) throw new Error(error.message);
+
+        return {
+            id: data.id,
+            lessonId: data.lesson_id,
+            spentTime: data.spent_time,
+            createdAt: new Date(data.created_at),
+        } as Quiz;
+    }
+
+    async saveQuestion(quizId: string, questionData: any): Promise<any> {
+        // 1. Upsert Question
+        const qPayload = questionData.id ? { id: questionData.id, quiz_id: quizId } : { quiz_id: quizId };
+        const { data: qData, error: qError } = await this.supabase
+            .from('questions')
+            .upsert(qPayload)
+            .select()
+            .single();
+
+        if (qError) throw new Error(qError.message);
+        const savedQuestionId = qData.id;
+
+        // 2. Upsert SectionContent
+        const scPayload = {
+            id: questionData.sectionContent?.id || undefined,
+            question_id: savedQuestionId,
+            type: 'MARKDOWN',
+            content: questionData.statement || '',
+            order: 0
+        };
+        const { data: scData, error: scError } = await this.supabase
+            .from('section_content')
+            .upsert(scPayload)
+            .select()
+            .single();
+
+        if (scError) throw new Error(scError.message);
+
+        // 3. Upsert Answers
+        const answersPayload = questionData.answers.map((a: any) => ({
+            id: a.id || crypto.randomUUID(),
+            question_id: savedQuestionId,
+            text: a.text || '',
+            is_correct: !!a.isCorrect,
+            reason: a.justification || a.reason || ''
+        }));
+        
+        const { error: ansError } = await this.supabase
+            .from('answers')
+            .upsert(answersPayload);
+
+        if (ansError) throw new Error(ansError.message);
+
+        return {
+            id: savedQuestionId,
+            statement: scData.content || '',
+            answers: answersPayload.map((a: any) => ({
+                id: a.id,
+                text: a.text,
+                justification: a.reason,
+                isCorrect: a.is_correct
+            })),
+            sectionContent: scData
+        };
+    }
+
     async getRevisionQuestions(lessonId: string, subModuleId: string): Promise<Question[]> {
         const lesson = await this.lessonService.getLessonById(lessonId);
         if (!lesson) return [];

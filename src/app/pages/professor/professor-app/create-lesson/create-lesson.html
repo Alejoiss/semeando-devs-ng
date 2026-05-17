@@ -62,7 +62,7 @@
                     <app-tab-extra-material [lessonId]="lessonId()" />
                 }
                 @case ('quiz') {
-                    <app-tab-quiz />
+                    <app-tab-quiz [lessonId]="lessonId()" />
                 }
             }
         </div>
