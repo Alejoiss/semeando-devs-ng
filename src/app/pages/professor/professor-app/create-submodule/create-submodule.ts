@@ -54,12 +54,18 @@ export class CreateSubmodule {
                     description: sm.description,
                 });
                 this.moduleId.set((sm as any).module_id);
-                if (sm.avatar) {
-                    this.visualMode.set('image');
-                    this.avatarPreviewUrl.set(sm.avatar);
-                } else if (sm.icon) {
+                
+                if (sm.icon && sm.icon.trim()) {
                     this.visualMode.set('icon');
-                    this.iconName.set(sm.icon);
+                    this.iconName.set(sm.icon.trim());
+                    if (sm.avatar && sm.avatar.trim()) {
+                        this.avatarPreviewUrl.set(sm.avatar.trim());
+                    }
+                } else if (sm.avatar && sm.avatar.trim()) {
+                    this.visualMode.set('image');
+                    this.avatarPreviewUrl.set(sm.avatar.trim());
+                } else {
+                    this.visualMode.set('image');
                 }
             }
         } catch (err) {
@@ -211,16 +217,20 @@ export class CreateSubmodule {
         this.saveError.set(null);
 
         try {
-            let avatarUrl: string | undefined = undefined;
-            let iconValue: string | undefined = undefined;
+            let avatarUrl: string | null = null;
+            let iconValue: string | null = null;
 
             if (this.visualMode() === 'image') {
                 const file = this.avatarFile();
                 if (file) {
                     avatarUrl = await this.subModuleService.uploadSubModuleAvatar(file);
+                } else {
+                    avatarUrl = this.avatarPreviewUrl();
                 }
+                iconValue = null;
             } else {
-                iconValue = this.iconName() || undefined;
+                iconValue = this.iconName() || null;
+                avatarUrl = null;
             }
 
             const isEdit = !!this.savedSubModuleId();

@@ -57,7 +57,7 @@
                                 <!-- Input Ícone -->
                                 @if (visualMode() === 'icon') {
                                     <div class="flex flex-col gap-2">
-                                        <input type="text" [value]="iconName()" (input)="onIconNameChange($event)" class="bg-surface-container-lowest text-on-surface border-none p-4 focus:ring-2 focus:ring-primary outline-none w-full" placeholder="Ex: memory">
+                                        <input type="text" [value]="iconName() || ''" (input)="onIconNameChange($event)" class="bg-surface-container-lowest text-on-surface border-none p-4 focus:ring-2 focus:ring-primary outline-none w-full" placeholder="Ex: memory">
                                         <a href="https://fonts.google.com/icons" target="_blank" class="text-label-sm text-primary hover:underline w-max">Ver ícones disponíveis no Google Fonts</a>
                                     </div>
                                 }

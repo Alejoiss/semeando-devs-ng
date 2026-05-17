@@ -51,7 +51,7 @@ export class SubModuleService {
         }
     }
 
-    async createSubModule(payload: { title: string; description: string; slug: string; module_id: string; avatar?: string; icon?: string; order?: number }): Promise<SubModule> {
+    async createSubModule(payload: { title: string; description: string; slug: string; module_id: string; avatar?: string | null; icon?: string | null; order?: number }): Promise<SubModule> {
         const { data, error } = await this.supabase
             .from('submodules')
             .insert({
@@ -73,7 +73,7 @@ export class SubModuleService {
         return data as unknown as SubModule;
     }
 
-    async updateSubModule(id: string, payload: { title?: string; description?: string; slug?: string; avatar?: string; icon?: string }): Promise<SubModule> {
+    async updateSubModule(id: string, payload: { title?: string; description?: string; slug?: string; avatar?: string | null; icon?: string | null }): Promise<SubModule> {
         const { data, error } = await this.supabase
             .from('submodules')
             .update(payload)

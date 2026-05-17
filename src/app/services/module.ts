@@ -200,8 +200,8 @@ export interface CreateModulePayload {
     title: string;
     description: string;
     slug: string;
-    avatar?: string;
-    icon?: string;
+    avatar?: string | null;
+    icon?: string | null;
     inRevision?: boolean;
     createdBy: string;
 }

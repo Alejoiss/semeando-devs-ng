@@ -55,12 +55,18 @@ export class CreateModule {
                     title: module.title,
                     description: module.description
                 });
-                if (module.avatar) {
-                    this.visualMode.set('image');
-                    this.avatarPreviewUrl.set(module.avatar);
-                } else if (module.icon) {
+                
+                if (module.icon && module.icon.trim()) {
                     this.visualMode.set('icon');
-                    this.iconName.set(module.icon);
+                    this.iconName.set(module.icon.trim());
+                    if (module.avatar && module.avatar.trim()) {
+                        this.avatarPreviewUrl.set(module.avatar.trim());
+                    }
+                } else if (module.avatar && module.avatar.trim()) {
+                    this.visualMode.set('image');
+                    this.avatarPreviewUrl.set(module.avatar.trim());
+                } else {
+                    this.visualMode.set('image');
                 }
             }
         } catch (err: any) {
@@ -210,16 +216,20 @@ export class CreateModule {
         this.saveError.set(null);
 
         try {
-            let avatarUrl: string | undefined = undefined;
-            let iconValue: string | undefined = undefined;
+            let avatarUrl: string | null = null;
+            let iconValue: string | null = null;
 
             if (this.visualMode() === 'image') {
                 const file = this.selectedFile();
                 if (file) {
                     avatarUrl = await this.moduleService.uploadModuleAvatar(file);
+                } else {
+                    avatarUrl = this.avatarPreviewUrl();
                 }
+                iconValue = null;
             } else {
-                iconValue = this.iconName() || undefined;
+                iconValue = this.iconName() || null;
+                avatarUrl = null;
             }
 
             if (this.savedModuleId()) {
