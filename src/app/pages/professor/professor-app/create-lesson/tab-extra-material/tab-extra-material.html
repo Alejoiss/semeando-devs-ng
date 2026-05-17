@@ -1,7 +1,174 @@
-<div class="flex flex-col gap-6 p-8 bg-surface-container-lowest/50 rounded-2xl border border-outline-variant/15">
-    <div class="flex flex-col items-center justify-center gap-4 py-12">
-        <span class="material-symbols-rounded text-[48px] text-on-surface-variant/50">attachment</span>
-        <h3 class="text-title-lg text-on-surface font-bold">Materiais Extras</h3>
-        <p class="text-on-surface-variant text-center max-w-md">Esta aba permitirá o upload e gerenciamento de arquivos, links e recursos complementares para esta lição.</p>
+@if (!lessonId()) {
+    <div class="glass-alert p-6 text-center rounded-2xl max-w-lg mx-auto my-12">
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-12 h-12 mx-auto mb-4 text-[#fe69ac] opacity-80 animate-pulse" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+        </svg>
+        <h3 class="jakarta-display text-lg font-bold text-[#dee5ff] mb-2">Lição Não Salva</h3>
+        <p class="inter-body text-sm text-[#dee5ff]/70">
+            Você precisa salvar os dados básicos da lição antes de poder adicionar ou gerenciar materiais extras para ela.
+        </p>
     </div>
-</div>
+} @else {
+    <div class="materials-container flex flex-col gap-8">
+        
+        <!-- Feedback messages -->
+        @if (errorMessage()) {
+            <div class="bg-red-500/10 border-l-4 border-red-500 p-4 rounded-xl flex items-center justify-between">
+                <p class="inter-body text-sm text-red-200">{{ errorMessage() }}</p>
+                <button (click)="errorMessage.set(null)" class="text-red-200 hover:text-white transition-colors">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
+                    </svg>
+                </button>
+            </div>
+        }
+
+        @if (showSuccess()) {
+            <div class="bg-green-500/10 border-l-4 border-green-500 p-4 rounded-xl flex items-center gap-3 animate-fade-in">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-green-400" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                </svg>
+                <p class="inter-body text-sm text-green-200">Materiais extras salvos com sucesso!</p>
+            </div>
+        }
+
+        <!-- Header Actions -->
+        <div class="flex items-center justify-between flex-wrap gap-4">
+            <div>
+                <h2 class="jakarta-display text-xl font-bold text-[#dee5ff] mb-1">Materiais Extras</h2>
+                <p class="inter-body text-xs text-[#dee5ff]/60">Forneça links de apoio, documentações e referências relevantes para os alunos.</p>
+            </div>
+            
+            <button 
+                type="button" 
+                (click)="addMaterial()" 
+                class="btn-primary flex items-center gap-2 px-5 py-2.5 rounded-xl font-semibold transition-all duration-300 transform active:scale-95 text-[#060e20]">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                </svg>
+                <span class="space-grotesk text-sm tracking-wide">Adicionar Material</span>
+            </button>
+        </div>
+
+        @if (isLoading()) {
+            <div class="flex flex-col items-center justify-center py-20 gap-4">
+                <div class="w-10 h-10 border-4 border-[#3fc2fb]/20 border-t-[#3fc2fb] rounded-full animate-spin"></div>
+                <p class="inter-body text-sm text-[#dee5ff]/60">Buscando materiais salvos...</p>
+            </div>
+        } @else {
+            <form [formGroup]="form" (ngSubmit)="save()" class="flex flex-col gap-6">
+                
+                @if (materials.length === 0) {
+                    <div class="empty-state p-12 text-center rounded-2xl bg-[#091328] transition-all duration-300">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-16 h-16 mx-auto mb-4 text-[#3fc2fb] opacity-60" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
+                        </svg>
+                        <h4 class="jakarta-display text-base font-bold text-[#dee5ff] mb-2">Nenhum material de apoio ainda</h4>
+                        <p class="inter-body text-sm text-[#dee5ff]/50 max-w-sm mx-auto mb-6">
+                            Adicione links úteis como repositórios Git, artigos ou documentações técnicas para enriquecer o aprendizado.
+                        </p>
+                        <button 
+                            type="button" 
+                            (click)="addMaterial()" 
+                            class="btn-secondary px-5 py-2.5 rounded-xl text-sm font-semibold transition-all duration-300">
+                            Adicionar Novo Link
+                        </button>
+                    </div>
+                } @else {
+                    <div formArrayName="materials" class="flex flex-col gap-4">
+                        @for (item of materials.controls; track item.value.id; let i = $index) {
+                            <div 
+                                [formGroupName]="i" 
+                                class="material-card p-6 rounded-2xl bg-[#0f1930] hover:bg-[#141f38] transition-all duration-300 flex items-start gap-4">
+                                
+                                <div class="flex-grow grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <!-- Title Input -->
+                                    <div class="flex flex-col gap-1.5">
+                                        <label class="space-grotesk text-xs tracking-wider text-[#dee5ff]/60 font-semibold uppercase">
+                                            Título do Material *
+                                        </label>
+                                        <input 
+                                            type="text" 
+                                            formControlName="title" 
+                                            placeholder="Ex: Documentação oficial do TypeScript" 
+                                            class="input-field rounded-xl px-4 py-3 bg-[#060e20] text-[#dee5ff] focus:outline-none focus:ring-2 focus:ring-[#3fc2fb]/50 transition-all text-sm" />
+                                        
+                                        @if (item.get('title')?.touched && item.get('title')?.invalid) {
+                                            <span class="inter-body text-xs text-[#ff716c] mt-1 flex items-center gap-1">
+                                                <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" viewBox="0 0 20 20" fill="currentColor">
+                                                    <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
+                                                </svg>
+                                                O título é obrigatório.
+                                            </span>
+                                        }
+                                    </div>
+
+                                    <!-- URL Input -->
+                                    <div class="flex flex-col gap-1.5">
+                                        <label class="space-grotesk text-xs tracking-wider text-[#dee5ff]/60 font-semibold uppercase">
+                                            URL do Link *
+                                        </label>
+                                        <input 
+                                            type="text" 
+                                            formControlName="url" 
+                                            placeholder="Ex: https://www.typescriptlang.org" 
+                                            class="input-field rounded-xl px-4 py-3 bg-[#060e20] text-[#dee5ff] focus:outline-none focus:ring-2 focus:ring-[#3fc2fb]/50 transition-all text-sm" />
+                                        
+                                        @if (item.get('url')?.touched && item.get('url')?.invalid) {
+                                            <span class="inter-body text-xs text-[#ff716c] mt-1 flex items-center gap-1">
+                                                <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" viewBox="0 0 20 20" fill="currentColor">
+                                                    <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
+                                                </svg>
+                                                @if (item.get('url')?.errors?.['required']) {
+                                                    O link URL é obrigatório.
+                                                } @else {
+                                                    Por favor, insira uma URL válida (ex: http:// ou https://).
+                                                }
+                                            </span>
+                                        }
+                                    </div>
+                                </div>
+
+                                <!-- Remove Button -->
+                                <button 
+                                    type="button" 
+                                    (click)="removeMaterial(i)" 
+                                    class="remove-btn self-center p-2.5 rounded-xl hover:bg-[#ff716c]/10 text-[#ff716c]/70 hover:text-[#ff716c] transition-all duration-300 transform active:scale-90"
+                                    title="Remover este material">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                    </svg>
+                                </button>
+                            </div>
+                        }
+                    </div>
+
+                    <!-- Footer Actions -->
+                    <div class="flex justify-end pt-6 mt-8 border-t border-[#0f1930]/40">
+                        <div class="flex items-center gap-4">
+                            @if (showSuccess()) {
+                                <span class="success-message text-tertiary text-label-md font-bold animate-fade-in">Salvo com sucesso!</span>
+                            }
+
+                            <button 
+                                type="submit" 
+                                [disabled]="isSaving() || form.invalid" 
+                                class="w-full sm:w-auto py-4 px-8 bg-gradient-to-r from-secondary to-secondary-dim text-on-secondary font-headline font-extrabold rounded-xl shadow-lg shadow-primary/20 active:scale-95 hover:scale-[1.02] transition-all disabled:opacity-50 disabled:cursor-not-allowed">
+                                @if (isSaving()) {
+                                    <span class="flex items-center justify-center gap-2">
+                                        <div class="animate-spin rounded-full h-4 w-4 border-t-2 border-on-secondary border-transparent"></div>
+                                        Salvando...
+                                    </span>
+                                } @else {
+                                    Salvar Materiais
+                                }
+                            </button>
+                        </div>
+                    </div>
+                }
+
+            </form>
+        }
+
+    </div>
+}

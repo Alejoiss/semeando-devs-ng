@@ -1,16 +1,16 @@
 import { TestBed } from '@angular/core/testing';
 
-import { Newsletter } from './newsletter';
+import { NewsletterService } from './newsletter';
 
-describe('Newsletter', () => {
-  let service: Newsletter;
+describe('NewsletterService', () => {
+    let service: NewsletterService;
 
-  beforeEach(() => {
-    TestBed.configureTestingModule({});
-    service = TestBed.inject(Newsletter);
-  });
+    beforeEach(() => {
+        TestBed.configureTestingModule({});
+        service = TestBed.inject(NewsletterService);
+    });
 
-  it('should be created', () => {
-    expect(service).toBeTruthy();
-  });
+    it('should be created', () => {
+        expect(service).toBeTruthy();
+    });
 });

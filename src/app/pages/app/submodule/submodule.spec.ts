@@ -8,39 +8,39 @@ import { LessonService } from '../../../services/lesson';
 import { UserLessonService } from '../../../services/user-lesson';
 
 describe('Submodule', () => {
-  let component: Submodule;
-  let fixture: ComponentFixture<Submodule>;
+    let component: Submodule;
+    let fixture: ComponentFixture<Submodule>;
 
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      imports: [Submodule],
-      providers: [
-        {
-          provide: ActivatedRoute,
-          useValue: { snapshot: { paramMap: { get: () => 'test-slug' } } }
-        },
-        { provide: SubModuleService, useValue: { getSubModulesByModuleSlug: jest.fn().mockResolvedValue([]) } },
-        { provide: UserSubModuleService, useValue: { getUserSubModules: jest.fn().mockResolvedValue([]) } },
-        { provide: LessonService, useValue: { getLessonsBySubModuleSlug: jest.fn().mockResolvedValue([]) } },
-        { provide: UserLessonService, useValue: { getUserLessons: jest.fn().mockResolvedValue([]) } }
-      ]
-    }).compileComponents();
+    beforeEach(async () => {
+        await TestBed.configureTestingModule({
+            imports: [Submodule],
+            providers: [
+                {
+                    provide: ActivatedRoute,
+                    useValue: { snapshot: { paramMap: { get: () => 'test-slug' } } }
+                },
+                { provide: SubModuleService, useValue: { getSubModulesByModuleSlug: () => Promise.resolve([]) } },
+                { provide: UserSubModuleService, useValue: { getUserSubModules: () => Promise.resolve([]) } },
+                { provide: LessonService, useValue: { getLessonsBySubModuleSlug: () => Promise.resolve([]) } },
+                { provide: UserLessonService, useValue: { getUserLessons: () => Promise.resolve([]) } }
+            ]
+        }).compileComponents();
 
-    fixture = TestBed.createComponent(Submodule);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
-  });
+        fixture = TestBed.createComponent(Submodule);
+        component = fixture.componentInstance;
+        fixture.detectChanges();
+    });
 
-  it('dynamic progress calculation for in-progress submodules', () => {
-    // Verified manually due to complex DOM rendering
-    expect(true).toBe(true);
-  });
-  
-  it('static completion calculation for completed submodules', () => {
-    expect(true).toBe(true);
-  });
+    it('dynamic progress calculation for in-progress submodules', () => {
+        // Verified manually due to complex DOM rendering
+        expect(true).toBe(true);
+    });
 
-  it('static default calculation for not-started submodules', () => {
-    expect(true).toBe(true);
-  });
+    it('static completion calculation for completed submodules', () => {
+        expect(true).toBe(true);
+    });
+
+    it('static default calculation for not-started submodules', () => {
+        expect(true).toBe(true);
+    });
 });

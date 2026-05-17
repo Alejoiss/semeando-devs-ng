@@ -1,0 +1,101 @@
+// Design System Style Declarations for TabExtraMaterial (Neon Terminal)
+
+.jakarta-display {
+    font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+}
+
+.inter-body {
+    font-family: 'Inter', system-ui, sans-serif;
+}
+
+.space-grotesk {
+    font-family: 'Space Grotesk', monospace;
+}
+
+// Glassmorphism and Alerts
+.glass-alert {
+    background: rgba(20, 31, 56, 0.6);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    box-shadow: 0 8px 32px 0 rgba(6, 14, 32, 0.4);
+    transition: all 0.3s ease;
+}
+
+// Buttons
+.btn-primary {
+    background: linear-gradient(135deg, #3fc2fb 0%, #27b4ed 100%);
+    box-shadow: 0 4px 20px rgba(63, 194, 251, 0.2);
+    color: #060e20;
+
+    &:hover:not(:disabled) {
+        background: linear-gradient(135deg, #59cdff 0%, #3fc2fb 100%);
+        box-shadow: 0 4px 24px rgba(63, 194, 251, 0.4);
+        transform: translateY(-1px);
+    }
+}
+
+.btn-secondary {
+    background: transparent;
+    color: #fe69ac;
+    border: 2px solid rgba(254, 105, 172, 0.2);
+
+    &:hover:not(:disabled) {
+        background: rgba(254, 105, 172, 0.08);
+        border-color: rgba(254, 105, 172, 0.4);
+        box-shadow: 0 4px 20px rgba(254, 105, 172, 0.15);
+        transform: translateY(-1px);
+    }
+}
+
+.btn-save {
+    background: linear-gradient(135deg, #3fc2fb 0%, #e8ffc0 100%);
+    box-shadow: 0 4px 20px rgba(63, 194, 251, 0.2);
+    color: #060e20;
+
+    &:hover:not(:disabled) {
+        box-shadow: 0 4px 24px rgba(63, 194, 251, 0.4);
+        transform: translateY(-1px);
+    }
+}
+
+// Material row containers with dynamic color transitions
+.material-card {
+    transition: background-color 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+        border-radius 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+        transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+
+    &:hover {
+        background-color: #141f38;
+        transform: scale(1.005);
+        border-radius: 1.5rem; // md corner radius on hover
+    }
+}
+
+// Custom Input field insets
+.input-field {
+    border: 1px solid rgba(222, 229, 255, 0.08);
+    transition: all 0.2s ease;
+
+    &:focus {
+        border-color: rgba(63, 194, 251, 0.5);
+        box-shadow: 0 0 12px rgba(63, 194, 251, 0.15);
+        background-color: #091328;
+    }
+}
+
+// Success message fade animation
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-8px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.animate-fade-in {
+    animation: fadeIn 0.3s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}

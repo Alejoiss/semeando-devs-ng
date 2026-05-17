@@ -1,16 +1,16 @@
 import { TestBed } from '@angular/core/testing';
 
-import { Xp } from './xp';
+import { XpService } from './xp';
 
-describe('Xp', () => {
-  let service: Xp;
+describe('XpService', () => {
+    let service: XpService;
 
-  beforeEach(() => {
-    TestBed.configureTestingModule({});
-    service = TestBed.inject(Xp);
-  });
+    beforeEach(() => {
+        TestBed.configureTestingModule({});
+        service = TestBed.inject(XpService);
+    });
 
-  it('should be created', () => {
-    expect(service).toBeTruthy();
-  });
+    it('should be created', () => {
+        expect(service).toBeTruthy();
+    });
 });

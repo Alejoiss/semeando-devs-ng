@@ -1,32 +1,45 @@
 # Requirements
 
 ## Overview
-This feature introduces "Extra Materials" attached to a lesson. A lesson can have an unlimited number of extra materials, which serve as supplementary resources for students. These resources can be external URLs or downloadable files. The system must support storing this metadata, handling file uploads for the FILE type, and presenting the extra materials as interactive tags on the lesson page.
+This specification defines the requirements for implementing the "Extra Materials" tab in the professor's lesson creation/editing dashboard. The feature allows professors to manage external links (URL type only) related to a lesson. 
+
+Users can add new links with a title and URL, view a list of existing links, remove unwanted links, and persist all changes to the database by clicking a "Save" button.
+
+## Glossary
+| Term | Definition |
+|------|------------|
+| Extra Material | A supporting resource linked to a lesson, consisting of a title and a URL. |
+| Professor | An educator user role authorized to create and edit lessons and submodules. |
 
 ## Assumptions
-- A lesson is already modeled in the system and has an identifier.
-- The Supabase storage bucket for files is already configured, or the FILE type implies storing a reference to a managed file/object.
+- Only links (`type === 'URL'`) are supported in this implementation phase. File uploads (`type === 'FILE'`) are excluded.
+- The "Extra Materials" tab is only active or interactable once a lesson has already been created (meaning `lessonId` is present).
 
 ## Requirements
 
-### REQ-1: Display Extra Materials
+### REQ-1: Extra Materials List
 
-**User Story:** As a student, I want to see the extra materials associated with a lesson, so that I can access supplementary study resources.
-
-#### Acceptance Criteria
-1.1 WHEN a user navigates to a lesson, THEN the application SHALL retrieve all extra materials linked to that lesson.
-1.2 THE application SHALL display each extra material as a visual tag in the Resources Card section.
-
-### REQ-2: File-based Extra Material Access
-
-**User Story:** As a student, I want to click on a file-type extra material, so that I can download it.
+**User Story:** As a professor, I want to view a list of extra materials currently linked to the lesson, so that I can see the supporting resources.
 
 #### Acceptance Criteria
-2.1 WHEN a user clicks an extra material tag of type FILE, THEN the application SHALL trigger a download of the associated file.
+1.1 THE dashboard application SHALL display all saved extra materials associated with the active lesson.
+1.2 WHEN the lesson has no associated extra materials, THEN the dashboard application SHALL show a message indicating that no materials are registered yet.
+1.3 THE dashboard application SHALL display the title and the URL for each extra material entry.
 
-### REQ-3: URL-based Extra Material Access
+### REQ-2: Add and Modify Extra Materials
 
-**User Story:** As a student, I want to click on a URL-type extra material, so that I can view it in a new browser tab.
+**User Story:** As a professor, I want to add new links and remove unwanted links from the list, so that I can keep the resource references accurate.
 
 #### Acceptance Criteria
-3.1 WHEN a user clicks an extra material tag of type URL, THEN the application SHALL open the provided URL in a new browser tab.
+2.1 WHEN the professor clicks the add material button, THEN the dashboard application SHALL add a new empty link row to the list containing title and URL input fields.
+2.2 WHEN the professor clicks the remove button next to a material row, THEN the dashboard application SHALL remove that item from the local list.
+2.3 THE dashboard application SHALL enforce validation requiring each extra material entry to have a non-empty title and a valid URL before allowing saving.
+
+### REQ-3: Persist Extra Materials
+
+**User Story:** As a professor, I want to save all changes to the extra materials, so that they are persisted in the database.
+
+#### Acceptance Criteria
+3.1 WHEN the professor clicks the save button, THEN the dashboard application SHALL send the updated list of extra materials and any deleted item IDs to the database service for persistence.
+3.2 WHEN the persistence operation completes successfully, THEN the dashboard application SHALL display a temporary success banner.
+3.3 IF the persistence operation fails, THEN the dashboard application SHALL display a specific error message to the professor.

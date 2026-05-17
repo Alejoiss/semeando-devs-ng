@@ -7,9 +7,9 @@ import { Lesson as LessonModel, LessonType } from '../../../../models/lesson/les
 import { UserLesson } from '../../../../models/user-lesson/user-lesson';
 
 const MOCK_LESSONS: LessonModel[] = [
-    { id: 'l1', title: 'Intro', description: 'Desc 1', type: LessonType.LESSON, order: 1, subModuleId: 'sm1' },
-    { id: 'l2', title: 'Desafio', description: 'Desc 2', type: LessonType.CHALLENGE, order: 2, subModuleId: 'sm1' },
-    { id: 'l3', title: 'Revisão', description: 'Desc 3', type: LessonType.REVISION, order: 3, subModuleId: 'sm1' },
+    { id: 'l1', title: 'Intro', description: 'Desc 1', type: LessonType.LESSON, order: 1, subModuleId: 'sm1', xp: 100 },
+    { id: 'l2', title: 'Desafio', description: 'Desc 2', type: LessonType.CHALLENGE, order: 2, subModuleId: 'sm1', xp: 100 },
+    { id: 'l3', title: 'Revisão', description: 'Desc 3', type: LessonType.REVISION, order: 3, subModuleId: 'sm1', xp: 100 },
 ];
 
 const MOCK_USER_LESSONS: Partial<UserLesson>[] = [

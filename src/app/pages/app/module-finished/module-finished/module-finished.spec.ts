@@ -14,6 +14,7 @@ const mockModule: Module = {
     avatar: 'avatar.png',
     icon: 'icon.png',
     slug: 'html-essencial',
+    inRevision: false,
 };
 
 const mockAchievement = new Achievements({

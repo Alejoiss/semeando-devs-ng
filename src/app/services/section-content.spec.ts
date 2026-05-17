@@ -1,16 +1,16 @@
 import { TestBed } from '@angular/core/testing';
 
-import { SectionContent } from './section-content';
+import { SectionContentService } from './section-content';
 
-describe('SectionContent', () => {
-  let service: SectionContent;
+describe('SectionContentService', () => {
+    let service: SectionContentService;
 
-  beforeEach(() => {
-    TestBed.configureTestingModule({});
-    service = TestBed.inject(SectionContent);
-  });
+    beforeEach(() => {
+        TestBed.configureTestingModule({});
+        service = TestBed.inject(SectionContentService);
+    });
 
-  it('should be created', () => {
-    expect(service).toBeTruthy();
-  });
+    it('should be created', () => {
+        expect(service).toBeTruthy();
+    });
 });

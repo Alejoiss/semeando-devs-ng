@@ -1,89 +1,119 @@
 # Design Document
 
 ## Overview
+This document specifies the technical design for implementing the "Extra Materials" management interface and integration in the professor's lesson creation dashboard.
 
-This document outlines the technical design for introducing Extra Materials to lessons in the Semeando Devs application. Extra materials allow instructors to provide supplementary links (URLs) or downloadable files to students within the context of a lesson.
-
-To achieve this, we will introduce a new `extra_material` table in Supabase, create an Angular service (`ExtraMaterialService`) to fetch this data, and integrate it into the existing `Lesson` component to render the materials interactively using signals.
+The feature utilizes Angular v20+ standalone components, Reactive Forms (via `FormBuilder` and `FormArray`), and signals for state management. Persistence is handled through Supabase using the existing PostgreSQL `extra_material` table structure, with all operations encapsulated in the `ExtraMaterialService` to ensure a clean separation of concerns.
 
 ### Change Type
-
-new-feature
+enhancement
 
 ### Design Goals
-
-1. Seamlessly integrate the retrieval of extra materials into the existing lesson data loading flow (`Lesson` component).
-2. Ensure accurate representation of URL vs. FILE types on the frontend, using appropriate semantic HTML and interactive behaviors (e.g. `target="_blank"` vs download attributes).
-3. Establish a robust database schema supporting both external links and internal bucket files.
+1. Provide a highly responsive and reactive authoring experience for managing supporting URLs.
+2. Ensure strict data validation (non-empty titles and valid URLs) prior to sending requests to Supabase.
+3. Align visual design strictly with the *Neon Terminal* style guide, leveraging deep midnight background contrasts and absolute avoiding of 1px solid borders.
 
 ### References
-
-- **REQ-1**: Display Extra Materials
-- **REQ-2**: File-based Extra Material Access
-- **REQ-3**: URL-based Extra Material Access
+- **REQ-1**: Extra Materials List
+- **REQ-2**: Add and Modify Extra Materials
+- **REQ-3**: Persist Extra Materials
 
 ## System Architecture
 
-### DES-1: Extra Material Data Storage
+### DES-1: TabExtraMaterial Component View & Local Form State
 
-The `extra_material` table in the Supabase database will store metadata for each extra material block associated with a lesson. It relies on the `lesson_id` as a foreign key to the `lessons` table.
+The `TabExtraMaterial` component manages the frontend state and layout for the extra materials of the active lesson. It accepts the `lessonId` input signal from the parent component, loads any existing extra materials from the backend on init, and binds the list of materials to an Angular `FormArray` within a Reactive Form.
 
-```mermaid
-erDiagram
-    LESSON ||--o{ EXTRA_MATERIAL : "has"
-    EXTRA_MATERIAL {
-        uuid id PK
-        uuid lesson_id FK
-        text title
-        text type "URL or FILE"
-        text url "Nullable, external link"
-        text file "Nullable, reference to storage"
-        timestamptz created_at
-    }
-```
-
-_Implements: REQ-1.1_
-
-### DES-2: Extra Material Service Integration
-
-An Angular service `ExtraMaterialService` will communicate with the Supabase MCP to retrieve `ExtraMaterial` objects linked to the currently active lesson ID. This service will be injected into the `Lesson` component and queried alongside existing assets (like `SectionContent`).
+The component allows adding a new material row locally, validating inputs, tracking deleted items, and calling the persistence service when the professor clicks "Salvar".
 
 ```mermaid
 flowchart TD
-    A[Lesson Component] -->|injects| B[ExtraMaterialService]
-    B -->|getExtraMaterialsByLessonId| C[(Supabase db)]
-    C -->|returns| B
-    B -->|returns ExtraMaterial[]| A
+    A[OnInit / lessonId Change] --> B[Fetch Existing Materials]
+    B --> C[Populate FormArray]
+    D[Add Button Click] --> E[Push FormGroup to FormArray]
+    F[Remove Icon Click] --> G[Remove FormGroup from FormArray]
+    G --> H[Track ID for Delete if Existed on DB]
+    I[Save Button Click] --> J{Form Valid?}
+    J -->|Yes| K[Call ExtraMaterialService Upsert & Delete]
+    J -->|No| L[Mark Fields as Touched & Show Error]
 ```
 
-_Implements: REQ-1.1_
+_Implements: REQ-1.1, REQ-1.2, REQ-1.3, REQ-2.1, REQ-2.2, REQ-2.3, REQ-3.2, REQ-3.3_
 
-### DES-3: Lesson UI Presentation
+### DES-2: ExtraMaterialService Database Gateway
 
-The `Lesson` component template will iterate over the fetched `ExtraMaterial` list. A conditional switch (or `@if` control flow) over the material type will render the correct `href`, `target`, and `download` attributes for the item to satisfy UI requirements. Materials will be displayed inside the "Resources Card" sidebar block.
+The `ExtraMaterialService` encapsulates all interactions with the Supabase `extra_material` table. It exposes methods to fetch materials by lesson ID, upsert an array of materials (with automatic column mappings like `lesson_id`), and delete a list of materials by their primary keys.
 
 ```mermaid
-flowchart LR
-    A[Material List Signal] --> B{Type?}
-    B -->|URL| C[Render Anchor target=_blank]
-    B -->|FILE| D[Render Anchor with download attribute]
+sequenceDiagram
+    participant Component as TabExtraMaterial Component
+    participant Service as ExtraMaterialService
+    participant DB as Supabase DB (extra_material)
+
+    Component->>Service: upsertExtraMaterials(lessonId, materials)
+    Service->>DB: upsert(mappedPayload)
+    DB-->>Service: Success/Error
+    Service-->>Component: Resolution
+
+    Component->>Service: deleteExtraMaterials(ids)
+    Service->>DB: delete().in('id', ids)
+    DB-->>Service: Success/Error
+    Service-->>Component: Resolution
 ```
 
-_Implements: REQ-1.2, REQ-2.1, REQ-3.1_
+_Implements: REQ-3.1_
 
 ## Code Anatomy
 
 | File Path | Purpose | Implements |
 |-----------|---------|------------|
-| `supabase/migrations/*_create_extra_material_table.sql` | DDL for the ExtraMaterial table | DES-1 |
-| `src/app/services/extra-material/extra-material.service.ts` | Orchestrates fetching from Supabase | DES-2 |
-| `src/app/pages/app/lesson/lesson.ts` | Loads extra materials via service, exposes signal | DES-2, DES-3 |
-| `src/app/pages/app/lesson/lesson.html` | UI changes to display the materials dynamically | DES-3 |
+| [extra-material.ts](file:///home/developer/workspace-pessoal/semeandodevsapp/src/models/extra-material/extra-material.ts) | Model defining the database representation and typescript type of extra material records. | DES-1, DES-2 |
+| [extra-material.ts](file:///home/developer/workspace-pessoal/semeandodevsapp/src/app/services/extra-material.ts) | Service containing database fetch, upsert, and delete operations. | DES-2 |
+| [tab-extra-material.ts](file:///home/developer/workspace-pessoal/semeandodevsapp/src/app/pages/professor/professor-app/create-lesson/tab-extra-material/tab-extra-material.ts) | Logic and reactive state management for adding, listing, validating, and submitting extra materials. | DES-1 |
+| [tab-extra-material.html](file:///home/developer/workspace-pessoal/semeandodevsapp/src/app/pages/professor/professor-app/create-lesson/tab-extra-material/tab-extra-material.html) | Component HTML template displaying inputs, lists, buttons, and state indicators with Neon Terminal styling. | DES-1 |
+| [tab-extra-material.scss](file:///home/developer/workspace-pessoal/semeandodevsapp/src/app/pages/professor/professor-app/create-lesson/tab-extra-material/tab-extra-material.scss) | Styles applying the Neon Terminal design tokens (no 1px borders, surface container low/high background depth shifts, transitions). | DES-1 |
+| [create-lesson.html](file:///home/developer/workspace-pessoal/semeandodevsapp/src/app/pages/professor/professor-app/create-lesson/create-lesson.html) | Passes the `lessonId` input to `<app-tab-extra-material>` to sync active lesson context. | DES-1 |
+
+## Data Models
+
+The implementation references the `ExtraMaterial` model, using a type-safe subset for state and payloads.
+
+```mermaid
+classDiagram
+    class ExtraMaterial {
+        +id: string
+        +lesson_id: string
+        +title: string
+        +type: string (URL)
+        +url: string
+        +file: string (null)
+    }
+```
+
+## Error Handling
+
+| Error Condition | Response | Recovery |
+|-----------------|----------|----------|
+| Invalid Form (Empty fields or invalid URL) | Block saving operation | Highlight invalid inputs and display validation error message |
+| Network or Supabase DB Error on Fetch | Log error and update signal state | Show error alert message in UI and prompt to reload |
+| Network or Supabase DB Error on Save | Re-enable save button and display error alert | Keep local state intact to allow retrying without losing changes |
+
+## Impact Analysis
+
+| Affected Area | Impact Level | Notes |
+|---------------|--------------|-------|
+| `create-lesson.html` | Low | Wire input `[lessonId]="lessonId()"` to `app-tab-extra-material` to bind the active lesson. |
+| `ExtraMaterialService` | Medium | Extending service to support `upsert` and `delete` operations. |
+
+### Testing Requirements
+
+| Test Type | Coverage Goal | Notes |
+|-----------|---------------|-------|
+| Unit Test | TabExtraMaterial logic and form validation | Verify items can be added, deleted, form validates correctly, and service functions are called on submit. |
 
 ## Traceability Matrix
 
 | Design Element | Requirements |
 |----------------|--------------|
-| DES-1 | REQ-1.1 |
-| DES-2 | REQ-1.1 |
-| DES-3 | REQ-1.2, REQ-2.1, REQ-3.1 |
+| DES-1 | REQ-1.1, REQ-1.2, REQ-1.3, REQ-2.1, REQ-2.2, REQ-2.3, REQ-3.2, REQ-3.3 |
+| DES-2 | REQ-3.1 |

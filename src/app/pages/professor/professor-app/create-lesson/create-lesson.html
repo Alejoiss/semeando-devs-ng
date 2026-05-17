@@ -59,7 +59,7 @@
                     <app-tab-content [subModuleId]="subModuleId()" [lessonId]="lessonId()" />
                 }
                 @case ('extra') {
-                    <app-tab-extra-material />
+                    <app-tab-extra-material [lessonId]="lessonId()" />
                 }
                 @case ('quiz') {
                     <app-tab-quiz />
