@@ -1,21 +1,21 @@
 <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
     <!-- LEFT COLUMN -->
     <div class="flex flex-col gap-10">
-        <div [formGroup]="lessonForm" class="flex flex-col gap-10 p-8 bg-surface_container_low/40 backdrop-blur-sm">
+        <div [formGroup]="lessonForm" class="flex flex-col gap-10 p-6 md:p-8 bg-surface-container-low rounded-2xl shadow-lg">
             <!-- Section Header -->
             <div class="flex flex-col gap-2">
-                <h3 class="text-title-lg text-on_surface font-bold font-plus-jakarta flex items-center gap-3">
+                <h3 class="text-title-lg text-on-surface font-bold font-plus-jakarta flex items-center gap-3">
                     <span class="material-symbols-rounded text-primary">article</span>
                     Informações da Lição
                 </h3>
-                <p class="text-on_surface_variant text-body-md">Defina os metadados básicos para a sua nova lição.</p>
+                <p class="text-on-surface-variant text-body-md">Defina os metadados básicos para a sua nova lição.</p>
             </div>
 
             <!-- Form Fields -->
             <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
                 <!-- Title Input -->
                 <div class="flex flex-col gap-3">
-                    <label for="lesson-title" class="text-label-lg font-bold text-on_surface flex items-center gap-2">
+                    <label for="lesson-title" class="text-label-lg font-bold text-on-surface flex items-center gap-2">
                         Título da Lição
                         <span class="text-secondary">*</span>
                     </label>
@@ -25,7 +25,7 @@
                             type="text"
                             formControlName="title"
                             placeholder="Ex: Introdução ao TypeScript"
-                            class="w-full bg-surface_container_lowest text-on_surface p-4 outline-none focus:ring-2 focus:ring-primary/20 transition-all placeholder:text-on_surface_variant/30 font-medium"
+                            class="w-full bg-surface-container-lowest text-on-surface p-4 outline-none focus:ring-2 focus:ring-primary/20 transition-all placeholder:text-on-surface-variant/30 font-medium"
                         />
                     </div>
                     @if (lessonForm.get('title')?.invalid && lessonForm.get('title')?.touched) {
@@ -35,7 +35,7 @@
 
                 <!-- Description Textarea -->
                 <div class="flex flex-col gap-3 md:col-span-2">
-                    <label for="lesson-description" class="text-label-lg font-bold text-on_surface flex items-center gap-2">
+                    <label for="lesson-description" class="text-label-lg font-bold text-on-surface flex items-center gap-2">
                         Descrição
                         <span class="text-secondary">*</span>
                     </label>
@@ -45,7 +45,7 @@
                             formControlName="description"
                             rows="4"
                             placeholder="Descreva brevemente o que será abordado nesta lição..."
-                            class="w-full bg-surface_container_lowest text-on_surface p-4 outline-none focus:ring-2 focus:ring-primary/20 transition-all placeholder:text-on_surface_variant/30 font-medium resize-none"
+                            class="w-full bg-surface-container-lowest text-on-surface p-4 outline-none focus:ring-2 focus:ring-primary/20 transition-all placeholder:text-on-surface-variant/30 font-medium resize-none"
                         ></textarea>
                     </div>
                     @if (lessonForm.get('description')?.invalid && lessonForm.get('description')?.touched) {
@@ -57,62 +57,62 @@
 
         @if (lessonId()) {
             <!-- Contents Authoring -->
-            <div class="flex flex-col gap-6 p-8 bg-surface_container_low/40 backdrop-blur-sm">
+            <div class="flex flex-col gap-6 p-6 md:p-8 bg-surface-container-low rounded-2xl shadow-lg">
                 <!-- Header -->
                 <div class="flex flex-col gap-2">
-                    <h3 class="text-title-lg text-on_surface font-bold font-plus-jakarta flex items-center gap-3">
+                    <h3 class="text-title-lg text-on-surface font-bold font-plus-jakarta flex items-center gap-3">
                         <span class="material-symbols-rounded text-primary">view_carousel</span>
                         Conteúdos da Lição
                     </h3>
-                    <p class="text-on_surface_variant text-body-md">Adicione blocos de conteúdo para construir a lição.</p>
+                    <p class="text-on-surface-variant text-body-md">Adicione blocos de conteúdo para construir a lição.</p>
                 </div>
 
                 <!-- Drag and Drop List -->
                 <div cdkDropList (cdkDropListDropped)="dropContent($event)" class="flex flex-col gap-4">
                     @for (content of contentList(); track content.id; let i = $index) {
-                        <div cdkDrag class="flex flex-col bg-surface_container_lowest border border-outline_variant/15 overflow-hidden">
+                        <div cdkDrag class="flex flex-col bg-surface-container rounded-2xl border border-outline-variant/15 overflow-hidden shadow-sm hover:shadow-md transition-all">
                             <!-- Accordion Header -->
-                            <div class="flex items-center justify-between p-4 bg-surface_container hover:bg-surface_bright/50 transition-colors cursor-pointer" (click)="toggleContent(content.id!)">
+                            <div class="flex items-center justify-between p-4 bg-surface-container hover:bg-surface-bright/50 transition-colors cursor-pointer" (click)="toggleContent(content.id!)">
                                 <div class="flex items-center gap-4">
-                                    <span cdkDragHandle class="material-symbols-rounded text-on_surface_variant hover:text-primary cursor-grab active:cursor-grabbing">drag_indicator</span>
-                                    <span class="text-label-lg font-bold text-on_surface">
+                                    <span cdkDragHandle class="material-symbols-rounded text-on-surface-variant hover:text-primary cursor-grab active:cursor-grabbing">drag_indicator</span>
+                                    <span class="text-label-lg font-bold text-on-surface">
                                         {{ content.type === SectionContentType.VIDEO ? 'Vídeo' : content.type === SectionContentType.IMAGE ? 'Imagem' : 'Markdown' }}
                                     </span>
                                 </div>
                                 <div class="flex items-center gap-2">
-                                    <button type="button" (click)="removeContent(i); $event.stopPropagation()" class="p-2 text-on_surface_variant hover:text-error transition-colors rounded-lg hover:bg-error/10">
+                                    <button type="button" (click)="removeContent(i); $event.stopPropagation()" class="p-2 text-on-surface-variant hover:text-error transition-colors rounded-lg hover:bg-error/10">
                                         <span class="material-symbols-rounded">delete</span>
                                     </button>
-                                    <span class="material-symbols-rounded text-on_surface_variant transition-transform" [class.rotate-180]="expandedContentIds().has(content.id!)">expand_more</span>
+                                    <span class="material-symbols-rounded text-on-surface-variant transition-transform" [class.rotate-180]="expandedContentIds().has(content.id!)">expand_more</span>
                                 </div>
                             </div>
 
                             <!-- Accordion Body -->
                             @if (expandedContentIds().has(content.id!)) {
-                                <div class="p-4 border-t border-outline_variant/15 flex flex-col gap-4 animate-fade-in bg-surface_container/20">
+                                <div class="p-4 border-t border-outline-variant/15 flex flex-col gap-4 animate-fade-in bg-surface-container/20 rounded-b-2xl">
                                     @if (content.type === SectionContentType.VIDEO) {
                                         <div class="flex flex-col gap-2">
-                                            <label class="text-label-md font-bold text-on_surface">URL do Vídeo (YouTube)</label>
-                                            <input type="text" [value]="content.content" (input)="updateContent(i, {content: $any($event.target).value})" placeholder="Ex: https://youtube.com/..." class="w-full bg-surface_container_lowest border border-outline_variant/15 p-3 outline-none focus:ring-2 focus:ring-primary/20 text-on_surface">
+                                            <label class="text-label-md font-bold text-on-surface">URL do Vídeo (YouTube)</label>
+                                            <input type="text" [value]="content.content" (input)="updateContent(i, {content: $any($event.target).value})" placeholder="Ex: https://youtube.com/..." class="w-full bg-surface-container-lowest border border-outline-variant/15 p-3 outline-none focus:ring-2 focus:ring-primary/20 text-on-surface">
                                         </div>
                                     }
                                     @if (content.type === SectionContentType.IMAGE) {
                                         <div class="flex flex-col gap-4">
                                             <div class="flex flex-col gap-2">
-                                                <label class="text-label-md font-bold text-on_surface">Imagem da Lição</label>
+                                                <label class="text-label-md font-bold text-on-surface">Imagem da Lição</label>
                                                 @if (content.file) {
-                                                    <div class="relative w-full max-h-48 overflow-hidden bg-surface_container flex items-center justify-center group mb-2 border border-outline_variant/15">
+                                                    <div class="relative w-full max-h-48 overflow-hidden bg-surface-container rounded-xl flex items-center justify-center group mb-2 border border-outline-variant/15">
                                                         <img [src]="content.file" class="w-full h-auto max-h-48 object-cover" />
                                                         <div class="absolute inset-0 bg-surface/80 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity gap-4">
-                                                            <button type="button" (click)="removeImage(i)" class="flex items-center gap-2 px-4 py-2 bg-error/20 hover:bg-error/30 text-error font-bold text-label-md transition-colors">
+                                                            <button type="button" (click)="removeImage(i)" class="flex items-center gap-2 px-4 py-2 bg-error/20 hover:bg-error/30 text-error font-bold text-label-md rounded-xl transition-colors">
                                                                 <span class="material-symbols-rounded">delete</span> Remover Imagem
                                                             </button>
                                                         </div>
                                                     </div>
                                                 } @else {
-                                                    <label class="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed border-outline_variant/30 hover:border-primary/50 cursor-pointer bg-surface_container_lowest hover:bg-surface_container/20 transition-all gap-2 group">
-                                                        <span class="material-symbols-rounded text-3xl text-on_surface_variant group-hover:text-primary transition-colors">cloud_upload</span>
-                                                        <span class="text-label-md text-on_surface_variant group-hover:text-primary transition-colors font-bold">
+                                                    <label class="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed border-outline-variant/30 hover:border-primary/50 cursor-pointer bg-surface-container-lowest hover:bg-surface-container/20 rounded-xl transition-all gap-2 group">
+                                                        <span class="material-symbols-rounded text-3xl text-on-surface-variant group-hover:text-primary transition-colors">cloud_upload</span>
+                                                        <span class="text-label-md text-on-surface-variant group-hover:text-primary transition-colors font-bold">
                                                             @if (isUploadingImageMap()[content.id!]) {
                                                                 Enviando imagem...
                                                             } @else {
@@ -130,47 +130,49 @@
                                                 }
                                             </div>
                                             <div class="flex flex-col gap-2">
-                                                <label class="text-label-md font-bold text-on_surface">Descrição Acessível (alt)</label>
-                                                <input type="text" [value]="content.fileDescription || ''" (input)="updateContent(i, {fileDescription: $any($event.target).value})" placeholder="Descrição da imagem para leitores de tela..." class="w-full bg-surface_container_lowest border border-outline_variant/15 p-3 outline-none focus:ring-2 focus:ring-primary/20 text-on_surface animate-fade-in">
+                                                <label class="text-label-md font-bold text-on-surface">Descrição Acessível (alt)</label>
+                                                <input type="text" [value]="content.fileDescription || ''" (input)="updateContent(i, {fileDescription: $any($event.target).value})" placeholder="Descrição da imagem para leitores de tela..." class="w-full bg-surface-container-lowest border border-outline-variant/15 p-3 outline-none focus:ring-2 focus:ring-primary/20 text-on-surface animate-fade-in">
                                             </div>
                                         </div>
                                     }
                                     @if (content.type === SectionContentType.MARKDOWN) {
                                         <div class="flex flex-col gap-2 h-[350px]">
-                                            <label class="text-label-md font-bold text-on_surface">Conteúdo Markdown</label>
-                                            <ngs-code-editor
-                                                [theme]="'vs-dark'"
-                                                [codeModel]="getCodeModel(content)"
-                                                [options]="{lineNumbers: 'off', minimap: {enabled: false}, wordWrap: 'on'}"
-                                                (valueChanged)="updateContent(i, {content: $event})"
-                                                class="w-full h-[300px] overflow-hidden border border-outline_variant/15"
-                                            ></ngs-code-editor>
+                                            <label class="text-label-md font-bold text-on-surface">Conteúdo Markdown</label>
+                                            <div class="overflow-hidden border border-outline-variant/15">
+                                                <ngs-code-editor
+                                                    [theme]="'vs-dark'"
+                                                    [codeModel]="getCodeModel(content)"
+                                                    [options]="{lineNumbers: 'off', minimap: {enabled: false}, wordWrap: 'on'}"
+                                                    (valueChanged)="updateContent(i, {content: $event})"
+                                                    class="w-full h-[300px]"
+                                                ></ngs-code-editor>
+                                            </div>
                                         </div>
                                     }
                                 </div>
                             }
                         </div>
                     } @empty {
-                        <div class="p-6 bg-surface_container_lowest rounded-xl border border-outline_variant/15 border-dashed flex items-center justify-center">
-                            <p class="text-on_surface_variant text-label-md">Nenhum conteúdo adicionado. Selecione uma opção abaixo para começar.</p>
+                        <div class="p-6 bg-surface-container-lowest rounded-xl border border-outline-variant/15 border-dashed flex items-center justify-center">
+                            <p class="text-on-surface-variant text-label-md">Nenhum conteúdo adicionado. Selecione uma opção abaixo para começar.</p>
                         </div>
                     }
                 </div>
 
                 <!-- Add Buttons -->
                 <div class="flex flex-wrap gap-4 mt-2">
-                    <button type="button" (click)="addContent(SectionContentType.MARKDOWN)" class="flex items-center gap-2 px-4 py-3 bg-surface_container_highest hover:bg-surface_bright rounded-lg text-on_surface transition-colors font-bold text-label-md">
+                    <button type="button" (click)="addContent(SectionContentType.MARKDOWN)" class="flex items-center gap-2 px-4 py-3 bg-surface-container-highest hover:bg-surface-bright rounded-lg text-on-surface transition-colors font-bold text-label-md">
                         <span class="material-symbols-rounded text-[20px] text-primary">notes</span> Adicionar Markdown
                     </button>
-                    <button type="button" (click)="addContent(SectionContentType.VIDEO)" class="flex items-center gap-2 px-4 py-3 bg-surface_container_highest hover:bg-surface_bright rounded-lg text-on_surface transition-colors font-bold text-label-md">
+                    <button type="button" (click)="addContent(SectionContentType.VIDEO)" class="flex items-center gap-2 px-4 py-3 bg-surface-container-highest hover:bg-surface-bright rounded-lg text-on-surface transition-colors font-bold text-label-md">
                         <span class="material-symbols-rounded text-[20px] text-tertiary">play_circle</span> Adicionar Vídeo
                     </button>
-                    <button type="button" (click)="addContent(SectionContentType.IMAGE)" class="flex items-center gap-2 px-4 py-3 bg-surface_container_highest hover:bg-surface_bright rounded-lg text-on_surface transition-colors font-bold text-label-md">
+                    <button type="button" (click)="addContent(SectionContentType.IMAGE)" class="flex items-center gap-2 px-4 py-3 bg-surface-container-highest hover:bg-surface-bright rounded-lg text-on-surface transition-colors font-bold text-label-md">
                         <span class="material-symbols-rounded text-[20px] text-secondary">image</span> Adicionar Imagem
                     </button>
                 </div>
             </div>
-        }
+        @}
 
         <!-- Error Message -->
         @if (errorMessage()) {
@@ -191,7 +193,7 @@
                     type="button"
                     (click)="saveLesson()"
                     [disabled]="lessonForm.invalid || isSaving()"
-                    class="w-full sm:w-auto py-4 px-8 bg-gradient-to-r from-secondary to-secondary-dim text-on-secondary font-headline font-extrabold rounded-lg shadow-lg shadow-primary/30 active:scale-95 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                    class="w-full sm:w-auto py-4 px-8 bg-gradient-to-r from-secondary to-secondary-dim text-on-secondary font-headline font-extrabold rounded-xl shadow-lg shadow-primary/20 active:scale-95 hover:scale-[1.02] transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                     @if (isSaving()) {
                         <span class="flex items-center justify-center gap-2">
@@ -208,33 +210,58 @@
 
     <!-- RIGHT COLUMN -->
     @if (lessonId()) {
-        <div class="hidden lg:flex flex-col gap-6 p-8 bg-surface_container_low/40 backdrop-blur-sm sticky top-8 h-[calc(100vh-100px)] overflow-y-auto custom-scrollbar">
-            <h3 class="text-title-lg text-on_surface font-bold font-plus-jakarta flex items-center gap-3">
+        <div class="hidden lg:flex flex-col gap-6 p-6 md:p-8 bg-surface-container-low rounded-2xl shadow-lg sticky top-8 h-[calc(100vh-100px)] overflow-y-auto custom-scrollbar">
+            <h3 class="text-title-lg text-on-surface font-bold font-plus-jakarta flex items-center gap-3">
                 <span class="material-symbols-rounded text-primary">visibility</span>
                 Preview da Lição
             </h3>
 
-            <div class="w-full bg-surface_container_lowest border border-outline_variant/15 flex-1 overflow-y-auto p-8 custom-scrollbar">
-                <div class="prose prose-invert prose-blue max-w-none flex flex-col gap-8">
-                    @for (content of contentList(); track content.id) {
-                        <div class="preview-block group relative">
-                            @if (content.type === SectionContentType.MARKDOWN && content.content) {
-                                <!-- Preview de Markdown precisa do pipe seguro ou componente de render -->
-                                <!-- Assumindo que temos MarkdownModule no projeto (baseado em challenge.html) -->
-                                <markdown [data]="content.content"></markdown>
-                            }
-                            @if (content.type === SectionContentType.VIDEO && content.content) {
-                                <div class="aspect-video w-full rounded-xl overflow-hidden bg-surface_container flex items-center justify-center">
-                                    <!-- Apenas placeholder simples. Na vida real o dom sanitizer seria usado -->
-                                    <span class="material-symbols-rounded text-6xl text-on_surface_variant">play_circle</span>
-                                </div>
-                            }
-                            @if (content.type === SectionContentType.IMAGE && content.file) {
-                                <img [src]="content.file" [alt]="content.fileDescription || ''" class="w-full rounded-xl" />
+            <div class="w-full border border-outline-variant/15 flex-1 overflow-y-auto p-8 custom-scrollbar">
+                <div class="prose prose-invert prose-blue max-w-none flex flex-col">
+                    @for (section of contentList(); track section.id) {
+                        <div class="section-container animate-fade-in">
+                            @switch (section.type) {
+                                @case ('TEXT') {
+                                    <div class="glass rounded-3xl p-8 md:p-12 border border-outline-variant/10">
+                                        <div class="prose prose-invert max-w-none">
+                                            <p class="text-on-surface-variant leading-relaxed text-lg">
+                                                {{ section.content }}
+                                            </p>
+                                        </div>
+                                    </div>
+                                }
+                                @case ('MARKDOWN') {
+                                    <div class="glass rounded-3xl p-8 md:p-12 border border-outline-variant/10">
+                                        <div class="prose prose-invert prose-blue max-w-none">
+                                            <markdown [data]="section.content"></markdown>
+                                        </div>
+                                    </div>
+                                }
+                                @case ('IMAGE') {
+                                    <div class="relative group rounded-3xl overflow-hidden bg-surface-container-highest border border-outline-variant/10 shadow-2xl">
+                                        <img [src]="section.file" [alt]="section.fileDescription || 'Lesson image'"
+                                            class="w-full h-auto object-cover group-hover:scale-105 transition-transform duration-700" />
+                                        @if (section.fileDescription) {
+                                            <div class="absolute bottom-0 left-0 w-full p-4 bg-black">
+                                                <p class="text-[10px] font-label uppercase tracking-widest text-white">
+                                                    {{ section.fileDescription }}
+                                                </p>
+                                            </div>
+                                        }
+                                    </div>
+                                }
+                                @case ('VIDEO') {
+                                    <div class="relative group rounded-3xl overflow-hidden bg-black border border-outline-variant/10 shadow-2xl aspect-video">
+                                        <video [src]="section.file" controls preload="metadata"
+                                            class="w-full h-full object-contain">
+                                            Seu navegador não suporta a tag de vídeo.
+                                        </video>
+                                    </div>
+                                }
                             }
                         </div>
                     } @empty {
-                        <div class="h-full flex flex-col items-center justify-center text-on_surface_variant gap-4 opacity-50 py-20">
+                        <div class="h-full flex flex-col items-center justify-center text-on-surface-variant gap-4 opacity-50 py-20">
                             <span class="material-symbols-rounded text-6xl">visibility_off</span>
                             <p>Adicione conteúdo para visualizar o preview.</p>
                         </div>

@@ -1,6 +1,6 @@
 <div class="flex flex-col gap-10">
     <div class="flex items-center gap-4">
-        <button type="button" (click)="goBack()" class="flex items-center gap-2 text-on_surface_variant hover:text-primary transition-colors pl-8">
+        <button type="button" (click)="goBack()" class="flex items-center gap-2 text-on-surface-variant hover:text-primary transition-colors pl-4">
             <span class="material-symbols-rounded">arrow_back</span>
             <span class="text-label-lg font-bold">Voltar para o Módulo</span>
         </button>
@@ -9,40 +9,40 @@
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-10">
         <!-- Coluna Esquerda: Formulário -->
         <div class="flex flex-col gap-6">
-            <h1 class="text-display-sm text-on_surface font-bold pl-8">Criar Submódulo</h1>
+            <h1 class="text-display-sm text-on-surface font-bold pl-4">Criar Submódulo</h1>
 
-            <div class="flex flex-col gap-6 surface_container p-6 md:p-8 rounded-2xl h-full">
+            <div class="flex flex-col gap-6 bg-surface-container-low p-6 md:p-8 rounded-2xl h-full shadow-lg">
                 <form [formGroup]="form" class="flex flex-col gap-6">
                     <!-- Título e Slug -->
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <!-- Título -->
                         <div class="flex flex-col gap-2">
-                            <label class="text-label-md text-on_surface_variant">Título do Submódulo *</label>
-                            <input type="text" formControlName="title" class="bg-surface_container_lowest text-on_surface border-none p-4 focus:ring-2 focus:ring-primary outline-none" placeholder="Ex: Componentes e Templates">
+                            <label class="text-label-md text-on-surface-variant">Título do Submódulo *</label>
+                            <input type="text" formControlName="title" class="bg-surface-container-lowest text-on-surface border-none p-4 focus:ring-2 focus:ring-primary outline-none transition-all" placeholder="Ex: Componentes e Templates">
                         </div>
 
                         <!-- Slug (Readonly) -->
                         <div class="flex flex-col gap-2">
-                            <label class="text-label-md text-on_surface_variant">Slug (URL)</label>
-                            <input type="text" [value]="slug()" readonly class="bg-surface_container_lowest/50 text-on_surface_variant border-none p-4 outline-none cursor-not-allowed">
+                            <label class="text-label-md text-on-surface-variant">Slug (URL)</label>
+                            <input type="text" [value]="slug()" readonly class="bg-surface-container-lowest/50 text-on-surface-variant border-none p-4 outline-none cursor-not-allowed">
                         </div>
                     </div>
 
                     <!-- Descrição -->
                     <div class="flex flex-col gap-2">
-                        <label class="text-label-md text-on_surface_variant">Descrição *</label>
-                        <textarea formControlName="description" rows="4" class="bg-surface_container_lowest text-on_surface border-none p-4 focus:ring-2 focus:ring-primary outline-none resize-none" placeholder="Uma breve descrição do que os alunos aprenderão neste submódulo..."></textarea>
+                        <label class="text-label-md text-on-surface-variant">Descrição *</label>
+                        <textarea formControlName="description" rows="4" class="bg-surface-container-lowest text-on-surface border-none p-4 focus:ring-2 focus:ring-primary outline-none resize-none transition-all" placeholder="Uma breve descrição do que os alunos aprenderão neste submódulo..."></textarea>
                     </div>
 
                     <!-- Identidade Visual Toggle -->
                     <div class="flex flex-col gap-4">
-                        <label class="text-label-md text-on_surface_variant">Identidade Visual *</label>
+                        <label class="text-label-md text-on-surface-variant">Identidade Visual *</label>
 
-                        <div class="flex flex-col md:flex-row md:items-center gap-6 bg-surface_container_lowest/30 p-4 rounded-xl">
+                        <div class="flex flex-col md:flex-row md:items-center gap-6 bg-surface-container-lowest/30 p-4">
                             <!-- Seletor -->
-                            <div class="flex bg-surface_container_lowest rounded-lg p-1 w-max shrink-0">
-                                <button type="button" (click)="setVisualMode('image')" [class]="visualMode() === 'image' ? 'bg-surface_container_highest text-primary shadow-sm' : 'text-on_surface_variant hover:text-on_surface'" class="px-6 py-2 rounded-md text-label-md transition-all">Imagem</button>
-                                <button type="button" (click)="setVisualMode('icon')" [class]="visualMode() === 'icon' ? 'bg-surface_container_highest text-primary shadow-sm' : 'text-on_surface_variant hover:text-on_surface'" class="px-6 py-2 rounded-md text-label-md transition-all">Ícone</button>
+                            <div class="flex bg-surface-container-lowest p-1 w-max shrink-0">
+                                <button type="button" (click)="setVisualMode('image')" [class]="visualMode() === 'image' ? 'bg-surface-container-highest text-primary shadow-sm' : 'text-on-surface-variant hover:text-on-surface'" class="px-6 py-2 rounded-md text-label-md transition-all">Imagem</button>
+                                <button type="button" (click)="setVisualMode('icon')" [class]="visualMode() === 'icon' ? 'bg-surface-container-highest text-primary shadow-sm' : 'text-on-surface-variant hover:text-on-surface'" class="px-6 py-2 rounded-md text-label-md transition-all">Ícone</button>
                             </div>
 
                             <!-- Inputs -->
@@ -50,14 +50,14 @@
                                 <!-- Input Imagem -->
                                 @if (visualMode() === 'image') {
                                     <div class="flex flex-col gap-2">
-                                        <input type="file" accept="image/*" (change)="onFileSelected($event)" class="text-on_surface_variant file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-label-md file:font-semibold file:bg-surface_container_highest file:text-primary hover:file:bg-surface_container_highest/80 cursor-pointer w-full">
+                                        <input type="file" accept="image/*" (change)="onFileSelected($event)" class="text-on-surface-variant file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-label-md file:font-semibold file:bg-surface-container-highest file:text-primary hover:file:bg-surface-container-highest/80 cursor-pointer w-full">
                                     </div>
                                 }
 
                                 <!-- Input Ícone -->
                                 @if (visualMode() === 'icon') {
                                     <div class="flex flex-col gap-2">
-                                        <input type="text" [value]="iconName()" (input)="onIconNameChange($event)" class="bg-surface_container_lowest text-on_surface border-none p-4 focus:ring-2 focus:ring-primary outline-none w-full" placeholder="Ex: memory">
+                                        <input type="text" [value]="iconName()" (input)="onIconNameChange($event)" class="bg-surface-container-lowest text-on-surface border-none p-4 focus:ring-2 focus:ring-primary outline-none w-full" placeholder="Ex: memory">
                                         <a href="https://fonts.google.com/icons" target="_blank" class="text-label-sm text-primary hover:underline w-max">Ver ícones disponíveis no Google Fonts</a>
                                     </div>
                                 }
@@ -76,7 +76,7 @@
                                 <span class="success-message text-tertiary text-label-md font-bold">Salvo com sucesso!</span>
                             }
 
-                            <button type="button" (click)="saveSubModule()" [disabled]="isSaving()" class="w-full sm:w-auto py-4 px-8 bg-gradient-to-r from-secondary to-secondary-dim text-on-secondary font-headline font-extrabold rounded-lg shadow-lg shadow-primary/30 active:scale-95 transition-all disabled:opacity-50 disabled:cursor-not-allowed">
+                            <button type="button" (click)="saveSubModule()" [disabled]="isSaving()" class="w-full sm:w-auto py-4 px-8 bg-gradient-to-r from-secondary to-secondary-dim text-on-secondary font-headline font-extrabold rounded-xl shadow-lg shadow-primary/20 active:scale-95 hover:scale-[1.02] transition-all disabled:opacity-50 disabled:cursor-not-allowed">
                                 @if (isSaving()) {
                                     <span class="flex items-center justify-center gap-2">
                                         <div class="animate-spin rounded-full h-4 w-4 border-t-2 border-on-primary border-transparent"></div>
@@ -94,10 +94,10 @@
 
         <!-- Coluna Direita: Preview -->
         <div class="flex flex-col gap-6">
-            <h2 class="text-display-sm text-on_surface font-bold">Preview do Card</h2>
-            <div class="surface_container p-6 rounded-2xl flex items-center justify-center min-h-[300px] h-full">
-                <!-- Submodule Card Preview goes here -->
-                <div class="w-full relative overflow-hidden bg-surface-container rounded-lg p-6 transition-all hover:bg-surface-container-high hover:translate-y-[-4px]">
+            <h2 class="text-display-sm text-on-surface font-bold pl-4">Preview do Card</h2>
+            <div class="bg-surface-container-low p-6 rounded-2xl flex items-center justify-center min-h-[300px] h-full shadow-lg">
+                <!-- Submodule Card Preview -->
+                <div class="w-full relative overflow-hidden bg-surface-container rounded-2xl p-6 transition-all hover:bg-surface-container-high hover:-translate-y-1 hover:shadow-xl hover:shadow-primary/5">
                     <div class="absolute top-0 right-0 p-4">
                         <div class="bg-on-surface-variant/10 text-on-surface-variant font-label text-[10px] px-3 py-1 rounded-full uppercase tracking-widest font-bold">
                             Disponível
@@ -110,11 +110,11 @@
                             } @else if (previewSubModule().avatar) {
                                 <img [src]="previewSubModule().avatar" alt="Avatar Preview" class="w-full h-full object-cover">
                             } @else {
-                                <span class="material-symbols-outlined text-3xl text-on_surface_variant/50">auto_stories</span>
+                                <span class="material-symbols-outlined text-3xl text-on-surface-variant/50">auto_stories</span>
                             }
                         </div>
                         <div class="flex-1">
-                            <h3 class="text-2xl font-headline font-bold mb-2 text-on_surface">
+                            <h3 class="text-2xl font-headline font-bold mb-2 text-on-surface">
                                 {{ previewSubModule().title }}
                             </h3>
                             <p class="text-on-surface-variant text-sm font-body leading-relaxed break-words whitespace-pre-wrap">
@@ -143,10 +143,10 @@
 
     <!-- Row 2: Lessons Panel (Visible only after save) -->
     @if (savedSubModuleId()) {
-        <div class="flex flex-col gap-6 surface_container p-6 md:p-8 rounded-2xl">
+        <div class="flex flex-col gap-6 bg-surface-container-low p-6 md:p-8 rounded-2xl shadow-lg">
             <div class="flex items-center justify-between">
-                <h2 class="text-display-xs text-on_surface font-bold">Lições</h2>
-                <a [routerLink]="['/professor/criar-licao', savedSubModuleId()]" class="bg-surface_container_highest hover:bg-surface_container_highest/80 text-primary font-bold py-2 px-6 rounded-xl transition-all flex items-center gap-2">
+                <h2 class="text-display-xs text-on-surface font-bold">Lições</h2>
+                <a [routerLink]="['/professor/criar-licao', savedSubModuleId()]" class="bg-surface-container-highest hover:bg-surface-container-highest/80 text-primary font-bold py-3 px-6 rounded-xl transition-all flex items-center gap-2 shadow-sm hover:scale-[1.02] no-underline">
                     <span class="material-symbols-rounded text-sm">add</span>
                     Adicionar Lição
                 </a>
@@ -154,44 +154,44 @@
 
             @if (lessonsLoading()) {
                 <div class="flex justify-center p-8">
-                    <span class="text-on_surface_variant">Carregando lições...</span>
+                    <span class="text-on-surface-variant">Carregando lições...</span>
                 </div>
             } @else if (lessonsError()) {
                 <div class="flex justify-center p-8 bg-error/10 rounded-xl">
                     <span class="text-error">{{ lessonsError() }}</span>
                 </div>
             } @else if (lessons().length === 0) {
-                <div class="flex flex-col items-center justify-center p-12 bg-surface_container_lowest rounded-xl border border-dashed border-surface_container_highest">
-                    <span class="material-symbols-rounded text-[48px] text-on_surface_variant/50 mb-4">menu_book</span>
-                    <p class="text-on_surface_variant text-body-lg">Nenhuma lição cadastrada.</p>
+                <div class="flex flex-col items-center justify-center p-12 bg-surface-container-lowest rounded-xl border border-dashed border-surface-container-highest">
+                    <span class="material-symbols-rounded text-[48px] text-on-surface-variant/50 mb-4">menu_book</span>
+                    <p class="text-on-surface-variant text-body-lg">Nenhuma lição cadastrada.</p>
                 </div>
             } @else {
                 <div class="flex flex-col gap-4">
                     @for (lesson of lessons(); track lesson.id) {
-                        <div class="flex items-center justify-between bg-surface_container_lowest p-4 rounded-xl group hover:bg-surface_container_highest transition-colors cursor-move"
+                        <div class="flex items-center justify-between bg-surface-container p-4 rounded-xl group hover:bg-surface-container-high transition-all hover:-translate-y-0.5 shadow-sm hover:shadow-md cursor-move"
                              draggable="true"
                              (dragstart)="onDragStart($index)"
                              (dragover)="onDragOver($event, $index)"
                              (drop)="onDrop()"
                              [class.opacity-50]="draggedIndex() === $index">
                             <div class="flex items-center gap-4">
-                                <span class="material-symbols-rounded text-on_surface_variant cursor-grab active:cursor-grabbing">drag_indicator</span>
+                                <span class="material-symbols-rounded text-on-surface-variant cursor-grab active:cursor-grabbing">drag_indicator</span>
 
                                 <div class="h-12 w-12 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
                                     <span class="material-symbols-rounded text-primary">{{ lesson.type === 'CHALLENGE' ? 'code' : 'article' }}</span>
                                 </div>
 
                                 <div class="flex flex-col">
-                                    <span class="text-title-sm text-on_surface font-bold">{{ lesson.title }}</span>
-                                    <span class="text-label-sm text-on_surface_variant">{{ lesson.type === 'CHALLENGE' ? 'Desafio' : (lesson.type === 'REVISION' ? 'Revisão' : 'Lição') }}</span>
+                                    <span class="text-title-sm text-on-surface font-bold">{{ lesson.title }}</span>
+                                    <span class="text-label-sm text-on-surface-variant">{{ lesson.type === 'CHALLENGE' ? 'Desafio' : (lesson.type === 'REVISION' ? 'Revisão' : 'Lição') }}</span>
                                 </div>
                             </div>
 
                             <div class="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                                <a [routerLink]="['/professor/editar-licao', lesson.id]" class="p-2 text-on_surface_variant hover:text-primary transition-colors rounded-lg hover:bg-primary/10">
+                                <a [routerLink]="['/professor/editar-licao', lesson.id]" class="p-2 text-on-surface-variant hover:text-primary transition-colors rounded-lg hover:bg-primary/10">
                                     <span class="material-symbols-rounded text-sm">edit</span>
                                 </a>
-                                <button type="button" (click)="deleteLesson(lesson.id)" class="p-2 text-on_surface_variant hover:text-error transition-colors rounded-lg hover:bg-error/10">
+                                <button type="button" (click)="deleteLesson(lesson.id)" class="p-2 text-on-surface-variant hover:text-error transition-colors rounded-lg hover:bg-error/10" aria-label="Excluir">
                                     <span class="material-symbols-rounded text-sm">delete</span>
                                 </button>
                             </div>
