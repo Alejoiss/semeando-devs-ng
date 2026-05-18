@@ -61,6 +61,16 @@
                 Atualizar para pró
             </button>
         }
+
+        <div class="flex items-center justify-between px-4 py-3 mt-2 bg-surface-container rounded-xl border border-outline-variant/15">
+            <div class="flex items-center gap-2 text-on-surface">
+                <span class="material-symbols-outlined text-[20px]" data-icon="auto_awesome">auto_awesome</span>
+                <span class="font-label text-sm font-bold">Créditos de IA</span>
+            </div>
+            <div class="font-label text-xs font-bold text-primary">
+                {{ aiCreditsService.submitCodeRemaining() }} / {{ aiCreditsService.submitCodeLimit() }}
+            </div>
+        </div>
         <!-- <a class="flex items-center gap-4 text-[#dee5ff]/60 px-4 py-3 hover:bg-[#141f38] hover:text-[#3fc2fb] transition-all"
             href="#">
             <span class="material-symbols-outlined" data-icon="settings">settings</span>

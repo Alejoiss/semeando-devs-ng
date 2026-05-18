@@ -21,7 +21,7 @@ export class Upgrade {
     private readonly planService = inject(PlanService);
     private readonly couponService = inject(CouponService);
     private readonly subscriptionService = inject(SubscriptionService);
-    private readonly userService = inject(UserService);
+    protected readonly userService = inject(UserService);
     private readonly router = inject(Router);
 
     protected readonly plan = signal<Plan | null>(null);

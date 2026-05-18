@@ -83,12 +83,12 @@ export class SectionContentService {
         return data.publicUrl;
     }
 
-    async evaluateLessonContent(title: string, description: string, markdowns: string[]): Promise<{ aiFeedback: string }> {
+    async evaluateLessonContent(lessonId: string, title: string, description: string, markdowns: string[]): Promise<{ aiFeedback: string }> {
         const { data: { session } } = await this.supabase.auth.getSession();
         if (!session) throw new Error('Sessão ativa não encontrada');
 
         const { data, error } = await this.supabase.functions.invoke('evaluate-lesson-content', {
-            body: { title, description, markdowns },
+            body: { lesson_id: lessonId, title, description, markdowns },
             headers: {
                 Authorization: `Bearer ${session.access_token}`
             }

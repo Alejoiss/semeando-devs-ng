@@ -42,6 +42,51 @@ serve(async (req: { method: string; headers: { get: (arg0: string) => any }; jso
             })
         }
 
+        // Check rate limits
+        const { data: profile, error: profileError } = await userClient
+            .from('profiles')
+            .select('is_pro')
+            .eq('id', user.id)
+            .single();
+
+        if (profileError) {
+            console.error('Error fetching profile:', profileError);
+            return new Response(JSON.stringify({ error: 'Erro ao buscar perfil do usuário' }), {
+                status: 500,
+                headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+            });
+        }
+
+        const isPro = profile?.is_pro ?? false;
+        const dailyLimit = isPro ? 30 : 5;
+
+        // Get start of current day UTC
+        const today = new Date();
+        today.setUTCHours(0, 0, 0, 0);
+        const startOfDayStr = today.toISOString();
+
+        const { count, error: countError } = await userClient
+            .from('ai_usage_logs')
+            .select('*', { count: 'exact', head: true })
+            .eq('user_id', user.id)
+            .eq('action_type', 'submit_code')
+            .gte('created_at', startOfDayStr);
+
+        if (countError) {
+            console.error('Error checking rate limit:', countError);
+            return new Response(JSON.stringify({ error: 'Erro ao verificar limites de uso da IA' }), {
+                status: 500,
+                headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+            });
+        }
+
+        if (count !== null && count >= dailyLimit) {
+            return new Response(JSON.stringify({ error: `Limite diário excedido. Você pode submeter código ${dailyLimit} vezes por dia.` }), {
+                status: 429,
+                headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+            });
+        }
+
         let aiFeedback = '';
         if (openRouterApiKey) {
             // Call OpenRouter
@@ -75,6 +120,21 @@ serve(async (req: { method: string; headers: { get: (arg0: string) => any }; jso
             }
         } else {
             aiFeedback = 'Configuração do agente de IA ausente.';
+        }
+
+        // Log successful usage
+        if (openRouterApiKey && aiFeedback && aiFeedback !== 'Não foi possível gerar o feedback no momento.') {
+            const { error: logError } = await userClient
+                .from('ai_usage_logs')
+                .insert({
+                    user_id: user.id,
+                    action_type: 'submit_code',
+                    lesson_id: lessonId
+                });
+
+            if (logError) {
+                console.error('Failed to log AI usage:', logError);
+            }
         }
 
         // --- Completion Logic ---

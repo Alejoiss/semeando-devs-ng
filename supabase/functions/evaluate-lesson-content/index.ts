@@ -46,13 +46,36 @@ serve(async (req: Request) => {
         }
 
         const body = await req.json()
-        const { title, description, markdowns } = body
+        const { lesson_id, title, description, markdowns } = body
 
-        if (!title || !description || !markdowns || !Array.isArray(markdowns) || markdowns.length === 0) {
+        if (!lesson_id || !title || !description || !markdowns || !Array.isArray(markdowns) || markdowns.length === 0) {
             return new Response(JSON.stringify({ error: 'Missing or invalid parameters' }), {
                 status: 400,
                 headers: { ...corsHeaders, 'Content-Type': 'application/json' }
             })
+        }
+
+        // Check rate limit
+        const { count, error: countError } = await userClient
+            .from('ai_usage_logs')
+            .select('*', { count: 'exact', head: true })
+            .eq('user_id', user.id)
+            .eq('action_type', 'evaluate_content')
+            .eq('lesson_id', lesson_id);
+
+        if (countError) {
+            console.error('Error checking rate limit:', countError);
+            return new Response(JSON.stringify({ error: 'Erro ao verificar limites de uso da IA' }), {
+                status: 500,
+                headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+            });
+        }
+
+        if (count !== null && count >= 3) {
+            return new Response(JSON.stringify({ error: 'Limite excedido. Você pode avaliar uma lição com IA no máximo 3 vezes.' }), {
+                status: 429,
+                headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+            });
         }
 
         // Format user message content containing metadata and markdown contents
@@ -97,6 +120,19 @@ serve(async (req: Request) => {
 
         const openRouterData = await openRouterRes.json()
         const aiFeedback = openRouterData.choices?.[0]?.message?.content || 'Não foi possível extrair o feedback.'
+
+        // Log successful usage
+        const { error: logError } = await userClient
+            .from('ai_usage_logs')
+            .insert({
+                user_id: user.id,
+                action_type: 'evaluate_content',
+                lesson_id: lesson_id
+            });
+
+        if (logError) {
+            console.error('Failed to log AI usage:', logError);
+        }
 
         return new Response(
             JSON.stringify({ aiFeedback }),

@@ -63,6 +63,11 @@ export class LandingPage implements OnInit {
             expanded: false
         },
         {
+            question: 'Existe limite para o uso da avaliação por IA?',
+            answer: 'Sim! Para envio de código nos desafios, usuários do plano gratuito têm até 5 avaliações por dia, enquanto assinantes Pro contam com até 30 avaliações diárias.',
+            expanded: false
+        },
+        {
             question: 'O que é XP e como eu uso?',
             answer: 'XP é a pontuação que você ganha ao concluir lições. Ela serve para subir no ranking (geral, mensal e semanal) e para acompanhar a sua evolução.',
             expanded: false

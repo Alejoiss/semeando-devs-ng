@@ -74,6 +74,19 @@
         }
     </div>
 
+    @if (!userService.currentUser()?.isPro) {
+        <div class="mb-12 max-w-4xl mx-auto bg-surface-container border border-outline-variant/15 p-6 rounded-2xl flex items-start gap-4">
+            <span class="material-symbols-outlined text-secondary text-3xl">auto_awesome</span>
+            <div>
+                <h3 class="font-headline font-bold text-on-surface mb-2">Avalie seus Códigos com Inteligência Artificial</h3>
+                <p class="font-body text-sm text-on-surface-variant">
+                    Usuários gratuitos podem enviar até <strong>5 códigos por dia</strong> para correção por IA. 
+                    No <span class="text-primary font-bold">Plano PRO</span>, o seu limite sobe para <strong>30 submissões diárias</strong>.
+                </p>
+            </div>
+        </div>
+    }
+
     <!-- Pricing Section -->
     @if (isLoading()) {
         <div class="flex flex-col items-center justify-center py-20 gap-4">
@@ -126,6 +139,11 @@
                                     <span class="material-symbols-outlined text-primary text-sm"
                                         style="font-variation-settings: 'FILL' 1;">done</span>
                                     Descontos no marketplace (em breve)
+                                </li>
+                                <li class="flex items-center gap-3 font-body text-sm text-on-surface">
+                                    <span class="material-symbols-outlined text-primary text-sm"
+                                        style="font-variation-settings: 'FILL' 1;">done</span>
+                                    Avaliação de Código com IA (30/dia)
                                 </li>
                                 <li class="flex items-center gap-3 font-body text-sm text-on-surface">
                                     <span class="material-symbols-outlined text-primary text-sm"
@@ -197,6 +215,11 @@
                                     <span class="material-symbols-outlined text-primary text-sm"
                                         style="font-variation-settings: 'FILL' 1;">done</span>
                                     Descontos no marketplace (em breve)
+                                </li>
+                                <li class="flex items-center gap-3 font-body text-sm text-on-surface">
+                                    <span class="material-symbols-outlined text-primary text-sm"
+                                        style="font-variation-settings: 'FILL' 1;">done</span>
+                                    Avaliação de Código com IA (30/dia)
                                 </li>
                                 <li class="flex items-center gap-3 font-body text-sm text-on-surface">
                                     <span class="material-symbols-outlined text-primary text-sm"

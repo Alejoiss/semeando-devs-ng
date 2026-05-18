@@ -278,7 +278,7 @@ export class TabContent {
                 return;
             }
 
-            const response = await this.sectionContentService.evaluateLessonContent(title, description, markdowns);
+            const response = await this.sectionContentService.evaluateLessonContent(this.lessonId()!, title, description, markdowns);
             this.aiFeedback.set(response.aiFeedback);
         } catch (error: any) {
             this.errorMessage.set(error.message || 'Ocorreu um erro ao processar a avaliação com a IA.');

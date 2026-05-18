@@ -30,7 +30,7 @@ CREATE POLICY "Users can read own user_achievements" ON public.user_achievements
 -- Seed achievements
 INSERT INTO public.achievements (name, icon, identification, requirement, xp_amount) VALUES
 ('Aprendiz de tags', 'aprendiz-de-tags.png', 'APRENDIZ_DE_TAGS', 'Concluir o módulo de HTML', 500),
-('Combo insano', 'combo-insano.png', 'COMBO_INSANO', 'Fazer 10 lições perfeitas seguidas', 200),
+('Combo insano', 'combo-insano.png', 'COMBO_INSANO', 'Concluir 10 lições perfeitas seguidas', 200),
 ('Estilista da Web', 'estilista-da-web.png', 'ESTILISTA_DA_WEB', 'Concluir o módulo de CSS', 500),
 ('Imparável', 'imparavel.png', 'IMPARAVEL', 'Fazer uma sequência de 10 dias seguidos.', 200),
 ('Mago das funções', 'mago-das-funcoes.png', 'MAGO_DAS_FUNCOES', 'Concluir o módulo de JavaScript', 500),

@@ -14,6 +14,7 @@ import { XpService } from '../../../../services/xp';
 import { Lesson as LessonModel } from '../../../../../models/lesson/lesson';
 import { UserLesson } from '../../../../../models/user-lesson/user-lesson';
 import { SectionContent } from '../../../../../models/section-content/section-content';
+import { AiCreditsService } from '../../../../services/ai-credits/ai-credits';
 
 @Component({
     selector: 'app-challenge',
@@ -32,6 +33,7 @@ export class Challenge implements OnInit {
     private achievementsService = inject(AchievementsService);
     private seedService = inject(SeedService);
     private xpService = inject(XpService);
+    private aiCreditsService = inject(AiCreditsService);
 
     lessonId = signal<string>('');
     slugSubmodule = signal<string>('');
@@ -168,6 +170,9 @@ export class Challenge implements OnInit {
             this.aiFeedback.set(result.aiFeedback);
             this.passed.set(true);
             this.xpAwarded.set(result.xpAwarded);
+
+            this.aiCreditsService.incrementSubmitCodeUsage();
+            this.aiCreditsService.refreshCredits().catch(console.error);
 
             if (result.xpAwarded > 0) {
                 const seedsAwarded = Math.ceil((this.lesson()?.xp ?? 0) * 0.1);
