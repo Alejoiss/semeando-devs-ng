@@ -115,25 +115,27 @@ export async function evaluateAchievements(
         const history = recentQuizzes || [];
 
         // 5.2 Perfection Achievements (COMBO_INSANO, SERIE_PERFEITA)
-        const perfectionThresholds: Record<string, number> = {
-            'SERIE_PERFEITA': 5,
-            'COMBO_INSANO': 10
-        };
+        if (context.lessonType !== 'CHALLENGE') {
+            const perfectionThresholds: Record<string, number> = {
+                'SERIE_PERFEITA': 5,
+                'COMBO_INSANO': 10
+            };
 
-        for (const [ident, threshold] of Object.entries(perfectionThresholds)) {
-            const ach = allAchievements.find(a => a.identification === ident);
-            if (!ach) continue;
-            const state = stateMap.get(ach.id);
-            if (!state || state.completed) continue;
+            for (const [ident, threshold] of Object.entries(perfectionThresholds)) {
+                const ach = allAchievements.find(a => a.identification === ident);
+                if (!ach) continue;
+                const state = stateMap.get(ach.id);
+                if (!state || state.completed) continue;
 
-            if (context.score === 10) {
-                const newProgress = (state.progress || 0) + 1;
-                await updateAchievement(ident, { 
-                    progress: newProgress, 
-                    completed: newProgress >= threshold 
-                });
-            } else {
-                await updateAchievement(ident, { progress: 0 });
+                if (context.score === 10) {
+                    const newProgress = (state.progress || 0) + 1;
+                    await updateAchievement(ident, { 
+                        progress: newProgress, 
+                        completed: newProgress >= threshold 
+                    });
+                } else {
+                    await updateAchievement(ident, { progress: 0 });
+                }
             }
         }
 
