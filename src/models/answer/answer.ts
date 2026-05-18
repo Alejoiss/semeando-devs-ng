@@ -5,7 +5,7 @@ export interface Answer {
     questionId: string;
     question?: Question;
     text: string;
-    isCorrect: boolean;
-    reason: string;
+    isCorrect?: boolean;
+    reason?: string;
     createdAt?: Date;
 }

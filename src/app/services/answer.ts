@@ -14,6 +14,22 @@ export class AnswerService {
     }
 
     async getAnswersByQuestionId(questionId: string): Promise<Answer[]> {
+        const { data, error } = await this.supabase.rpc('get_quiz_answers_safe', {
+            p_question_id: questionId
+        });
+
+        if (error) {
+            throw new Error(error.message);
+        }
+
+        return (data ?? []).map((a: any) => ({
+            id: a.id,
+            questionId: a.question_id,
+            text: a.text
+        })) as Answer[];
+    }
+
+    async getAnswersByQuestionIdForEditor(questionId: string): Promise<Answer[]> {
         const { data, error } = await this.supabase
             .from('answers')
             .select('*')
@@ -31,5 +47,33 @@ export class AnswerService {
             reason: a.reason,
             createdAt: new Date(a.created_at)
         })) as Answer[];
+    }
+
+    async verifyAnswer(answerId: string): Promise<{ isCorrect: boolean; reason: string }> {
+        const { data, error } = await this.supabase.rpc('verify_quiz_answer', {
+            p_answer_id: answerId
+        });
+
+        if (error) {
+            throw new Error(error.message);
+        }
+
+        const result = data?.[0];
+        return {
+            isCorrect: result?.is_correct ?? false,
+            reason: result?.reason ?? ''
+        };
+    }
+
+    async getQuestionHint(questionId: string): Promise<string> {
+        const { data, error } = await this.supabase.rpc('get_quiz_question_hint', {
+            p_question_id: questionId
+        });
+
+        if (error) {
+            throw new Error(error.message);
+        }
+
+        return data ?? '';
     }
 }

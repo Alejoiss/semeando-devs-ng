@@ -67,7 +67,7 @@ export class TabQuiz {
             for (let i = 0; i < 10; i++) {
                 const dbQ = dbQuestions[i];
                 if (dbQ) {
-                    const answers = await this.answerService.getAnswersByQuestionId(dbQ.id);
+                    const answers = await this.answerService.getAnswersByQuestionIdForEditor(dbQ.id);
                     // Ensure there are 4 answers
                     const paddedAnswers = [...answers];
                     while (paddedAnswers.length < 4) {
@@ -80,8 +80,8 @@ export class TabQuiz {
                         answers: paddedAnswers.slice(0, 4).map(a => ({
                             id: a.id,
                             text: a.text,
-                            justification: a.reason,
-                            isCorrect: a.isCorrect
+                            justification: a.reason ?? '',
+                            isCorrect: !!a.isCorrect
                         })),
                         sectionContent: sc,
                         isSaving: false,

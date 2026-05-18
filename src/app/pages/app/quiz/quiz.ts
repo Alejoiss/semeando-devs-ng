@@ -68,6 +68,7 @@ export class Quiz implements OnInit {
     protected readonly earnedSeeds = signal<number>(0);
     protected readonly showHintConfirm = signal(false);
     protected readonly hintVisible = signal(false);
+    protected readonly questionHint = signal<string | null>(null);
 
     private timerInterval: any;
     private userId: string | null = null;
@@ -75,7 +76,7 @@ export class Quiz implements OnInit {
 
     protected readonly currentQuestion = computed(() => this.questions()[this.currentIndex()]);
     protected readonly selectedAnswer = computed(() => this.currentAnswers().find(a => a.id === this.selectedOptionId()));
-    protected readonly correctReason = computed(() => this.currentAnswers().find(a => a.isCorrect)?.reason);
+    protected readonly correctReason = computed(() => this.questionHint());
 
     protected readonly progress = computed(() => this.currentIndex() + 1);
     protected readonly totalQuestions = computed(() => this.questions().length);
@@ -188,25 +189,38 @@ export class Quiz implements OnInit {
             return;
         }
 
-        const isCorrect = selectedAnswer.isCorrect;
+        try {
+            const verification = await this.answerService.verifyAnswer(selectedId);
+            const isCorrect = verification.isCorrect;
 
-        this.results.update(r => [...r, {
-            questionId: question.id,
-            correct: isCorrect,
-            answerId: selectedId
-        }]);
+            this.currentAnswers.update(answers =>
+                answers.map(a =>
+                    a.id === selectedId
+                        ? { ...a, isCorrect: isCorrect, reason: verification.reason }
+                        : a
+                )
+            );
 
-        // Persist question result
-        if (this.userId) {
-            await this.userQuestionService.saveUserQuestion({
-                userId: this.userId,
+            this.results.update(r => [...r, {
                 questionId: question.id,
-                answerId: selectedId,
-                isCorrect: isCorrect
-            });
-        }
+                correct: isCorrect,
+                answerId: selectedId
+            }]);
 
-        this.confirmed.set(true);
+            // Persist question result
+            if (this.userId) {
+                await this.userQuestionService.saveUserQuestion({
+                    userId: this.userId,
+                    questionId: question.id,
+                    answerId: selectedId,
+                    isCorrect: isCorrect
+                });
+            }
+
+            this.confirmed.set(true);
+        } catch (error) {
+            console.error('Error confirming answer:', error);
+        }
     }
 
     protected async next() {
@@ -218,6 +232,7 @@ export class Quiz implements OnInit {
             this.confirmed.set(false);
             this.hintVisible.set(false);
             this.showHintConfirm.set(false);
+            this.questionHint.set(null);
             await this.loadAnswersForCurrentQuestion();
         } else {
             await this.finishQuiz();
@@ -270,10 +285,16 @@ export class Quiz implements OnInit {
     protected async confirmHint() {
         if (this.confirmed() || this.finished() || this.totalSeeds() < 50) return;
 
-        const success = await this.seedService.spendSeeds(50);
-        if (success) {
-            this.hintVisible.set(true);
-            this.showHintConfirm.set(false);
+        try {
+            const success = await this.seedService.spendSeeds(50);
+            if (success) {
+                const hint = await this.answerService.getQuestionHint(this.currentQuestion().id);
+                this.questionHint.set(hint);
+                this.hintVisible.set(true);
+                this.showHintConfirm.set(false);
+            }
+        } catch (error) {
+            console.error('Error confirming hint:', error);
         }
     }
 
@@ -287,6 +308,7 @@ export class Quiz implements OnInit {
         this.earnedSeeds.set(0);
         this.hintVisible.set(false);
         this.showHintConfirm.set(false);
+        this.questionHint.set(null);
         this.questions.update(q => this.shuffle(q));
         this.loadAnswersForCurrentQuestion();
         this.startTimer();

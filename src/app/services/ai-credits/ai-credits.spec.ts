@@ -1,16 +1,16 @@
 import { TestBed } from '@angular/core/testing';
 
-import { AiCredits } from './ai-credits';
+import { AiCreditsService } from './ai-credits';
 
-describe('AiCredits', () => {
-  let service: AiCredits;
+describe('AiCreditsService', () => {
+    let service: AiCreditsService;
 
-  beforeEach(() => {
-    TestBed.configureTestingModule({});
-    service = TestBed.inject(AiCredits);
-  });
+    beforeEach(() => {
+        TestBed.configureTestingModule({});
+        service = TestBed.inject(AiCreditsService);
+    });
 
-  it('should be created', () => {
-    expect(service).toBeTruthy();
-  });
+    it('should be created', () => {
+        expect(service).toBeTruthy();
+    });
 });
