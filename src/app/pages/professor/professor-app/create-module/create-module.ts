@@ -6,10 +6,15 @@ import { SubModuleService } from '../../../../services/sub-module';
 import { UserService } from '../../../../services/user';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { SubModule } from '../../../../../models/sub-module/sub-module';
+import { SectionContentService } from '../../../../services/section-content';
+import { SectionContent, SectionContentType } from '../../../../../models/section-content/section-content';
+import { CdkDragDrop, DragDropModule, moveItemInArray } from '@angular/cdk/drag-drop';
+import { MarkdownModule } from 'ngx-markdown';
+import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 
 @Component({
     selector: 'app-create-module',
-    imports: [ReactiveFormsModule],
+    imports: [ReactiveFormsModule, DragDropModule, MarkdownModule],
     templateUrl: './create-module.html',
     styleUrl: './create-module.scss',
     changeDetection: ChangeDetectionStrategy.OnPush,
@@ -20,6 +25,10 @@ export class CreateModule {
     private userService = inject(UserService);
     private route = inject(ActivatedRoute);
     private router = inject(Router);
+    private sectionContentService = inject(SectionContentService);
+    private sanitizer = inject(DomSanitizer);
+
+    SectionContentType = SectionContentType; // Expose to template
 
     // Form
     form = new FormGroup({
@@ -31,6 +40,17 @@ export class CreateModule {
     subModules = signal<SubModule[]>([]);
     subModulesLoading = signal(false);
     subModulesError = signal<string | null>(null);
+
+    // Presentation content
+    presentationContents = signal<Partial<SectionContent>[]>([]);
+    deletedPresentationContentIds = signal<string[]>([]);
+    expandedPresentationIds = signal<Set<string>>(new Set());
+    isUploadingImageMap = signal<Record<string, boolean>>({});
+
+    // Presentation save states
+    isSavingPresentation = signal(false);
+    presentationSaveError = signal<string | null>(null);
+    showPresentationSuccess = signal(false);
 
     constructor() {
         const id = this.route.snapshot.paramMap.get('id');
@@ -67,6 +87,13 @@ export class CreateModule {
                     this.avatarPreviewUrl.set(module.avatar.trim());
                 } else {
                     this.visualMode.set('image');
+                }
+
+                // Load presentation contents
+                const contents = await this.sectionContentService.getSectionContentsByModuleId(id);
+                this.presentationContents.set(contents);
+                if (contents.length > 0 && contents[0].id) {
+                    this.expandedPresentationIds.set(new Set([contents[0].id]));
                 }
             }
         } catch (err: any) {
@@ -241,6 +268,17 @@ export class CreateModule {
                     icon: iconValue,
                 };
                 await this.moduleService.updateModule(this.savedModuleId()!, payload);
+
+                // Save presentation contents
+                const contentsToSave = this.presentationContents().map((c, i) => ({ ...c, order: i }));
+                await this.sectionContentService.upsertSectionContentsForModule(this.savedModuleId()!, contentsToSave);
+
+                const toDelete = this.deletedPresentationContentIds();
+                if (toDelete.length > 0) {
+                    await this.sectionContentService.deleteSectionContents(toDelete);
+                    this.deletedPresentationContentIds.set([]);
+                }
+
                 this.showSuccess.set(true);
                 setTimeout(() => this.showSuccess.set(false), 3000);
             } else {
@@ -257,6 +295,17 @@ export class CreateModule {
                 const createdModule = await this.moduleService.createModule(payload);
                 await this.moduleService.assignTeacherToModule(user.id, createdModule.id);
                 this.savedModuleId.set(createdModule.id);
+
+                // Save presentation contents
+                const contentsToSave = this.presentationContents().map((c, i) => ({ ...c, order: i }));
+                await this.sectionContentService.upsertSectionContentsForModule(createdModule.id, contentsToSave);
+
+                const toDelete = this.deletedPresentationContentIds();
+                if (toDelete.length > 0) {
+                    await this.sectionContentService.deleteSectionContents(toDelete);
+                    this.deletedPresentationContentIds.set([]);
+                }
+
                 this.router.navigate(['/professor/editar-modulo', createdModule.id]);
             }
         } catch (err: any) {
@@ -275,5 +324,123 @@ export class CreateModule {
 
     editSubModule(subModuleId: string) {
         this.router.navigate(['/professor/editar-submodulo', subModuleId]);
+    }
+
+    // Presentation Content Actions
+    dropPresentationContent(event: CdkDragDrop<Partial<SectionContent>[]>) {
+        const currentList = [...this.presentationContents()];
+        moveItemInArray(currentList, event.previousIndex, event.currentIndex);
+        this.presentationContents.set(currentList);
+    }
+
+    addPresentationContent(type: SectionContentType) {
+        const newId = crypto.randomUUID();
+        const newList = [...this.presentationContents(), {
+            id: newId,
+            type,
+            content: '',
+            file: '',
+            fileDescription: ''
+        }];
+        this.presentationContents.set(newList);
+
+        const expanded = new Set(this.expandedPresentationIds());
+        expanded.add(newId);
+        this.expandedPresentationIds.set(expanded);
+    }
+
+    removePresentationContent(index: number) {
+        const currentList = [...this.presentationContents()];
+        const removed = currentList.splice(index, 1)[0];
+        if (removed.id) {
+            this.deletedPresentationContentIds.update(ids => [...ids, removed.id!]);
+        }
+        this.presentationContents.set(currentList);
+    }
+
+    updatePresentationContent(index: number, updates: Partial<SectionContent>) {
+        const currentList = [...this.presentationContents()];
+        currentList[index] = { ...currentList[index], ...updates };
+        this.presentationContents.set(currentList);
+    }
+
+    async onPresentationImageSelected(index: number, event: Event) {
+        const input = event.target as HTMLInputElement;
+        if (!input.files || input.files.length === 0) return;
+
+        const file = input.files[0];
+        const content = this.presentationContents()[index];
+        const id = content.id!;
+
+        if (file.size > 5 * 1024 * 1024) {
+            alert('A imagem não pode ter mais de 5MB.');
+            input.value = '';
+            return;
+        }
+
+        this.isUploadingImageMap.update(map => ({ ...map, [id]: true }));
+        try {
+            const publicUrl = await this.sectionContentService.uploadLessonImage(file);
+            this.updatePresentationContent(index, { file: publicUrl });
+        } catch (error: any) {
+            alert(error.message || 'Erro ao fazer upload da imagem.');
+            input.value = '';
+        } finally {
+            this.isUploadingImageMap.update(map => ({ ...map, [id]: false }));
+        }
+    }
+
+    removePresentationImage(index: number) {
+        this.updatePresentationContent(index, { file: '' });
+    }
+
+    togglePresentationContent(id: string) {
+        const expanded = new Set(this.expandedPresentationIds());
+        if (expanded.has(id)) {
+            expanded.delete(id);
+        } else {
+            expanded.add(id);
+        }
+        this.expandedPresentationIds.set(expanded);
+    }
+
+    getSafeHtml(html: string): SafeHtml {
+        return this.sanitizer.bypassSecurityTrustHtml(html);
+    }
+
+    async savePresentation() {
+        if (this.isSavingPresentation()) return;
+
+        const moduleId = this.savedModuleId();
+        if (!moduleId) {
+            this.presentationSaveError.set('Módulo não encontrado.');
+            return;
+        }
+
+        this.isSavingPresentation.set(true);
+        this.presentationSaveError.set(null);
+        this.showPresentationSuccess.set(false);
+
+        try {
+            const contentsToSave = this.presentationContents().map((c, i) => ({ ...c, order: i }));
+            await this.sectionContentService.upsertSectionContentsForModule(moduleId, contentsToSave);
+
+            const toDelete = this.deletedPresentationContentIds();
+            if (toDelete.length > 0) {
+                await this.sectionContentService.deleteSectionContents(toDelete);
+                this.deletedPresentationContentIds.set([]);
+            }
+
+            this.showPresentationSuccess.set(true);
+            setTimeout(() => this.showPresentationSuccess.set(false), 3000);
+
+            // Reload presentation content to ensure fresh state with IDs from DB
+            const contents = await this.sectionContentService.getSectionContentsByModuleId(moduleId);
+            this.presentationContents.set(contents);
+        } catch (err: any) {
+            this.presentationSaveError.set(err.message || 'Erro ao salvar a apresentação.');
+        } finally {
+            this.isSavingPresentation.set(false);
+        }
     }
 }

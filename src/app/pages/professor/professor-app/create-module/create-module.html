@@ -205,5 +205,205 @@
                 </div>
             }
         </div>
+
+        <!-- Row 3: Presentation Columns (Visible only after save) -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-10 mt-6">
+            <!-- Coluna Esquerda: Edição da Apresentação -->
+            <div class="flex flex-col gap-6 bg-surface-container-low p-6 md:p-8 rounded-2xl shadow-lg">
+                <div class="flex flex-col gap-2">
+                    <h2 class="text-display-xs text-on-surface font-bold">Apresentação do Módulo</h2>
+                    <p class="text-on-surface-variant text-body-md">Defina os conteúdos de introdução e apresentação deste módulo.</p>
+                </div>
+
+                <!-- Drag and Drop List -->
+                <div cdkDropList (cdkDropListDropped)="dropPresentationContent($event)" class="flex flex-col gap-4">
+                    @for (content of presentationContents(); track content.id; let i = $index) {
+                        <div cdkDrag class="flex flex-col bg-surface-container rounded-2xl border border-outline-variant/15 overflow-hidden shadow-sm hover:shadow-md transition-all">
+                            <!-- Accordion Header -->
+                            <div class="flex items-center justify-between p-4 bg-surface-container hover:bg-surface-bright/50 transition-colors cursor-pointer" (click)="togglePresentationContent(content.id!)">
+                                <div class="flex items-center gap-4">
+                                    <span cdkDragHandle class="material-symbols-rounded text-on-surface-variant hover:text-primary cursor-grab active:cursor-grabbing">drag_indicator</span>
+                                    <span class="text-label-lg font-bold text-on-surface">
+                                        {{ content.type === SectionContentType.VIDEO ? 'Vídeo' : content.type === SectionContentType.IMAGE ? 'Imagem' : 'Markdown' }}
+                                    </span>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <button type="button" (click)="removePresentationContent(i); $event.stopPropagation()" class="p-2 text-on-surface-variant hover:text-error transition-colors rounded-lg hover:bg-error/10">
+                                        <span class="material-symbols-rounded">delete</span>
+                                    </button>
+                                    <span class="material-symbols-rounded text-on-surface-variant transition-transform" [class.rotate-180]="expandedPresentationIds().has(content.id!)">expand_more</span>
+                                </div>
+                            </div>
+
+                            <!-- Accordion Body -->
+                            @if (expandedPresentationIds().has(content.id!)) {
+                                <div class="p-4 border-t border-outline-variant/15 flex flex-col gap-4 animate-fade-in bg-surface-container/20 rounded-b-2xl">
+                                    @if (content.type === SectionContentType.VIDEO) {
+                                        <div class="flex flex-col gap-2">
+                                            <label class="text-label-md font-bold text-on-surface">Código Iframe do Vídeo (ex: YouTube/Vimeo)</label>
+                                            <textarea rows="4" [value]="content.content || ''" (input)="updatePresentationContent(i, {content: $any($event.target).value})" placeholder="Ex: &lt;iframe width=&quot;560&quot; height=&quot;315&quot; src=&quot;https://www.youtube.com/embed/...&quot; ...&gt;&lt;/iframe&gt;" class="w-full bg-surface-container-lowest border border-outline-variant/15 p-3 outline-none focus:ring-2 focus:ring-primary/20 text-on-surface resize-none font-mono text-sm"></textarea>
+                                        </div>
+                                    }
+                                    @if (content.type === SectionContentType.IMAGE) {
+                                        <div class="flex flex-col gap-4">
+                                            <div class="flex flex-col gap-2">
+                                                <label class="text-label-md font-bold text-on-surface">Imagem da Apresentação</label>
+                                                @if (content.file) {
+                                                    <div class="relative w-full max-h-48 overflow-hidden bg-surface-container rounded-xl flex items-center justify-center group mb-2 border border-outline-variant/15">
+                                                        <img [src]="content.file" class="w-full h-auto max-h-48 object-cover" />
+                                                        <div class="absolute inset-0 bg-surface/80 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity gap-4">
+                                                            <button type="button" (click)="removePresentationImage(i)" class="flex items-center gap-2 px-4 py-2 bg-error/20 hover:bg-error/30 text-error font-bold text-label-md rounded-xl transition-colors">
+                                                                <span class="material-symbols-rounded">delete</span> Remover Imagem
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                } @else {
+                                                    <label class="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed border-outline-variant/30 hover:border-primary/50 cursor-pointer bg-surface-container-lowest hover:bg-surface-container/20 rounded-xl transition-all gap-2 group">
+                                                        <span class="material-symbols-rounded text-3xl text-on-surface-variant group-hover:text-primary transition-colors">cloud_upload</span>
+                                                        <span class="text-label-md text-on-surface-variant group-hover:text-primary transition-colors font-bold">
+                                                            @if (isUploadingImageMap()[content.id!]) {
+                                                                Enviando imagem...
+                                                            } @else {
+                                                                Clique para fazer upload (Máx: 5MB)
+                                                            }
+                                                        </span>
+                                                        <input
+                                                            type="file"
+                                                            accept="image/*"
+                                                            class="hidden"
+                                                            [disabled]="isUploadingImageMap()[content.id!]"
+                                                            (change)="onPresentationImageSelected(i, $event)"
+                                                        />
+                                                    </label>
+                                                }
+                                            </div>
+                                            <div class="flex flex-col gap-2">
+                                                <label class="text-label-md font-bold text-on-surface">Descrição Acessível (alt)</label>
+                                                <input type="text" [value]="content.fileDescription || ''" (input)="updatePresentationContent(i, {fileDescription: $any($event.target).value})" placeholder="Descrição da imagem para leitores de tela..." class="w-full bg-surface-container-lowest border border-outline-variant/15 p-3 outline-none focus:ring-2 focus:ring-primary/20 text-on-surface animate-fade-in">
+                                            </div>
+                                        </div>
+                                    }
+                                    @if (content.type === SectionContentType.MARKDOWN) {
+                                        <div class="flex flex-col gap-2">
+                                            <label class="text-label-md font-bold text-on-surface">Conteúdo Markdown</label>
+                                            <textarea rows="8" [value]="content.content || ''" (input)="updatePresentationContent(i, {content: $any($event.target).value})" placeholder="Use Markdown para formatar o texto..." class="w-full bg-surface-container-lowest border border-outline-variant/15 p-3 outline-none focus:ring-2 focus:ring-primary/20 text-on-surface font-sans text-md resize-y"></textarea>
+                                        </div>
+                                    }
+                                </div>
+                            }
+                        </div>
+                    } @empty {
+                        <div class="p-6 bg-surface-container-lowest rounded-xl border border-outline-variant/15 border-dashed flex items-center justify-center">
+                            <p class="text-on-surface-variant text-label-md">Nenhuma apresentação adicionada. Selecione uma opção abaixo para começar.</p>
+                        </div>
+                    }
+                </div>
+
+                <!-- Add Buttons -->
+                <div class="flex flex-wrap gap-4 mt-2">
+                    <button type="button" (click)="addPresentationContent(SectionContentType.MARKDOWN)" class="flex items-center gap-2 px-4 py-3 bg-surface-container-highest hover:bg-surface-bright rounded-lg text-on-surface transition-colors font-bold text-label-md">
+                        <span class="material-symbols-rounded text-[20px] text-primary">notes</span> Adicionar Markdown
+                    </button>
+                    <button type="button" (click)="addPresentationContent(SectionContentType.VIDEO)" class="flex items-center gap-2 px-4 py-3 bg-surface-container-highest hover:bg-surface-bright rounded-lg text-on-surface transition-colors font-bold text-label-md">
+                        <span class="material-symbols-rounded text-[20px] text-tertiary">play_circle</span> Adicionar Vídeo
+                    </button>
+                    <button type="button" (click)="addPresentationContent(SectionContentType.IMAGE)" class="flex items-center gap-2 px-4 py-3 bg-surface-container-highest hover:bg-surface-bright rounded-lg text-on-surface transition-colors font-bold text-label-md">
+                        <span class="material-symbols-rounded text-[20px] text-secondary">image</span> Adicionar Imagem
+                    </button>
+                </div>
+
+                <!-- Save Presentation Button -->
+                <div class="flex flex-col items-end gap-2 mt-6 pt-6 border-t border-outline-variant/15">
+                    @if (presentationSaveError()) {
+                        <span class="text-error text-label-sm">{{ presentationSaveError() }}</span>
+                    }
+
+                    <div class="flex items-center gap-4">
+                        @if (showPresentationSuccess()) {
+                            <span class="success-message text-tertiary text-label-md font-bold">Apresentação salva com sucesso!</span>
+                        }
+
+                        <button type="button" (click)="savePresentation()" [disabled]="isSavingPresentation()" class="w-full sm:w-auto py-4 px-8 bg-gradient-to-r from-primary to-primary-container text-on-primary-container font-headline font-bold rounded-xl glow-primary hover:scale-[1.02] active:scale-95 transition-all disabled:opacity-50 disabled:cursor-not-allowed">
+                            @if (isSavingPresentation()) {
+                                <span class="flex items-center justify-center gap-2">
+                                    <div class="animate-spin rounded-full h-4 w-4 border-t-2 border-on-primary border-transparent"></div>
+                                    Salvando...
+                                </span>
+                            } @else {
+                                Salvar Apresentação
+                            }
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Coluna Direita: Preview da Apresentação -->
+            <div class="flex flex-col gap-6 bg-surface-container-low p-6 md:p-8 rounded-2xl shadow-lg">
+                <h2 class="text-display-xs text-on-surface font-bold">Visualização do Aluno</h2>
+                <p class="text-on-surface-variant text-body-md">Visualize em tempo real como os estudantes verão a apresentação do módulo.</p>
+
+                <div class="glass rounded-2xl border border-outline-variant/10 overflow-hidden neon-glow-primary">
+                    <div class="w-full flex items-center justify-between p-4 bg-surface-container">
+                        <div class="flex items-center gap-3 text-on-surface">
+                            <span class="material-symbols-outlined text-primary text-xl" data-icon="rocket_launch">rocket_launch</span>
+                            <span class="font-headline font-bold text-sm">Apresentação do módulo</span>
+                        </div>
+                        <span class="material-symbols-outlined text-on-surface-variant text-sm">expand_more</span>
+                    </div>
+
+                    <div class="p-6 border-t border-outline-variant/10 space-y-8 bg-surface-container-low/30 min-h-[300px]">
+                        @for (content of presentationContents(); track content.id) {
+                            <div class="space-y-4">
+                                @switch (content.type) {
+                                    @case (SectionContentType.MARKDOWN) {
+                                        <div class="prose prose-invert max-w-none text-on-surface-variant text-md">
+                                            @if (content.content) {
+                                                <markdown [data]="content.content"></markdown>
+                                            } @else {
+                                                <p class="text-on-surface-variant/40 italic">Sem conteúdo textual.</p>
+                                            }
+                                        </div>
+                                    }
+                                    @case (SectionContentType.IMAGE) {
+                                        <div class="relative rounded-2xl overflow-hidden bg-surface-container-highest border border-outline-variant/10 shadow-md">
+                                            @if (content.file) {
+                                                <img [src]="content.file" class="w-full h-auto object-cover" [alt]="content.fileDescription || 'Imagem da apresentação'" />
+                                                @if (content.fileDescription) {
+                                                    <div class="absolute bottom-0 left-0 w-full p-3 bg-black/80">
+                                                        <p class="text-xs font-label uppercase tracking-widest text-white">{{ content.fileDescription }}</p>
+                                                    </div>
+                                                }
+                                            } @else {
+                                                <div class="flex flex-col items-center justify-center p-8 text-on-surface-variant/40 gap-2">
+                                                    <span class="material-symbols-rounded text-3xl">image</span>
+                                                    <p class="text-xs">Nenhuma imagem carregada.</p>
+                                                </div>
+                                            }
+                                        </div>
+                                    }
+                                    @case (SectionContentType.VIDEO) {
+                                        <div class="relative rounded-2xl overflow-hidden bg-black border border-outline-variant/10 shadow-md aspect-video flex items-center justify-center">
+                                            @if (content.content) {
+                                                <div [innerHTML]="getSafeHtml(content.content)" class="w-full h-full iframe-container"></div>
+                                            } @else {
+                                                <div class="flex flex-col items-center justify-center text-on-surface-variant/40 gap-1 p-4">
+                                                    <span class="material-symbols-outlined text-2xl text-secondary animate-pulse">play_circle</span>
+                                                    <p class="text-xs">Código iframe não configurado.</p>
+                                                </div>
+                                            }
+                                        </div>
+                                    }
+                                }
+                            </div>
+                        } @empty {
+                            <div class="flex flex-col items-center justify-center h-full min-h-[200px] text-on-surface-variant/30 gap-3">
+                                <span class="material-symbols-rounded text-[48px] animate-bounce">rocket_launch</span>
+                                <p class="text-sm font-bold text-center">Nenhum bloco de apresentação adicionado ainda.</p>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
     }
 </div>

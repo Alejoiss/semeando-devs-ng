@@ -60,6 +60,41 @@ export class SectionContentService {
         }
     }
 
+    async getSectionContentsByModuleId(moduleId: string): Promise<SectionContent[]> {
+        const { data, error } = await this.supabase
+            .from('section_content')
+            .select('id, type, content, file, fileDescription:file_description, order')
+            .eq('module_id', moduleId)
+            .order('order', { ascending: true });
+
+        if (error) {
+            throw new Error(error.message);
+        }
+
+        return (data ?? []) as unknown as SectionContent[];
+    }
+
+    async upsertSectionContentsForModule(moduleId: string, contents: Partial<SectionContent>[]): Promise<void> {
+        if (!contents.length) return;
+        const payload = contents.map(c => ({
+            id: c.id,
+            module_id: moduleId,
+            type: c.type,
+            content: c.content,
+            file: c.file,
+            file_description: c.fileDescription,
+            order: c.order
+        }));
+
+        const { error } = await this.supabase
+            .from('section_content')
+            .upsert(payload);
+
+        if (error) {
+            throw new Error(error.message);
+        }
+    }
+
     async uploadLessonImage(file: File): Promise<string> {
         if (file.size > 5 * 1024 * 1024) {
             throw new Error('A imagem não pode ter mais de 5MB.');

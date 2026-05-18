@@ -11,6 +11,10 @@ import { UserService } from '../../../services/user';
 import { SubModule } from '../../../../models/sub-module/sub-module';
 import { Module } from '../../../../models/module/module';
 import { Achievements } from '../../../../models/achievements/achievements';
+import { SectionContentService } from '../../../services/section-content';
+import { SectionContent, SectionContentType } from '../../../../models/section-content/section-content';
+import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
+import { MarkdownModule } from 'ngx-markdown';
 
 export interface SubmoduleWithState {
     submodule: SubModule;
@@ -22,7 +26,7 @@ export interface SubmoduleWithState {
 @Component({
     selector: 'app-submodule',
     standalone: true,
-    imports: [CommonModule, RouterLink],
+    imports: [CommonModule, RouterLink, MarkdownModule],
     templateUrl: './submodule.html',
     styleUrls: ['./submodule.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
@@ -37,12 +41,26 @@ export class Submodule implements OnInit {
     private moduleService = inject(ModuleService);
     private achievementsService = inject(AchievementsService);
     private userService = inject(UserService);
+    private sectionContentService = inject(SectionContentService);
+    private sanitizer = inject(DomSanitizer);
 
     module = signal<Module | null>(null);
     submodulesWithState = signal<SubmoduleWithState[]>([]);
     achievement = signal<Achievements | null>(null);
     isLoading = signal<boolean>(true);
     error = signal<string | null>(null);
+
+    presentationContents = signal<SectionContent[]>([]);
+    isPresentationCollapsed = signal<boolean>(true);
+    SectionContentType = SectionContentType;
+
+    getSafeHtml(html: string | undefined): SafeHtml {
+        return this.sanitizer.bypassSecurityTrustHtml(html || '');
+    }
+
+    togglePresentation() {
+        this.isPresentationCollapsed.update(c => !c);
+    }
 
     ngOnInit() {
         this.loadData();
@@ -136,6 +154,10 @@ export class Submodule implements OnInit {
                 this.module.set(module);
                 const achievement = await this.achievementsService.getAchievementByModuleId(module.id);
                 this.achievement.set(achievement);
+
+                // Fetch presentation contents
+                const presentation = await this.sectionContentService.getSectionContentsByModuleId(module.id);
+                this.presentationContents.set(presentation);
             }
 
             this.error.set(null);

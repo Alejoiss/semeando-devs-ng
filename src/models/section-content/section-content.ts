@@ -1,6 +1,7 @@
 import { Lesson } from "../lesson/lesson";
 import { Question } from "../question/question";
 import { Quiz } from "../quiz/quiz";
+import { Module } from "../module/module";
 
 export enum SectionContentType {
     TEXT = 'TEXT',
@@ -21,4 +22,6 @@ export interface SectionContent {
     questionId?: string;
     question?: Question;
     quiz?: Quiz;
+    moduleId?: string;
+    module?: Module;
 }

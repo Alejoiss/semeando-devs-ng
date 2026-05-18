@@ -21,6 +21,75 @@
         </div>
     </header>
 
+    @if (presentationContents().length > 0) {
+        <section class="mb-12 relative animate-fade-in">
+            <div class="glass-panel rounded-2xl border border-outline-variant/10 overflow-hidden">
+                <button (click)="togglePresentation()" class="w-full flex items-center justify-between p-6 hover:bg-surface-container-high transition-all text-left">
+                    <div class="flex items-center gap-3 text-on-surface">
+                        <span class="material-symbols-outlined text-primary text-2xl" data-icon="rocket_launch">rocket_launch</span>
+                        <span class="text-xl font-headline font-bold">Apresentação do módulo</span>
+                    </div>
+                    <span class="material-symbols-outlined text-on-surface-variant transition-transform duration-300" 
+                          [style.transform]="isPresentationCollapsed() ? 'rotate(0deg)' : 'rotate(180deg)'">
+                        expand_more
+                    </span>
+                </button>
+                
+                @if (!isPresentationCollapsed()) {
+                    <div class="p-6 md:p-8 border-t border-outline-variant/10 space-y-8 bg-surface-container-low/30">
+                        @for (section of presentationContents(); track section.id) {
+                            <div class="space-y-4">
+                                @switch (section.type) {
+                                    @case ('TEXT') {
+                                        <div class="glass rounded-3xl p-6 md:p-8 border border-outline-variant/10">
+                                            <div class="prose prose-invert max-w-none">
+                                                <p class="text-on-surface-variant leading-relaxed">
+                                                    {{ section.content }}
+                                                </p>
+                                            </div>
+                                        </div>
+                                    }
+                                    @case ('MARKDOWN') {
+                                        <div class="glass rounded-3xl p-6 md:p-8 border border-outline-variant/10">
+                                            <div class="prose prose-invert prose-blue max-w-none">
+                                                <markdown [data]="section.content"></markdown>
+                                            </div>
+                                        </div>
+                                    }
+                                    @case ('IMAGE') {
+                                        <div class="relative group rounded-3xl overflow-hidden bg-surface-container-highest border border-outline-variant/10 shadow-2xl max-w-3xl mx-auto">
+                                            <img [src]="section.file" [alt]="section.fileDescription || 'Module presentation image'"
+                                                class="w-full h-auto object-cover group-hover:scale-105 transition-transform duration-700" />
+                                            @if (section.fileDescription) {
+                                                <div class="absolute bottom-0 left-0 w-full p-4 bg-black/80">
+                                                    <p class="text-[10px] font-label uppercase tracking-widest text-white">
+                                                        {{ section.fileDescription }}
+                                                    </p>
+                                                </div>
+                                            }
+                                        </div>
+                                    }
+                                    @case ('VIDEO') {
+                                        <div class="relative group rounded-3xl overflow-hidden bg-black border border-outline-variant/10 shadow-2xl aspect-video max-w-3xl mx-auto flex items-center justify-center">
+                                            @if (section.content) {
+                                                <div [innerHTML]="getSafeHtml(section.content)" class="w-full h-full iframe-container"></div>
+                                            } @else {
+                                                <div class="flex flex-col items-center justify-center text-on-surface-variant gap-2 p-6">
+                                                    <span class="material-symbols-outlined text-4xl text-secondary animate-pulse">play_circle</span>
+                                                    <p class="text-label-md text-center">Vídeo não disponível.</p>
+                                                </div>
+                                            }
+                                        </div>
+                                    }
+                                }
+                            </div>
+                        }
+                    </div>
+                }
+            </div>
+        </section>
+    }
+
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-8">
         @if (isLoading()) {
             @for (_ of [1, 2, 3, 4]; track $index) {
