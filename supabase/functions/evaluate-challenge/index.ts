@@ -52,7 +52,7 @@ serve(async (req: { method: string; headers: { get: (arg0: string) => any }; jso
                     "Content-Type": "application/json"
                 },
                 body: JSON.stringify({
-                    "model": "inclusionai/ring-2.6-1t:free",
+                    "model": "openai/gpt-5-nano",
                     "messages": [
                         {
                             "role": "system",

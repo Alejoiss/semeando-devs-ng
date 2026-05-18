@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, effect, inject, input, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, effect, inject, input, signal } from '@angular/core';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -42,7 +42,13 @@ export class TabContent {
 
     contentList = signal<Partial<SectionContent>[]>([]);
     contentIdsToDelete = signal<string[]>([]);
-    
+
+    isEvaluating = signal(false);
+    aiFeedback = signal<string | null>(null);
+
+    hasMarkdownContent = computed(() => this.contentList().some(c => c.type === SectionContentType.MARKDOWN));
+    canEvaluate = computed(() => this.hasMarkdownContent() && !this.isSaving() && !this.isEvaluating() && !!this.lessonId());
+
     // Cache for editor models to prevent cursor jumps on re-render
     codeModels: Record<string, CodeModel> = {};
 
@@ -114,10 +120,10 @@ export class TabContent {
                     title: this.lessonForm.value.title!,
                     description: this.lessonForm.value.description!,
                 });
-                
+
                 const contentsToSave = this.contentList().map((c, i) => ({ ...c, order: i }));
                 await this.sectionContentService.upsertSectionContents(id, contentsToSave);
-                
+
                 const toDelete = this.contentIdsToDelete();
                 if (toDelete.length > 0) {
                     await this.sectionContentService.deleteSectionContents(toDelete);
@@ -138,7 +144,7 @@ export class TabContent {
                 if (!user) throw new Error('Usuário não autenticado.');
 
                 const lessonCount = await this.lessonService.getLessonCountBySubModuleId(smId);
-                
+
                 const newLesson = await this.lessonService.createLesson({
                     title: this.lessonForm.value.title!,
                     description: this.lessonForm.value.description!,
@@ -175,7 +181,7 @@ export class TabContent {
             fileDescription: ''
         }];
         this.contentList.set(newList);
-        
+
         const expanded = new Set(this.expandedContentIds());
         expanded.add(newId);
         this.expandedContentIds.set(expanded);
@@ -187,8 +193,8 @@ export class TabContent {
         if (removed.id) {
             delete this.codeModels[removed.id]; // Clean cache
             // Keep track of all IDs to delete, Supabase upsert requires valid UUIDs.
-            // When removing we just push to the toDelete list. 
-            // If it's a newly added content (that was never saved), it might fail deletion, 
+            // When removing we just push to the toDelete list.
+            // If it's a newly added content (that was never saved), it might fail deletion,
             // but we can catch or ignore it in the service or just let it pass.
             this.contentIdsToDelete.update(ids => [...ids, removed.id!]);
         }
@@ -200,7 +206,7 @@ export class TabContent {
         const item = { ...currentList[index], ...updates };
         currentList[index] = item;
         this.contentList.set(currentList);
-        
+
         // Update cached code model value to keep it in sync, without changing reference
         if (item.id && updates.content !== undefined && this.codeModels[item.id]) {
             this.codeModels[item.id].value = updates.content;
@@ -249,5 +255,35 @@ export class TabContent {
             expanded.add(id);
         }
         this.expandedContentIds.set(expanded);
+    }
+
+    async evaluateContent() {
+        if (!this.canEvaluate()) return;
+
+        this.isEvaluating.set(true);
+        this.errorMessage.set(null);
+        this.aiFeedback.set(null);
+
+        try {
+            const title = this.lessonForm.value.title || '';
+            const description = this.lessonForm.value.description || '';
+
+            // Extract only the markdowns section blocks
+            const markdowns = this.contentList()
+                .filter(c => c.type === SectionContentType.MARKDOWN && c.content)
+                .map(c => c.content!);
+
+            if (markdowns.length === 0) {
+                this.errorMessage.set('Adicione algum conteúdo no bloco de Markdown antes de avaliar.');
+                return;
+            }
+
+            const response = await this.sectionContentService.evaluateLessonContent(title, description, markdowns);
+            this.aiFeedback.set(response.aiFeedback);
+        } catch (error: any) {
+            this.errorMessage.set(error.message || 'Ocorreu um erro ao processar a avaliação com a IA.');
+        } finally {
+            this.isEvaluating.set(false);
+        }
     }
 }

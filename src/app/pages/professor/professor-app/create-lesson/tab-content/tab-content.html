@@ -185,6 +185,58 @@
                         <span class="material-symbols-rounded text-[20px] text-secondary">image</span> Adicionar Imagem
                     </button>
                 </div>
+
+                <!-- AI Evaluation Section -->
+                <div class="flex flex-col gap-6 p-6 md:p-8 bg-surface-container-low rounded-2xl shadow-lg mt-8">
+                    <!-- Header -->
+                    <div class="flex flex-col gap-2">
+                        <h3 class="text-title-lg text-on-surface font-bold font-plus-jakarta flex items-center gap-3">
+                            <span class="material-symbols-rounded text-secondary">psychology</span>
+                            Avaliação Pedagógica com IA
+                        </h3>
+                        <p class="text-on-surface-variant text-body-md">
+                            Avalie se a estrutura e a qualidade pedagógica de seus blocos de Markdown atendem às diretrizes de qualidade do projeto.
+                        </p>
+                    </div>
+
+                    <!-- Action Button -->
+                    <div class="flex items-center gap-4">
+                        <button
+                            type="button"
+                            (click)="evaluateContent()"
+                            [disabled]="!canEvaluate()"
+                            class="w-full sm:w-auto py-3 px-6 bg-surface-container-highest hover:bg-surface-bright text-on-surface hover:text-primary transition-all rounded-lg font-bold text-label-md disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                        >
+                            @if (isEvaluating()) {
+                                <div class="animate-spin rounded-full h-4 w-4 border-t-2 border-primary border-transparent"></div>
+                                <span>Avaliando Conteúdo...</span>
+                            } @else {
+                                <span class="material-symbols-rounded text-[20px] text-secondary">analytics</span>
+                                <span>Avaliar conteúdo com IA</span>
+                            }
+                        </button>
+                        
+                        @if (!hasMarkdownContent()) {
+                            <span class="text-label-sm text-on-surface-variant/70 italic flex items-center gap-1.5">
+                                <span class="material-symbols-rounded text-body-sm">info</span>
+                                Adicione ao menos um bloco de Markdown para habilitar a avaliação.
+                            </span>
+                        }
+                    </div>
+
+                    <!-- AI Feedback Panel -->
+                    @if (aiFeedback()) {
+                        <div class="ai-feedback-container glass rounded-2xl p-6 border border-outline-variant/10 bg-surface-container/30 transition-all duration-300">
+                            <div class="flex items-center gap-3 mb-4">
+                                <span class="material-symbols-rounded text-tertiary">sentiment_satisfied</span>
+                                <h4 class="text-title-md text-on-surface font-bold font-plus-jakarta">Feedback do Professor IA</h4>
+                            </div>
+                            <div class="prose prose-invert prose-blue max-w-none">
+                                <markdown [data]="aiFeedback()"></markdown>
+                            </div>
+                        </div>
+                    }
+                </div>
             </div>
         }
 
