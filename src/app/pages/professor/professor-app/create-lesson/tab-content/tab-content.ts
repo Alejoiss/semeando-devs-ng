@@ -35,6 +35,7 @@ export class TabContent {
 
     subModuleId = input<string | null>(null);
     lessonId = input<string | null>(null);
+    lessonType = input<LessonType>(LessonType.LESSON);
 
     isSaving = signal(false);
     showSuccess = signal(false);
@@ -148,7 +149,7 @@ export class TabContent {
                 const newLesson = await this.lessonService.createLesson({
                     title: this.lessonForm.value.title!,
                     description: this.lessonForm.value.description!,
-                    type: LessonType.LESSON,
+                    type: this.lessonType(),
                     order: lessonCount + 1,
                     subModuleId: smId,
                     xp: 50,

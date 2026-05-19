@@ -1,0 +1,89 @@
+<div class="flex flex-col gap-8">
+    <div [formGroup]="codeForm" class="flex flex-col gap-8 p-6 md:p-8 bg-surface-container-low rounded-2xl shadow-lg">
+        <!-- Section Header -->
+        <div class="flex flex-col gap-2">
+            <h3 class="text-title-lg text-on-surface font-bold font-plus-jakarta flex items-center gap-3">
+                <span class="material-symbols-rounded text-primary">code</span>
+                Configuração de Código do Desafio
+            </h3>
+            <p class="text-on-surface-variant text-body-md">Defina a linguagem e o código inicial para os alunos resolverem o desafio.</p>
+        </div>
+
+        <!-- Form Fields -->
+        <div class="flex flex-col gap-6">
+            <!-- Language Input -->
+            <div class="flex flex-col gap-3">
+                <label for="code-language" class="text-label-lg font-bold text-on-surface flex items-center gap-2">
+                    Linguagem
+                    <span class="text-secondary">*</span>
+                </label>
+                <div class="relative group max-w-md">
+                    <input
+                        id="code-language"
+                        type="text"
+                        formControlName="language"
+                        placeholder="Ex: typescript, javascript, python"
+                        class="w-full bg-surface-container-lowest text-on-surface p-4 outline-none focus:ring-2 focus:ring-primary/20 transition-all placeholder:text-on-surface-variant/30 font-medium rounded-xl"
+                    />
+                </div>
+                @if (codeForm.get('language')?.invalid && codeForm.get('language')?.touched) {
+                    <p class="text-error text-label-sm font-medium animate-fade-in mt-1">
+                        @if (codeForm.get('language')?.hasError('required')) {
+                            <span>A linguagem é obrigatória.</span>
+                        }
+                    </p>
+                }
+            </div>
+
+            <!-- Code Editor Input -->
+            <div class="flex flex-col gap-3">
+                <label class="text-label-lg font-bold text-on-surface flex items-center gap-2">
+                    Código Inicial
+                    <span class="text-secondary">*</span>
+                </label>
+                <div class="overflow-hidden rounded-xl bg-surface-container-lowest border border-outline-variant/15 h-[400px]">
+                    <ngs-code-editor
+                        [theme]="'vs-dark'"
+                        [codeModel]="codeModel"
+                        [options]="{lineNumbers: 'on', minimap: {enabled: false}, wordWrap: 'on'}"
+                        (valueChanged)="onCodeChanged($event)"
+                        class="w-full h-full"
+                    ></ngs-code-editor>
+                </div>
+            </div>
+        </div>
+
+        <!-- Error Message -->
+        @if (errorMessage()) {
+            <div class="bg-error/10 text-error p-4 rounded-xl flex items-center gap-3 animate-shake">
+                <span class="material-symbols-rounded">error</span>
+                <span class="text-label-md font-bold">{{ errorMessage() }}</span>
+            </div>
+        }
+
+        <!-- Footer Actions -->
+        <div class="flex justify-end pt-4">
+            <div class="flex items-center gap-4">
+                @if (showSuccess()) {
+                    <span class="success-message text-tertiary text-label-md font-bold">Salvo com sucesso!</span>
+                }
+
+                <button
+                    type="button"
+                    (click)="saveCode()"
+                    [disabled]="codeForm.invalid || isSaving()"
+                    class="w-full sm:w-auto py-4 px-8 bg-gradient-to-r from-secondary to-secondary-dim text-on-secondary font-headline font-extrabold rounded-xl shadow-lg shadow-primary/20 active:scale-95 hover:scale-[1.02] transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                    @if (isSaving()) {
+                        <span class="flex items-center justify-center gap-2">
+                            <div class="animate-spin rounded-full h-4 w-4 border-t-2 border-on-primary border-transparent"></div>
+                            Salvando...
+                        </span>
+                    } @else {
+                        Salvar Código
+                    }
+                </button>
+            </div>
+        </div>
+    </div>
+</div>

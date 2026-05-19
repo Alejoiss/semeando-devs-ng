@@ -171,6 +171,10 @@
                         <span class="material-symbols-rounded text-sm">add</span>
                         Criar Lição
                     </a>
+                    <a [routerLink]="['/professor/criar-licao', savedSubModuleId()]" [queryParams]="{ type: 'CHALLENGE' }" class="bg-surface-container-highest hover:bg-surface-container-highest/80 text-primary font-bold py-3 px-6 rounded-xl transition-all flex items-center gap-2 shadow-sm hover:scale-[1.02] no-underline">
+                        <span class="material-symbols-rounded text-sm">add</span>
+                        Criar Desafio
+                    </a>
                     <button type="button" (click)="createRevision()" [disabled]="lessonsLoading()" class="bg-surface-container-highest hover:bg-surface-container-highest/80 text-primary font-bold py-3 px-6 rounded-xl transition-all flex items-center gap-2 shadow-sm hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed">
                         <span class="material-symbols-rounded text-sm">add</span>
                         Criar Revisão
@@ -204,7 +208,7 @@
                                 <span class="material-symbols-rounded text-on-surface-variant cursor-grab active:cursor-grabbing">drag_indicator</span>
 
                                 <div class="h-12 w-12 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
-                                    <span class="material-symbols-rounded text-primary">{{ lesson.type === 'CHALLENGE' ? 'code' : (lesson.type === 'REVISION' ? 'assignment' : 'article') }}</span>
+                                    <span class="material-symbols-rounded text-primary">{{ lesson.type === 'CHALLENGE' ? 'code' : (lesson.type === 'REVISION' ? 'checklist' : 'article') }}</span>
                                 </div>
 
                                 <div class="flex flex-col">

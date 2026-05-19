@@ -10,9 +10,11 @@
     <!-- Main Title -->
     <div class="flex flex-col gap-2 pl-4">
         <h1 class="text-display-sm text-on-surface font-bold">
-            {{ lessonId() ? 'Editar Lição' : 'Criar Nova Lição' }}
+            {{ lessonType() === LessonType.CHALLENGE ? (lessonId() ? 'Editar Desafio' : 'Criar Novo Desafio') : (lessonId() ? 'Editar Lição' : 'Criar Nova Lição') }}
         </h1>
-        <p class="text-on-surface-variant text-body-md">Configure o conteúdo, materiais de apoio e quiz da lição.</p>
+        <p class="text-on-surface-variant text-body-md">
+            {{ lessonType() === LessonType.CHALLENGE ? 'Configure o conteúdo e o código inicial do desafio.' : 'Configure o conteúdo, materiais de apoio e quiz da lição.' }}
+        </p>
     </div>
 
     <!-- Tabs Container -->
@@ -28,41 +30,58 @@
                 <span class="material-symbols-rounded text-[20px]">article</span>
                 Conteúdo
             </button>
-            <button
-                type="button"
-                (click)="lessonId() ? setTab('extra') : null"
-                [class]="activeTab() === 'extra' ? 'bg-surface-bright/80 text-primary shadow-lg backdrop-blur-md' : 'text-on-surface-variant hover:text-on-surface hover:bg-surface-container-highest/50'"
-                [class.opacity-50]="!lessonId()"
-                [class.cursor-not-allowed]="!lessonId()"
-                class="px-8 py-3 rounded-lg text-label-lg font-bold transition-all flex items-center gap-2"
-            >
-                <span class="material-symbols-rounded text-[20px]">attachment</span>
-                Materiais extras
-            </button>
-            <button
-                type="button"
-                (click)="lessonId() ? setTab('quiz') : null"
-                [class]="activeTab() === 'quiz' ? 'bg-surface-bright/80 text-primary shadow-lg backdrop-blur-md' : 'text-on-surface-variant hover:text-on-surface hover:bg-surface-container-highest/50'"
-                [class.opacity-50]="!lessonId()"
-                [class.cursor-not-allowed]="!lessonId()"
-                class="px-8 py-3 rounded-lg text-label-lg font-bold transition-all flex items-center gap-2"
-            >
-                <span class="material-symbols-rounded text-[20px]">quiz</span>
-                Quiz
-            </button>
+            @if (lessonType() !== LessonType.CHALLENGE) {
+                <button
+                    type="button"
+                    (click)="lessonId() ? setTab('extra') : null"
+                    [class]="activeTab() === 'extra' ? 'bg-surface-bright/80 text-primary shadow-lg backdrop-blur-md' : 'text-on-surface-variant hover:text-on-surface hover:bg-surface-container-highest/50'"
+                    [class.opacity-50]="!lessonId()"
+                    [class.cursor-not-allowed]="!lessonId()"
+                    class="px-8 py-3 rounded-lg text-label-lg font-bold transition-all flex items-center gap-2"
+                >
+                    <span class="material-symbols-rounded text-[20px]">attachment</span>
+                    Materiais extras
+                </button>
+                <button
+                    type="button"
+                    (click)="lessonId() ? setTab('quiz') : null"
+                    [class]="activeTab() === 'quiz' ? 'bg-surface-bright/80 text-primary shadow-lg backdrop-blur-md' : 'text-on-surface-variant hover:text-on-surface hover:bg-surface-container-highest/50'"
+                    [class.opacity-50]="!lessonId()"
+                    [class.cursor-not-allowed]="!lessonId()"
+                    class="px-8 py-3 rounded-lg text-label-lg font-bold transition-all flex items-center gap-2"
+                >
+                    <span class="material-symbols-rounded text-[20px]">quiz</span>
+                    Quiz
+                </button>
+            } @else {
+                <button
+                    type="button"
+                    (click)="lessonId() ? setTab('code') : null"
+                    [class]="activeTab() === 'code' ? 'bg-surface-bright/80 text-primary shadow-lg backdrop-blur-md' : 'text-on-surface-variant hover:text-on-surface hover:bg-surface-container-highest/50'"
+                    [class.opacity-50]="!lessonId()"
+                    [class.cursor-not-allowed]="!lessonId()"
+                    class="px-8 py-3 rounded-lg text-label-lg font-bold transition-all flex items-center gap-2"
+                >
+                    <span class="material-symbols-rounded text-[20px]">code</span>
+                    Código
+                </button>
+            }
         </div>
 
         <!-- Dynamic Content Area -->
         <div class="flex flex-col gap-6 mt-4">
             @switch (activeTab()) {
                 @case ('content') {
-                    <app-tab-content [subModuleId]="subModuleId()" [lessonId]="lessonId()" />
+                    <app-tab-content [subModuleId]="subModuleId()" [lessonId]="lessonId()" [lessonType]="lessonType()" />
                 }
                 @case ('extra') {
                     <app-tab-extra-material [lessonId]="lessonId()" />
                 }
                 @case ('quiz') {
                     <app-tab-quiz [lessonId]="lessonId()" />
+                }
+                @case ('code') {
+                    <app-tab-code [lessonId]="lessonId()" />
                 }
             }
         </div>
