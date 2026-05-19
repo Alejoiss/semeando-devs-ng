@@ -5,7 +5,7 @@ import { Router, ActivatedRoute, RouterLink } from '@angular/router';
 import { SubModuleService } from '../../../../services/sub-module';
 import { UserService } from '../../../../services/user';
 import { LessonService } from '../../../../services/lesson';
-import { Lesson } from '../../../../../models/lesson/lesson';
+import { Lesson, LessonType } from '../../../../../models/lesson/lesson';
 
 @Component({
     selector: 'app-create-submodule',
@@ -54,7 +54,7 @@ export class CreateSubmodule {
                     description: sm.description,
                 });
                 this.moduleId.set((sm as any).module_id);
-                
+
                 if (sm.icon && sm.icon.trim()) {
                     this.visualMode.set('icon');
                     this.iconName.set(sm.icon.trim());
@@ -86,6 +86,36 @@ export class CreateSubmodule {
             this.lessons.set(data);
         } catch (err: any) {
             this.lessonsError.set(err.message || 'Erro ao carregar lições.');
+        } finally {
+            this.lessonsLoading.set(false);
+        }
+    }
+    async createRevision() {
+        const subModuleId = this.savedSubModuleId();
+        if (!subModuleId) return;
+
+        this.lessonsLoading.set(true);
+        this.lessonsError.set(null);
+        try {
+            const user = this.userService.currentUser();
+            if (!user) throw new Error('Usuário não autenticado.');
+
+            const subModuleName = this.form.controls.title.value || '';
+            const lessonCount = await this.lessonService.getLessonCountBySubModuleId(subModuleId);
+
+            await this.lessonService.createLesson({
+                title: 'Revisão do submódulo ' + subModuleName,
+                description: 'Vamos revisar o que aprendemos até aqui neste submódulo',
+                type: LessonType.REVISION,
+                order: lessonCount + 1,
+                subModuleId: subModuleId,
+                xp: 50,
+                createdBy: user.id,
+            });
+
+            await this.loadLessons(subModuleId);
+        } catch (err: any) {
+            this.lessonsError.set(err.message || 'Erro ao criar lição de revisão.');
         } finally {
             this.lessonsLoading.set(false);
         }

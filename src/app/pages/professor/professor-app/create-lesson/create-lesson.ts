@@ -1,5 +1,7 @@
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
+import { LessonService } from '../../../../services/lesson';
+import { LessonType } from '../../../../../models/lesson/lesson';
 import { TabContent } from './tab-content/tab-content';
 import { TabExtraMaterial } from './tab-extra-material/tab-extra-material';
 import { TabQuiz } from './tab-quiz/tab-quiz';
@@ -17,6 +19,7 @@ export type LessonTab = 'content' | 'extra' | 'quiz';
 export class CreateLesson {
     private route = inject(ActivatedRoute);
     private router = inject(Router);
+    private lessonService = inject(LessonService);
 
     activeTab = signal<LessonTab>('content');
 
@@ -26,6 +29,26 @@ export class CreateLesson {
     constructor() {
         this.lessonId.set(this.route.snapshot.paramMap.get('id'));
         this.subModuleId.set(this.route.snapshot.paramMap.get('idSubModule'));
+        this.checkLessonType();
+    }
+
+    private async checkLessonType() {
+        const id = this.lessonId();
+        if (id) {
+            try {
+                const lesson = await this.lessonService.getLessonById(id);
+                if (lesson && lesson.type === LessonType.REVISION) {
+                    const subModuleId = lesson.subModuleId || this.subModuleId();
+                    if (subModuleId) {
+                        this.router.navigate(['/professor/editar-submodulo', subModuleId], { replaceUrl: true });
+                    } else {
+                        this.router.navigate(['/professor/meus-modulos'], { replaceUrl: true });
+                    }
+                }
+            } catch (err) {
+                console.error('Erro ao verificar tipo da lição', err);
+            }
+        }
     }
 
     setTab(tab: LessonTab) {
