@@ -172,8 +172,8 @@ serve(async (req: { method: string; headers: { get: (arg0: string) => any }; jso
             }
 
             // --- 2.5 XP Award ---
-            if (!wasAlreadyCompleted && lessonData.xp > 0) {
-                const xpToAward = lessonData.xp
+            if (lessonData.xp > 0) {
+                const xpToAward = !wasAlreadyCompleted ? lessonData.xp : Math.ceil(lessonData.xp * 0.1)
 
                 // 1. Insert into xp_log
                 const { error: logError } = await serviceRoleClient

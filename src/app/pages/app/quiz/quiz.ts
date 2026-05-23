@@ -103,6 +103,8 @@ export class Quiz implements OnInit {
 
     protected readonly passed = computed(() => this.scorePercent() >= 70);
 
+    protected readonly xpAwarded = computed(() => this.quizCompletionResult()?.xpAwarded || 0);
+
     async ngOnInit() {
         const lessonId = this.route.snapshot.paramMap.get('lessonId');
         if (!lessonId) return;
@@ -257,8 +259,8 @@ export class Quiz implements OnInit {
                 );
                 this.quizCompletionResult.set(result);
 
-                if (this.passed()) {
-                    const amount = Math.ceil((this.lesson()?.xp ?? 0) * 0.1);
+                if (this.passed() && result.xpAwarded > 15) {
+                    const amount = Math.ceil((result.xpAwarded ?? 0) * 0.1);
                     await this.seedService.creditSeeds(amount);
                     this.earnedSeeds.set(amount);
                 }

@@ -33,7 +33,7 @@ serve(async (req: { method: string; headers: { get: (arg0: string) => any }; jso
         if (userError || !user) throw new Error('Invalid user or token')
 
         const body = await req.json()
-        const { lessonId, description, code } = body
+        const { lessonId, description, code, initial_code } = body
 
         if (!lessonId || !description || !code) {
             return new Response(JSON.stringify({ error: 'Missing required parameters' }), {
@@ -101,11 +101,11 @@ serve(async (req: { method: string; headers: { get: (arg0: string) => any }; jso
                     "messages": [
                         {
                             "role": "system",
-                            "content": "Você é um professor de programação avaliando o código de um aluno. Analise se a resposta resolve o problema proposto e gere um feedback textual indicando o que está bom e o que pode ser melhorado (organização, legibilidade, boas práticas). O aluno não pode ser reprovado. Seja claro e encorajador."
+                            "content": "Você é um professor de programação avaliando o código de um aluno. Analise se a resposta resolve o problema proposto e gere um feedback textual indicando o que está bom e o que pode ser melhorado (organização, legibilidade, boas práticas). Não sugira outros assuntos que não estejam no desafio. Você está conversando diretamente com o aluno. Analise o código inicial (que é dado no próprio exercício) e o código que o aluno mandou, compare os dois e analise se o aluno conseguiu resolver o problema proposto. O aluno não pode ser reprovado. Seja claro e encorajador. Não retorne a solução do problema ao aluno, apenas o feedback e sugestões de melhoria para atender o que foi pedido. Retorne a resposta em markdown e em Português do Brasil. Não retorne uma resposta com continuidade, ela deve ser única e conclusiva, sem dar continuidade na conversa."
                         },
                         {
                             "role": "user",
-                            "content": `Problema proposto:\n${description}\n\nCódigo do aluno:\n${code}`
+                            "content": `Problema proposto:\n${description}\n\nCódigo inicial:\n${initial_code}\n\nCódigo do aluno:\n${code}`
                         }
                     ]
                 })

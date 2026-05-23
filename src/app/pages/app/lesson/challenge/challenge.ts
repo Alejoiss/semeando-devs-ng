@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy, Component, computed, inject, OnInit, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, OnInit, OnDestroy, signal } from '@angular/core';
 import { ActivatedRoute, RouterLink, Router } from '@angular/router';
 import { MarkdownModule } from 'ngx-markdown';
 import { CodeEditorModule, CodeModel } from '@ngstack/code-editor';
@@ -24,7 +24,7 @@ import { AiCreditsService } from '../../../../services/ai-credits/ai-credits';
     styleUrl: './challenge.scss',
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class Challenge implements OnInit {
+export class Challenge implements OnInit, OnDestroy {
     private route = inject(ActivatedRoute);
     private router = inject(Router);
     private lessonService = inject(LessonService);
@@ -45,6 +45,8 @@ export class Challenge implements OnInit {
 
     isLoading = signal<boolean>(true);
     error = signal<string | null>(null);
+    toastError = signal<string | null>(null);
+    private toastTimeout: any;
 
     isSubmitting = signal<boolean>(false);
     aiFeedback = signal<string | null>(null);
@@ -67,6 +69,39 @@ export class Challenge implements OnInit {
             enabled: false
         }
     };
+
+    ngOnDestroy(): void {
+        if (this.toastTimeout) {
+            clearTimeout(this.toastTimeout);
+        }
+    }
+
+    showToast(message: string) {
+        this.toastError.set(message);
+        if (this.toastTimeout) {
+            clearTimeout(this.toastTimeout);
+        }
+        this.toastTimeout = setTimeout(() => {
+            this.toastError.set(null);
+        }, 8000);
+    }
+
+    clearToast() {
+        this.toastError.set(null);
+        if (this.toastTimeout) {
+            clearTimeout(this.toastTimeout);
+        }
+    }
+
+    goBack() {
+        const slug = this.slug();
+        const slugSubmodule = this.slugSubmodule();
+        if (slug && slugSubmodule) {
+            this.router.navigate(['/app/s', slug, 'ss', slugSubmodule]);
+        } else {
+            this.router.navigate(['/app']);
+        }
+    }
 
     ngOnInit(): void {
         this.route.paramMap.subscribe(() => {
@@ -102,18 +137,20 @@ export class Challenge implements OnInit {
                 return;
             }
 
+            let currentUserLesson = userLesson;
             // Start lesson if it doesn't exist
-            if (!userLesson) {
+            if (!currentUserLesson) {
                 await this.userLessonService.startLesson(lessonId);
+                currentUserLesson = await this.userLessonService.getUserLesson(lessonId);
             }
 
             this.lesson.set(lesson);
-            this.userLesson.set(userLesson);
+            this.userLesson.set(currentUserLesson);
             this.sectionContents.set(sectionContents);
 
             const lang = lesson.language || 'javascript';
-            const initCode = userLesson?.savedCode 
-                ? (userLesson.savedCode as string) 
+            const initCode = currentUserLesson?.savedCode
+                ? (currentUserLesson.savedCode as string)
                 : (lesson.initialCode || '// Escreva seu código aqui\n');
 
             this.codeModel.set({
@@ -123,9 +160,14 @@ export class Challenge implements OnInit {
             });
             this.currentCode.set(initCode);
 
-            if (userLesson?.aiFeedback) {
-                this.aiFeedback.set(userLesson.aiFeedback);
-                this.passed.set(userLesson.completed);
+            if (currentUserLesson) {
+                this.passed.set(currentUserLesson.completed);
+                if (currentUserLesson.aiFeedback) {
+                    this.aiFeedback.set(currentUserLesson.aiFeedback);
+                }
+                if (currentUserLesson.completed) {
+                    this.xpAwarded.set(lesson.xp);
+                }
             }
 
             this.error.set(null);
@@ -146,13 +188,15 @@ export class Challenge implements OnInit {
             await this.userLessonService.updateDraftCode(this.lessonId(), this.currentCode());
         } catch (err) {
             console.error('Erro ao salvar rascunho', err);
+            this.showToast('Erro ao salvar rascunho.');
         }
     }
 
     async submitChallenge() {
-        if (this.isSubmitting() || this.passed()) return;
+        if (this.isSubmitting()) return;
 
         try {
+            this.clearToast();
             this.isSubmitting.set(true);
             await this.saveDraft();
 
@@ -183,7 +227,7 @@ export class Challenge implements OnInit {
             await this.achievementsService.checkUnseenAchievements();
 
         } catch (err: unknown) {
-            this.error.set(err instanceof Error ? err.message : 'Erro ao avaliar o desafio.');
+            this.showToast(err instanceof Error ? err.message : 'Erro ao avaliar o desafio.');
         } finally {
             this.isSubmitting.set(false);
         }

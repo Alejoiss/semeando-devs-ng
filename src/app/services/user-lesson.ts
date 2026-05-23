@@ -29,7 +29,7 @@ export class UserLessonService {
             throw new Error(error.message);
         }
 
-        return (data ?? []) as unknown as UserLesson[];
+        return (data ?? []).map(item => this.mapUserLesson(item));
     }
 
     async startLesson(lessonId: string): Promise<void> {
@@ -68,7 +68,32 @@ export class UserLessonService {
             throw new Error(error.message);
         }
 
-        return data ? (data as unknown as UserLesson) : null;
+        return data ? this.mapUserLesson(data) : null;
+    }
+
+    private mapUserLesson(data: any): UserLesson {
+        if (!data) return null as any;
+        return {
+            id: data.id,
+            completed: data.completed,
+            completedAt: data.completed_at ? new Date(data.completed_at) : null,
+            savedCode: data.saved_code,
+            submittedCode: data.submitted_code,
+            aiFeedback: data.ai_feedback,
+            user: data.user,
+            lesson: data.lesson ? {
+                id: data.lesson.id,
+                title: data.lesson.title,
+                description: data.lesson.description,
+                type: data.lesson.type,
+                order: data.lesson.order,
+                subModuleId: data.lesson.sub_module_id,
+                xp: data.lesson.xp,
+                language: data.lesson.language,
+                initialCode: data.lesson.initial_code,
+                createdBy: data.lesson.created_by
+            } : undefined
+        } as unknown as UserLesson;
     }
 
     async updateDraftCode(lessonId: string, code: string): Promise<void> {
