@@ -6,9 +6,24 @@
             <h3 class="text-3xl font-extrabold tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-primary via-secondary to-tertiary">
                 Quiz da Lição
             </h3>
-            <span class="font-mono text-xs text-on-surface-variant/70 bg-surface-container px-3 py-1 border-l-2 border-secondary select-none">
-                CONFIGURAÇÃO OBRIGATÓRIA: 10 QUESTÕES
-            </span>
+            <div class="flex items-center gap-3 flex-wrap">
+                <span class="font-mono text-xs text-on-surface-variant/70 bg-surface-container px-3 py-1 border-l-2 border-secondary select-none">
+                    CONFIGURAÇÃO OBRIGATÓRIA: 10 QUESTÕES
+                </span>
+                <!-- Task 2.1 — Importar JSON button (DES-1, REQ-1.1) -->
+                @if (!isLoading()) {
+                    <button
+                        type="button"
+                        id="import-json-btn"
+                        (click)="openImportModal()"
+                        class="px-4 py-1.5 font-mono text-xs font-bold tracking-wider uppercase text-secondary border border-secondary/20 hover:border-secondary/60 hover:bg-secondary/10 transition-all flex items-center gap-2"
+                        aria-label="Importar questões via JSON"
+                    >
+                        <span class="material-symbols-rounded text-[16px]">upload_file</span>
+                        IMPORTAR JSON
+                    </button>
+                }
+            </div>
         </div>
         <p class="text-on-surface-variant text-sm max-w-2xl mt-1">
             Desenvolva perguntas objetivas com 4 alternativas cada. Defina uma justificativa didática (feedback) para orientar o aluno após a resposta.
@@ -72,7 +87,7 @@
                             </div>
 
                             <div class="flex flex-col border border-outline-variant/15 bg-surface-container-lowest/10">
-                                <!-- Grid Header (Plentiful room to prevent truncation) -->
+                                <!-- Grid Header -->
                                 <div class="grid grid-cols-[100px_1fr_1fr] gap-4 px-4 py-3.5 bg-surface-container-high/60 text-xs font-mono text-on-surface-variant/90 font-bold border-b border-outline-variant/15 select-none">
                                     <div class="text-center tracking-widest text-secondary">CORRETA</div>
                                     <div class="tracking-wider">CONTEÚDO DA ALTERNATIVA</div>
@@ -95,6 +110,7 @@
                                                     [class.bg-primary]="ans.isCorrect"
                                                     [class.shadow-[0_0_10px_rgba(63,194,251,0.4)]]="ans.isCorrect"
                                                     [class.border-outline-variant/40]="!ans.isCorrect"
+                                                    [attr.aria-label]="'Marcar alternativa ' + (aIndex + 1) + ' como correta'"
                                                     title="Marcar como correta">
                                                 @if (ans.isCorrect) {
                                                     <span class="material-symbols-rounded text-[14px] text-surface font-black">check</span>
@@ -111,6 +127,7 @@
                                         <textarea rows="3"
                                                   class="w-full bg-surface-container-low text-on-surface rounded-none px-4 py-3 border border-outline-variant/15 focus:border-primary/50 focus:bg-surface-container-high focus:ring-0 outline-none transition-all resize-none text-sm leading-relaxed"
                                                   placeholder="Escreva a resposta da alternativa..."
+                                                  [attr.aria-label]="'Texto da alternativa ' + (aIndex + 1)"
                                                   [value]="ans.text"
                                                   (input)="updateAnswerText(qIndex, aIndex, $any($event.target).value)"></textarea>
 
@@ -118,6 +135,7 @@
                                         <textarea rows="3"
                                                   class="w-full bg-surface-container-low text-on-surface rounded-none px-4 py-3 border border-outline-variant/15 focus:border-primary/50 focus:bg-surface-container-high focus:ring-0 outline-none transition-all resize-none text-sm leading-relaxed"
                                                   placeholder="Por que esta resposta está certa ou errada? (Explicado ao aluno após responder)"
+                                                  [attr.aria-label]="'Justificativa da alternativa ' + (aIndex + 1)"
                                                   [value]="ans.justification"
                                                   (input)="updateAnswerJustification(qIndex, aIndex, $any($event.target).value)"></textarea>
                                     </div>
@@ -129,14 +147,14 @@
                         <div class="flex items-center justify-between mt-2 pt-4 border-t border-outline-variant/10">
                             <div class="flex items-center gap-4">
                                 @if (q.errorMessage) {
-                                    <span class="text-error font-mono text-xs flex items-center gap-1.5 p-2 bg-error/10 border-l-2 border-error">
-                                        <span class="material-symbols-rounded text-[16px]">error</span>
+                                    <span class="text-error font-mono text-xs flex items-center gap-1.5 p-2 bg-error/10 border-l-2 border-error" role="alert">
+                                        <span class="material-symbols-rounded text-[16px]" aria-hidden="true">error</span>
                                         {{ q.errorMessage }}
                                     </span>
                                 }
                                 @if (q.showSuccess) {
-                                    <span class="text-tertiary font-mono text-xs flex items-center gap-1.5 p-2 bg-tertiary/10 border-l-2 border-tertiary success-message">
-                                        <span class="material-symbols-rounded text-[16px]">check_circle</span>
+                                    <span class="text-tertiary font-mono text-xs flex items-center gap-1.5 p-2 bg-tertiary/10 border-l-2 border-tertiary success-message" role="status">
+                                        <span class="material-symbols-rounded text-[16px]" aria-hidden="true">check_circle</span>
                                         DADOS PERSISTIDOS COM SUCESSO!
                                     </span>
                                 }
@@ -147,10 +165,10 @@
                                     [disabled]="q.isSaving"
                                     class="px-6 py-2.5 bg-gradient-to-r from-primary to-primary-container text-surface font-mono font-bold rounded-none hover:shadow-[0_0_20px_rgba(63,194,251,0.4)] transition-all flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed uppercase text-xs tracking-wider">
                                 @if (q.isSaving) {
-                                    <div class="animate-spin border-2 border-surface border-t-transparent h-4 w-4"></div>
+                                    <div class="animate-spin border-2 border-surface border-t-transparent h-4 w-4" aria-hidden="true"></div>
                                     <span>SALVANDO...</span>
                                 } @else {
-                                    <span class="material-symbols-rounded text-[18px]">save</span>
+                                    <span class="material-symbols-rounded text-[18px]" aria-hidden="true">save</span>
                                     <span>SALVAR QUESTÃO #0{{ qIndex + 1 }}</span>
                                 }
                             </button>
@@ -162,3 +180,106 @@
     }
 </div>
 
+<!-- Tasks 2.2–2.5 — Import JSON Modal (DES-2) -->
+@if (isImportModalOpen()) {
+    <div
+        class="fixed inset-0 z-[9999] flex items-center justify-center p-4 md:p-8"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="import-modal-title"
+    >
+        <!-- Glassmorphic backdrop -->
+        <div
+            class="absolute inset-0 bg-surface/70 backdrop-blur-xl"
+            (click)="closeImportModal()"
+            aria-hidden="true"
+        ></div>
+
+        <!-- Modal panel -->
+        <div class="relative w-full max-w-3xl flex flex-col bg-surface-container shadow-[0_8px_60px_rgba(0,0,0,0.6)] overflow-hidden"
+             style="max-height: 90vh">
+
+            <!-- Modal header -->
+            <div class="flex items-center justify-between px-6 py-4 bg-surface-container-high border-b border-outline-variant/10 flex-shrink-0">
+                <div class="flex flex-col gap-0.5">
+                    <span class="font-mono text-xs tracking-widest text-secondary font-semibold">// IMPORTAÇÃO EM LOTE</span>
+                    <h2 id="import-modal-title" class="text-lg font-extrabold tracking-tight text-on-surface">
+                        Importar Questões via JSON
+                    </h2>
+                </div>
+                <button
+                    type="button"
+                    (click)="closeImportModal()"
+                    class="w-9 h-9 flex items-center justify-center text-on-surface-variant hover:text-on-surface hover:bg-surface-bright transition-colors"
+                    aria-label="Fechar modal"
+                >
+                    <span class="material-symbols-rounded text-[20px]">close</span>
+                </button>
+            </div>
+
+            <!-- Instructions -->
+            <div class="px-6 pt-4 pb-2 flex-shrink-0">
+                <p class="text-on-surface-variant text-xs font-mono leading-relaxed">
+                    Cole um array JSON com até 10 questões. Cada item deve ter: <span class="text-primary">"question"</span> (string) e <span class="text-primary">"answers"</span> (array de 4 objetos com <span class="text-tertiary">"text"</span>, <span class="text-tertiary">"isCorrect"</span> e <span class="text-tertiary">"reason"</span>).
+                </p>
+            </div>
+
+            <!-- Task 2.3 — Monaco editor (DES-2, REQ-2.1) -->
+            <div class="flex-1 min-h-0 px-6 pb-4" style="height: 360px">
+                <div class="h-full border border-outline-variant/15 overflow-hidden bg-surface-container-lowest">
+                    <ngs-code-editor
+                        [theme]="'vs-dark'"
+                        [codeModel]="importCodeModel"
+                        [options]="{
+                            lineNumbers: 'on',
+                            contextmenu: false,
+                            minimap: { enabled: false },
+                            scrollBeyondLastLine: false,
+                            wordWrap: 'on',
+                            formatOnPaste: true
+                        }"
+                        (valueChanged)="updateImportJson($event)"
+                        aria-label="Editor de código para importação de questões JSON"
+                    ></ngs-code-editor>
+                </div>
+            </div>
+
+            <!-- Task 2.4 — Error banner (DES-3) -->
+            @if (importError()) {
+                <div class="mx-6 mb-4 flex items-center gap-2 px-4 py-3 bg-error/10 border-l-4 border-error text-error font-mono text-xs flex-shrink-0" role="alert">
+                    <span class="material-symbols-rounded text-[16px]" aria-hidden="true">error</span>
+                    <span>{{ importError() }}</span>
+                </div>
+            }
+
+            <!-- Task 2.5 — Action buttons (DES-1, DES-4, REQ-2.2) -->
+            <div class="flex items-center justify-end gap-3 px-6 py-4 bg-surface-container-high border-t border-outline-variant/10 flex-shrink-0">
+                <button
+                    type="button"
+                    id="import-cancel-btn"
+                    (click)="closeImportModal()"
+                    [disabled]="isImporting()"
+                    class="px-6 py-2.5 font-mono text-xs font-bold uppercase tracking-wider text-on-surface-variant hover:text-on-surface hover:bg-surface-bright transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                    CANCELAR
+                </button>
+                <button
+                    type="button"
+                    id="import-submit-btn"
+                    (click)="importFromJson()"
+                    [disabled]="isImporting()"
+                    class="px-6 py-2.5 bg-gradient-to-r from-primary to-primary-container text-surface font-mono font-bold uppercase text-xs tracking-wider hover:shadow-[0_0_20px_rgba(63,194,251,0.4)] transition-all flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                    [attr.aria-busy]="isImporting()"
+                >
+                    @if (isImporting()) {
+                        <div class="animate-spin border-2 border-surface border-t-transparent h-4 w-4" aria-hidden="true"></div>
+                        <span>IMPORTANDO...</span>
+                    } @else {
+                        <span class="material-symbols-rounded text-[18px]" aria-hidden="true">download_done</span>
+                        <span>IMPORTAR</span>
+                    }
+                </button>
+            </div>
+        </div>
+    </div>
+}
