@@ -49,7 +49,10 @@ export class Checkout implements OnInit, AfterViewInit {
         if (!p) return 0;
         
         let basePrice = cy === 'monthly' ? p.monthlyPrice : p.yearlyPrice;
-        if (!c) return basePrice;
+        
+        if (!c || (c.validForPlanType !== 'all' && c.validForPlanType !== cy)) {
+            return basePrice;
+        }
 
         if (c.discountType === 'percentage') {
             return basePrice * (1 - c.discountValue / 100);

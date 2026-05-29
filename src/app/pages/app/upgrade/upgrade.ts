@@ -37,7 +37,7 @@ export class Upgrade {
         const p = this.plan();
         const c = this.coupon();
         if (!p) return 0;
-        if (!c) return p.monthlyPrice;
+        if (!c || c.validForPlanType === 'yearly') return p.monthlyPrice;
 
         if (c.discountType === 'percentage') {
             return p.monthlyPrice * (1 - c.discountValue / 100);
@@ -49,7 +49,7 @@ export class Upgrade {
         const p = this.plan();
         const c = this.coupon();
         if (!p) return 0;
-        if (!c) return p.yearlyPrice;
+        if (!c || c.validForPlanType === 'monthly') return p.yearlyPrice;
 
         if (c.discountType === 'percentage') {
             return p.yearlyPrice * (1 - c.discountValue / 100);
@@ -64,6 +64,8 @@ export class Upgrade {
 
     protected readonly isOneHundredPercentDiscount = computed(() => {
         const c = this.coupon();
+        // Se for 100% discount, a tela tenta ativar direto (como mensal, pq n faz sentido anual grátis p/ smp).
+        // Aqui assumimos que quem ganha 100% de desconto vai pro ciclo que o cupom permitir.
         return c?.discountType === 'percentage' && c?.discountValue === 100;
     });
 

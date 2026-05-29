@@ -107,6 +107,13 @@ serve(async (req: { method: string; headers: { get: (arg0: string) => any }; jso
                 )
             }
 
+            if (couponData.valid_for_plan_type !== 'all' && couponData.valid_for_plan_type !== billingCycle) {
+                return new Response(
+                    JSON.stringify({ error: `Este cupom é válido apenas para o plano ${couponData.valid_for_plan_type === 'monthly' ? 'Mensal' : 'Anual'}.` }),
+                    { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+                )
+            }
+
             if (couponData.discount_type === 'percentage') {
                 transactionAmount = transactionAmount * (1 - Number(couponData.discount_value) / 100)
             } else {
