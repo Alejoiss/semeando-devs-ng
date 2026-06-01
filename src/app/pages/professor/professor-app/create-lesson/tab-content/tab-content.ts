@@ -131,6 +131,8 @@ export class TabContent {
                     this.contentIdsToDelete.set([]);
                 }
 
+                await this.lessonService.invalidateLesson(id);
+
                 this.showSuccess.set(true);
                 setTimeout(() => this.showSuccess.set(false), 3000);
             } else {

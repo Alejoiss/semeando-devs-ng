@@ -1,6 +1,7 @@
 import { ChangeDetectionStrategy, Component, effect, inject, input, signal } from '@angular/core';
 import { FormBuilder, FormArray, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ExtraMaterialService } from '../../../../../services/extra-material';
+import { LessonService } from '../../../../../services/lesson';
 import { ExtraMaterial, ExtraMaterialType } from '../../../../../../models/extra-material/extra-material';
 
 @Component({
@@ -14,6 +15,7 @@ import { ExtraMaterial, ExtraMaterialType } from '../../../../../../models/extra
 export class TabExtraMaterial {
     private fb = inject(FormBuilder);
     private extraMaterialService = inject(ExtraMaterialService);
+    private lessonService = inject(LessonService);
 
     lessonId = input<string | null>(null);
 
@@ -124,6 +126,8 @@ export class TabExtraMaterial {
 
             // Reload to sync database state
             await this.loadExtraMaterials(id);
+
+            await this.lessonService.invalidateLesson(id);
 
             this.showSuccess.set(true);
             setTimeout(() => this.showSuccess.set(false), 3000);

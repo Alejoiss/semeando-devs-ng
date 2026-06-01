@@ -194,6 +194,42 @@ export class ModuleService {
             inRevision: data.in_revision
         } as Module;
     }
+
+    async checkAllLessonsValidated(moduleId: string): Promise<boolean> {
+        const { data: submodules, error: subError } = await this.supabase
+            .from('submodules')
+            .select('id')
+            .eq('module_id', moduleId);
+
+        if (subError || !submodules) return false;
+
+        if (submodules.length === 0) return true;
+
+        const submoduleIds = submodules.map((s: any) => s.id);
+
+        const { data: lessons, error: lessonError } = await this.supabase
+            .from('lessons')
+            .select('id, is_validated')
+            .in('sub_module_id', submoduleIds)
+            .neq('type', 'REVISION');
+
+        if (lessonError) return false;
+
+        if (!lessons || lessons.length === 0) return true;
+
+        return lessons.every((l: any) => l.is_validated === true);
+    }
+
+    async updateModuleAvailability(moduleId: string, available: boolean): Promise<void> {
+        const { error } = await this.supabase
+            .from('modules')
+            .update({ in_revision: !available })
+            .eq('id', moduleId);
+
+        if (error) {
+            throw new Error(error.message);
+        }
+    }
 }
 
 export interface CreateModulePayload {

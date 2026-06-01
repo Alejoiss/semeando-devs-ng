@@ -13,6 +13,16 @@
         </p>
     </div>
 
+    @if (toggleError()) {
+        <div role="alert" class="mb-6 flex items-start gap-3 bg-error/10 text-error rounded-xl px-5 py-4 text-label-md">
+            <span class="material-symbols-rounded text-lg shrink-0 mt-0.5">warning</span>
+            <span>{{ toggleError() }}</span>
+            <button type="button" (click)="toggleError.set(null)" class="ml-auto shrink-0 text-error hover:text-error/70 transition-colors" aria-label="Fechar alerta">
+                <span class="material-symbols-rounded text-lg">close</span>
+            </button>
+        </div>
+    }
+
     <!-- Grid Layout -->
     @if (isLoading()) {
         <!-- Skeleton Loading -->
@@ -45,8 +55,35 @@
                         </div>
                     </div>
 
-                    <!-- Edit Button -->
-                    <div class="ml-auto mt-4 cursor-pointer w-fit">
+                    <!-- Actions Row -->
+                    <div class="ml-auto mt-4 flex items-center gap-3 w-fit">
+                        @if (isAdmin()) {
+                            <label
+                                class="flex items-center gap-2 cursor-pointer select-none"
+                                [attr.aria-label]="'Disponível: ' + (!module.inRevision ? 'sim' : 'não')">
+                                <span class="text-label-sm text-on-surface-variant font-medium">Disponível</span>
+                                <button
+                                    type="button"
+                                    role="switch"
+                                    [attr.aria-checked]="!module.inRevision"
+                                    [disabled]="togglingModuleId() === module.id"
+                                    (click)="toggleAvailability(module, !!module.inRevision)"
+                                    class="relative h-6 w-11 rounded-full transition-colors duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary disabled:opacity-50 disabled:cursor-not-allowed"
+                                    [style.background-color]="!module.inRevision ? '#4ade80' : '#f87171'">
+                                    @if (togglingModuleId() === module.id) {
+                                        <span class="absolute inset-0 flex items-center justify-center">
+                                            <div class="h-3 w-3 rounded-full border-2 border-on-surface border-t-transparent animate-spin"></div>
+                                        </span>
+                                    } @else {
+                                        <span
+                                            class="absolute top-0.5 left-0.5 h-5 w-5 rounded-full shadow-md transition-transform duration-300"
+                                            style="background-color: #ffffff;"
+                                            [class.translate-x-5]="!module.inRevision">
+                                        </span>
+                                    }
+                                </button>
+                            </label>
+                        }
                         <a
                             [routerLink]="['/professor/editar-modulo', module.id]"
                             class="flex items-center gap-2 px-6 py-2 bg-gradient-to-r from-primary to-primary-container text-on-primary-container font-headline font-bold rounded-xl glow-primary hover:scale-105 active:scale-95 transition-all text-sm no-underline"

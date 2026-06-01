@@ -77,6 +77,8 @@ export class CreateSubmodule {
     lessons = signal<Lesson[]>([]);
     lessonsLoading = signal(false);
     lessonsError = signal<string | null>(null);
+    isValidating = signal<string | null>(null);
+    lessonTypeRef = LessonType;
 
     async loadLessons(subModuleId: string) {
         this.lessonsLoading.set(true);
@@ -128,6 +130,21 @@ export class CreateSubmodule {
             this.lessons.update((list) => list.filter((l) => l.id !== id));
         } catch (err: any) {
             alert(err.message || 'Erro ao excluir lição.');
+        }
+    }
+
+    async validateLesson(lesson: Lesson) {
+        if (this.isValidating()) return;
+        this.isValidating.set(lesson.id);
+        try {
+            const passed = await this.lessonService.validateLesson(lesson.id, lesson.type);
+            this.lessons.update(list =>
+                list.map(l => l.id === lesson.id ? { ...l, isValidated: passed } : l)
+            );
+        } catch (err: any) {
+            alert(err.message || 'Erro ao validar lição.');
+        } finally {
+            this.isValidating.set(null);
         }
     }
 

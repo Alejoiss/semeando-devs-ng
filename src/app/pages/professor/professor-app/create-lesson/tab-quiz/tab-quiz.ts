@@ -1,6 +1,7 @@
 import { ChangeDetectionStrategy, Component, effect, inject, input, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { QuizService } from '../../../../../services/quiz';
+import { LessonService } from '../../../../../services/lesson';
 import { Quiz } from '../../../../../../models/quiz/quiz';
 import { Question } from '../../../../../../models/question/question';
 import { SectionContentType } from '../../../../../../models/section-content/section-content';
@@ -47,6 +48,7 @@ export class TabQuiz {
     private quizService = inject(QuizService);
     private questionService = inject(QuestionService);
     private answerService = inject(AnswerService);
+    private lessonService = inject(LessonService);
 
     quiz = signal<Quiz | null>(null);
     questions = signal<QuestionFormState[]>([]);
@@ -196,6 +198,10 @@ export class TabQuiz {
                 sectionContent: savedQ.sectionContent,
                 showSuccess: true
             });
+            const id = this.lessonId();
+            if (id) {
+                await this.lessonService.invalidateLesson(id);
+            }
             setTimeout(() => this.updateQuestionState(index, { showSuccess: false }), 3000);
         } catch (error: any) {
             this.updateQuestionState(index, { errorMessage: error.message || 'Erro ao salvar a pergunta.' });

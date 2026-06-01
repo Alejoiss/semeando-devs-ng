@@ -89,6 +89,8 @@ export class TabCode {
                 initialCode: this.codeModel.value,
             });
 
+            await this.lessonService.invalidateLesson(id);
+
             this.showSuccess.set(true);
             setTimeout(() => this.showSuccess.set(false), 3000);
         } catch (error: any) {

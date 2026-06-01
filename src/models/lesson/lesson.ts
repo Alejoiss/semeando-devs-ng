@@ -15,4 +15,5 @@ export interface Lesson {
     language?: string;
     initialCode?: string;
     createdBy?: string;
+    isValidated?: boolean | null;
 }

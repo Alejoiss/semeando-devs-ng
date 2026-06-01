@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { createClient, SupabaseClient } from '@supabase/supabase-js';
 import { environment } from '../../environments/environment';
-import { Lesson } from '../../models/lesson/lesson';
+import { Lesson, LessonType } from '../../models/lesson/lesson';
 
 @Injectable({
     providedIn: 'root',
@@ -38,7 +38,19 @@ export class LessonService {
             throw new Error(error.message);
         }
 
-        return (data ?? []) as unknown as Lesson[];
+        return (data ?? []).map(d => ({
+            id: d.id,
+            title: d.title,
+            description: d.description,
+            type: d.type,
+            order: d.order,
+            subModuleId: d.sub_module_id,
+            xp: d.xp,
+            language: d.language,
+            initialCode: d.initial_code,
+            createdBy: d.created_by,
+            isValidated: d.is_validated,
+        })) as Lesson[];
     }
 
     async updateLessonOrder(updates: { id: string; order: number }[]): Promise<void> {
@@ -187,5 +199,100 @@ export class LessonService {
         }
 
         return count ?? 0;
+    }
+
+    async invalidateLesson(lessonId: string): Promise<void> {
+        const { error } = await this.supabase
+            .from('lessons')
+            .update({ is_validated: null })
+            .eq('id', lessonId);
+
+        if (error) {
+            throw new Error(error.message);
+        }
+    }
+
+    async validateLesson(lessonId: string, lessonType: LessonType): Promise<boolean> {
+        let passed = false;
+
+        if (lessonType === LessonType.LESSON) {
+            passed = await this._validateLessonType(lessonId);
+        } else if (lessonType === LessonType.CHALLENGE) {
+            passed = await this._validateChallengeType(lessonId);
+        }
+
+        const { error } = await this.supabase
+            .from('lessons')
+            .update({ is_validated: passed })
+            .eq('id', lessonId);
+
+        if (error) {
+            throw new Error(error.message);
+        }
+
+        return passed;
+    }
+
+    private async _validateLessonType(lessonId: string): Promise<boolean> {
+        const { count: scCount, error: scError } = await this.supabase
+            .from('section_content')
+            .select('*', { count: 'exact', head: true })
+            .eq('lesson_id', lessonId);
+        if (scError || (scCount ?? 0) < 1) return false;
+
+        const { count: emCount, error: emError } = await this.supabase
+            .from('extra_material')
+            .select('*', { count: 'exact', head: true })
+            .eq('lesson_id', lessonId);
+        if (emError || (emCount ?? 0) < 1) return false;
+
+        const { data: quizData, error: quizError } = await this.supabase
+            .from('quizzes')
+            .select('id')
+            .eq('lesson_id', lessonId);
+        if (quizError || !quizData || quizData.length !== 1) return false;
+
+        const quizId = quizData[0].id;
+
+        const { data: questions, error: questionsError } = await this.supabase
+            .from('questions')
+            .select('id')
+            .eq('quiz_id', quizId);
+        if (questionsError || !questions || questions.length !== 10) return false;
+
+        for (const question of questions) {
+            const { data: answers, error: answersError } = await this.supabase
+                .from('answers')
+                .select('id, is_correct')
+                .eq('question_id', question.id);
+
+            if (answersError || !answers || answers.length !== 4) return false;
+
+            const correctCount = answers.filter((a: any) => a.is_correct === true).length;
+            if (correctCount !== 1) return false;
+        }
+
+        return true;
+    }
+
+    private async _validateChallengeType(lessonId: string): Promise<boolean> {
+        const { count: scCount, error: scError } = await this.supabase
+            .from('section_content')
+            .select('*', { count: 'exact', head: true })
+            .eq('lesson_id', lessonId);
+        if (scError || (scCount ?? 0) < 1) return false;
+
+        const { data: lesson, error: lessonError } = await this.supabase
+            .from('lessons')
+            .select('language, initial_code')
+            .eq('id', lessonId)
+            .single();
+
+        if (lessonError || !lesson) return false;
+
+        const hasLanguage = typeof lesson.language === 'string' && lesson.language.trim().length > 0;
+        const hasInitialCode = typeof lesson.initial_code === 'string' && lesson.initial_code.trim().length > 0;
+
+        return hasLanguage && hasInitialCode;
     }
 }

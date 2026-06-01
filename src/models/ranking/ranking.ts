@@ -5,6 +5,7 @@ export interface RankingEntry {
     avatar: string | null;
     xp: number;
     is_pro: boolean;
+    role?: 'student' | 'teacher' | 'admin';
 }
 
 export interface CurrentUserRanking {

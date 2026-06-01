@@ -212,7 +212,16 @@
                                 </div>
 
                                 <div class="flex flex-col">
-                                    <span class="text-title-sm text-on-surface font-bold">{{ lesson.title }}</span>
+                                    <span class="text-title-sm text-on-surface font-bold flex items-center gap-2">
+                                        {{ lesson.title }}
+                                        @if (lesson.type !== 'REVISION') {
+                                            @if (lesson.isValidated === true) {
+                                                <span class="material-symbols-rounded text-sm text-tertiary" aria-label="Lição validada" title="Lição validada">check_circle</span>
+                                            } @else if (lesson.isValidated === false) {
+                                                <span class="material-symbols-rounded text-sm text-error" aria-label="Validação com pendências" title="Validação com pendências">warning</span>
+                                            }
+                                        }
+                                    </span>
                                     <span class="text-label-sm text-on-surface-variant">{{ lesson.type === 'CHALLENGE' ? 'Desafio' : (lesson.type === 'REVISION' ? 'Revisão' : 'Lição') }}</span>
                                 </div>
                             </div>
@@ -222,6 +231,21 @@
                                     <a [routerLink]="['/professor/editar-licao', lesson.id]" class="p-2 text-on-surface-variant hover:text-primary transition-colors rounded-lg hover:bg-primary/10">
                                         <span class="material-symbols-rounded text-sm">edit</span>
                                     </a>
+                                }
+                                @if (lesson.type !== 'REVISION' && lesson.isValidated !== true) {
+                                    <button
+                                        type="button"
+                                        (click)="validateLesson(lesson)"
+                                        [disabled]="isValidating() === lesson.id"
+                                        class="p-2 text-on-surface-variant hover:text-primary transition-colors rounded-lg hover:bg-primary/10 disabled:opacity-50 disabled:cursor-not-allowed"
+                                        [attr.aria-label]="'Validar lição ' + lesson.title"
+                                        title="Validar lição">
+                                        @if (isValidating() === lesson.id) {
+                                            <div class="h-4 w-4 rounded-full border-2 border-primary border-t-transparent animate-spin"></div>
+                                        } @else {
+                                            <span class="material-symbols-rounded text-sm">verified</span>
+                                        }
+                                    </button>
                                 }
                                 <button type="button" (click)="deleteLesson(lesson.id)" class="p-2 text-on-surface-variant hover:text-error transition-colors rounded-lg hover:bg-error/10" aria-label="Excluir">
                                     <span class="material-symbols-rounded text-sm">delete</span>
