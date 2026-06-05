@@ -288,6 +288,13 @@ export class TabQuiz {
         const savedResults: QuestionFormState[] = [];
 
         try {
+            try {
+                await this.questionService.deleteQuestionsByQuizId(qz.id);
+            } catch (err: any) {
+                this.importError.set('Erro ao limpar as questões antigas. Tente novamente.');
+                return;
+            }
+
             for (let i = 0; i < capped.length; i++) {
                 const item = capped[i];
                 const questionData = {

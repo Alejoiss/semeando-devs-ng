@@ -4,6 +4,11 @@ import { ExtraMaterialService } from '../../../../../services/extra-material';
 import { LessonService } from '../../../../../services/lesson';
 import { ExtraMaterial, ExtraMaterialType } from '../../../../../../models/extra-material/extra-material';
 
+interface JsonImportItem {
+    title: string;
+    url: string;
+}
+
 @Component({
     selector: 'app-tab-extra-material',
     standalone: true,
@@ -23,6 +28,10 @@ export class TabExtraMaterial {
     isSaving = signal(false);
     showSuccess = signal(false);
     errorMessage = signal<string | null>(null);
+
+    isImportModalOpen = signal(false);
+    importError = signal<string | null>(null);
+    importRawJson = signal('');
 
     form = this.fb.group({
         materials: this.fb.array([])
@@ -136,5 +145,65 @@ export class TabExtraMaterial {
         } finally {
             this.isSaving.set(false);
         }
+    }
+    openImportModal() {
+        this.isImportModalOpen.set(true);
+    }
+
+    closeImportModal() {
+        this.isImportModalOpen.set(false);
+        this.importError.set(null);
+        this.importRawJson.set('');
+    }
+
+    updateImportJson(value: string) {
+        this.importRawJson.set(value);
+    }
+
+    importFromJson() {
+        this.importError.set(null);
+        const raw = this.importRawJson();
+
+        let parsed: unknown;
+        try {
+            parsed = JSON.parse(raw);
+        } catch {
+            this.importError.set('JSON inválido. Verifique a sintaxe.');
+            return;
+        }
+
+        if (!Array.isArray(parsed)) {
+            this.importError.set('O payload deve ser um array de materiais.');
+            return;
+        }
+
+        const items = parsed as JsonImportItem[];
+
+        for (let i = 0; i < items.length; i++) {
+            const item = items[i];
+            if (!item.title || item.title.trim() === '') {
+                this.importError.set(`Item ${i + 1}: campo "title" ausente ou vazio.`);
+                return;
+            }
+            if (!item.url || !/https?:\/\/.+/.test(item.url)) {
+                this.importError.set(`Item ${i + 1}: campo "url" ausente ou inválido (deve começar com http:// ou https://).`);
+                return;
+            }
+        }
+
+        while (this.materials.length !== 0) {
+            this.materials.removeAt(0);
+        }
+
+        for (const item of items) {
+            this.materials.push(this.fb.group({
+                id: [crypto.randomUUID()],
+                title: [item.title, [Validators.required]],
+                type: [ExtraMaterialType.URL],
+                url: [item.url, [Validators.required, Validators.pattern(/https?:\/\/.+/)]]
+            }));
+        }
+
+        this.closeImportModal();
     }
 }

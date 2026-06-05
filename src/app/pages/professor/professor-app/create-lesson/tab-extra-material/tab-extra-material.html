@@ -39,15 +39,29 @@
                 <p class="inter-body text-xs text-[#dee5ff]/60">Forneça links de apoio, documentações e referências relevantes para os alunos.</p>
             </div>
             
-            <button 
-                type="button" 
-                (click)="addMaterial()" 
+        <div class="flex items-center gap-3 flex-wrap">
+            <button
+                type="button"
+                id="import-json-btn"
+                (click)="openImportModal()"
+                class="btn-secondary flex items-center gap-2 px-5 py-2.5 rounded-xl font-semibold transition-all duration-300 transform active:scale-95 text-sm"
+                aria-label="Importar materiais via JSON">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
+                </svg>
+                <span class="space-grotesk tracking-wide">Importar JSON</span>
+            </button>
+
+            <button
+                type="button"
+                (click)="addMaterial()"
                 class="btn-primary flex items-center gap-2 px-5 py-2.5 rounded-xl font-semibold transition-all duration-300 transform active:scale-95 text-[#060e20]">
                 <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
                 </svg>
                 <span class="space-grotesk text-sm tracking-wide">Adicionar Material</span>
             </button>
+        </div>
         </div>
 
         @if (isLoading()) {
@@ -170,5 +184,91 @@
             </form>
         }
 
+    </div>
+}
+
+@if (isImportModalOpen()) {
+    <div
+        class="fixed inset-0 z-[9999] flex items-center justify-center p-4 md:p-8"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="import-extra-modal-title">
+
+        <div
+            class="absolute inset-0 bg-[#060e20]/70 backdrop-blur-xl"
+            (click)="closeImportModal()"
+            aria-hidden="true">
+        </div>
+
+        <div
+            class="relative w-full max-w-lg flex flex-col bg-[#0f1930] rounded-2xl shadow-[0_8px_60px_rgba(0,0,0,0.6)] overflow-hidden"
+            (click)="$event.stopPropagation()">
+
+            <div class="flex items-center justify-between px-6 py-4 bg-[#141f38]">
+                <div class="flex flex-col gap-0.5">
+                    <span class="space-grotesk text-xs tracking-widest text-[#fe69ac] font-semibold uppercase">// Importação em Lote</span>
+                    <h2 id="import-extra-modal-title" class="jakarta-display text-lg font-bold text-[#dee5ff]">
+                        Importar Materiais via JSON
+                    </h2>
+                </div>
+                <button
+                    type="button"
+                    (click)="closeImportModal()"
+                    class="w-9 h-9 flex items-center justify-center text-[#dee5ff]/50 hover:text-[#dee5ff] hover:bg-[#091328] rounded-xl transition-colors"
+                    aria-label="Fechar modal de importação">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+            </div>
+
+            <div class="px-6 pt-4 pb-2">
+                <p class="inter-body text-xs text-[#dee5ff]/60 leading-relaxed">
+                    Cole um array JSON onde cada objeto deve ter:
+                    <span class="text-[#3fc2fb] font-semibold">"title"</span> (string) e
+                    <span class="text-[#e8ffc0] font-semibold">"url"</span> (string começando com http:// ou https://).
+                </p>
+            </div>
+
+            <div class="px-6 pb-4">
+                <textarea
+                    class="input-field w-full bg-[#060e20] text-[#dee5ff] rounded-xl p-4 min-h-[200px] resize-y font-mono text-sm focus:outline-none focus:ring-2 focus:ring-[#3fc2fb]/30 transition-all placeholder:text-[#dee5ff]/30"
+                    placeholder='[&#10;  { "title": "MDN Web Docs", "url": "https://developer.mozilla.org" }&#10;]'
+                    [value]="importRawJson()"
+                    (input)="updateImportJson($any($event.target).value)"
+                    aria-label="Editor JSON de materiais extras">
+                </textarea>
+            </div>
+
+            @if (importError()) {
+                <div class="mx-6 mb-4 flex items-start gap-2 px-4 py-3 bg-red-500/10 border-l-4 border-red-500 rounded-r-xl" role="alert">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-red-400 flex-shrink-0 mt-0.5" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
+                    </svg>
+                    <span class="inter-body text-xs text-red-200">{{ importError() }}</span>
+                </div>
+            }
+
+            <div class="flex items-center justify-end gap-3 px-6 py-4 bg-[#141f38]">
+                <button
+                    type="button"
+                    id="import-extra-cancel-btn"
+                    (click)="closeImportModal()"
+                    class="px-5 py-2.5 space-grotesk text-xs font-bold tracking-wide uppercase text-[#dee5ff]/60 hover:text-[#dee5ff] hover:bg-[#091328] rounded-xl transition-all">
+                    Cancelar
+                </button>
+                <button
+                    type="button"
+                    id="import-extra-submit-btn"
+                    (click)="importFromJson()"
+                    class="btn-primary flex items-center gap-2 px-5 py-2.5 rounded-xl font-semibold transition-all duration-300 transform active:scale-95 text-[#060e20] space-grotesk text-xs tracking-wide uppercase"
+                    aria-label="Confirmar importação dos materiais">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                    </svg>
+                    Importar
+                </button>
+            </div>
+        </div>
     </div>
 }

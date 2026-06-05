@@ -40,4 +40,15 @@ export class QuestionService {
             }))
         })).sort((a, b) => a.sectionContents[0].order - b.sectionContents[0].order) as Question[];
     }
+
+    async deleteQuestionsByQuizId(quizId: string): Promise<void> {
+        const { error } = await this.supabase
+            .from('questions')
+            .delete()
+            .eq('quiz_id', quizId);
+
+        if (error) {
+            throw new Error(error.message);
+        }
+    }
 }

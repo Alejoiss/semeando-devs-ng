@@ -43,7 +43,8 @@ describe('TabQuiz', () => {
             saveQuestion: jasmine.createSpy('saveQuestion').and.returnValue(Promise.resolve(makeSavedQ(0)))
         };
         mockQuestionService = {
-            getQuestionsByQuizId: jasmine.createSpy('getQuestionsByQuizId').and.returnValue(Promise.resolve([]))
+            getQuestionsByQuizId: jasmine.createSpy('getQuestionsByQuizId').and.returnValue(Promise.resolve([])),
+            deleteQuestionsByQuizId: jasmine.createSpy('deleteQuestionsByQuizId').and.returnValue(Promise.resolve())
         };
         mockAnswerService = {
             getAnswersByQuestionId: jasmine.createSpy('getAnswersByQuestionId').and.returnValue(Promise.resolve([]))
@@ -132,6 +133,33 @@ describe('TabQuiz', () => {
             component.openImportModal();
             component.closeImportModal();
             expect(component.isImportModalOpen()).toBeFalse();
+        });
+    });
+
+    describe('loader visual styles', () => {
+        it('uses rounded-full class for the main page loader spinner', () => {
+            component.isLoading.set(true);
+            fixture.detectChanges();
+            const compiled = fixture.nativeElement as HTMLElement;
+            const spinner = compiled.querySelector('.animate-spin');
+            expect(spinner).toBeTruthy();
+            expect(spinner?.classList.contains('rounded-full')).toBeTrue();
+            expect(spinner?.classList.contains('rounded-none')).toBeFalse();
+        });
+
+        it('uses rounded-full class for the modal import button spinner', () => {
+            component.isLoading.set(false);
+            component.openImportModal();
+            component.isImporting.set(true);
+            fixture.detectChanges();
+            
+            const compiled = fixture.nativeElement as HTMLElement;
+            const submitBtn = compiled.querySelector('#import-submit-btn');
+            expect(submitBtn).toBeTruthy();
+            
+            const spinner = submitBtn?.querySelector('.animate-spin');
+            expect(spinner).toBeTruthy();
+            expect(spinner?.classList.contains('rounded-full')).toBeTrue();
         });
     });
 
@@ -345,6 +373,14 @@ describe('TabQuiz', () => {
             await component.importFromJson();
 
             expect(component.isImportModalOpen()).toBeFalse();
+        });
+
+        it('deletes existing questions from the quiz before importing new ones', async () => {
+            component.updateImportJson(makeValidJson(2));
+            await component.importFromJson();
+
+            expect(mockQuestionService.deleteQuestionsByQuizId).toHaveBeenCalledWith('q1');
+            expect(mockQuestionService.deleteQuestionsByQuizId).toHaveBeenCalledBefore(mockQuizService.saveQuestion);
         });
 
         // 3.13 — quiz editor reflects imported content

@@ -2,12 +2,14 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { TabExtraMaterial } from './tab-extra-material';
 import { ReactiveFormsModule } from '@angular/forms';
 import { ExtraMaterialService } from '../../../../../services/extra-material';
+import { LessonService } from '../../../../../services/lesson';
 import { ExtraMaterialType } from '../../../../../../models/extra-material/extra-material';
 
 describe('TabExtraMaterial', () => {
     let component: TabExtraMaterial;
     let fixture: ComponentFixture<TabExtraMaterial>;
     let mockExtraMaterialService: any;
+    let mockLessonService: any;
 
     beforeEach(async () => {
         mockExtraMaterialService = {
@@ -19,10 +21,16 @@ describe('TabExtraMaterial', () => {
             deleteExtraMaterials: jasmine.createSpy().and.returnValue(Promise.resolve()),
         };
 
+        mockLessonService = {
+            getLessonById: jasmine.createSpy().and.returnValue(Promise.resolve(null)),
+            invalidateLesson: jasmine.createSpy().and.returnValue(Promise.resolve()),
+        };
+
         await TestBed.configureTestingModule({
             imports: [TabExtraMaterial, ReactiveFormsModule],
             providers: [
-                { provide: ExtraMaterialService, useValue: mockExtraMaterialService }
+                { provide: ExtraMaterialService, useValue: mockExtraMaterialService },
+                { provide: LessonService, useValue: mockLessonService },
             ]
         }).compileComponents();
 
@@ -128,5 +136,114 @@ describe('TabExtraMaterial', () => {
 
         expect(mockExtraMaterialService.deleteExtraMaterials).toHaveBeenCalledWith(['mat-2']);
         expect(mockExtraMaterialService.upsertExtraMaterials).toHaveBeenCalled();
+    });
+
+    describe('JSON import', () => {
+        it('opens the import modal when openImportModal is called', () => {
+            expect(component.isImportModalOpen()).toBeFalse();
+
+            component.openImportModal();
+
+            expect(component.isImportModalOpen()).toBeTrue();
+        });
+
+        it('does not show the Importar JSON button when lessonId is null', async () => {
+            fixture.componentRef.setInput('lessonId', null);
+            fixture.detectChanges();
+
+            const compiled = fixture.nativeElement as HTMLElement;
+            const btn = compiled.querySelector('#import-json-btn');
+            expect(btn).toBeNull();
+        });
+
+        it('renders the modal elements when the modal is open', async () => {
+            component.openImportModal();
+            fixture.detectChanges();
+
+            const compiled = fixture.nativeElement as HTMLElement;
+            expect(compiled.querySelector('textarea[aria-label="Editor JSON de materiais extras"]')).toBeTruthy();
+            expect(compiled.querySelector('#import-extra-cancel-btn')).toBeTruthy();
+            expect(compiled.querySelector('#import-extra-submit-btn')).toBeTruthy();
+            expect(compiled.textContent).toContain('Importar Materiais via JSON');
+        });
+
+        it('shows an error and keeps modal open when JSON is syntactically invalid', () => {
+            component.openImportModal();
+            component.updateImportJson('{ not valid json }}}');
+
+            component.importFromJson();
+
+            expect(component.importError()).not.toBeNull();
+            expect(component.isImportModalOpen()).toBeTrue();
+        });
+
+        it('shows an error when the JSON payload is not an array', () => {
+            component.openImportModal();
+            component.updateImportJson(JSON.stringify({ title: 'test', url: 'https://example.com' }));
+
+            component.importFromJson();
+
+            expect(component.importError()).not.toBeNull();
+            expect(component.importError()).toContain('array');
+        });
+
+        it('shows an error identifying the item when a title is missing or empty', () => {
+            component.openImportModal();
+            component.updateImportJson(JSON.stringify([
+                { title: 'Valid', url: 'https://valid.com' },
+                { title: '', url: 'https://example.com' }
+            ]));
+
+            component.importFromJson();
+
+            expect(component.importError()).not.toBeNull();
+            expect(component.importError()).toContain('2');
+            expect(component.importError()).toContain('title');
+        });
+
+        it('shows an error identifying the item when a URL is missing or invalid', () => {
+            component.openImportModal();
+            component.updateImportJson(JSON.stringify([
+                { title: 'Valid', url: 'https://valid.com' },
+                { title: 'Bad URL', url: 'not-a-url' }
+            ]));
+
+            component.importFromJson();
+
+            expect(component.importError()).not.toBeNull();
+            expect(component.importError()).toContain('2');
+            expect(component.importError()).toContain('url');
+        });
+
+        it('populates the FormArray and closes the modal on a valid import', () => {
+            component.openImportModal();
+            component.updateImportJson(JSON.stringify([
+                { title: 'MDN Web Docs', url: 'https://developer.mozilla.org' },
+                { title: 'W3Schools', url: 'https://www.w3schools.com' }
+            ]));
+
+            component.importFromJson();
+
+            expect(component.isImportModalOpen()).toBeFalse();
+            expect(component.materials.length).toBe(2);
+            expect(component.materials.at(0).get('title')?.value).toBe('MDN Web Docs');
+            expect(component.materials.at(0).get('url')?.value).toBe('https://developer.mozilla.org');
+            expect(component.materials.at(1).get('title')?.value).toBe('W3Schools');
+            expect(component.importError()).toBeNull();
+        });
+
+        it('closes the modal and resets state without changing the materials list when cancelled', () => {
+            const countBefore = component.materials.length;
+
+            component.openImportModal();
+            component.updateImportJson('[{"title":"Test","url":"https://test.com"}]');
+
+            component.closeImportModal();
+
+            expect(component.isImportModalOpen()).toBeFalse();
+            expect(component.importRawJson()).toBe('');
+            expect(component.importError()).toBeNull();
+            expect(component.materials.length).toBe(countBefore);
+        });
     });
 });
