@@ -2,17 +2,6 @@
     font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
 }
 
-.line-drawing {
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    left: 50%;
-    width: 4px;
-    transform: translateX(-50%);
-    background: linear-gradient(to bottom, #3fc2fb 0%, #3fc2fb 60%, #0f1930 60%, #0f1930 100%);
-    z-index: 0;
-}
-
 .glass-card {
     backdrop-filter: blur(16px);
     background: rgba(15, 25, 48, 0.7);

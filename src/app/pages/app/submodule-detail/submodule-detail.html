@@ -51,9 +51,8 @@
         </div>
 
         <section class="relative">
-            <div class="line-drawing"></div>
             <div class="space-y-14 relative z-10">
-                @for (item of lessonsWithState(); track item.lesson.id; let isEven = $even) {
+                @for (item of lessonsWithState(); track item.lesson.id; let isEven = $even; let isFirst = $first; let isLast = $last; let index = $index) {
                     @let isCompleted = item.progressState === 'completed';
                     @let isInProgress = item.progressState === 'in-progress';
                     @let notStarted = item.progressState === 'not-started';
@@ -61,10 +60,27 @@
                     @let isLesson = item.lesson.type === 'LESSON';
                     @let isChallenge = item.lesson.type === 'CHALLENGE';
                     @let isRevision = item.lesson.type === 'REVISION';
+                    @let prevCompleted = index > 0 ? (lessonsWithState()[index - 1].progressState === 'completed') : false;
 
-                    <article [class]="isEven ? 'flex flex-col md:flex-row items-center gap-6' : 'flex flex-col md:flex-row-reverse items-center gap-6'">
+                    <article class="grid grid-cols-[auto_1fr] md:grid-cols-9 items-center gap-4 md:gap-6 relative">
+                        <!-- Line segments -->
+                        @if (!isFirst) {
+                            <div [class]="
+                                'absolute top-0 bottom-1/2 w-[4px] -translate-x-1/2 z-0 ' +
+                                'left-[32px] md:left-1/2 ' +
+                                (prevCompleted ? 'bg-primary shadow-[0_0_8px_rgba(63,194,251,0.4)]' : 'bg-surface-container-highest')
+                            "></div>
+                        }
+                        @if (!isLast) {
+                            <div [class]="
+                                'absolute top-1/2 bottom-0 w-[4px] -translate-x-1/2 z-0 ' +
+                                'left-[32px] md:left-1/2 ' +
+                                (isCompleted ? 'bg-primary shadow-[0_0_8px_rgba(63,194,251,0.4)]' : 'bg-surface-container-highest')
+                            "></div>
+                        }
+
                         <div [class]="
-                            'w-16 h-16 rounded-full flex items-center justify-center flex-shrink-0 ' +
+                            'w-16 h-16 rounded-full flex items-center justify-center flex-shrink-0 justify-self-center z-10 md:col-start-5 md:col-span-1 ' +
                             (isCompleted
                                 ? (isChallenge ? 'bg-secondary shadow-[0_0_20px_rgba(254,105,172,0.4)] text-on-secondary' : 'bg-primary shadow-[0_0_20px_rgba(63,194,251,0.4)] text-on-primary')
                                 : isInProgress
@@ -79,8 +95,8 @@
                         </div>
 
                         <div [class]="
-                            'glass-card flex-1 p-6 rounded-2xl transition-all ' +
-                            (isEven ? 'border-l-4 ' : 'border-r-4 ') +
+                            'glass-card p-6 rounded-2xl transition-all md:col-span-4 ' +
+                            (isEven ? 'md:col-start-6 border-l-4 ' : 'md:col-start-1 md:row-start-1 border-r-4 ') +
                             (isCompleted
                                 ? (isChallenge ? 'border-secondary' : 'border-primary')
                                 : isInProgress
@@ -88,7 +104,7 @@
                                     : isBlocked
                                         ? 'bg-surface-container-lowest/30 opacity-40 grayscale border-transparent hover:bg-surface-container-lowest/30 select-none'
                                         : 'bg-surface-container-lowest/50 hover:bg-surface-container-low border-surface-container-highest') +
-                            (isEven ? '' : ' text-right')
+                            (isEven ? '' : ' md:text-right')
                         ">
                             <div class="flex justify-between items-start mb-2">
                                 <span [class]="
