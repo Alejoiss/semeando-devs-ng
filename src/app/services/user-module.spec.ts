@@ -76,4 +76,26 @@ describe('UserModuleService', () => {
             await expectAsync(service.getUserModules()).toBeRejectedWithError('Query failed');
         });
     });
+
+    describe('getUserModulesForUser (REQ-4.2)', () => {
+        it('returns user specific module completion states without auth check', async () => {
+            const mockUserModules = [
+                { module_id: 'm1', completed: false }
+            ];
+            selectSpy.eq.and.returnValue(Promise.resolve({ data: mockUserModules, error: null }));
+
+            const result = await service.getUserModulesForUser('user-123');
+            expect(result).toEqual(mockUserModules as any);
+            expect(supabaseSpy.from).toHaveBeenCalledWith('user_modules');
+            expect(fromSpy.select).toHaveBeenCalledWith('module_id, completed');
+            expect(selectSpy.eq).toHaveBeenCalledWith('user_id', 'user-123');
+            expect(authSpy.getUser).not.toHaveBeenCalled();
+        });
+
+        it('throws error if query fails', async () => {
+            selectSpy.eq.and.returnValue(Promise.resolve({ data: null, error: { message: 'Query failed' } }));
+
+            await expectAsync(service.getUserModulesForUser('user-123')).toBeRejectedWithError('Query failed');
+        });
+    });
 });

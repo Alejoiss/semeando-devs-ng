@@ -3,10 +3,37 @@ import { UserLessonService } from './user-lesson';
 
 describe('UserLessonService', () => {
     let service: UserLessonService;
+    let supabaseSpy: any;
+    let authSpy: any;
+    let fromSpy: any;
+    let selectSpy: any;
+    let eqSpy: any;
 
     beforeEach(() => {
         TestBed.configureTestingModule({});
         service = TestBed.inject(UserLessonService);
+
+        authSpy = {
+            getUser: jasmine.createSpy('getUser').and.returnValue(Promise.resolve({ data: { user: { id: 'user-123' } }, error: null }))
+        };
+
+        eqSpy = jasmine.createSpy('eq').and.returnValue(Promise.resolve({ data: [], error: null }));
+
+        selectSpy = {
+            eq: eqSpy
+        };
+
+        fromSpy = {
+            select: jasmine.createSpy('select').and.returnValue(selectSpy)
+        };
+
+        supabaseSpy = {
+            auth: authSpy,
+            from: jasmine.createSpy('from').and.returnValue(fromSpy)
+        };
+
+        // Replace internal supabase client
+        (service as any).supabase = supabaseSpy;
     });
 
     // Task 4.5 — REQ-5.4
@@ -30,10 +57,35 @@ describe('UserLessonService', () => {
         expect(service['supabase']).toBeDefined();
     });
 
-    // Task 4.5 — REQ-5.2: unauthenticated user causes rejection
-    it('should return a Promise from getUserLessons', () => {
-        const result = service.getUserLessons();
-        expect(result).toBeInstanceOf(Promise);
-        result.catch(() => {}); // expected to reject without a session in unit context
+    describe('getUserLessonsForUser', () => {
+        it('returns user lessons with mapped lesson fields without auth check', async () => {
+            const mockUserLessons = [
+                {
+                    id: 'ul-1',
+                    completed: true,
+                    lesson: { id: 'l-1', sub_module_id: 'sm-1' }
+                }
+            ];
+            eqSpy.and.returnValue(Promise.resolve({ data: mockUserLessons, error: null }));
+
+            const result = await service.getUserLessonsForUser('user-123');
+            expect(result).toEqual([
+                {
+                    id: 'ul-1',
+                    completed: true,
+                    lesson: { id: 'l-1', subModuleId: 'sm-1' }
+                }
+            ]);
+            expect(supabaseSpy.from).toHaveBeenCalledWith('user_lessons');
+            expect(fromSpy.select).toHaveBeenCalledWith('id, completed, lesson:lessons(id, sub_module_id)');
+            expect(eqSpy).toHaveBeenCalledWith('user_id', 'user-123');
+            expect(authSpy.getUser).not.toHaveBeenCalled();
+        });
+
+        it('throws error if query fails', async () => {
+            eqSpy.and.returnValue(Promise.resolve({ data: null, error: { message: 'Query failed' } }));
+
+            await expectAsync(service.getUserLessonsForUser('user-123')).toBeRejectedWithError('Query failed');
+        });
     });
 });

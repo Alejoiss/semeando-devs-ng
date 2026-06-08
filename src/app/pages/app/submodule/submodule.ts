@@ -76,19 +76,60 @@ export class Submodule implements OnInit {
                  return;
             }
 
-            const submodules = await this.submoduleService.getSubModulesByModuleSlug(slug);
-            const userSubmodules = await this.userSubmoduleService.getUserSubModules();
+            let userId = this.userService.currentUser()?.id;
+            if (!userId) {
+                await this.userService.loadUserProfile();
+                userId = this.userService.currentUser()?.id;
+            }
+            if (!userId) {
+                throw new Error('Usuário não autenticado.');
+            }
+
+            // Group 1: Parallel fetch independent resources
+            const [
+                submodules,
+                userSubmodules,
+                userLessons,
+                module,
+                allModuleLessons
+            ] = await Promise.all([
+                this.submoduleService.getSubModulesByModuleSlug(slug),
+                this.userSubmoduleService.getUserSubModulesForUser(userId),
+                this.userLessonService.getUserLessonsForUser(userId).catch(() => []),
+                this.moduleService.getModuleBySlug(slug),
+                this.lessonService.getLessonsByModuleSlug(slug).catch(() => [])
+            ]);
+
+            if (module) {
+                this.module.set(module);
+            } else {
+                this.error.set('Módulo não encontrado.');
+                this.isLoading.set(false);
+                return;
+            }
+
+            // Group 2: Fetch resources dependent on module ID
+            const [achievement, presentation] = await Promise.all([
+                this.achievementsService.getAchievementByModuleId(module.id).catch(() => null),
+                this.sectionContentService.getSectionContentsByModuleId(module.id).catch(() => [])
+            ]);
+
+            this.achievement.set(achievement);
+            this.presentationContents.set(presentation);
+
             const isPro = this.userService.currentUser()?.isPro || false;
 
-            let userLessons: any[] = [];
-            try {
-                userLessons = await this.userLessonService.getUserLessons();
-            } catch {
-                // user might not have any lessons yet
-            }
-            const completedLessonIds = new Set(
-                userLessons.filter(ul => ul.completed).map(ul => ul.lesson?.id)
+            const completedLessonIds = new Set<string>(
+                userLessons.filter((ul: any) => ul.completed).map((ul: any) => ul.lesson?.id || ul.lesson_id)
             );
+
+            // Group batch-fetched lessons by subModuleId
+            const lessonsBySubmoduleMap = new Map<string, any[]>();
+            for (const lesson of allModuleLessons) {
+                const lessonsList = lessonsBySubmoduleMap.get(lesson.subModuleId) || [];
+                lessonsList.push(lesson);
+                lessonsBySubmoduleMap.set(lesson.subModuleId, lessonsList);
+            }
 
             const sortedSubmodules = [...submodules].sort((a, b) => (a.order || 0) - (b.order || 0));
 
@@ -119,23 +160,19 @@ export class Submodule implements OnInit {
                     progressPercentage = 100;
                 }
 
-                try {
-                    const lessons = await this.lessonService.getLessonsBySubModuleSlug(sm.slug);
-                    if (lessons.length > 0) {
-                        if (state === 'in-progress') {
-                            const sortedLessons = [...lessons].sort((a, b) => (a.order || 0) - (b.order || 0));
-                            const firstIncomplete = sortedLessons.find(l => !completedLessonIds.has(l.id));
-                            targetLessonId = firstIncomplete?.id ?? sortedLessons[0].id;
-                            
-                            const completedCount = lessons.filter(l => completedLessonIds.has(l.id)).length;
-                            progressPercentage = Math.round((completedCount / lessons.length) * 100);
-                        } else {
-                            const sortedLessons = [...lessons].sort((a, b) => (a.order || 0) - (b.order || 0));
-                            targetLessonId = sortedLessons[0].id;
-                        }
+                const lessons = lessonsBySubmoduleMap.get(sm.id) || [];
+                if (lessons.length > 0) {
+                    if (state === 'in-progress') {
+                        const sortedLessons = [...lessons].sort((a, b) => (a.order || 0) - (b.order || 0));
+                        const firstIncomplete = sortedLessons.find(l => !completedLessonIds.has(l.id));
+                        targetLessonId = firstIncomplete?.id ?? sortedLessons[0].id;
+                        
+                        const completedCount = lessons.filter(l => completedLessonIds.has(l.id)).length;
+                        progressPercentage = Math.round((completedCount / lessons.length) * 100);
+                    } else {
+                        const sortedLessons = [...lessons].sort((a, b) => (a.order || 0) - (b.order || 0));
+                        targetLessonId = sortedLessons[0].id;
                     }
-                } catch {
-                    // fallback: no target lesson
                 }
 
                 withState.push({
@@ -147,19 +184,6 @@ export class Submodule implements OnInit {
             }
 
             this.submodulesWithState.set(withState);
-
-            // Fetch achievement for the module
-            const module = await this.moduleService.getModuleBySlug(slug);
-            if (module) {
-                this.module.set(module);
-                const achievement = await this.achievementsService.getAchievementByModuleId(module.id);
-                this.achievement.set(achievement);
-
-                // Fetch presentation contents
-                const presentation = await this.sectionContentService.getSectionContentsByModuleId(module.id);
-                this.presentationContents.set(presentation);
-            }
-
             this.error.set(null);
         } catch (err: any) {
             this.error.set(err.message || 'Erro ao carregar os submódulos.');

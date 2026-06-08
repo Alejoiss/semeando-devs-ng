@@ -31,6 +31,19 @@ export class UserSubModuleService {
         return (data ?? []) as unknown as UserSubModule[];
     }
 
+    async getUserSubModulesForUser(userId: string): Promise<UserSubModule[]> {
+        const { data, error } = await this.supabase
+            .from('user_submodules')
+            .select('*, subModule:submodules(*)')
+            .eq('user_id', userId);
+
+        if (error) {
+            throw new Error(error.message);
+        }
+
+        return (data ?? []) as unknown as UserSubModule[];
+    }
+
     async startSubModule(subModuleId: string): Promise<void> {
         const { data: { user }, error: authError } = await this.supabase.auth.getUser();
 

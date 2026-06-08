@@ -28,6 +28,21 @@ export class ModuleService {
         })) as Module[];
     }
 
+    async getModulesForDisplay(): Promise<Module[]> {
+        const { data, error } = await this.supabase
+            .from('modules')
+            .select('id, title, description, slug, avatar, icon, in_revision');
+
+        if (error) {
+            throw new Error(error.message);
+        }
+
+        return (data || []).map(m => ({
+            ...m,
+            inRevision: m.in_revision
+        })) as Module[];
+    }
+
     async getModuleBySlug(slug: string): Promise<Module | null> {
         try {
             const { data, error } = await this.supabase

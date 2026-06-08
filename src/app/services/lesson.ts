@@ -27,6 +27,43 @@ export class LessonService {
         return (data ?? []) as unknown as Lesson[];
     }
 
+    async getLessonsByModuleSlug(slug: string): Promise<any[]> {
+        const { data, error } = await this.supabase
+            .from('lessons')
+            .select('id, order, sub_module_id, subModule:submodules!inner(id, module:modules!inner(slug))')
+            .eq('submodules.modules.slug', slug)
+            .order('order', { ascending: true });
+
+        if (error) {
+            throw new Error(error.message);
+        }
+
+        return (data ?? []).map((d: any) => ({
+            id: d.id,
+            order: d.order,
+            subModuleId: d.sub_module_id,
+            subModule: d.subModule ? {
+                id: d.subModule.id
+            } : undefined
+        }));
+    }
+
+    async getLessonsLightweight(): Promise<{ id: string; subModuleId: string; moduleId: string }[]> {
+        const { data, error } = await this.supabase
+            .from('lessons')
+            .select('id, sub_module_id, subModule:submodules!inner(module_id)');
+
+        if (error) {
+            throw new Error(error.message);
+        }
+
+        return (data ?? []).map((item: any) => ({
+            id: item.id,
+            subModuleId: item.sub_module_id,
+            moduleId: item.subModule?.module_id
+        }));
+    }
+
     async getLessonsBySubModuleId(subModuleId: string): Promise<Lesson[]> {
         const { data, error } = await this.supabase
             .from('lessons')

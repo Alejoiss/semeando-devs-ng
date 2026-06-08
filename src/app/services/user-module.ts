@@ -32,6 +32,19 @@ export class UserModuleService {
         return (data ?? []) as unknown as UserModule[];
     }
 
+    async getUserModulesForUser(userId: string): Promise<any[]> {
+        const { data, error } = await this.supabase
+            .from('user_modules')
+            .select('module_id, completed')
+            .eq('user_id', userId);
+
+        if (error) {
+            throw new Error(error.message);
+        }
+
+        return data ?? [];
+    }
+
     async startModule(moduleId: string): Promise<void> {
         const { data: { user }, error: authError } = await this.supabase.auth.getUser();
 

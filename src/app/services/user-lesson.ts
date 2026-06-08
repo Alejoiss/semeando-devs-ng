@@ -32,6 +32,26 @@ export class UserLessonService {
         return (data ?? []).map(item => this.mapUserLesson(item));
     }
 
+    async getUserLessonsForUser(userId: string): Promise<any[]> {
+        const { data, error } = await this.supabase
+            .from('user_lessons')
+            .select('id, completed, lesson:lessons(id, sub_module_id)')
+            .eq('user_id', userId);
+
+        if (error) {
+            throw new Error(error.message);
+        }
+
+        return (data ?? []).map((item: any) => ({
+            id: item.id,
+            completed: item.completed,
+            lesson: item.lesson ? {
+                id: item.lesson.id,
+                subModuleId: item.lesson.sub_module_id
+            } : undefined
+        }));
+    }
+
     async startLesson(lessonId: string): Promise<void> {
         const { data: { user }, error: authError } = await this.supabase.auth.getUser();
 

@@ -38,9 +38,9 @@ export class Modules implements OnInit {
     private readonly router = inject(Router);
 
     protected readonly modules = signal<Module[]>([]);
-    protected readonly userModules = signal<UserModule[]>([]);
-    protected readonly lessons = signal<Lesson[]>([]);
-    protected readonly userLessons = signal<UserLesson[]>([]);
+    protected readonly userModules = signal<any[]>([]);
+    protected readonly allLessons = signal<{ id: string; subModuleId: string; moduleId: string }[]>([]);
+    protected readonly userLessons = signal<any[]>([]);
     
     protected readonly podiumUsers = signal<RankingEntry[]>([]);
     protected readonly currentUserPosition = signal<number | null>(null);
@@ -50,8 +50,8 @@ export class Modules implements OnInit {
     protected readonly error = signal<string | null>(null);
 
     protected readonly modulesWithState = computed<ModuleWithState[]>(() => {
-        const userModuleMap = new Map<string, UserModule>(
-            this.userModules().map((um) => [um.module.id, um])
+        const userModuleMap = new Map<string, any>(
+            this.userModules().map((um) => [um.module_id || um.module?.id, um])
         );
 
         return this.modules().map((module) => {
@@ -65,10 +65,10 @@ export class Modules implements OnInit {
                 if (progressState === 'completed') {
                     progressPercentage = 100;
                 } else {
-                    const moduleLessons = this.lessons().filter(l => (l as any).subModule?.module?.id === module.id);
+                    const moduleLessons = this.allLessons().filter(l => l.moduleId === module.id);
                     if (moduleLessons.length > 0) {
                         const completedCount = this.userLessons().filter(ul => 
-                            ul.completed && moduleLessons.some(l => l.id === (ul.lesson?.id || (ul as any).lesson_id))
+                            ul.completed && moduleLessons.some(l => l.id === (ul.lesson?.id || ul.lesson_id))
                         ).length;
                         progressPercentage = Math.round((completedCount / moduleLessons.length) * 100);
                     }
@@ -86,18 +86,28 @@ export class Modules implements OnInit {
     private async loadData(): Promise<void> {
         try {
             this.isLoading.set(true);
-            const [modules, userModules, userLessons, rankingResult, lessons] = await Promise.all([
-                this.moduleService.getModules(),
-                this.userModuleService.getUserModules(),
-                this.userLessonService.getUserLessons(),
+
+            let userId = this.userService.currentUser()?.id;
+            if (!userId) {
+                await this.userService.loadUserProfile();
+                userId = this.userService.currentUser()?.id;
+            }
+            if (!userId) {
+                throw new Error('Usuário não autenticado.');
+            }
+
+            const [modules, userModules, userLessons, rankingResult, lightweightLessons] = await Promise.all([
+                this.moduleService.getModulesForDisplay(),
+                this.userModuleService.getUserModulesForUser(userId),
+                this.userLessonService.getUserLessonsForUser(userId),
                 this.rankingWeeklyService.getRanking(),
-                this.lessonService.getAllLessons()
+                this.lessonService.getLessonsLightweight()
             ]);
 
             this.modules.set(modules.filter(m => !m.inRevision));
             this.userModules.set(userModules);
             this.userLessons.set(userLessons);
-            this.lessons.set(lessons);
+            this.allLessons.set(lightweightLessons);
 
             // Ranking data
             this.podiumUsers.set(rankingResult.ranking.slice(0, 3));
