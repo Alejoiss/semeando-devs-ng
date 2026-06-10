@@ -1,5 +1,6 @@
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 import { createClient } from "npm:@supabase/supabase-js@2";
+import nodemailer from "npm:nodemailer";
 
 const corsHeaders = {
     'Access-Control-Allow-Origin': '*',
@@ -56,18 +57,99 @@ Deno.serve(async (req) => {
 
         const records = [];
 
+        // SMTP & Resend configuration
+        const resendApiKey = Deno.env.get('RESEND_API_KEY');
+        const smtpHost = Deno.env.get('SMTP_HOST') || 'host.docker.internal';
+        const smtpPort = parseInt(Deno.env.get('SMTP_PORT') || '54325', 10);
+        const smtpUser = Deno.env.get('SMTP_USER') || '';
+        const smtpPass = Deno.env.get('SMTP_PASS') || '';
+        const smtpSender = Deno.env.get('SMTP_SENDER') || 'Semeando Devs <noreply@semeandodevs.com.br>';
+
+        let transporter: any = null;
+        if (!resendApiKey) {
+            transporter = nodemailer.createTransport({
+                host: smtpHost,
+                port: smtpPort,
+                secure: smtpPort === 465,
+                auth: smtpUser && smtpPass ? {
+                    user: smtpUser,
+                    pass: smtpPass,
+                } : undefined,
+                tls: {
+                    rejectUnauthorized: false
+                }
+            });
+        }
+
         for (const user of subscribers) {
-            // Mock email send
-            console.log(`[Email] Sending newsletter '${newsletter.id}' to ${user.email}`);
-            console.log(`[Email] Content: ${newsletter.body}`);
-            if (newsletter.cta_url) {
-                console.log(`[Email] CTA: ${newsletter.cta_label} -> ${newsletter.cta_url}`);
+            let emailSent = false;
+            try {
+                let htmlContent = `
+                    <div style="font-family: sans-serif; background-color: #060e20; color: #dee5ff; padding: 24px; border-radius: 8px; max-width: 600px; margin: 0 auto;">
+                        <h2 style="color: #3fc2fb; margin-top: 0;">Informativo Semeando Devs</h2>
+                        <div style="margin-bottom: 24px; line-height: 1.6;">
+                            ${newsletter.body.replace(/\n/g, '<br>')}
+                        </div>
+                `;
+
+                if (newsletter.cta_url) {
+                    htmlContent += `
+                        <div style="margin-top: 24px; margin-bottom: 24px;">
+                            <a href="${newsletter.cta_url}" style="background: linear-gradient(135deg, #3fc2fb, #27b4ed); color: #060e20; padding: 12px 24px; border-radius: 16px; text-decoration: none; font-weight: bold; display: inline-block;">
+                                ${newsletter.cta_label || 'Acesse'}
+                            </a>
+                        </div>
+                    `;
+                }
+
+                htmlContent += `
+                        <hr style="border: 0; border-top: 1px solid #141f38; margin: 24px 0;" />
+                        <p style="font-size: 12px; color: #fe69ac;">Semeando Devs: Transformando o aprendizado de tecnologia em uma jornada de alto impacto.</p>
+                    </div>
+                `;
+
+                if (resendApiKey) {
+                    // Send via Resend API
+                    const response = await fetch('https://api.resend.com/emails', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${resendApiKey}`
+                        },
+                        body: JSON.stringify({
+                            from: smtpSender,
+                            to: user.email,
+                            subject: 'Novidades do Semeando Devs!',
+                            html: htmlContent
+                        })
+                    });
+
+                    if (!response.ok) {
+                        const errBody = await response.text();
+                        throw new Error(`Resend API response error (${response.status}): ${errBody}`);
+                    }
+                    emailSent = true;
+                    console.log(`[Email] Sent newsletter '${newsletter.id}' to ${user.email} via Resend API`);
+                } else {
+                    // Fallback to local SMTP (Nodemailer)
+                    await transporter.sendMail({
+                        from: smtpSender,
+                        to: user.email,
+                        subject: 'Novidades do Semeando Devs!',
+                        html: htmlContent,
+                        text: `${newsletter.body}${newsletter.cta_url ? `\n\n${newsletter.cta_label || 'Acesse'}: ${newsletter.cta_url}` : ''}`
+                    });
+                    emailSent = true;
+                    console.log(`[Email] Sent newsletter '${newsletter.id}' to ${user.email} via local SMTP`);
+                }
+            } catch (mailError) {
+                console.error(`[Email] Failed to send newsletter '${newsletter.id}' to ${user.email}:`, mailError);
             }
 
             records.push({
                 user_id: user.id,
                 newsletter_id: newsletter.id,
-                email_sent: true,
+                email_sent: emailSent,
             });
         }
 
