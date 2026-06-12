@@ -23,6 +23,7 @@ export class AchievementsService {
             const { data, error } = await this.supabase
                 .from('achievements')
                 .select('*')
+                .eq('is_visible', true)
                 .order('created_at', { ascending: true });
 
             if (error) {

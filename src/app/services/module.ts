@@ -76,6 +76,7 @@ export class ModuleService {
                     )
                 )
             `)
+            .eq('in_revision', false)
             .order('order', { foreignTable: 'submodules', ascending: true })
             .order('order', { foreignTable: 'submodules.lessons', ascending: true });
 

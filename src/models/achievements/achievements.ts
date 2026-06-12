@@ -6,6 +6,7 @@ export class Achievements {
     public requirement: string; // requirement for the achievement
     public moduleId?: string; // id of the module for this achievement whether its module based achievement
     public xpAmount: number; // xp amount for this achievement
+    public isVisible: boolean;
     public createdAt: Date;
 
     constructor(data: any = {}) {
@@ -16,6 +17,7 @@ export class Achievements {
         this.requirement = data.requirement || '';
         this.moduleId = data.module_id || '';
         this.xpAmount = data.xp_amount || 0;
+        this.isVisible = data.is_visible !== undefined ? data.is_visible : true;
         this.createdAt = data.created_at ? new Date(data.created_at) : new Date();
     }
 }

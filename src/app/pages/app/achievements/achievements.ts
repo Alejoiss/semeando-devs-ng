@@ -24,7 +24,11 @@ export class Achievements implements OnInit {
     public totalXp = this.xpService.totalXp;
     public totalSeeds = this.seedService.totalSeeds;
 
-    public earnedAchievementsCount = computed(() => this.userAchievements().length);
+    public earnedAchievementsCount = computed(() =>
+        this.userAchievements().filter((ua) =>
+            this.achievements().some((a) => a.id === ua.achievementId)
+        ).length
+    );
 
     async ngOnInit() {
         const [allAchievements, myAchievements] = await Promise.all([
