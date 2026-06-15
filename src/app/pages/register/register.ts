@@ -52,7 +52,14 @@ export class Register {
         this.busy = true;
         try {
             const { name, email, password, newsletterActive } = this.registerForm.value;
-            await this.userService.register({ name, email, password, newsletter_active: newsletterActive });
+            await this.userService.register({ 
+                name, 
+                email, 
+                password, 
+                newsletter_active: newsletterActive,
+                acceptedTerms: true,
+                acceptedTermsAt: new Date()
+            });
             this.router.navigate(['/auth/login']);
         } catch (error: any) {
             this.registerError = error.message || 'Erro ao criar conta. Tente novamente.';

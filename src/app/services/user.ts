@@ -75,6 +75,9 @@ export class UserService {
                 emailRedirectTo: `${environment.urlBase}/auth/login`,
                 data: {
                     name: user.name,
+                    newsletter_active: user.newsletter_active,
+                    terms_accepted: user.acceptedTerms,
+                    terms_accepted_at: user.acceptedTermsAt ? user.acceptedTermsAt.toISOString() : null,
                 }
             }
         });
@@ -93,7 +96,7 @@ export class UserService {
 
         const { data: profileData } = await this.supabase
             .from('profiles')
-            .select('is_pro, pro_until, newsletter_active, role')
+            .select('is_pro, pro_until, newsletter_active, role, terms_accepted, terms_accepted_at')
             .eq('id', user.id)
             .returns<Profile[]>()
             .single();
@@ -106,8 +109,8 @@ export class UserService {
             email: user.email || '',
             name: user.user_metadata?.['name'] || '',
             password: '',
-            acceptedTerms: true,
-            acceptedTermsAt: new Date(user.created_at),
+            acceptedTerms: profileData?.terms_accepted || false,
+            acceptedTermsAt: profileData?.terms_accepted_at ? new Date(profileData.terms_accepted_at) : null,
             avatar: user.user_metadata?.['avatar'] || '',
             plan: user.user_metadata?.['plan'] || null,
             isPro: isProActive,
@@ -125,7 +128,10 @@ export class UserService {
         const { error } = await this.supabase.auth.updateUser({
             ...(email && { email }),
             ...(password && { password }),
-            data: { ...metadataUpdates, newsletter_active },
+            data: { 
+                ...metadataUpdates,
+                ...(newsletter_active !== undefined && { newsletter_active })
+            },
         });
 
         if (error) {

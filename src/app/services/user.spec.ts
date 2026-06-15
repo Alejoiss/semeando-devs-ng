@@ -17,9 +17,26 @@ describe('UserService', () => {
             updateUser: jasmine.createSpy('updateUser')
         };
 
+        // Mock supabase.from chain
+        const mockSingle = jasmine.createSpy('single').and.returnValue(Promise.resolve({
+            data: { 
+                is_pro: false, 
+                role: 'student', 
+                newsletter_active: false,
+                terms_accepted: true,
+                terms_accepted_at: new Date().toISOString()
+            }, 
+            error: null 
+        }));
+        const mockReturns = jasmine.createSpy('returns').and.returnValue({ single: mockSingle });
+        const mockEq = jasmine.createSpy('eq').and.returnValue({ returns: mockReturns });
+        const mockSelect = jasmine.createSpy('select').and.returnValue({ eq: mockEq });
+        const mockFrom = jasmine.createSpy('from').and.returnValue({ select: mockSelect });
+
         // Replace the internal supabase client with our mock for testing
         (service as any).supabase = {
-            auth: supabaseAuthSpy
+            auth: supabaseAuthSpy,
+            from: mockFrom
         };
     });
 
@@ -42,8 +59,8 @@ describe('UserService', () => {
         });
 
         it('denies sign in if it fails', async () => {
-            supabaseAuthSpy.signInWithPassword.and.returnValue(Promise.resolve({ data: null, error: { message: 'Invalid login' } }));
-            await expectAsync(service.signIn({ email: 'test@test.com', password: 'wrong' })).toBeRejectedWithError('Invalid login');
+            supabaseAuthSpy.signInWithPassword.and.returnValue(Promise.resolve({ data: null, error: { message: 'Invalid login credentials' } }));
+            await expectAsync(service.signIn({ email: 'test@test.com', password: 'wrong' })).toBeRejectedWithError('E-mail ou senha inválidos.');
         });
     });
 
@@ -65,12 +82,27 @@ describe('UserService', () => {
     describe('registration (REQ-1.1)', () => {
         it('verify user registration', async () => {
             supabaseAuthSpy.signUp.and.returnValue(Promise.resolve({ data: {}, error: null }));
-            await service.register({ email: 'test@test.com', password: 'password', name: 'Test' });
-            expect(supabaseAuthSpy.signUp).toHaveBeenCalledWith({
+            const acceptedTermsAt = new Date();
+            await service.register({ 
+                email: 'test@test.com', 
+                password: 'password', 
+                name: 'Test',
+                newsletter_active: true,
+                acceptedTerms: true,
+                acceptedTermsAt
+            });
+            expect(supabaseAuthSpy.signUp).toHaveBeenCalledWith(jasmine.objectContaining({
                 email: 'test@test.com',
                 password: 'password',
-                options: { data: { name: 'Test' } }
-            });
+                options: jasmine.objectContaining({
+                    data: jasmine.objectContaining({
+                        name: 'Test',
+                        newsletter_active: true,
+                        terms_accepted: true,
+                        terms_accepted_at: acceptedTermsAt.toISOString()
+                    })
+                })
+            }));
         });
 
         it('rejects if email or password is missing', async () => {
@@ -91,6 +123,8 @@ describe('UserService', () => {
             const profile = await service.getUserProfile();
             expect(profile.id).toBe('123');
             expect(profile.name).toBe('Test User');
+            expect(profile.acceptedTerms).toBeTrue();
+            expect(profile.acceptedTermsAt).toBeInstanceOf(Date);
         });
 
         it('denies reading if unauthenticated', async () => {
@@ -108,7 +142,7 @@ describe('UserService', () => {
 
         it('denies updating if it fails (unauthenticated/error)', async () => {
             supabaseAuthSpy.updateUser.and.returnValue(Promise.resolve({ data: null, error: { message: 'Update failed' } }));
-            await expectAsync(service.updateUserProfile({ name: 'New Name' })).toBeRejectedWithError('Update failed');
+            await expectAsync(service.updateUserProfile({ name: 'New Name' })).toBeRejectedWithError('Ocorreu um erro inesperado. Tente novamente.');
         });
     });
 });

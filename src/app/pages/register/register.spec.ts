@@ -37,7 +37,7 @@ describe('Register', () => {
         expect(component).toBeTruthy();
     });
 
-    it('should redirect to /app on successful registration (REQ-1.3)', fakeAsync(() => {
+    it('should redirect to /auth/login on successful registration (REQ-1.3)', fakeAsync(() => {
         const navigateSpy = spyOn(router, 'navigate');
         userServiceSpy.register.and.returnValue(Promise.resolve());
 
@@ -46,14 +46,15 @@ describe('Register', () => {
             email: 'john@example.com',
             password: 'password123',
             confirmPassword: 'password123',
-            termsAccepted: true
+            termsAccepted: true,
+            newsletterActive: false
         });
 
         component.onSubmit();
         tick();
 
         expect(userServiceSpy.register).toHaveBeenCalled();
-        expect(navigateSpy).toHaveBeenCalledWith(['/app']);
+        expect(navigateSpy).toHaveBeenCalledWith(['/auth/login']);
     }));
 
     it('should show error message on registration failure', fakeAsync(() => {
@@ -64,7 +65,8 @@ describe('Register', () => {
             email: 'john@example.com',
             password: 'password123',
             confirmPassword: 'password123',
-            termsAccepted: true
+            termsAccepted: true,
+            newsletterActive: false
         });
 
         component.onSubmit();

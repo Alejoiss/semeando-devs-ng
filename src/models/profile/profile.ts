@@ -4,6 +4,8 @@ export interface Profile {
     role: 'student' | 'teacher' | 'admin';
     pro_until?: string | null;
     newsletter_active?: boolean;
+    terms_accepted?: boolean;
+    terms_accepted_at?: string | null;
     created_at?: string;
     updated_at?: string;
 }

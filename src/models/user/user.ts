@@ -6,7 +6,7 @@ export interface User {
     email: string;
     password: string;
     acceptedTerms: boolean;
-    acceptedTermsAt: Date;
+    acceptedTermsAt?: Date | null;
     avatar: string;
     plan: Plan;
     isPro: boolean;
