@@ -24,7 +24,9 @@ describe('UserService', () => {
                 role: 'student', 
                 newsletter_active: false,
                 terms_accepted: true,
-                terms_accepted_at: new Date().toISOString()
+                terms_accepted_at: new Date().toISOString(),
+                teacher_terms_accepted: false,
+                teacher_terms_accepted_at: null
             }, 
             error: null 
         }));
@@ -125,6 +127,42 @@ describe('UserService', () => {
             expect(profile.name).toBe('Test User');
             expect(profile.acceptedTerms).toBeTrue();
             expect(profile.acceptedTermsAt).toBeInstanceOf(Date);
+            expect(profile.teacherTermsAccepted).toBeFalse();
+            expect(profile.teacherTermsAcceptedAt).toBeNull();
+        });
+
+        it('verify profile reading maps teacher terms correctly when accepted', async () => {
+            const mockUser = {
+                id: '123',
+                email: 'test@test.com',
+                created_at: new Date().toISOString(),
+                user_metadata: { name: 'Test User' }
+            };
+            supabaseAuthSpy.getUser.and.returnValue(Promise.resolve({ data: { user: mockUser }, error: null }));
+
+            const acceptedAtStr = new Date().toISOString();
+            const mockSingle = jasmine.createSpy('single').and.returnValue(Promise.resolve({
+                data: { 
+                    is_pro: false, 
+                    role: 'student', 
+                    newsletter_active: false,
+                    terms_accepted: true,
+                    terms_accepted_at: new Date().toISOString(),
+                    teacher_terms_accepted: true,
+                    teacher_terms_accepted_at: acceptedAtStr
+                }, 
+                error: null 
+            }));
+            const mockReturns = jasmine.createSpy('returns').and.returnValue({ single: mockSingle });
+            const mockEq = jasmine.createSpy('eq').and.returnValue({ returns: mockReturns });
+            const mockSelect = jasmine.createSpy('select').and.returnValue({ eq: mockEq });
+            const mockFrom = jasmine.createSpy('from').and.returnValue({ select: mockSelect });
+
+            (service as any).supabase.from = mockFrom;
+
+            const profile = await service.getUserProfile();
+            expect(profile.teacherTermsAccepted).toBeTrue();
+            expect(profile.teacherTermsAcceptedAt).toEqual(new Date(acceptedAtStr));
         });
 
         it('denies reading if unauthenticated', async () => {
@@ -143,6 +181,86 @@ describe('UserService', () => {
         it('denies updating if it fails (unauthenticated/error)', async () => {
             supabaseAuthSpy.updateUser.and.returnValue(Promise.resolve({ data: null, error: { message: 'Update failed' } }));
             await expectAsync(service.updateUserProfile({ name: 'New Name' })).toBeRejectedWithError('Ocorreu um erro inesperado. Tente novamente.');
+        });
+    });
+
+    describe('accept teacher terms (REQ-4)', () => {
+        it('should update profile and update userSignal on success', async () => {
+            // Set user signal in memory
+            const initialUser: any = {
+                id: 'user_123',
+                email: 'test@test.com',
+                name: 'Test Teacher',
+                password: '',
+                acceptedTerms: true,
+                acceptedTermsAt: new Date(),
+                teacherTermsAccepted: false,
+                teacherTermsAcceptedAt: null,
+                avatar: '',
+                plan: null,
+                isPro: false,
+                role: 'teacher',
+                proUntil: null,
+                newsletter_active: false
+            };
+            (service as any).userSignal.set(initialUser);
+
+            const mockUpdate = jasmine.createSpy('update').and.returnValue({
+                eq: jasmine.createSpy('eq').and.returnValue(Promise.resolve({ error: null }))
+            });
+            const mockFrom = jasmine.createSpy('from').and.returnValue({
+                update: mockUpdate
+            });
+
+            (service as any).supabase.from = mockFrom;
+
+            await service.acceptTeacherTerms();
+
+            expect(mockFrom).toHaveBeenCalledWith('profiles');
+            expect(mockUpdate).toHaveBeenCalledWith(jasmine.objectContaining({
+                teacher_terms_accepted: true
+            }));
+
+            const updatedUser = service.currentUser();
+            expect(updatedUser).toBeTruthy();
+            expect(updatedUser?.teacherTermsAccepted).toBeTrue();
+            expect(updatedUser?.teacherTermsAcceptedAt).toBeInstanceOf(Date);
+        });
+
+        it('should throw error if user is not authenticated', async () => {
+            (service as any).userSignal.set(null);
+            await expectAsync(service.acceptTeacherTerms()).toBeRejectedWithError('Usuário não autenticado.');
+        });
+
+        it('should throw error if database update fails', async () => {
+            const initialUser: any = {
+                id: 'user_123',
+                email: 'test@test.com',
+                name: 'Test Teacher',
+                password: '',
+                acceptedTerms: true,
+                acceptedTermsAt: new Date(),
+                teacherTermsAccepted: false,
+                teacherTermsAcceptedAt: null,
+                avatar: '',
+                plan: null,
+                isPro: false,
+                role: 'teacher',
+                proUntil: null,
+                newsletter_active: false
+            };
+            (service as any).userSignal.set(initialUser);
+
+            const mockUpdate = jasmine.createSpy('update').and.returnValue({
+                eq: jasmine.createSpy('eq').and.returnValue(Promise.resolve({ error: { message: 'Database error' } }))
+            });
+            const mockFrom = jasmine.createSpy('from').and.returnValue({
+                update: mockUpdate
+            });
+
+            (service as any).supabase.from = mockFrom;
+
+            await expectAsync(service.acceptTeacherTerms()).toBeRejectedWithError('Não foi possível registrar o aceite dos termos. Tente novamente.');
         });
     });
 });

@@ -96,7 +96,7 @@ export class UserService {
 
         const { data: profileData } = await this.supabase
             .from('profiles')
-            .select('is_pro, pro_until, newsletter_active, role, terms_accepted, terms_accepted_at')
+            .select('is_pro, pro_until, newsletter_active, role, terms_accepted, terms_accepted_at, teacher_terms_accepted, teacher_terms_accepted_at')
             .eq('id', user.id)
             .returns<Profile[]>()
             .single();
@@ -111,6 +111,8 @@ export class UserService {
             password: '',
             acceptedTerms: profileData?.terms_accepted || false,
             acceptedTermsAt: profileData?.terms_accepted_at ? new Date(profileData.terms_accepted_at) : null,
+            teacherTermsAccepted: profileData?.teacher_terms_accepted || false,
+            teacherTermsAcceptedAt: profileData?.teacher_terms_accepted_at ? new Date(profileData.teacher_terms_accepted_at) : null,
             avatar: user.user_metadata?.['avatar'] || '',
             plan: user.user_metadata?.['plan'] || null,
             isPro: isProActive,
@@ -147,6 +149,30 @@ export class UserService {
 
         await this.loadUserProfile();
     }
+
+    async acceptTeacherTerms(): Promise<void> {
+        const user = this.userSignal();
+        if (!user) throw new Error('Usuário não autenticado.');
+
+        const now = new Date().toISOString();
+        const { error } = await this.supabase
+            .from('profiles')
+            .update({
+                teacher_terms_accepted: true,
+                teacher_terms_accepted_at: now,
+            })
+            .eq('id', user.id);
+
+        if (error) {
+            throw new Error('Não foi possível registrar o aceite dos termos. Tente novamente.');
+        }
+
+        this.userSignal.update(currentUser => currentUser
+            ? { ...currentUser, teacherTermsAccepted: true, teacherTermsAcceptedAt: new Date(now) }
+            : currentUser
+        );
+    }
+
     async uploadAvatar(file: File): Promise<string> {
         const user = this.userSignal();
         if (!user) throw new Error('User not authenticated');

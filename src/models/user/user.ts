@@ -7,6 +7,8 @@ export interface User {
     password: string;
     acceptedTerms: boolean;
     acceptedTermsAt?: Date | null;
+    teacherTermsAccepted?: boolean;
+    teacherTermsAcceptedAt?: Date | null;
     avatar: string;
     plan: Plan;
     isPro: boolean;

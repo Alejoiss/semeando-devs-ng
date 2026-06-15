@@ -1,0 +1,13 @@
+.glass-panel {
+    background: rgb(31, 43, 73);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+}
+
+.neon-glow-primary {
+    box-shadow: 0 0 20px rgba(63, 194, 251, 0.15);
+}
+
+[id] {
+    scroll-margin-top: 128px;
+}

@@ -10,4 +10,8 @@
     <main class="md:pl-64 pt-24 pb-24 min-h-screen">
         <router-outlet></router-outlet>
     </main>
+
+    @if (showTermsModal()) {
+        <app-professor-terms></app-professor-terms>
+    }
 </div>

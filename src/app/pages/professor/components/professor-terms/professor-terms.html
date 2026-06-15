@@ -1,0 +1,294 @@
+<div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+    <div class="glass-panel neon-glow-primary rounded-2xl w-full max-w-4xl flex flex-col"
+         style="max-height: 90vh;">
+
+        <!-- Header -->
+        <div class="flex items-start justify-between p-6 md:p-8 pb-4 shrink-0">
+            <div>
+                <h1 class="text-3xl md:text-4xl font-headline font-extrabold tracking-tight text-on-surface">
+                    Termos do <span class="text-primary">Professor Parceiro</span>
+                </h1>
+                <p class="font-label text-secondary-dim tracking-widest uppercase text-xs font-bold mt-1">
+                    Versão atual · Junho de 2026
+                </p>
+            </div>
+        </div>
+
+        <!-- Index -->
+        <div class="mx-6 md:mx-8 mb-4 p-4 bg-surface-container rounded-xl shrink-0">
+            <p class="text-xs font-bold text-on-surface mb-2 uppercase tracking-widest font-label">Índice</p>
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-1 text-xs text-primary font-body">
+                <button (click)="scrollToSection('pt-sec-1')" class="text-left hover:underline cursor-pointer transition-all hover:translate-x-1 inline-flex items-center gap-1">→ 1. Disponibilização de Cursos</button>
+                <button (click)="scrollToSection('pt-sec-2')" class="text-left hover:underline cursor-pointer transition-all hover:translate-x-1 inline-flex items-center gap-1">→ 2. Modelo de Remuneração</button>
+                <button (click)="scrollToSection('pt-sec-3')" class="text-left hover:underline cursor-pointer transition-all hover:translate-x-1 inline-flex items-center gap-1">→ 3. Revisão do Modelo</button>
+                <button (click)="scrollToSection('pt-sec-4')" class="text-left hover:underline cursor-pointer transition-all hover:translate-x-1 inline-flex items-center gap-1">→ 4. Vigência e Permanência</button>
+                <button (click)="scrollToSection('pt-sec-5')" class="text-left hover:underline cursor-pointer transition-all hover:translate-x-1 inline-flex items-center gap-1">→ 5. Atualização dos Cursos</button>
+                <button (click)="scrollToSection('pt-sec-6')" class="text-left hover:underline cursor-pointer transition-all hover:translate-x-1 inline-flex items-center gap-1">→ 6. Substituição do Professor</button>
+                <button (click)="scrollToSection('pt-sec-7')" class="text-left hover:underline cursor-pointer transition-all hover:translate-x-1 inline-flex items-center gap-1">→ 7. Forma de Pagamento</button>
+                <button (click)="scrollToSection('pt-sec-8')" class="text-left hover:underline cursor-pointer transition-all hover:translate-x-1 inline-flex items-center gap-1">→ 8. Ética e Conduta</button>
+                <button (click)="scrollToSection('pt-sec-9')" class="text-left hover:underline cursor-pointer transition-all hover:translate-x-1 inline-flex items-center gap-1">→ 9. Responsabilidades do Professor</button>
+                <button (click)="scrollToSection('pt-sec-10')" class="text-left hover:underline cursor-pointer transition-all hover:translate-x-1 inline-flex items-center gap-1">→ 10. Responsabilidades da Plataforma</button>
+                <button (click)="scrollToSection('pt-sec-11')" class="text-left hover:underline cursor-pointer transition-all hover:translate-x-1 inline-flex items-center gap-1">→ 11. Divulgação e Marketing</button>
+                <button (click)="scrollToSection('pt-sec-12')" class="text-left hover:underline cursor-pointer transition-all hover:translate-x-1 inline-flex items-center gap-1">→ 12. Visão Filantrópica</button>
+                <button (click)="scrollToSection('pt-sec-13')" class="text-left hover:underline cursor-pointer transition-all hover:translate-x-1 inline-flex items-center gap-1">→ 13. Disposições Gerais</button>
+            </div>
+        </div>
+
+        <!-- Scrollable content -->
+        <div class="overflow-y-auto px-6 md:px-8 pb-4 flex-1">
+            <div class="mb-6">
+                <p class="text-base text-on-surface-variant font-body leading-relaxed">
+                    Este documento tem como objetivo esclarecer as condições para que professores
+                    (<span class="text-on-surface font-semibold">Professores Parceiros</span>) disponibilizem seus cursos
+                    de programação na plataforma <span class="text-on-surface font-semibold">Semeando Devs</span>.
+                    Ao aceitar este documento, o Professor declara estar ciente e de acordo com as regras abaixo.
+                </p>
+            </div>
+
+            <div class="space-y-10">
+
+                <!-- Section 1 -->
+                <section id="pt-sec-1">
+                    <div class="flex items-center gap-3 mb-4">
+                        <span class="w-8 h-8 rounded bg-primary/20 flex items-center justify-center text-primary font-label font-bold text-sm">01</span>
+                        <h2 class="text-xl font-headline font-bold text-on-surface">Sobre a Disponibilização de Cursos</h2>
+                    </div>
+                    <div class="space-y-3 text-on-surface-variant font-body text-sm leading-relaxed">
+                        <p>A Plataforma é um ambiente de ensino online em que professores com experiência em programação podem publicar cursos para serem acessados pelos alunos assinantes.</p>
+                        <p>A Semeando Devs adota uma padronização de estrutura dos cursos (organização em módulos, aulas, lições, formato dos materiais, padrões mínimos de qualidade, etc.). Essa padronização será detalhada em documento específico, que será enviado ao Professor interessado, e deverá ser integralmente observada na criação e atualização dos cursos.</p>
+                        <p>A disponibilização de qualquer curso na Plataforma dependerá de análise e aprovação da equipe responsável, considerando, entre outros critérios:</p>
+                        <ul class="list-none space-y-2">
+                            <li class="flex items-start gap-2"><span class="material-symbols-outlined text-primary text-sm mt-0.5">check_circle</span><span>Qualidade técnica e didática do conteúdo;</span></li>
+                            <li class="flex items-start gap-2"><span class="material-symbols-outlined text-primary text-sm mt-0.5">check_circle</span><span>Relevância do tema para o público-alvo;</span></li>
+                            <li class="flex items-start gap-2"><span class="material-symbols-outlined text-primary text-sm mt-0.5">check_circle</span><span>Atualidade do conteúdo e aderência às boas práticas de programação;</span></li>
+                            <li class="flex items-start gap-2"><span class="material-symbols-outlined text-primary text-sm mt-0.5">check_circle</span><span>Respeito às leis vigentes e aos valores da Plataforma.</span></li>
+                        </ul>
+                        <p>A Plataforma poderá, a seu critério, solicitar ajustes, melhorias ou complementações antes de aprovar o curso para publicação.</p>
+                    </div>
+                </section>
+
+                <!-- Section 2 -->
+                <section id="pt-sec-2">
+                    <div class="flex items-center gap-3 mb-4">
+                        <span class="w-8 h-8 rounded bg-primary/20 flex items-center justify-center text-primary font-label font-bold text-sm">02</span>
+                        <h2 class="text-xl font-headline font-bold text-on-surface">Modelo de Remuneração</h2>
+                    </div>
+                    <div class="space-y-3 text-on-surface-variant font-body text-sm leading-relaxed">
+                        <p>A Plataforma adota um modelo de assinatura: os alunos pagam um valor periódico para ter acesso aos cursos disponíveis.</p>
+                        <p>Do valor total efetivamente arrecadado com assinaturas no período de referência, será feita a seguinte divisão inicial:</p>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 my-3">
+                            <div class="flex gap-3 p-3 bg-surface-container-low rounded-lg">
+                                <span class="material-symbols-outlined text-primary shrink-0">account_balance</span>
+                                <p><span class="text-on-surface font-semibold block mb-0.5">50% para a Plataforma</span>Destinado à operação, infraestrutura e crescimento.</p>
+                            </div>
+                            <div class="flex gap-3 p-3 bg-surface-container-low rounded-lg">
+                                <span class="material-symbols-outlined text-tertiary shrink-0">school</span>
+                                <p><span class="text-on-surface font-semibold block mb-0.5">50% para os Professores</span>Distribuído proporcionalmente às lições concluídas.</p>
+                            </div>
+                        </div>
+                        <p>Os 50% destinados aos Professores serão distribuídos entre todos os Professores com cursos ativos, proporcionalmente ao número de lições concluídas pelos alunos em cada curso no período de referência.</p>
+                        <div class="flex gap-3 p-3 bg-surface-container-low rounded-lg mt-3">
+                            <span class="material-symbols-outlined text-secondary shrink-0">calculate</span>
+                            <div>
+                                <span class="text-on-surface font-semibold block mb-1">Exemplo Prático</span>
+                                <p>Se a plataforma arrecada R$ 10.000,00 em um mês, R$ 5.000,00 vão para os Professores. Se o Professor A teve 50% das lições concluídas, recebe R$ 2.500,00; o Professor B com 30% recebe R$ 1.500,00; e o Professor C com 20% recebe R$ 1.000,00.</p>
+                            </div>
+                        </div>
+                        <p>A remuneração é sempre calculada sobre os valores efetivamente recebidos pela Plataforma (incluindo a dedução de taxas de meios de pagamento, estornos e inadimplências, quando aplicável).</p>
+                    </div>
+                </section>
+
+                <!-- Section 3 -->
+                <section id="pt-sec-3">
+                    <div class="flex items-center gap-3 mb-4">
+                        <span class="w-8 h-8 rounded bg-primary/20 flex items-center justify-center text-primary font-label font-bold text-sm">03</span>
+                        <h2 class="text-xl font-headline font-bold text-on-surface">Revisão do Modelo de Distribuição</h2>
+                    </div>
+                    <div class="space-y-3 text-on-surface-variant font-body text-sm leading-relaxed">
+                        <p>O Professor declara estar ciente de que o modelo de distribuição de receitas poderá ser revisto pela Plataforma em razão de necessidade de sustentabilidade econômica, aumento de custos operacionais, mudanças de mercado ou alterações regulatórias.</p>
+                        <p>Em caso de alteração do modelo, a Plataforma comunicará os Professores com antecedência razoável, apresentará o novo modelo de forma clara e dará ao Professor a opção de manter seus cursos ou solicitar sua retirada.</p>
+                        <p>A continuidade da disponibilização dos cursos após a comunicação das novas condições será interpretada como concordância do Professor com o modelo atualizado.</p>
+                    </div>
+                </section>
+
+                <!-- Section 4 -->
+                <section id="pt-sec-4">
+                    <div class="flex items-center gap-3 mb-4">
+                        <span class="w-8 h-8 rounded bg-primary/20 flex items-center justify-center text-primary font-label font-bold text-sm">04</span>
+                        <h2 class="text-xl font-headline font-bold text-on-surface">Vigência da Remuneração e Permanência do Curso</h2>
+                    </div>
+                    <div class="space-y-3 text-on-surface-variant font-body text-sm leading-relaxed">
+                        <p>O Professor terá direito à remuneração enquanto seu curso estiver ativo e disponível na Plataforma, observadas as regras de distribuição vigentes.</p>
+                        <p>Em caso de remoção de um curso, cessará o direito do Professor à remuneração referente àquele curso a partir da data de retirada.</p>
+                        <p>A Plataforma poderá remover ou descontinuar cursos em casos como conteúdo desatualizado, baixa qualidade técnica, violação de direitos autorais ou descumprimento destes termos.</p>
+                    </div>
+                </section>
+
+                <!-- Section 5 -->
+                <section id="pt-sec-5">
+                    <div class="flex items-center gap-3 mb-4">
+                        <span class="w-8 h-8 rounded bg-primary/20 flex items-center justify-center text-primary font-label font-bold text-sm">05</span>
+                        <h2 class="text-xl font-headline font-bold text-on-surface">Atualização dos Cursos e Impacto ao Longo do Tempo</h2>
+                    </div>
+                    <div class="space-y-3 text-on-surface-variant font-body text-sm leading-relaxed">
+                        <p>É natural que alunos que já concluíram determinada lição não a refaçam, o que pode resultar em redução gradual da remuneração do Professor em relação aos antigos alunos.</p>
+                        <p>As tecnologias de programação evoluem, abrindo espaço para: inclusão de novas lições, atualização de conteúdos existentes e criação de módulos complementares.</p>
+                        <p>Ao manter o curso atualizado, o Professor aumenta as chances de atrair novos alunos, trazer alunos antigos de volta para as novas lições e manter sua participação no total de lições concluídas.</p>
+                        <p>A Plataforma compromete-se a notificar os alunos que já concluíram o curso sempre que forem disponibilizadas novas lições relevantes.</p>
+                    </div>
+                </section>
+
+                <!-- Section 6 -->
+                <section id="pt-sec-6">
+                    <div class="flex items-center gap-3 mb-4">
+                        <span class="w-8 h-8 rounded bg-primary/20 flex items-center justify-center text-primary font-label font-bold text-sm">06</span>
+                        <h2 class="text-xl font-headline font-bold text-on-surface">Substituição ou Descontinuidade do Professor</h2>
+                    </div>
+                    <div class="space-y-3 text-on-surface-variant font-body text-sm leading-relaxed">
+                        <p>Caso o Professor decida interromper a atualização do curso, ou em situações em que a falta de atualização comprometa a qualidade do material, a Plataforma poderá convidar outro Professor para assumir a continuidade do curso.</p>
+                        <p>O novo Professor não terá direito à remuneração pelas lições criadas pelo Professor anterior; será remunerado pelas novas lições que criar e pelas lições antigas que eventualmente forem substancialmente atualizadas por ele.</p>
+                        <p>Quando uma lição for atualizada de forma relevante, a Plataforma poderá atribuí-la ao Professor que realizou a atualização. Os critérios para caracterizar "atualização relevante" serão definidos pela Plataforma e comunicados ao Professor.</p>
+                    </div>
+                </section>
+
+                <!-- Section 7 -->
+                <section id="pt-sec-7">
+                    <div class="flex items-center gap-3 mb-4">
+                        <span class="w-8 h-8 rounded bg-primary/20 flex items-center justify-center text-primary font-label font-bold text-sm">07</span>
+                        <h2 class="text-xl font-headline font-bold text-on-surface">Forma de Pagamento</h2>
+                    </div>
+                    <div class="space-y-3 text-on-surface-variant font-body text-sm leading-relaxed">
+                        <p>Os repasses aos Professores serão realizados por transferência bancária para conta de titularidade do próprio Professor, após o fechamento do período de referência e processamento dos valores.</p>
+                        <p>O Professor é responsável por manter seus dados bancários e cadastrais atualizados na Plataforma, bem como por emitir as notas fiscais aplicáveis e cumprir com suas obrigações tributárias conforme a legislação vigente.</p>
+                    </div>
+                </section>
+
+                <!-- Section 8 -->
+                <section id="pt-sec-8">
+                    <div class="flex items-center gap-3 mb-4">
+                        <span class="w-8 h-8 rounded bg-primary/20 flex items-center justify-center text-primary font-label font-bold text-sm">08</span>
+                        <h2 class="text-xl font-headline font-bold text-on-surface">Ética, Conduta e Uso Indevido</h2>
+                    </div>
+                    <div class="space-y-3 text-on-surface-variant font-body text-sm leading-relaxed">
+                        <p>O Professor compromete-se a não criar contas falsas, perfis simulados ou qualquer outro meio fraudulento para aumentar artificialmente o número de lições concluídas e sua remuneração.</p>
+                        <div class="flex gap-3 p-3 bg-surface-container-low rounded-lg">
+                            <span class="material-symbols-outlined text-error shrink-0">gpp_bad</span>
+                            <div>
+                                <span class="text-on-surface font-semibold block mb-1">Condutas Proibidas</span>
+                                <p>Incentivar alunos a apenas "clicar" nas lições sem estudo efetivo; realizar acessos indevidos à Plataforma; burlar sistemas de controle de acesso ou métricas.</p>
+                            </div>
+                        </div>
+                        <p>A constatação de fraude poderá resultar em suspensão ou descontinuidade imediata do Professor, remoção de seus cursos e bloqueio de valores a receber, sem prejuízo de medidas legais cabíveis.</p>
+                    </div>
+                </section>
+
+                <!-- Section 9 -->
+                <section id="pt-sec-9">
+                    <div class="flex items-center gap-3 mb-4">
+                        <span class="w-8 h-8 rounded bg-primary/20 flex items-center justify-center text-primary font-label font-bold text-sm">09</span>
+                        <h2 class="text-xl font-headline font-bold text-on-surface">Responsabilidades do Professor</h2>
+                    </div>
+                    <div class="space-y-3 text-on-surface-variant font-body text-sm leading-relaxed">
+                        <p>O Professor é integralmente responsável pela qualidade, originalidade e veracidade do conteúdo de seus cursos. É dever do Professor:</p>
+                        <ul class="list-none space-y-2">
+                            <li class="flex items-start gap-2"><span class="material-symbols-outlined text-tertiary text-sm mt-0.5">verified</span><span>Produzir conteúdo autoral ou com as devidas autorizações de uso;</span></li>
+                            <li class="flex items-start gap-2"><span class="material-symbols-outlined text-tertiary text-sm mt-0.5">verified</span><span>Não violar direitos autorais, de imagem, privacidade, marcas ou direitos de terceiros;</span></li>
+                            <li class="flex items-start gap-2"><span class="material-symbols-outlined text-tertiary text-sm mt-0.5">verified</span><span>Manter os cursos em nível mínimo de atualização e qualidade conforme critérios da Plataforma.</span></li>
+                        </ul>
+                        <p>O Professor reconhece que a ausência de atualizações relevantes pode reduzir a atratividade do curso e levar à substituição de sua autoria por outro Professor.</p>
+                    </div>
+                </section>
+
+                <!-- Section 10 -->
+                <section id="pt-sec-10">
+                    <div class="flex items-center gap-3 mb-4">
+                        <span class="w-8 h-8 rounded bg-primary/20 flex items-center justify-center text-primary font-label font-bold text-sm">10</span>
+                        <h2 class="text-xl font-headline font-bold text-on-surface">Responsabilidades da Plataforma</h2>
+                    </div>
+                    <div class="space-y-3 text-on-surface-variant font-body text-sm leading-relaxed">
+                        <p>A Plataforma se compromete a disponibilizar os cursos aprovados de forma estável, registrar de maneira confiável as lições concluídas, realizar o cálculo de remuneração com base nos critérios estabelecidos e repassar os valores devidos dentro dos prazos definidos.</p>
+                        <p>A Plataforma reserva-se o direito de analisar todo conteúdo enviado, aprovar, solicitar ajustes ou recusar conteúdos que não atendam aos padrões de qualidade ou às políticas da Plataforma.</p>
+                        <p>A Plataforma não se responsabiliza por promessas ou garantias feitas pelo Professor diretamente a alunos em canais externos.</p>
+                    </div>
+                </section>
+
+                <!-- Section 11 -->
+                <section id="pt-sec-11">
+                    <div class="flex items-center gap-3 mb-4">
+                        <span class="w-8 h-8 rounded bg-primary/20 flex items-center justify-center text-primary font-label font-bold text-sm">11</span>
+                        <h2 class="text-xl font-headline font-bold text-on-surface">Divulgação, Marketing e Promoção dos Cursos</h2>
+                    </div>
+                    <div class="space-y-3 text-on-surface-variant font-body text-sm leading-relaxed">
+                        <p>A Plataforma realizará ações de divulgação e marketing, utilizando site institucional, redes sociais, campanhas digitais, parcerias com escolas e comunidades, entre outras estratégias.</p>
+                        <p>O Professor autoriza, de forma não exclusiva e sem custo adicional, o uso do nome, imagem (se fornecida), marca (se houver) e trechos de seus cursos em materiais de divulgação da Plataforma, exclusivamente com a finalidade de promover a Semeando Devs e seus cursos.</p>
+                        <p>A realização de ações de marketing não garante ao Professor qualquer nível mínimo de exposição ou número de alunos; trata-se de um esforço global do qual todos os Professores podem se beneficiar indiretamente.</p>
+                    </div>
+                </section>
+
+                <!-- Section 12 -->
+                <section id="pt-sec-12">
+                    <div class="flex items-center gap-3 mb-4">
+                        <span class="w-8 h-8 rounded bg-primary/20 flex items-center justify-center text-primary font-label font-bold text-sm">12</span>
+                        <h2 class="text-xl font-headline font-bold text-on-surface">Visão Filantrópica e Impacto na Remuneração</h2>
+                    </div>
+                    <div class="space-y-3 text-on-surface-variant font-body text-sm leading-relaxed">
+                        <p>A Semeando Devs tem uma visão filantrópica, buscando oferecer acesso gratuito ou com descontos a estudantes de escolas públicas, projetos de ensino em comunidades carentes, programas de menores aprendizes e outras iniciativas sociais.</p>
+                        <div class="flex gap-3 p-3 bg-surface-container-low rounded-lg">
+                            <span class="material-symbols-outlined text-secondary shrink-0">volunteer_activism</span>
+                            <p>Nessas modalidades sociais, os valores arrecadados tendem a ser menores ou até inexistentes em alguns casos, o que impacta diretamente o montante disponível para distribuição aos Professores. A distribuição é sempre calculada sobre o que for efetivamente arrecadado.</p>
+                        </div>
+                        <p>Ao aceitar estes termos, o Professor declara estar ciente de que sua remuneração pode ser influenciada por políticas de bolsas, descontos, campanhas promocionais e ações filantrópicas da Plataforma.</p>
+                    </div>
+                </section>
+
+                <!-- Section 13 -->
+                <section id="pt-sec-13">
+                    <div class="flex items-center gap-3 mb-4">
+                        <span class="w-8 h-8 rounded bg-primary/20 flex items-center justify-center text-primary font-label font-bold text-sm">13</span>
+                        <h2 class="text-xl font-headline font-bold text-on-surface">Disposições Gerais</h2>
+                    </div>
+                    <div class="space-y-3 text-on-surface-variant font-body text-sm leading-relaxed">
+                        <p>A adesão do Professor a estes termos não cria vínculo empregatício, societário ou de representação entre o Professor e a Plataforma. A relação é de parceria para disponibilização de conteúdo.</p>
+                        <p>Estes termos poderão ser atualizados pela Plataforma. Sempre que houver alteração relevante, o Professor será comunicado pelos meios cadastrados e a continuidade do uso implicará concordância com a nova versão.</p>
+                        <p>Em caso de dúvidas sobre a interpretação destes termos, prevalecerá a interpretação da Plataforma, sem prejuízo do direito do Professor de buscar esclarecimentos adicionais.</p>
+                    </div>
+                </section>
+
+            </div>
+        </div>
+
+        <!-- Footer / Accept -->
+        <div class="p-6 md:p-8 pt-4 shrink-0 bg-surface-container-low rounded-b-2xl">
+
+            @if (errorMessage()) {
+                <div class="flex items-center gap-2 mb-3 p-3 bg-error/10 rounded-lg text-error text-sm font-body" role="alert">
+                    <span class="material-symbols-outlined text-base shrink-0">error</span>
+                    <span>{{ errorMessage() }}</span>
+                </div>
+            }
+
+            <div class="flex flex-col sm:flex-row items-center justify-between gap-4">
+                <p class="text-xs text-on-surface-variant font-body text-center sm:text-left">
+                    Ao clicar em <span class="text-on-surface font-semibold">Aceitar os Termos</span>, você confirma que leu e concorda com todas as condições acima.
+                </p>
+                <button
+                    id="professor-terms-accept-btn"
+                    (click)="onAccept()"
+                    [disabled]="isAccepting()"
+                    class="shrink-0 px-8 py-3 bg-gradient-to-r from-primary to-primary-container text-on-primary font-bold rounded-2xl transition-all hover:shadow-[0_0_20px_rgba(63,194,251,0.4)] active:scale-95 disabled:opacity-60 disabled:cursor-not-allowed disabled:active:scale-100 flex items-center gap-2"
+                    [attr.aria-busy]="isAccepting()"
+                    aria-label="Aceitar os termos do professor parceiro"
+                >
+                    @if (isAccepting()) {
+                        <span class="w-4 h-4 border-2 border-on-primary/30 border-t-on-primary rounded-full animate-spin"></span>
+                        Registrando...
+                    } @else {
+                        <span class="material-symbols-outlined text-base">check_circle</span>
+                        Aceitar os Termos
+                    }
+                </button>
+            </div>
+        </div>
+
+    </div>
+</div>
