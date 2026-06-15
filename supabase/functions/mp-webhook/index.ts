@@ -1,5 +1,6 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2"
+import nodemailer from "npm:nodemailer"
 import { handleAuthorizedPayment, handleClaim, handlePreapproval } from "./handlers.ts"
 
 const corsHeaders = {
@@ -89,6 +90,24 @@ serve(async (req: Request) => {
         )
     }
 
+    let logId: string | null = null;
+    try {
+        const { data: logData, error: logError } = await serviceRoleClient
+            .from('webhooks_log_mp')
+            .insert({ payload: event, status: 'pending' })
+            .select('id')
+            .single();
+
+        if (logError) throw logError;
+        if (logData) logId = logData.id;
+    } catch (logErr) {
+        console.error('[mp-webhook] Failed to insert initial log:', logErr);
+        return new Response(
+            JSON.stringify({ error: 'Failed to initialize webhook log' }),
+            { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } },
+        )
+    }
+
     const topic = event?.topic
 
     try {
@@ -101,9 +120,79 @@ serve(async (req: Request) => {
         } else {
             console.log(`[mp-webhook] Unhandled topic received: ${topic}`)
         }
+
+        if (logId) {
+            await serviceRoleClient
+                .from('webhooks_log_mp')
+                .update({ status: 'success', updated_at: new Date().toISOString() })
+                .eq('id', logId);
+        }
+
     } catch (err: unknown) {
         const message = err instanceof Error ? err.message : String(err)
         console.error(`[mp-webhook] Unhandled error processing topic "${topic}":`, message)
+        
+        if (logId) {
+            await serviceRoleClient
+                .from('webhooks_log_mp')
+                .update({ status: 'error', updated_at: new Date().toISOString() })
+                .eq('id', logId);
+
+            try {
+                const resendApiKey = Deno.env.get('RESEND_API_KEY');
+                const smtpSender = Deno.env.get('SMTP_SENDER') || 'Semeando Devs <noreply@semeandodevs.com.br>';
+                const adminEmail = 'joissonjdm@gmail.com';
+                const subject = 'ERRO WEBHOOK MERCADO PAGO';
+                const htmlContent = `
+                    <div style="font-family: sans-serif; background-color: #060e20; color: #dee5ff; padding: 24px; border-radius: 8px;">
+                        <h2 style="color: #ff716c;">Erro ao processar Webhook do Mercado Pago</h2>
+                        <p>Ocorreu um erro ao processar o webhook do tópico <strong>${topic}</strong>.</p>
+                        <p><strong>Log ID:</strong> ${logId}</p>
+                        <p><strong>Erro:</strong> ${message}</p>
+                    </div>
+                `;
+
+                if (resendApiKey) {
+                    const response = await fetch('https://api.resend.com/emails', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${resendApiKey}`
+                        },
+                        body: JSON.stringify({
+                            from: smtpSender,
+                            to: adminEmail,
+                            subject: subject,
+                            html: htmlContent
+                        })
+                    });
+                    if (!response.ok) {
+                        console.error('[Email] Resend API error:', await response.text());
+                    }
+                } else {
+                    const smtpHost = Deno.env.get('SMTP_HOST') || 'host.docker.internal';
+                    const smtpPort = parseInt(Deno.env.get('SMTP_PORT') || '54325', 10);
+                    const smtpUser = Deno.env.get('SMTP_USER') || '';
+                    const smtpPass = Deno.env.get('SMTP_PASS') || '';
+
+                    const transporter = nodemailer.createTransport({
+                        host: smtpHost,
+                        port: smtpPort,
+                        secure: smtpPort === 465,
+                        auth: smtpUser && smtpPass ? { user: smtpUser, pass: smtpPass } : undefined,
+                        tls: { rejectUnauthorized: false }
+                    });
+                    await transporter.sendMail({
+                        from: smtpSender,
+                        to: adminEmail,
+                        subject: subject,
+                        html: htmlContent
+                    });
+                }
+            } catch (mailErr) {
+                console.error('[Email] Failed to send webhook error alert:', mailErr);
+            }
+        }
     }
 
     return new Response(
