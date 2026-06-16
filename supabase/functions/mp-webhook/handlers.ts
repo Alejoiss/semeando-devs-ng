@@ -1,7 +1,7 @@
 import { SupabaseClient } from "https://esm.sh/@supabase/supabase-js@2"
 import { insertBillingEvent, updateBillingEvent } from "./billing-events.ts"
 
-type MpEvent = { topic?: string; data?: { id?: string } }
+type MpEvent = { id?: string | number; topic?: string; type?: string; data?: { id?: string } }
 
 async function fetchFromMercadoPago(url: string, mlToken: string): Promise<unknown> {
     const response = await fetch(url, {
@@ -53,8 +53,9 @@ export async function handleAuthorizedPayment(
         return
     }
 
+    const eventId = event?.id ? String(event.id) : paymentId
     const billingResult = await insertBillingEvent(client, {
-        mpEventId: paymentId,
+        mpEventId: eventId,
         topic: 'subscription_authorized_payment',
         payload: event,
     })
@@ -109,8 +110,9 @@ export async function handlePreapproval(
         return
     }
 
+    const eventId = event?.id ? String(event.id) : preapprovalIdFromEvent
     const billingResult = await insertBillingEvent(client, {
-        mpEventId: preapprovalIdFromEvent,
+        mpEventId: eventId,
         topic: 'subscription_preapproval',
         payload: event,
     })
@@ -171,8 +173,9 @@ export async function handleClaim(
         return
     }
 
+    const eventId = event?.id ? String(event.id) : claimId
     const billingResult = await insertBillingEvent(client, {
-        mpEventId: claimId,
+        mpEventId: eventId,
         topic: 'claims_integration',
         payload: event,
     })

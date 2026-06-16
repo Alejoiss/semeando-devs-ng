@@ -16,7 +16,30 @@ async function validateSignature(
 ): Promise<boolean> {
     if (!xSignature || !xRequestId) return false
 
-    const signedTemplate = `id:${xRequestId};request-body:${rawBody};`
+    // Extract ts and v1 from x-signature (e.g. ts=1690000000,v1=abcdef...)
+    let ts = ''
+    let receivedHex = ''
+    xSignature.split(',').forEach((part: string) => {
+        const [key, val] = part.trim().split('=')
+        if (key === 'ts') ts = val
+        if (key === 'v1') receivedHex = val
+    })
+
+    if (!ts || !receivedHex) return false
+
+    // Extract data.id from the body
+    let dataId = ''
+    try {
+        const bodyObj = JSON.parse(rawBody)
+        // O id pode estar em data.id ou direto em id, dependendo do tipo de evento
+        dataId = bodyObj.data?.id || bodyObj.id || ''
+    } catch {
+        return false
+    }
+
+    // Official Mercado Pago template: id:{data.id};request-id:{x-request-id};ts:{ts};
+    const signedTemplate = `id:${dataId};request-id:${xRequestId};ts:${ts};`
+
     const encoder = new TextEncoder()
     const keyData = encoder.encode(secret)
     const msgData = encoder.encode(signedTemplate)
@@ -32,11 +55,6 @@ async function validateSignature(
     const computedHex = Array.from(new Uint8Array(signature))
         .map((b) => b.toString(16).padStart(2, '0'))
         .join('')
-
-    const receivedHex = xSignature.split(',').reduce((acc: string, part: string) => {
-        const [key, val] = part.trim().split('=')
-        return key === 'v1' ? val : acc
-    }, '')
 
     return computedHex === receivedHex
 }
@@ -80,7 +98,7 @@ serve(async (req: Request) => {
         )
     }
 
-    let event: { topic?: string; data?: { id?: string } }
+    let event: { topic?: string; type?: string; data?: { id?: string } }
     try {
         event = JSON.parse(rawBody)
     } catch {
@@ -108,10 +126,10 @@ serve(async (req: Request) => {
         )
     }
 
-    const topic = event?.topic
+    const topic = event?.type || event?.topic
 
     try {
-        if (topic === 'subscription_authorized_payment') {
+        if (topic === 'subscription_authorized_payment' || topic === 'payment') {
             await handleAuthorizedPayment(serviceRoleClient, event, mlAccessToken)
         } else if (topic === 'subscription_preapproval') {
             await handlePreapproval(serviceRoleClient, event, mlAccessToken)
