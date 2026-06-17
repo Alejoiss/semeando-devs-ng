@@ -73,7 +73,18 @@ export async function handleAuthorizedPayment(
             mlToken,
         ) as Record<string, unknown>
 
-        const preapprovalId = payment['preapproval_id'] as string | undefined
+        const paymentMetadata = payment['metadata'] as Record<string, unknown> | undefined
+        const pointOfInteraction = payment['point_of_interaction'] as Record<string, any> | undefined
+
+        let preapprovalId =
+            (paymentMetadata?.['preapproval_id'] as string | undefined) ||
+            (pointOfInteraction?.['transaction_data']?.['subscription_id'] as string | undefined)
+
+        // For PIX subscriptions, the DB saves the payment ID as the preapproval_id
+        if (!preapprovalId && payment['payment_method_id'] === 'pix') {
+            preapprovalId = payment['id']?.toString()
+        }
+
         if (!preapprovalId) {
             await updateBillingEvent(client, billingEventId, { status: 'orphan', errorMessage: 'No preapproval_id in payment object' })
             return
