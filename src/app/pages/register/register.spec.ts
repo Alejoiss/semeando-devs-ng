@@ -37,8 +37,7 @@ describe('Register', () => {
         expect(component).toBeTruthy();
     });
 
-    it('should redirect to /auth/login on successful registration (REQ-1.3)', fakeAsync(() => {
-        const navigateSpy = spyOn(router, 'navigate');
+    it('displays the success modal on successful registration', fakeAsync(() => {
         userServiceSpy.register.and.returnValue(Promise.resolve());
 
         component.registerForm.setValue({
@@ -50,10 +49,22 @@ describe('Register', () => {
             newsletterActive: false
         });
 
+        expect(component.showSuccessModal()).toBeFalse();
+
         component.onSubmit();
         tick();
 
         expect(userServiceSpy.register).toHaveBeenCalled();
+        expect(component.showSuccessModal()).toBeTrue();
+    }));
+
+    it('redirects the user to the login page when the confirmation button is clicked', fakeAsync(() => {
+        const navigateSpy = spyOn(router, 'navigate');
+        
+        component.onCloseSuccessModal();
+        tick();
+
+        expect(component.showSuccessModal()).toBeFalse();
         expect(navigateSpy).toHaveBeenCalledWith(['/auth/login']);
     }));
 

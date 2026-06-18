@@ -20,127 +20,165 @@
             <div class="animate-spin w-12 h-12 border-4 border-primary border-t-transparent rounded-full"></div>
         </div>
     } @else {
-        <!-- Podium Section -->
-        <section class="max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8 items-end mb-16 px-4 mt-[120px]">
-            @if (podiumUsers().length >= 2) {
-                <!-- 2nd Place -->
-                <div class="order-2 md:order-1 flex flex-col items-center">
-                    <div class="relative group">
-                        <div class="absolute -inset-1 bg-gradient-to-t from-primary/50 to-transparent rounded-full blur opacity-25"></div>
-                        @if (podiumUsers()[1].avatar) {
-                            <img alt="Avatar" class="w-24 h-24 rounded-full border-4 border-surface-container-high relative object-cover" [src]="podiumUsers()[1].avatar" />
-                        } @else {
-                            <div class="w-24 h-24 rounded-full border-4 border-surface-container-high relative flex items-center justify-center bg-surface-container text-primary font-headline font-bold text-3xl">{{ getInitials(podiumUsers()[1].name) }}</div>
-                        }
-                        <div class="absolute -bottom-2 -right-2 w-10 h-10 bg-surface-container-high rounded-full flex items-center justify-center border-2 border-surface shadow-xl">
-                            <span class="text-on-surface-variant font-label font-bold text-lg">2</span>
-                        </div>
-                    </div>
-                    <div class="mt-6 text-center bg-surface-container-low/50 p-6 rounded-t-3xl w-full border-x border-t border-outline-variant/10">
-                        <h3 class="font-headline font-bold text-lg mb-1 flex items-center justify-center gap-1">
-                            {{ podiumUsers()[1].name || 'Usuário' }}
-                            @if (podiumUsers()[1].is_pro) {
-                                <span class="material-symbols-outlined text-secondary text-xs" data-icon="star" style="font-variation-settings: 'FILL' 1;">star</span>
+        @if (isRankingComplete()) {
+            <!-- Podium Section -->
+            <section class="max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8 items-end mb-16 px-4 mt-[120px]">
+                @if (podiumUsers().length >= 2) {
+                    <!-- 2nd Place -->
+                    <div class="order-2 md:order-1 flex flex-col items-center">
+                        <div class="relative group">
+                            <div class="absolute -inset-1 bg-gradient-to-t from-primary/50 to-transparent rounded-full blur opacity-25"></div>
+                            @if (podiumUsers()[1].avatar) {
+                                <img alt="Avatar" class="w-24 h-24 rounded-full border-4 border-surface-container-high relative object-cover" [src]="podiumUsers()[1].avatar" />
+                            } @else {
+                                <div class="w-24 h-24 rounded-full border-4 border-surface-container-high relative flex items-center justify-center bg-surface-container text-primary font-headline font-bold text-3xl">{{ getInitials(podiumUsers()[1].name) }}</div>
                             }
-                        </h3>
-                        <div class="flex items-center justify-center gap-2 text-on-surface">
-                            <span class="material-symbols-outlined text-primary scale-75" data-icon="bolt" style="font-variation-settings: 'FILL' 1;">bolt</span>
-                            <span class="font-label font-bold text-xl tracking-tight">{{ podiumUsers()[1].xp }} XP</span>
+                            <div class="absolute -bottom-2 -right-2 w-10 h-10 bg-surface-container-high rounded-full flex items-center justify-center border-2 border-surface shadow-xl">
+                                <span class="text-on-surface-variant font-label font-bold text-lg">2</span>
+                            </div>
                         </div>
-                    </div>
-                </div>
-            }
-
-            @if (podiumUsers().length >= 1) {
-                <!-- 1st Place -->
-                <div class="order-1 md:order-2 flex flex-col items-center -translate-y-8">
-                    <div class="relative group">
-                        <div class="absolute -inset-4 bg-primary/20 rounded-full blur-2xl animate-pulse"></div>
-                        <div class="absolute -top-12 left-1/2 -translate-x-1/2">
-                            <span class="material-symbols-outlined text-secondary text-5xl drop-shadow-[0_0_10px_rgba(254,105,172,0.8)]" data-icon="workspace_premium" style="font-variation-settings: 'FILL' 1;">workspace_premium</span>
-                        </div>
-                        @if (podiumUsers()[0].avatar) {
-                            <img alt="Avatar" class="w-36 h-36 rounded-full border-4 border-secondary glow-secondary relative object-cover" [src]="podiumUsers()[0].avatar" />
-                        } @else {
-                            <div class="w-36 h-36 rounded-full border-4 border-secondary glow-secondary relative flex items-center justify-center bg-surface-container text-secondary font-headline font-bold text-5xl">{{ getInitials(podiumUsers()[0].name) }}</div>
-                        }
-                        <div class="absolute -bottom-4 -right-2 w-12 h-12 bg-secondary rounded-full flex items-center justify-center border-4 border-surface shadow-2xl">
-                            <span class="text-white font-label font-black text-xl">1</span>
-                        </div>
-                    </div>
-                    <div class="mt-8 text-center bg-surface-container p-8 rounded-t-[3rem] w-full border-x border-t border-secondary/20 shadow-[0_-10px_40px_rgba(63,194,251,0.1)]">
-                        <h3 class="font-headline font-black text-2xl mb-1 text-on-surface flex items-center justify-center gap-1">
-                            {{ podiumUsers()[0].name || 'Usuário' }}
-                            @if (podiumUsers()[0].is_pro) {
-                                <span class="material-symbols-outlined text-secondary text-sm" data-icon="star" style="font-variation-settings: 'FILL' 1;">star</span>
-                            }
-                        </h3>
-                        <div class="flex items-center justify-center gap-2 text-on-surface">
-                            <span class="material-symbols-outlined text-secondary" data-icon="stars" style="font-variation-settings: 'FILL' 1;">stars</span>
-                            <span class="font-label font-bold text-3xl tracking-tighter text-secondary">{{ podiumUsers()[0].xp }} XP</span>
-                        </div>
-                    </div>
-                </div>
-            }
-
-            @if (podiumUsers().length >= 3) {
-                <!-- 3rd Place -->
-                <div class="order-3 flex flex-col items-center">
-                    <div class="relative group">
-                        <div class="absolute -inset-1 bg-gradient-to-t from-tertiary/30 to-transparent rounded-full blur opacity-25"></div>
-                        @if (podiumUsers()[2].avatar) {
-                            <img alt="Avatar" class="w-24 h-24 rounded-full border-4 border-surface-container-high relative object-cover" [src]="podiumUsers()[2].avatar" />
-                        } @else {
-                            <div class="w-24 h-24 rounded-full border-4 border-surface-container-high relative flex items-center justify-center bg-surface-container text-tertiary font-headline font-bold text-3xl">{{ getInitials(podiumUsers()[2].name) }}</div>
-                        }
-                        <div class="absolute -bottom-2 -right-2 w-10 h-10 bg-surface-container-high rounded-full flex items-center justify-center border-2 border-surface shadow-xl">
-                            <span class="text-on-surface-variant font-label font-bold text-lg">3</span>
-                        </div>
-                    </div>
-                    <div class="mt-6 text-center bg-surface-container-low/50 p-6 rounded-t-3xl w-full border-x border-t border-outline-variant/10">
-                        <h3 class="font-headline font-bold text-lg mb-1 flex items-center justify-center gap-1">
-                            {{ podiumUsers()[2].name || 'Usuário' }}
-                            @if (podiumUsers()[2].is_pro) {
-                                <span class="material-symbols-outlined text-secondary text-xs" data-icon="star" style="font-variation-settings: 'FILL' 1;">star</span>
-                            }
-                        </h3>
-                        <div class="flex items-center justify-center gap-2 text-on-surface">
-                            <span class="material-symbols-outlined text-tertiary scale-75" data-icon="electric_bolt" style="font-variation-settings: 'FILL' 1;">electric_bolt</span>
-                            <span class="font-label font-bold text-xl tracking-tight">{{ podiumUsers()[2].xp }} XP</span>
-                        </div>
-                    </div>
-                </div>
-            }
-        </section>
-
-        <!-- Ranking List (Scrollable 4 to 50) -->
-        @if (rankedUsers().length > 0) {
-            <section class="max-w-4xl mx-auto space-y-4 pb-12">
-                <!-- Rank Header -->
-                <div class="px-8 flex items-center text-on-surface-variant font-label text-xs uppercase tracking-widest mb-4">
-                    <div class="w-12">#</div>
-                    <div class="flex-1">Usuário</div>
-                    <div class="w-32 text-right">XP Total</div>
-                </div>
-                <!-- Rank Items -->
-                <div class="space-y-3">
-                    @for (user of rankedUsers(); track user.userId) {
-                        <div class="bg-surface-container-low/40 hover:bg-surface-container transition-colors p-4 px-8 rounded-2xl flex items-center group">
-                            <div class="w-12 font-label font-bold text-lg text-on-surface-variant group-hover:text-primary">{{ user.position < 10 ? '0' + user.position : user.position }}</div>
-                            <div class="flex-1 flex items-center gap-4">
-                                @if (user.avatar) {
-                                    <img alt="User" class="w-10 h-10 rounded-full object-cover" [src]="user.avatar" />
-                                } @else {
-                                    <div class="w-10 h-10 rounded-full bg-surface-container flex items-center justify-center text-xs text-on-surface-variant font-bold">{{ getInitials(user.name) }}</div>
+                        <div class="mt-6 text-center bg-surface-container-low/50 p-6 rounded-t-3xl w-full border-x border-t border-outline-variant/10">
+                            <h3 class="font-headline font-bold text-lg mb-1 flex items-center justify-center gap-1">
+                                {{ podiumUsers()[1].name || 'Usuário' }}
+                                @if (podiumUsers()[1].is_pro) {
+                                    <span class="material-symbols-outlined text-secondary text-xs" data-icon="star" style="font-variation-settings: 'FILL' 1;">star</span>
                                 }
-                                <span class="font-headline font-semibold text-on-surface">{{ user.name || 'Usuário' }}</span>
-                                @if (user.is_pro) {
+                            </h3>
+                            <div class="flex items-center justify-center gap-2 text-on-surface">
+                                <span class="material-symbols-outlined text-primary scale-75" data-icon="bolt" style="font-variation-settings: 'FILL' 1;">bolt</span>
+                                <span class="font-label font-bold text-xl tracking-tight">{{ podiumUsers()[1].xp }} XP</span>
+                            </div>
+                        </div>
+                    </div>
+                }
+
+                @if (podiumUsers().length >= 1) {
+                    <!-- 1st Place -->
+                    <div class="order-1 md:order-2 flex flex-col items-center -translate-y-8">
+                        <div class="relative group">
+                            <div class="absolute -inset-4 bg-primary/20 rounded-full blur-2xl animate-pulse"></div>
+                            <div class="absolute -top-12 left-1/2 -translate-x-1/2">
+                                <span class="material-symbols-outlined text-secondary text-5xl drop-shadow-[0_0_10px_rgba(254,105,172,0.8)]" data-icon="workspace_premium" style="font-variation-settings: 'FILL' 1;">workspace_premium</span>
+                            </div>
+                            @if (podiumUsers()[0].avatar) {
+                                <img alt="Avatar" class="w-36 h-36 rounded-full border-4 border-secondary glow-secondary relative object-cover" [src]="podiumUsers()[0].avatar" />
+                            } @else {
+                                <div class="w-36 h-36 rounded-full border-4 border-secondary glow-secondary relative flex items-center justify-center bg-surface-container text-secondary font-headline font-bold text-5xl">{{ getInitials(podiumUsers()[0].name) }}</div>
+                            }
+                            <div class="absolute -bottom-4 -right-2 w-12 h-12 bg-secondary rounded-full flex items-center justify-center border-4 border-surface shadow-2xl">
+                                <span class="text-white font-label font-black text-xl">1</span>
+                            </div>
+                        </div>
+                        <div class="mt-8 text-center bg-surface-container p-8 rounded-t-[3rem] w-full border-x border-t border-secondary/20 shadow-[0_-10px_40px_rgba(63,194,251,0.1)]">
+                            <h3 class="font-headline font-black text-2xl mb-1 text-on-surface flex items-center justify-center gap-1">
+                                {{ podiumUsers()[0].name || 'Usuário' }}
+                                @if (podiumUsers()[0].is_pro) {
                                     <span class="material-symbols-outlined text-secondary text-sm" data-icon="star" style="font-variation-settings: 'FILL' 1;">star</span>
                                 }
+                            </h3>
+                            <div class="flex items-center justify-center gap-2 text-on-surface">
+                                <span class="material-symbols-outlined text-secondary" data-icon="stars" style="font-variation-settings: 'FILL' 1;">stars</span>
+                                <span class="font-label font-bold text-3xl tracking-tighter text-secondary">{{ podiumUsers()[0].xp }} XP</span>
                             </div>
-                            <div class="w-32 text-right font-label font-bold text-primary">{{ user.xp }}</div>
                         </div>
-                    }
+                    </div>
+                }
+
+                @if (podiumUsers().length >= 3) {
+                    <!-- 3rd Place -->
+                    <div class="order-3 flex flex-col items-center">
+                        <div class="relative group">
+                            <div class="absolute -inset-1 bg-gradient-to-t from-tertiary/30 to-transparent rounded-full blur opacity-25"></div>
+                            @if (podiumUsers()[2].avatar) {
+                                <img alt="Avatar" class="w-24 h-24 rounded-full border-4 border-surface-container-high relative object-cover" [src]="podiumUsers()[2].avatar" />
+                            } @else {
+                                <div class="w-24 h-24 rounded-full border-4 border-surface-container-high relative flex items-center justify-center bg-surface-container text-tertiary font-headline font-bold text-3xl">{{ getInitials(podiumUsers()[2].name) }}</div>
+                            }
+                            <div class="absolute -bottom-2 -right-2 w-10 h-10 bg-surface-container-high rounded-full flex items-center justify-center border-2 border-surface shadow-xl">
+                                <span class="text-on-surface-variant font-label font-bold text-lg">3</span>
+                            </div>
+                        </div>
+                        <div class="mt-6 text-center bg-surface-container-low/50 p-6 rounded-t-3xl w-full border-x border-t border-outline-variant/10">
+                            <h3 class="font-headline font-bold text-lg mb-1 flex items-center justify-center gap-1">
+                                {{ podiumUsers()[2].name || 'Usuário' }}
+                                @if (podiumUsers()[2].is_pro) {
+                                    <span class="material-symbols-outlined text-secondary text-xs" data-icon="star" style="font-variation-settings: 'FILL' 1;">star</span>
+                                }
+                            </h3>
+                            <div class="flex items-center justify-center gap-2 text-on-surface">
+                                <span class="material-symbols-outlined text-tertiary scale-75" data-icon="electric_bolt" style="font-variation-settings: 'FILL' 1;">electric_bolt</span>
+                                <span class="font-label font-bold text-xl tracking-tight">{{ podiumUsers()[2].xp }} XP</span>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </section>
+
+            <!-- Ranking List (Scrollable 4 to 50) -->
+            @if (rankedUsers().length > 0) {
+                <section class="max-w-4xl mx-auto space-y-4 pb-12">
+                    <!-- Rank Header -->
+                    <div class="px-8 flex items-center text-on-surface-variant font-label text-xs uppercase tracking-widest mb-4">
+                        <div class="w-12">#</div>
+                        <div class="flex-1">Usuário</div>
+                        <div class="w-32 text-right">XP Total</div>
+                    </div>
+                    <!-- Rank Items -->
+                    <div class="space-y-3">
+                        @for (user of rankedUsers(); track user.userId) {
+                            <div class="bg-surface-container-low/40 hover:bg-surface-container transition-colors p-4 px-8 rounded-2xl flex items-center group">
+                                <div class="w-12 font-label font-bold text-lg text-on-surface-variant group-hover:text-primary">{{ user.position < 10 ? '0' + user.position : user.position }}</div>
+                                <div class="flex-1 flex items-center gap-4">
+                                    @if (user.avatar) {
+                                        <img alt="User" class="w-10 h-10 rounded-full object-cover" [src]="user.avatar" />
+                                    } @else {
+                                        <div class="w-10 h-10 rounded-full bg-surface-container flex items-center justify-center text-xs text-on-surface-variant font-bold">{{ getInitials(user.name) }}</div>
+                                    }
+                                    <span class="font-headline font-semibold text-on-surface">{{ user.name || 'Usuário' }}</span>
+                                    @if (user.is_pro) {
+                                        <span class="material-symbols-outlined text-secondary text-sm" data-icon="star" style="font-variation-settings: 'FILL' 1;">star</span>
+                                    }
+                                </div>
+                                <div class="w-32 text-right font-label font-bold text-primary">{{ user.xp }}</div>
+                            </div>
+                        }
+                    </div>
+                </section>
+            }
+        } @else {
+            <!-- Beautiful Glowing Placeholder Card -->
+            <section class="max-w-3xl mx-auto mt-16 px-4">
+                <div class="relative overflow-hidden bg-surface-container/60 backdrop-blur-xl rounded-[2rem] p-12 text-center flex flex-col items-center justify-center border border-outline-variant/15 shadow-2xl">
+                    <!-- Glow effect -->
+                    <div class="absolute -inset-10 bg-gradient-to-t from-primary/10 to-secondary/10 rounded-full blur-3xl opacity-30 pointer-events-none"></div>
+                    
+                    <!-- Pulsing Icon Container -->
+                    <div class="relative mb-8 flex items-center justify-center">
+                        <div class="absolute inset-0 bg-primary/20 rounded-full blur-xl animate-pulse"></div>
+                        <div class="w-20 h-20 rounded-full bg-surface-container-high flex items-center justify-center border border-primary/30 relative">
+                            <span class="material-symbols-outlined text-4xl text-primary drop-shadow-[0_0_8px_rgba(63,194,251,0.5)] animate-bounce" data-icon="leaderboard">leaderboard</span>
+                        </div>
+                    </div>
+
+                    <!-- Typography Scale & Pairings from the Design System -->
+                    <h2 class="text-3xl font-extrabold font-headline tracking-tight text-on-surface mb-4">
+                        Posições em Construção
+                    </h2>
+                    
+                    <p class="text-on-surface-variant font-body leading-relaxed max-w-lg mb-8">
+                        O ranking <span class="text-primary font-bold uppercase tracking-wider font-label text-sm">@switch (activeTab()) {
+                            @case ('geral') { geral }
+                            @case ('mensal') { mensal }
+                            @case ('semanal') { semanal }
+                        }</span> ainda não possui participantes suficientes para ser exibido. Continue concluindo lições, acumulando XP e seja o primeiro a garantir sua vaga no pódio!
+                    </p>
+
+                    <!-- Primary CTA with Gradient and Hover Micro-animations -->
+                    <button routerLink="/app" 
+                        class="px-8 py-4 bg-gradient-to-r from-primary to-primary-container text-on-primary-container font-headline font-bold rounded-xl glow-primary hover:scale-105 active:scale-95 transition-all flex items-center gap-3">
+                        <span class="material-symbols-outlined text-xl" data-icon="rocket_launch">rocket_launch</span>
+                        Começar a Pontuar
+                    </button>
                 </div>
             </section>
         }

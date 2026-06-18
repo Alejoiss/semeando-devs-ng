@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+import { Component, signal } from '@angular/core';
 import { AbstractControl, FormBuilder, FormGroup, ReactiveFormsModule, ValidatorFn, Validators } from '@angular/forms';
 import { RouterModule, Router } from '@angular/router';
 
@@ -25,6 +25,7 @@ export class Register {
     public busy = false;
     public registerError = '';
     public registerTitle = 'Comece sua jornada hoje';
+    public showSuccessModal = signal(false);
 
     constructor(private fb: FormBuilder, private userService: UserService, private router: Router) {
         this.registerForm = this.fb.group({
@@ -60,11 +61,16 @@ export class Register {
                 acceptedTerms: true,
                 acceptedTermsAt: new Date()
             });
-            this.router.navigate(['/auth/login']);
+            this.showSuccessModal.set(true);
         } catch (error: any) {
             this.registerError = error.message || 'Erro ao criar conta. Tente novamente.';
         } finally {
             this.busy = false;
         }
+    }
+
+    onCloseSuccessModal(): void {
+        this.showSuccessModal.set(false);
+        this.router.navigate(['/auth/login']);
     }
 }

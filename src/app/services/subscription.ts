@@ -88,7 +88,7 @@ export class SubscriptionService {
         });
 
         if (error) {
-            throw new Error(error.message || 'Erro ao ativar o plano Pro.');
+            throw new Error(error.message || 'Erro ao ativar o plano Pró.');
         }
     }
 

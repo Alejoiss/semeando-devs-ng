@@ -64,7 +64,7 @@ export class LandingPage implements OnInit {
         },
         {
             question: 'Existe limite para o uso da avaliação por IA?',
-            answer: 'Sim! Para envio de código nos desafios, usuários do plano gratuito têm até 5 avaliações por dia, enquanto assinantes Pro contam com até 30 avaliações diárias.',
+            answer: 'Sim! Para envio de código nos desafios, usuários do plano gratuito têm até 5 avaliações por dia, enquanto assinantes Pró contam com até 30 avaliações diárias.',
             expanded: false
         },
         {

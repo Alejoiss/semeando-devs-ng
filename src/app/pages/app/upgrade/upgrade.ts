@@ -129,7 +129,7 @@ export class Upgrade {
             await this.userService.loadUserProfile();
             this.router.navigate(['/app/gerenciar-assinatura']);
         } catch (error: any) {
-            this.subscriptionError.set(error.message || 'Erro ao ativar Pro');
+            this.subscriptionError.set(error.message || 'Erro ao ativar Pró');
         } finally {
             this.isSubscribing.set(false);
         }

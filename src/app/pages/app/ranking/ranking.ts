@@ -1,13 +1,14 @@
-import { Component, ChangeDetectionStrategy, inject, OnInit, signal } from '@angular/core';
+import { Component, ChangeDetectionStrategy, inject, OnInit, signal, computed } from '@angular/core';
 import { RankingOverallService } from '../../../services/ranking-overall';
 import { RankingMonthlyService } from '../../../services/ranking-monthly';
 import { RankingWeeklyService } from '../../../services/ranking-weekly';
 import { RankingEntry } from '../../../../models/ranking/ranking';
 import { UserService } from '../../../services/user';
+import { RouterLink } from '@angular/router';
 
 @Component({
     selector: 'app-ranking',
-    imports: [],
+    imports: [RouterLink],
     templateUrl: './ranking.html',
     styleUrl: './ranking.scss',
     changeDetection: ChangeDetectionStrategy.OnPush
@@ -23,6 +24,9 @@ export class Ranking implements OnInit {
 
     podiumUsers = signal<RankingEntry[]>([]);
     rankedUsers = signal<RankingEntry[]>([]);
+    isRankingComplete = computed(() => {
+        return (this.podiumUsers().length + this.rankedUsers().length) >= 4;
+    });
     currentUserPosition = signal<number | null>(null);
     currentUserXp = signal<number>(0);
     currentUserName = signal<string>('');
