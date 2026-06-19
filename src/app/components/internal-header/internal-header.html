@@ -1,11 +1,14 @@
-<header class="fixed top-0 w-full z-50 flex justify-between items-center px-6 h-20 bg-surface/80 backdrop-blur-xl border-b border-outline-variant/15">
+<header
+    class="fixed top-0 w-full z-50 flex justify-between items-center px-6 h-20 bg-surface/80 backdrop-blur-xl border-b border-outline-variant/15">
     <div class="flex items-center gap-4 md:gap-8">
-        <button (click)="navigationService.toggleSidebar()" class="md:hidden text-[#3fc2fb] hover:text-[#fe69ac] transition-colors duration-300 flex items-center justify-center">
+        <button (click)="navigationService.toggleSidebar()"
+            class="md:hidden text-[#3fc2fb] hover:text-[#fe69ac] transition-colors duration-300 flex items-center justify-center">
             <span class="material-symbols-outlined text-2xl">menu</span>
         </button>
         <h1 class="text-2xl font-black tracking-tighter text-[#3fc2fb] uppercase font-headline">
             <a class="brand" routerLink="/app">
-                <img src="assets/logos/semeando.devs.horizontal.darkbg.svg" alt="Logo Semeando Devs" width="100" />
+                <img src="assets/logos/semeando.devs.horizontal.darkbg.small.svg" alt="Logo Semeando Devs"
+                    width="200" />
             </a>
         </h1>
         <!-- <nav class="hidden md:flex items-center gap-6 font-label text-sm tracking-wide">
@@ -19,25 +22,30 @@
         <div class="flex items-center bg-surface-container rounded-full px-3 md:px-4 py-1 md:py-1.5 gap-2 md:gap-3 border border-outline-variant/10 transition-all duration-300"
             [class.animate-xp-pulse]="isPulsing()">
             <span class="material-symbols-outlined text-tertiary text-sm" data-icon="bolt">bolt</span>
-            <span class="font-label text-[10px] md:text-xs font-bold text-tertiary">{{ displayXp() | number:'1.0-0' }} <span class="hidden md:inline">XP</span></span>
+            <span class="font-label text-[10px] md:text-xs font-bold text-tertiary">{{ displayXp() | number:'1.0-0' }}
+                <span class="hidden md:inline">XP</span></span>
         </div>
-        <div class="flex items-center bg-surface-container rounded-full px-3 md:px-4 py-1 md:py-1.5 gap-2 md:gap-3 border border-outline-variant/10 transition-all duration-300">
+        <div
+            class="flex items-center bg-surface-container rounded-full px-3 md:px-4 py-1 md:py-1.5 gap-2 md:gap-3 border border-outline-variant/10 transition-all duration-300">
             <img src="assets/seed/seed.png" alt="Seeds" class="w-3 h-3 md:w-4 h-4 object-contain" />
-            <span class="font-label text-[10px] md:text-xs font-bold text-tertiary">{{ displaySeeds() | number:'1.0-0' }} <span class="hidden md:inline">Seeds</span></span>
+            <span class="font-label text-[10px] md:text-xs font-bold text-tertiary">{{ displaySeeds() | number:'1.0-0'
+                }} <span class="hidden md:inline">Seeds</span></span>
         </div>
         <div class="flex items-center gap-2 relative">
             @if (currentUser()?.isPro) {
-                <div class="absolute -top-1 -right-1 z-10 bg-secondary rounded-full p-0.5 shadow-[0_0_10px_rgba(254,105,172,0.5)] flex items-center justify-center">
-                    <span class="material-symbols-outlined text-[10px] text-white font-black" data-icon="star">star</span>
-                </div>
+            <div
+                class="absolute -top-1 -right-1 z-10 bg-secondary rounded-full p-0.5 shadow-[0_0_10px_rgba(254,105,172,0.5)] flex items-center justify-center">
+                <span class="material-symbols-outlined text-[10px] text-white font-black" data-icon="star">star</span>
+            </div>
             }
-            <a routerLink="/app/perfil" class="h-10 w-10 rounded-full overflow-hidden border-2 border-primary/20 ring-2 ring-background ring-offset-2 ring-offset-primary/10 hover:border-primary/50 transition-all duration-300 block">
+            <a routerLink="/app/perfil"
+                class="h-10 w-10 rounded-full overflow-hidden border-2 border-primary/20 ring-2 ring-background ring-offset-2 ring-offset-primary/10 hover:border-primary/50 transition-all duration-300 block">
                 @if (currentUser()?.avatar) {
-                    <img [src]="currentUser()?.avatar" alt="User profile avatar" class="w-full h-full object-cover" />
+                <img [src]="currentUser()?.avatar" alt="User profile avatar" class="w-full h-full object-cover" />
                 } @else {
-                    <div class="w-full h-full bg-surface-container-high flex items-center justify-center">
-                        <span class="material-symbols-outlined text-on-surface-variant text-xl">person</span>
-                    </div>
+                <div class="w-full h-full bg-surface-container-high flex items-center justify-center">
+                    <span class="material-symbols-outlined text-on-surface-variant text-xl">person</span>
+                </div>
                 }
             </a>
         </div>
