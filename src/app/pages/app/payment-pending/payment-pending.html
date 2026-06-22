@@ -2,7 +2,8 @@
 
     <!-- Background glow -->
     <div class="absolute inset-0 pointer-events-none">
-        <div class="absolute top-1/4 left-1/2 -translate-x-1/2 w-[600px] h-[600px] bg-primary/5 rounded-full blur-3xl"></div>
+        <div class="absolute top-1/4 left-1/2 -translate-x-1/2 w-[600px] h-[600px] bg-primary/5 rounded-full blur-3xl">
+        </div>
     </div>
 
     <div class="relative z-10 w-full max-w-lg text-center">
@@ -10,8 +11,10 @@
         <!-- Pulse animation icon -->
         <div class="relative inline-flex items-center justify-center mb-8">
             <span class="absolute inline-flex w-24 h-24 rounded-full bg-primary/20 animate-ping"></span>
-            <span class="absolute inline-flex w-20 h-20 rounded-full bg-primary/10 animate-ping [animation-delay:300ms]"></span>
-            <div class="relative w-16 h-16 rounded-full bg-surface-container-high flex items-center justify-center shadow-lg shadow-primary/20">
+            <span
+                class="absolute inline-flex w-20 h-20 rounded-full bg-primary/10 animate-ping [animation-delay:300ms]"></span>
+            <div
+                class="relative w-16 h-16 rounded-full bg-surface-container-high flex items-center justify-center shadow-lg shadow-primary/20">
                 <span class="material-symbols-outlined text-3xl text-primary">
                     {{ paymentMethod() === 'pix' ? 'qr_code_2' : 'credit_card' }}
                 </span>
@@ -23,61 +26,51 @@
         </h1>
         <p class="font-body text-on-surface-variant text-base mb-2">
             @if (paymentMethod() === 'pix') {
-                Escaneie o QR Code abaixo e efetue o pagamento.<br>O acesso PRO será liberado automaticamente.
+            Escaneie o QR Code abaixo e efetue o pagamento.<br>O acesso PRÓ será liberado automaticamente.
             } @else {
-                Seu pagamento está sendo processado pelo Mercado Pago.<br>
-                <span class="text-primary font-medium">Esta tela atualizará automaticamente</span> assim que for confirmado.
+            Seu pagamento está sendo processado pelo Mercado Pago.<br>
+            <span class="text-primary font-medium">Esta tela atualizará automaticamente</span> assim que for confirmado.
             }
         </p>
 
         <!-- PIX QR Code -->
         @if (paymentMethod() === 'pix' && pixQrCodeBase64()) {
-            <div class="mt-8 bg-surface-container rounded-2xl p-6 shadow-2xl shadow-primary/5">
-                <div class="flex flex-col items-center gap-5">
-                    <img
-                        [src]="'data:image/jpeg;base64,' + pixQrCodeBase64()"
-                        alt="QR Code PIX"
-                        class="w-48 h-48 rounded-xl bg-white p-2"
-                    >
-                    @if (pixQrCode()) {
-                        <div class="w-full">
-                            <label class="block text-sm font-label text-on-surface-variant mb-2 text-left">
-                                PIX Copia e Cola
-                            </label>
-                            <div class="flex gap-2">
-                                <input
-                                    type="text"
-                                    [value]="pixQrCode()"
-                                    readonly
-                                    class="w-full bg-surface-container-lowest text-on-surface rounded-lg px-4 py-3 font-body text-sm focus:outline-none"
-                                >
-                                <button
-                                    (click)="copyPixCode()"
-                                    aria-label="Copiar código PIX"
-                                    class="bg-primary text-on-primary px-4 py-2 rounded-lg font-headline font-bold hover:opacity-90 transition-opacity flex items-center gap-2"
-                                >
-                                    <span class="material-symbols-outlined">content_copy</span>
-                                </button>
-                            </div>
-                        </div>
-                    }
+        <div class="mt-8 bg-surface-container rounded-2xl p-6 shadow-2xl shadow-primary/5">
+            <div class="flex flex-col items-center gap-5">
+                <img [src]="'data:image/jpeg;base64,' + pixQrCodeBase64()" alt="QR Code PIX"
+                    class="w-48 h-48 rounded-xl bg-white p-2">
+                @if (pixQrCode()) {
+                <div class="w-full">
+                    <label class="block text-sm font-label text-on-surface-variant mb-2 text-left">
+                        PIX Copia e Cola
+                    </label>
+                    <div class="flex gap-2">
+                        <input type="text" [value]="pixQrCode()" readonly
+                            class="w-full bg-surface-container-lowest text-on-surface rounded-lg px-4 py-3 font-body text-sm focus:outline-none">
+                        <button (click)="copyPixCode()" aria-label="Copiar código PIX"
+                            class="bg-primary text-on-primary px-4 py-2 rounded-lg font-headline font-bold hover:opacity-90 transition-opacity flex items-center gap-2">
+                            <span class="material-symbols-outlined">content_copy</span>
+                        </button>
+                    </div>
                 </div>
+                }
             </div>
+        </div>
         }
 
         <!-- Loading bar -->
         <div class="mt-8 w-full h-1 rounded-full bg-surface-container-high overflow-hidden">
-            <div class="h-full w-full bg-gradient-to-r from-primary to-secondary rounded-full animate-[loading_2s_ease-in-out_infinite]"></div>
+            <div
+                class="h-full w-full bg-gradient-to-r from-primary to-secondary rounded-full animate-[loading_2s_ease-in-out_infinite]">
+            </div>
         </div>
 
         <p class="mt-4 text-xs font-label text-on-surface-variant/60">
             Não feche esta janela. Você será redirecionado automaticamente.
         </p>
 
-        <a
-            routerLink="/app"
-            class="mt-6 inline-block text-sm font-label text-on-surface-variant hover:text-primary transition-colors underline underline-offset-2"
-        >
+        <a routerLink="/app"
+            class="mt-6 inline-block text-sm font-label text-on-surface-variant hover:text-primary transition-colors underline underline-offset-2">
             Verificar depois
         </a>
     </div>
@@ -85,45 +78,43 @@
 
 <!-- Success Modal -->
 @if (showSuccessModal()) {
+<div class="fixed inset-0 z-50 flex items-center justify-center p-4" role="dialog" aria-modal="true"
+    aria-labelledby="success-modal-title">
+    <!-- Backdrop -->
+    <div class="absolute inset-0 bg-black/60 backdrop-blur-sm"></div>
+
+    <!-- Modal content -->
     <div
-        class="fixed inset-0 z-50 flex items-center justify-center p-4"
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby="success-modal-title"
-    >
-        <!-- Backdrop -->
-        <div class="absolute inset-0 bg-black/60 backdrop-blur-sm"></div>
+        class="relative z-10 w-full max-w-md bg-surface-container rounded-3xl p-8 shadow-2xl shadow-secondary/20 text-center overflow-hidden">
 
-        <!-- Modal content -->
-        <div class="relative z-10 w-full max-w-md bg-surface-container rounded-3xl p-8 shadow-2xl shadow-secondary/20 text-center overflow-hidden">
-
-            <!-- Gradient top accent -->
-            <div class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-primary via-secondary to-tertiary rounded-t-3xl"></div>
-
-            <!-- Celebration icon -->
-            <div class="relative inline-flex items-center justify-center mb-6">
-                <span class="absolute w-24 h-24 rounded-full bg-secondary/20 animate-ping [animation-duration:1.5s]"></span>
-                <div class="relative w-20 h-20 rounded-full bg-gradient-to-br from-primary/20 to-secondary/20 flex items-center justify-center">
-                    <span class="material-symbols-outlined text-4xl text-secondary">celebration</span>
-                </div>
-            </div>
-
-            <h2 id="success-modal-title" class="font-display font-extrabold text-2xl text-on-surface mb-2">
-                Pagamento Aprovado!
-            </h2>
-            <p class="font-body text-on-surface-variant mb-2">
-                Bem-vindo(a) ao <span class="text-primary font-bold">Semeando Devs PRO</span>! 🚀
-            </p>
-            <p class="font-body text-on-surface-variant/70 text-sm mb-8">
-                Seu acesso a todos os conteúdos PRO está liberado. Bora plantar conhecimento!
-            </p>
-
-            <button
-                (click)="closeModalAndNavigate()"
-                class="w-full py-4 bg-gradient-to-r from-primary to-primary-container text-on-primary font-headline font-extrabold rounded-xl shadow-lg shadow-primary/30 hover:shadow-primary/50 transition-all"
-            >
-                Começar agora 🌱
-            </button>
+        <!-- Gradient top accent -->
+        <div
+            class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-primary via-secondary to-tertiary rounded-t-3xl">
         </div>
+
+        <!-- Celebration icon -->
+        <div class="relative inline-flex items-center justify-center mb-6">
+            <span class="absolute w-24 h-24 rounded-full bg-secondary/20 animate-ping [animation-duration:1.5s]"></span>
+            <div
+                class="relative w-20 h-20 rounded-full bg-gradient-to-br from-primary/20 to-secondary/20 flex items-center justify-center">
+                <span class="material-symbols-outlined text-4xl text-secondary">celebration</span>
+            </div>
+        </div>
+
+        <h2 id="success-modal-title" class="font-display font-extrabold text-2xl text-on-surface mb-2">
+            Pagamento Aprovado!
+        </h2>
+        <p class="font-body text-on-surface-variant mb-2">
+            Bem-vindo(a) ao <span class="text-primary font-bold">Semeando Devs PRÓ</span>! 🚀
+        </p>
+        <p class="font-body text-on-surface-variant/70 text-sm mb-8">
+            Seu acesso a todos os conteúdos PRÓ está liberado. Bora plantar conhecimento!
+        </p>
+
+        <button (click)="closeModalAndNavigate()"
+            class="w-full py-4 bg-gradient-to-r from-primary to-primary-container text-on-primary font-headline font-extrabold rounded-xl shadow-lg shadow-primary/30 hover:shadow-primary/50 transition-all">
+            Começar agora 🌱
+        </button>
     </div>
+</div>
 }

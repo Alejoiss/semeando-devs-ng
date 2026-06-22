@@ -37,5 +37,5 @@ CREATE POLICY "Allow authenticated read-only access to coupons"
 
 -- Seed initial plan
 INSERT INTO public.plans (name, monthly_price, yearly_price, is_main)
-VALUES ('Plano PRO', 29.90, 299.00, true)
+VALUES ('Plano PRÓ', 29.90, 299.00, true)
 ON CONFLICT DO NOTHING;

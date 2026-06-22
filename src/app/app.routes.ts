@@ -107,7 +107,7 @@ export const routes: Routes = [
             {
                 path: 'upgrade',
                 loadComponent: () => import('./pages/app/upgrade/upgrade').then((m) => m.Upgrade),
-                title: 'Semeando Devs - Assinatura PRO'
+                title: 'Semeando Devs - Assinatura PRÓ'
             },
             {
                 path: 'checkout',

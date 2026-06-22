@@ -8,236 +8,258 @@
                 <span class="text-primary/80">{{ module()?.title || 'Carregando...' }}</span>
             </nav>
             @if (isLoading()) {
-                <div class="h-12 w-2/3 bg-surface-container-highest rounded-lg mb-4 animate-pulse"></div>
-                <div class="h-6 w-full bg-surface-container-highest rounded-lg animate-pulse"></div>
+            <div class="h-12 w-2/3 bg-surface-container-highest rounded-lg mb-4 animate-pulse"></div>
+            <div class="h-6 w-full bg-surface-container-highest rounded-lg animate-pulse"></div>
             } @else {
-                <h1 class="text-5xl lg:text-6xl font-headline font-extrabold tracking-tight mb-4 text-on-surface">
-                    {{ module()?.title }}
-                </h1>
-                <p class="text-xl text-on-surface-variant w-full font-body leading-relaxed">
-                    {{ module()?.description }}
-                </p>
+            <h1 class="text-5xl lg:text-6xl font-headline font-extrabold tracking-tight mb-4 text-on-surface">
+                {{ module()?.title }}
+            </h1>
+            <p class="text-xl text-on-surface-variant w-full font-body leading-relaxed">
+                {{ module()?.description }}
+            </p>
             }
         </div>
     </header>
 
     @if (presentationContents().length > 0) {
-        <section class="mb-12 relative animate-fade-in">
-            <div class="glass-panel rounded-2xl border border-outline-variant/10 overflow-hidden">
-                <button (click)="togglePresentation()" class="w-full flex items-center justify-between p-6 hover:bg-surface-container-high transition-all text-left">
-                    <div class="flex items-center gap-3 text-on-surface">
-                        <span class="material-symbols-outlined text-primary text-2xl" data-icon="rocket_launch">rocket_launch</span>
-                        <span class="text-xl font-headline font-bold">Apresentação do módulo</span>
+    <section class="mb-12 relative animate-fade-in">
+        <div class="glass-panel rounded-2xl border border-outline-variant/10 overflow-hidden">
+            <button (click)="togglePresentation()"
+                class="w-full flex items-center justify-between p-6 hover:bg-surface-container-high transition-all text-left">
+                <div class="flex items-center gap-3 text-on-surface">
+                    <span class="material-symbols-outlined text-primary text-2xl"
+                        data-icon="rocket_launch">rocket_launch</span>
+                    <span class="text-xl font-headline font-bold">Apresentação do módulo</span>
+                </div>
+                <span class="material-symbols-outlined text-on-surface-variant transition-transform duration-300"
+                    [style.transform]="isPresentationCollapsed() ? 'rotate(0deg)' : 'rotate(180deg)'">
+                    expand_more
+                </span>
+            </button>
+
+            @if (!isPresentationCollapsed()) {
+            <div class="p-6 md:p-8 border-t border-outline-variant/10 space-y-8 bg-surface-container-low/30">
+                @for (section of presentationContents(); track section.id) {
+                <div class="space-y-4">
+                    @switch (section.type) {
+                    @case ('TEXT') {
+                    <div class="glass rounded-3xl p-6 md:p-8 border border-outline-variant/10">
+                        <div class="prose prose-invert max-w-none">
+                            <p class="text-on-surface-variant leading-relaxed">
+                                {{ section.content }}
+                            </p>
+                        </div>
                     </div>
-                    <span class="material-symbols-outlined text-on-surface-variant transition-transform duration-300" 
-                          [style.transform]="isPresentationCollapsed() ? 'rotate(0deg)' : 'rotate(180deg)'">
-                        expand_more
-                    </span>
-                </button>
-                
-                @if (!isPresentationCollapsed()) {
-                    <div class="p-6 md:p-8 border-t border-outline-variant/10 space-y-8 bg-surface-container-low/30">
-                        @for (section of presentationContents(); track section.id) {
-                            <div class="space-y-4">
-                                @switch (section.type) {
-                                    @case ('TEXT') {
-                                        <div class="glass rounded-3xl p-6 md:p-8 border border-outline-variant/10">
-                                            <div class="prose prose-invert max-w-none">
-                                                <p class="text-on-surface-variant leading-relaxed">
-                                                    {{ section.content }}
-                                                </p>
-                                            </div>
-                                        </div>
-                                    }
-                                    @case ('MARKDOWN') {
-                                        <div class="glass rounded-3xl p-6 md:p-8 border border-outline-variant/10">
-                                            <div class="prose prose-invert prose-blue max-w-none">
-                                                <markdown [data]="section.content"></markdown>
-                                            </div>
-                                        </div>
-                                    }
-                                    @case ('IMAGE') {
-                                        <div class="relative group rounded-3xl overflow-hidden bg-surface-container-highest border border-outline-variant/10 shadow-2xl max-w-3xl mx-auto">
-                                            <img [src]="section.file" [alt]="section.fileDescription || 'Module presentation image'"
-                                                class="w-full h-auto object-cover group-hover:scale-105 transition-transform duration-700" />
-                                            @if (section.fileDescription) {
-                                                <div class="absolute bottom-0 left-0 w-full p-4 bg-black/80">
-                                                    <p class="text-[10px] font-label uppercase tracking-widest text-white">
-                                                        {{ section.fileDescription }}
-                                                    </p>
-                                                </div>
-                                            }
-                                        </div>
-                                    }
-                                    @case ('VIDEO') {
-                                        <div class="relative group rounded-3xl overflow-hidden bg-black border border-outline-variant/10 shadow-2xl aspect-video max-w-3xl mx-auto flex items-center justify-center">
-                                            @if (section.content) {
-                                                <div [innerHTML]="getSafeHtml(section.content)" class="w-full h-full iframe-container"></div>
-                                            } @else {
-                                                <div class="flex flex-col items-center justify-center text-on-surface-variant gap-2 p-6">
-                                                    <span class="material-symbols-outlined text-4xl text-secondary animate-pulse">play_circle</span>
-                                                    <p class="text-label-md text-center">Vídeo não disponível.</p>
-                                                </div>
-                                            }
-                                        </div>
-                                    }
-                                }
-                            </div>
+                    }
+                    @case ('MARKDOWN') {
+                    <div class="glass rounded-3xl p-6 md:p-8 border border-outline-variant/10">
+                        <div class="prose prose-invert prose-blue max-w-none">
+                            <markdown [data]="section.content"></markdown>
+                        </div>
+                    </div>
+                    }
+                    @case ('IMAGE') {
+                    <div
+                        class="relative group rounded-3xl overflow-hidden bg-surface-container-highest border border-outline-variant/10 shadow-2xl max-w-3xl mx-auto">
+                        <img [src]="section.file" [alt]="section.fileDescription || 'Module presentation image'"
+                            class="w-full h-auto object-cover group-hover:scale-105 transition-transform duration-700" />
+                        @if (section.fileDescription) {
+                        <div class="absolute bottom-0 left-0 w-full p-4 bg-black/80">
+                            <p class="text-[10px] font-label uppercase tracking-widest text-white">
+                                {{ section.fileDescription }}
+                            </p>
+                        </div>
                         }
                     </div>
+                    }
+                    @case ('VIDEO') {
+                    <div
+                        class="relative group rounded-3xl overflow-hidden bg-black border border-outline-variant/10 shadow-2xl aspect-video max-w-3xl mx-auto flex items-center justify-center">
+                        @if (section.content) {
+                        <div [innerHTML]="getSafeHtml(section.content)" class="w-full h-full iframe-container"></div>
+                        } @else {
+                        <div class="flex flex-col items-center justify-center text-on-surface-variant gap-2 p-6">
+                            <span
+                                class="material-symbols-outlined text-4xl text-secondary animate-pulse">play_circle</span>
+                            <p class="text-label-md text-center">Vídeo não disponível.</p>
+                        </div>
+                        }
+                    </div>
+                    }
+                    }
+                </div>
                 }
             </div>
-        </section>
+            }
+        </div>
+    </section>
     }
 
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-8">
         @if (isLoading()) {
-            @for (_ of [1, 2, 3, 4]; track $index) {
-                <div class="bg-surface-container rounded-lg p-8 animate-pulse">
-                    <div class="h-16 w-16 bg-surface-container-highest rounded-xl mb-4"></div>
-                    <div class="h-6 w-3/4 bg-surface-container-highest rounded mb-2"></div>
-                    <div class="h-4 w-full bg-surface-container-highest rounded mt-8"></div>
-                </div>
-            }
+        @for (_ of [1, 2, 3, 4]; track $index) {
+        <div class="bg-surface-container rounded-lg p-8 animate-pulse">
+            <div class="h-16 w-16 bg-surface-container-highest rounded-xl mb-4"></div>
+            <div class="h-6 w-3/4 bg-surface-container-highest rounded mb-2"></div>
+            <div class="h-4 w-full bg-surface-container-highest rounded mt-8"></div>
+        </div>
+        }
         } @else if (error()) {
-            <div class="col-span-full bg-surface-container rounded-lg p-8 text-center flex flex-col items-center">
-                <span class="material-symbols-outlined text-5xl text-error mb-4" data-icon="error">error</span>
-                <p class="text-on-surface text-lg font-bold">{{ error() }}</p>
-            </div>
+        <div class="col-span-full bg-surface-container rounded-lg p-8 text-center flex flex-col items-center">
+            <span class="material-symbols-outlined text-5xl text-error mb-4" data-icon="error">error</span>
+            <p class="text-on-surface text-lg font-bold">{{ error() }}</p>
+        </div>
         } @else {
-            @for (item of submodulesWithState(); track item.submodule.id) {
-                <div class="group relative bg-surface-container rounded-lg p-8 transition-all"
-                    [class]="item.progressState === 'in-progress' ? 'border-t-2 border-primary/20 cursor-pointer hover:bg-surface-container-high' : item.progressState === 'blocked' ? 'opacity-50 grayscale select-none' : 'cursor-pointer hover:bg-surface-container-high'">
-                    <div class="absolute top-0 right-0 p-4">
-                        @if (item.progressState === 'completed') {
-                            <div class="bg-tertiary/20 text-tertiary font-label text-[10px] px-3 py-1 rounded-full uppercase tracking-widest font-bold">
-                                Concluído
-                            </div>
-                        } @else if (item.progressState === 'in-progress') {
-                            <div class="bg-primary/20 text-primary font-label text-[10px] px-3 py-1 rounded-full uppercase tracking-widest font-bold">
-                                Em progresso
-                            </div>
-                        } @else if (item.progressState === 'not-started') {
-                            <div class="bg-on-surface-variant/10 text-on-surface-variant font-label text-[10px] px-3 py-1 rounded-full uppercase tracking-widest font-bold">
-                                Disponível
-                            </div>
-                        } @else {
-                            <div class="bg-surface-container-highest text-on-surface-variant font-label text-[10px] px-3 py-1 rounded-full uppercase tracking-widest font-bold">
-                                Bloqueado
-                            </div>
-                        }
-                    </div>
+        @for (item of submodulesWithState(); track item.submodule.id) {
+        <div class="group relative bg-surface-container rounded-lg p-8 transition-all"
+            [class]="item.progressState === 'in-progress' ? 'border-t-2 border-primary/20 cursor-pointer hover:bg-surface-container-high' : item.progressState === 'blocked' ? 'opacity-50 grayscale select-none' : 'cursor-pointer hover:bg-surface-container-high'">
+            <div class="absolute top-0 right-0 p-4">
+                @if (item.progressState === 'completed') {
+                <div
+                    class="bg-tertiary/20 text-tertiary font-label text-[10px] px-3 py-1 rounded-full uppercase tracking-widest font-bold">
+                    Concluído
+                </div>
+                } @else if (item.progressState === 'in-progress') {
+                <div
+                    class="bg-primary/20 text-primary font-label text-[10px] px-3 py-1 rounded-full uppercase tracking-widest font-bold">
+                    Em progresso
+                </div>
+                } @else if (item.progressState === 'not-started') {
+                <div
+                    class="bg-on-surface-variant/10 text-on-surface-variant font-label text-[10px] px-3 py-1 rounded-full uppercase tracking-widest font-bold">
+                    Disponível
+                </div>
+                } @else {
+                <div
+                    class="bg-surface-container-highest text-on-surface-variant font-label text-[10px] px-3 py-1 rounded-full uppercase tracking-widest font-bold">
+                    Bloqueado
+                </div>
+                }
+            </div>
 
-                    <div class="flex items-start gap-6 mb-8" [routerLink]="item.progressState !== 'blocked' ? ['s', item.submodule.slug] : null">
-                        <div class="w-16 h-16 rounded-xl flex items-center justify-center ring-1 transition-all"
-                            [class]="item.progressState === 'completed'
+            <div class="flex items-start gap-6 mb-8"
+                [routerLink]="item.progressState !== 'blocked' ? ['s', item.submodule.slug] : null">
+                <div class="w-16 h-16 rounded-xl flex items-center justify-center ring-1 transition-all"
+                    [class]="item.progressState === 'completed'
                                      ? 'bg-tertiary/10 text-tertiary ring-tertiary/20'
                                      : item.progressState === 'in-progress'
                                      ? 'bg-primary/10 text-primary ring-primary/20 shadow-[0_0_15px_rgba(63,194,251,0.2)]'
                                      : item.progressState === 'blocked'
                                      ? 'bg-surface-container/50 text-on-surface-variant/50 ring-outline-variant/10'
                                      : 'bg-surface-container-highest text-on-surface-variant ring-outline-variant/30 group-hover:ring-primary/50'">
-                            @if (item.progressState === 'completed') {
-                                <span class="material-symbols-outlined text-3xl" [attr.data-icon]="item.submodule.icon || 'check_circle'" data-weight="fill" style="font-variation-settings: 'FILL' 1;">{{ item.submodule.icon || 'check_circle' }}</span>
-                            } @else if (item.progressState === 'blocked') {
-                                <span class="material-symbols-outlined text-3xl" data-icon="lock">lock</span>
-                            } @else {
-                                <span class="material-symbols-outlined text-3xl" [attr.data-icon]="item.submodule.icon || 'auto_stories'">{{ item.submodule.icon || 'auto_stories' }}</span>
-                            }
-                        </div>
-                        <div class="flex-1">
-                            <h3 class="text-2xl font-headline font-bold mb-2 group-hover:text-primary transition-colors">
-                                {{ item.submodule.title }}
-                            </h3>
-                            <p class="text-on-surface-variant text-sm font-body leading-relaxed">
-                                {{ item.submodule.description }}
-                            </p>
-                        </div>
-                    </div>
-
-                    <div class="space-y-4">
-                        <div class="flex justify-between items-end font-label">
-                            <span class="text-xs text-on-surface-variant">Progresso</span>
-                            @if (item.progressState === 'completed') {
-                                <span class="text-lg font-bold text-tertiary">{{ item.progressPercentage }}%</span>
-                            } @else if (item.progressState === 'in-progress') {
-                                <span class="text-lg font-bold text-primary">{{ item.progressPercentage }}%</span>
-                            } @else {
-                                <span class="text-lg font-bold text-on-surface-variant/50">{{ item.progressPercentage }}%</span>
-                            }
-                        </div>
-                        <div class="h-2 w-full bg-surface-container-highest rounded-full overflow-hidden">
-                            @if (item.progressState === 'completed') {
-                                <div class="h-full bg-tertiary rounded-full" [style.width.%]="item.progressPercentage"></div>
-                            } @else if (item.progressState === 'in-progress') {
-                                <div class="h-full bg-gradient-to-r from-primary to-primary-container rounded-full progress-glow" [style.width.%]="item.progressPercentage"></div>
-                            } @else {
-                                <div class="h-full bg-primary rounded-full" [style.width.%]="item.progressPercentage"></div>
-                            }
-                        </div>
-                    </div>
-
-                    @if (item.targetLessonId && item.progressState !== 'blocked') {
-                        <div class="mt-6 flex justify-end">
-                            @if (item.progressState === 'completed') {
-                                <button [routerLink]="['ss', item.submodule.slug]"
-                                    class="flex items-center gap-2 px-8 py-3 bg-gradient-to-r from-primary to-primary-container text-on-primary-container font-headline font-bold rounded-xl glow-primary hover:scale-105 active:scale-95 transition-all">
-                                    <span class="material-symbols-outlined text-sm" data-icon="check_circle">check_circle</span>
-                                    Revisar
-                                </button>
-                            } @else if (item.progressState === 'in-progress') {
-                                <button [routerLink]="['ss', item.submodule.slug]"
-                                    class="px-8 py-3 bg-gradient-to-r from-secondary to-primary-container text-on-primary-container font-headline font-bold rounded-xl hover:scale-105 active:scale-95 transition-all">
-                                    Continuar
-                                </button>
-                            } @else {
-                                <button (click)="onStartSubmodule(item.submodule.id, item.submodule.slug)"
-                                    class="px-8 py-3 bg-gradient-to-r from-primary to-primary-container text-on-primary-container font-headline font-bold rounded-xl glow-primary hover:scale-105 active:scale-95 transition-all">
-                                    Iniciar
-                                </button>
-                            }
-                        </div>
+                    @if (item.progressState === 'completed') {
+                    <span class="material-symbols-outlined text-3xl"
+                        [attr.data-icon]="item.submodule.icon || 'check_circle'" data-weight="fill"
+                        style="font-variation-settings: 'FILL' 1;">{{ item.submodule.icon || 'check_circle' }}</span>
                     } @else if (item.progressState === 'blocked') {
-                        <div class="mt-6 flex justify-end">
-                            <button routerLink="/app/upgrade" class="flex items-center gap-2 px-8 py-3 bg-gradient-to-r from-secondary to-primary-container text-on-primary-container font-headline font-bold rounded-xl hover:scale-105 active:scale-95 transition-all">
-                                <span class="material-symbols-outlined text-sm" data-icon="rocket_launch">rocket_launch</span>
-                                Liberar com PRO
-                            </button>
-                        </div>
+                    <span class="material-symbols-outlined text-3xl" data-icon="lock">lock</span>
+                    } @else {
+                    <span class="material-symbols-outlined text-3xl"
+                        [attr.data-icon]="item.submodule.icon || 'auto_stories'">{{ item.submodule.icon ||
+                        'auto_stories' }}</span>
                     }
                 </div>
-            } @empty {
-                <div class="col-span-full bg-surface-container rounded-lg p-8 text-center flex flex-col items-center">
-                    <span class="material-symbols-outlined text-5xl text-on-surface-variant mb-4" data-icon="inbox">inbox</span>
-                    <p class="text-on-surface-variant text-sm font-body">Nenhum submódulo disponível no momento.</p>
+                <div class="flex-1">
+                    <h3 class="text-2xl font-headline font-bold mb-2 group-hover:text-primary transition-colors">
+                        {{ item.submodule.title }}
+                    </h3>
+                    <p class="text-on-surface-variant text-sm font-body leading-relaxed">
+                        {{ item.submodule.description }}
+                    </p>
                 </div>
+            </div>
+
+            <div class="space-y-4">
+                <div class="flex justify-between items-end font-label">
+                    <span class="text-xs text-on-surface-variant">Progresso</span>
+                    @if (item.progressState === 'completed') {
+                    <span class="text-lg font-bold text-tertiary">{{ item.progressPercentage }}%</span>
+                    } @else if (item.progressState === 'in-progress') {
+                    <span class="text-lg font-bold text-primary">{{ item.progressPercentage }}%</span>
+                    } @else {
+                    <span class="text-lg font-bold text-on-surface-variant/50">{{ item.progressPercentage }}%</span>
+                    }
+                </div>
+                <div class="h-2 w-full bg-surface-container-highest rounded-full overflow-hidden">
+                    @if (item.progressState === 'completed') {
+                    <div class="h-full bg-tertiary rounded-full" [style.width.%]="item.progressPercentage"></div>
+                    } @else if (item.progressState === 'in-progress') {
+                    <div class="h-full bg-gradient-to-r from-primary to-primary-container rounded-full progress-glow"
+                        [style.width.%]="item.progressPercentage"></div>
+                    } @else {
+                    <div class="h-full bg-primary rounded-full" [style.width.%]="item.progressPercentage"></div>
+                    }
+                </div>
+            </div>
+
+            @if (item.targetLessonId && item.progressState !== 'blocked') {
+            <div class="mt-6 flex justify-end">
+                @if (item.progressState === 'completed') {
+                <button [routerLink]="['ss', item.submodule.slug]"
+                    class="flex items-center gap-2 px-8 py-3 bg-gradient-to-r from-primary to-primary-container text-on-primary-container font-headline font-bold rounded-xl glow-primary hover:scale-105 active:scale-95 transition-all">
+                    <span class="material-symbols-outlined text-sm" data-icon="check_circle">check_circle</span>
+                    Revisar
+                </button>
+                } @else if (item.progressState === 'in-progress') {
+                <button [routerLink]="['ss', item.submodule.slug]"
+                    class="px-8 py-3 bg-gradient-to-r from-secondary to-primary-container text-on-primary-container font-headline font-bold rounded-xl hover:scale-105 active:scale-95 transition-all">
+                    Continuar
+                </button>
+                } @else {
+                <button (click)="onStartSubmodule(item.submodule.id, item.submodule.slug)"
+                    class="px-8 py-3 bg-gradient-to-r from-primary to-primary-container text-on-primary-container font-headline font-bold rounded-xl glow-primary hover:scale-105 active:scale-95 transition-all">
+                    Iniciar
+                </button>
+                }
+            </div>
+            } @else if (item.progressState === 'blocked') {
+            <div class="mt-6 flex justify-end">
+                <button routerLink="/app/upgrade"
+                    class="flex items-center gap-2 px-8 py-3 bg-gradient-to-r from-secondary to-primary-container text-on-primary-container font-headline font-bold rounded-xl hover:scale-105 active:scale-95 transition-all">
+                    <span class="material-symbols-outlined text-sm" data-icon="rocket_launch">rocket_launch</span>
+                    Liberar com PRÓ
+                </button>
+            </div>
             }
+        </div>
+        } @empty {
+        <div class="col-span-full bg-surface-container rounded-lg p-8 text-center flex flex-col items-center">
+            <span class="material-symbols-outlined text-5xl text-on-surface-variant mb-4" data-icon="inbox">inbox</span>
+            <p class="text-on-surface-variant text-sm font-body">Nenhum submódulo disponível no momento.</p>
+        </div>
+        }
         }
     </div>
 
     @if (achievement()) {
-        <section class="mt-16 glass-panel rounded-xl p-8 flex flex-col md:flex-row items-center justify-between gap-8 border border-primary/10 relative overflow-hidden">
-            <div class="absolute top-0 right-0 w-32 h-32 bg-secondary/5 rounded-full blur-3xl"></div>
-            <div class="relative z-10 text-center md:text-left">
-                <h4 class="text-secondary font-headline font-bold text-xl mb-2 flex items-center gap-2 justify-center md:justify-start">
-                    <span class="material-symbols-outlined" data-icon="rewarded_ads">rewarded_ads</span>
-                    Bônus de Conclusão
-                </h4>
-                <p class="text-on-surface-variant font-body">{{ achievement()?.requirement }} para ganhar este emblema e +{{ achievement()?.xpAmount }} XP de Milestone.</p>
+    <section
+        class="mt-16 glass-panel rounded-xl p-8 flex flex-col md:flex-row items-center justify-between gap-8 border border-primary/10 relative overflow-hidden">
+        <div class="absolute top-0 right-0 w-32 h-32 bg-secondary/5 rounded-full blur-3xl"></div>
+        <div class="relative z-10 text-center md:text-left">
+            <h4
+                class="text-secondary font-headline font-bold text-xl mb-2 flex items-center gap-2 justify-center md:justify-start">
+                <span class="material-symbols-outlined" data-icon="rewarded_ads">rewarded_ads</span>
+                Bônus de Conclusão
+            </h4>
+            <p class="text-on-surface-variant font-body">{{ achievement()?.requirement }} para ganhar este emblema e +{{
+                achievement()?.xpAmount }} XP de Milestone.</p>
+        </div>
+        <div class="flex items-center gap-4 relative z-10">
+            <div
+                class="w-20 h-20 rounded-full bg-surface-container flex items-center justify-center border-2 border-secondary/20 shadow-[0_0_20px_rgba(254,105,172,0.15)] overflow-hidden">
+                @if (achievement()?.icon) {
+                <img [src]="'assets/achievements/' + achievement()?.icon" [alt]="achievement()?.name"
+                    class="w-full h-full object-cover">
+                } @else {
+                <span class="material-symbols-outlined text-3xl text-secondary"
+                    data-icon="emoji_events">emoji_events</span>
+                }
             </div>
-            <div class="flex items-center gap-4 relative z-10">
-                <div class="w-20 h-20 rounded-full bg-surface-container flex items-center justify-center border-2 border-secondary/20 shadow-[0_0_20px_rgba(254,105,172,0.15)] overflow-hidden">
-                    @if (achievement()?.icon) {
-                        <img [src]="'assets/achievements/' + achievement()?.icon" [alt]="achievement()?.name" class="w-full h-full object-cover">
-                    } @else {
-                        <span class="material-symbols-outlined text-3xl text-secondary" data-icon="emoji_events">emoji_events</span>
-                    }
-                </div>
-                <div class="text-center md:text-left">
-                    <div class="text-on-surface font-headline font-black text-2xl">{{ achievement()?.name }}</div>
-                    <div class="font-label text-xs text-secondary tracking-widest uppercase">Pela trilha!</div>
-                </div>
+            <div class="text-center md:text-left">
+                <div class="text-on-surface font-headline font-black text-2xl">{{ achievement()?.name }}</div>
+                <div class="font-label text-xs text-secondary tracking-widest uppercase">Pela trilha!</div>
             </div>
-        </section>
+        </div>
+    </section>
     }
 </main>

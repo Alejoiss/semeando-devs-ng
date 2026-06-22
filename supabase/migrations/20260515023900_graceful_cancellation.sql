@@ -1,9 +1,9 @@
 -- Add access_until column to subscriptions to track the end of the paid billing period
--- This is set on cancellation so the user retains PRO access until the already-paid cycle ends.
+-- This is set on cancellation so the user retains PRÓ access until the already-paid cycle ends.
 alter table subscriptions
     add column if not exists access_until timestamptz null;
 
--- Cron job: runs daily at 2:00 AM and revokes PRO access for profiles whose pro_until has passed.
+-- Cron job: runs daily at 2:00 AM and revokes PRÓ access for profiles whose pro_until has passed.
 -- This is the final authority for expiring cancelled subscriptions.
 select cron.schedule(
     'expire-pro-access',   -- unique job name

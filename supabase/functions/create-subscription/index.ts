@@ -146,7 +146,7 @@ serve(async (req: { method: string; headers: { get: (arg0: string) => any }; jso
         // 3. Process Payment with Mercado Pago
         if (paymentMethod === 'card') {
             const preapprovalPayload = {
-                reason: `Assinatura PRO - ${planData.name}`,
+                reason: `Assinatura PRÓ - ${planData.name}`,
                 external_reference: `user_${user.id}_plan_${planId}`,
                 payer_email: user.email,
                 card_token_id: cardTokenId,
@@ -185,7 +185,7 @@ serve(async (req: { method: string; headers: { get: (arg0: string) => any }; jso
         } else if (paymentMethod === 'pix') {
             const paymentPayload = {
                 transaction_amount: transactionAmount,
-                description: `Assinatura PRO - ${planData.name}`,
+                description: `Assinatura PRÓ - ${planData.name}`,
                 payment_method_id: 'pix',
                 payer: { email: user.email },
                 external_reference: `user_${user.id}_plan_${planId}`
@@ -211,7 +211,7 @@ serve(async (req: { method: string; headers: { get: (arg0: string) => any }; jso
                     { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
                 )
             }
-            
+
             mpPreapprovalId = mpData.id.toString()
             subscriptionStatus = 'pending'
             responseData = {

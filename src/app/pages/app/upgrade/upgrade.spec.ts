@@ -9,7 +9,7 @@ describe('Upgrade', () => {
     await TestBed.configureTestingModule({
       imports: [Upgrade]
     })
-    .compileComponents();
+      .compileComponents();
 
     fixture = TestBed.createComponent(Upgrade);
     component = fixture.componentInstance;
@@ -22,7 +22,7 @@ describe('Upgrade', () => {
 
   it('verifies layout and typography matches design', () => {
     const compiled = fixture.nativeElement as HTMLElement;
-    // Assuming stitch generated some texts like 'PRO' or similar headers
-    expect(compiled.innerHTML).toContain('PRO'); // Just basic check
+    // Assuming stitch generated some texts like 'PRÓ' or similar headers
+    expect(compiled.innerHTML).toContain('PRÓ'); // Just basic check
   });
 });

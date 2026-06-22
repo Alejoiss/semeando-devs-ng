@@ -215,27 +215,27 @@ export async function handleClaim(
         }
 
         if (claimStatus === 'opened' || claimStatus === 'in_process') {
-            // Suspend PRO access preventively while dispute is open
+            // Suspend PRÓ access preventively while dispute is open
             const subscriptionId = await syncSubscriptionAndProfile(client, preapprovalId, 'payment_failed', false)
             if (!subscriptionId) {
                 await updateBillingEvent(client, billingEventId, { status: 'orphan', errorMessage: `No subscription for preapproval_id ${preapprovalId}` })
                 return
             }
             await updateBillingEvent(client, billingEventId, { status: 'success', subscriptionId })
-            console.log(`[mp-webhook] Claim ${claimId} opened — PRO access suspended for preapproval ${preapprovalId}`)
+            console.log(`[mp-webhook] Claim ${claimId} opened — PRÓ access suspended for preapproval ${preapprovalId}`)
             return
         }
 
         if (claimStatus === 'resolved') {
             if (claimResolution === 'seller') {
-                // Seller won — restore PRO access
+                // Seller won — restore PRÓ access
                 const subscriptionId = await syncSubscriptionAndProfile(client, preapprovalId, 'active', true)
                 if (!subscriptionId) {
                     await updateBillingEvent(client, billingEventId, { status: 'orphan', errorMessage: `No subscription for preapproval_id ${preapprovalId}` })
                     return
                 }
                 await updateBillingEvent(client, billingEventId, { status: 'success', subscriptionId })
-                console.log(`[mp-webhook] Claim ${claimId} resolved for seller — PRO access restored for preapproval ${preapprovalId}`)
+                console.log(`[mp-webhook] Claim ${claimId} resolved for seller — PRÓ access restored for preapproval ${preapprovalId}`)
             } else {
                 // Buyer won (refund issued) — subscription already cancelled by payment webhook
                 await updateBillingEvent(client, billingEventId, { status: 'success' })
