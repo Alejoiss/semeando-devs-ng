@@ -64,6 +64,9 @@ export class Quiz implements OnInit {
     protected readonly isProcessingCompleteQuiz = signal<boolean>(false);
     protected readonly quizCompletionResult = signal<any>(null);
 
+    protected readonly isConfirming = signal<boolean>(false);
+    protected readonly prefetchedAnswers = signal<{ questionId: string; answers: Answer[] } | null>(null);
+
     protected readonly totalSeeds = this.seedService.totalSeeds;
     protected readonly earnedSeeds = signal<number>(0);
     protected readonly showHintConfirm = signal(false);
@@ -172,6 +175,13 @@ export class Quiz implements OnInit {
         const question = this.currentQuestion();
         if (!question) return;
 
+        const prefetched = this.prefetchedAnswers();
+        if (prefetched && prefetched.questionId === question.id) {
+            this.currentAnswers.set(prefetched.answers);
+            this.prefetchedAnswers.set(null);
+            return;
+        }
+
         let answers = await this.answerService.getAnswersByQuestionId(question.id);
         answers = this.shuffle(answers);
         this.currentAnswers.set(answers);
@@ -187,9 +197,11 @@ export class Quiz implements OnInit {
         const question = this.currentQuestion();
         const selectedAnswer = this.selectedAnswer();
 
-        if (!selectedId || !question || !selectedAnswer || this.confirmed() || this.finished()) {
+        if (!selectedId || !question || !selectedAnswer || this.confirmed() || this.finished() || this.isConfirming()) {
             return;
         }
+
+        this.isConfirming.set(true);
 
         try {
             const verification = await this.answerService.verifyAnswer(selectedId);
@@ -220,8 +232,20 @@ export class Quiz implements OnInit {
             }
 
             this.confirmed.set(true);
+
+            const nextIndex = this.currentIndex() + 1;
+            if (nextIndex < this.totalQuestions()) {
+                const nextQuestionId = this.questions()[nextIndex].id;
+                this.answerService.getAnswersByQuestionId(nextQuestionId).then(answers => {
+                    this.prefetchedAnswers.set({ questionId: nextQuestionId, answers: this.shuffle(answers) });
+                }).catch(err => {
+                    console.error('Error prefetching answers:', err);
+                });
+            }
         } catch (error) {
             console.error('Error confirming answer:', error);
+        } finally {
+            this.isConfirming.set(false);
         }
     }
 
@@ -351,6 +375,8 @@ export class Quiz implements OnInit {
 
         // Shortcut for Enter (Confirm or Next)
         if (event.key === 'Enter') {
+            if (this.isConfirming() || this.isProcessingCompleteQuiz()) return;
+            
             if (this.confirmed()) {
                 this.next();
             } else if (this.selectedOptionId()) {

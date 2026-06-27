@@ -125,10 +125,16 @@
                         </button>
                     }
                 </div>
-                <button class="px-5 py-2 rounded-lg font-bold text-on-primary-container" [class.bg-primary]="!confirmed()"
-                    [class.bg-tertiary]="confirmed()" [class.cursor-not-allowed]="!confirmed() && selectedOptionId() === null"
-                    [disabled]="!confirmed() && selectedOptionId() === null" (click)="confirmed() ? next() : confirmAnswer()">
-                    {{ confirmed() ? (currentIndex() === totalQuestions() - 1 ? 'Ver resultado' : 'Próxima questão') : 'Confirmar resposta' }}
+                <button class="px-5 py-2 rounded-lg font-bold text-on-primary-container inline-flex items-center justify-center gap-2" [class.bg-primary]="!confirmed()"
+                    [class.bg-tertiary]="confirmed()" [class.cursor-not-allowed]="(!confirmed() && selectedOptionId() === null) || isConfirming()"
+                    [class.opacity-70]="isConfirming()"
+                    [disabled]="(!confirmed() && selectedOptionId() === null) || isConfirming()" (click)="confirmed() ? next() : confirmAnswer()">
+                    @if (isConfirming()) {
+                        <span class="material-symbols-outlined animate-spin text-sm">progress_activity</span>
+                        Confirmando...
+                    } @else {
+                        {{ confirmed() ? (currentIndex() === totalQuestions() - 1 ? 'Ver resultado' : 'Próxima questão') : 'Confirmar resposta' }}
+                    }
                 </button>
             </div>
         }
