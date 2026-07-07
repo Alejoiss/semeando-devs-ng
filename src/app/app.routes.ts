@@ -1,6 +1,7 @@
 import { Routes } from '@angular/router';
 import { authGuard } from './components/guards/auth.guard';
 import { teacherGuard } from './components/guards/teacher.guard';
+import { dailyLimitGuard } from './components/guards/daily-limit.guard';
 
 export const routes: Routes = [
     {
@@ -71,16 +72,19 @@ export const routes: Routes = [
             },
             {
                 path: 's/:slug/ss/:slugSubmodule/lesson/:lessonId',
+                canActivate: [dailyLimitGuard],
                 loadComponent: () => import('./pages/app/lesson/lesson').then((m) => m.Lesson),
                 title: 'Semeando Devs - Aula'
             },
             {
                 path: 's/:slug/ss/:slugSubmodule/lesson/:lessonId/quiz',
+                canActivate: [dailyLimitGuard],
                 loadComponent: () => import('./pages/app/quiz/quiz').then((m) => m.Quiz),
                 title: 'Semeando Devs - Quiz'
             },
             {
                 path: 's/:slug/ss/:slugSubmodule/lesson/:lessonId/challenge',
+                canActivate: [dailyLimitGuard],
                 loadComponent: () => import('./pages/app/lesson/challenge/challenge').then((m) => m.Challenge),
                 title: 'Semeando Devs - Desafio'
             },

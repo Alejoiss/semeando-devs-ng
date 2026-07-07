@@ -156,10 +156,23 @@
                                     </a>
                                 }
                             } @else if (isBlocked) {
-                                <div [class]="'flex items-center gap-2 font-label text-sm font-bold text-on-surface-variant/50 ' + (isEven ? '' : 'ml-auto justify-end')">
-                                    <span class="material-symbols-outlined text-sm">lock</span>
-                                    Conclua a lição anterior
-                                </div>
+                                @if (dailyLimitService.isDailyLimitReached()) {
+                                    <div [class]="'flex flex-col gap-3 ' + (isEven ? '' : 'items-end')">
+                                        <p class="text-xs text-on-surface-variant/70 leading-relaxed">
+                                            Você atingiu o limite máximo de lições diárias no plano gratuito. Faça o upgrade para o plano Pró ou volte amanhã.
+                                        </p>
+                                        <a routerLink="/app/upgrade"
+                                           [class]="'px-5 py-2 bg-gradient-to-r from-secondary to-primary-container text-on-primary-container font-headline font-bold rounded-lg inline-flex items-center gap-2 text-sm ' + (isEven ? '' : 'ml-auto')">
+                                            <span class="material-symbols-outlined text-sm">rocket_launch</span>
+                                            Upgrade para Pró
+                                        </a>
+                                    </div>
+                                } @else {
+                                    <div [class]="'flex items-center gap-2 font-label text-sm font-bold text-on-surface-variant/50 ' + (isEven ? '' : 'ml-auto justify-end')">
+                                        <span class="material-symbols-outlined text-sm">lock</span>
+                                        Conclua a lição anterior
+                                    </div>
+                                }
                             }
                         </div>
                     </article>

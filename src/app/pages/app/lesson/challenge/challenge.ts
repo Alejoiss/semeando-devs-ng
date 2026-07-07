@@ -15,6 +15,8 @@ import { Lesson as LessonModel } from '../../../../../models/lesson/lesson';
 import { UserLesson } from '../../../../../models/user-lesson/user-lesson';
 import { SectionContent } from '../../../../../models/section-content/section-content';
 import { AiCreditsService } from '../../../../services/ai-credits/ai-credits';
+import { DailyLimitService } from '../../../../services/daily-limit/daily-limit';
+import { UserService } from '../../../../services/user';
 
 @Component({
     selector: 'app-challenge',
@@ -34,6 +36,8 @@ export class Challenge implements OnInit, OnDestroy {
     private seedService = inject(SeedService);
     private xpService = inject(XpService);
     private aiCreditsService = inject(AiCreditsService);
+    private dailyLimitService = inject(DailyLimitService);
+    private userService = inject(UserService);
 
     lessonId = signal<string>('');
     slugSubmodule = signal<string>('');
@@ -225,6 +229,11 @@ export class Challenge implements OnInit, OnDestroy {
 
             await this.xpService.refreshXp();
             await this.achievementsService.checkUnseenAchievements();
+
+            const userId = this.userService.currentUser()?.id;
+            if (userId) {
+                this.dailyLimitService.loadDailyCount(userId).catch(console.error);
+            }
 
         } catch (err: unknown) {
             this.showToast(err instanceof Error ? err.message : 'Erro ao avaliar o desafio.');

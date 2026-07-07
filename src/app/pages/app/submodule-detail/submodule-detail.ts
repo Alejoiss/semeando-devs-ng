@@ -9,6 +9,8 @@ import { Lesson, LessonType } from '../../../../models/lesson/lesson';
 import { UserLesson } from '../../../../models/user-lesson/user-lesson';
 import { UserQuizService } from '../../../services/user-quiz';
 import { UserQuiz } from '../../../../models/user-quiz/user-quiz';
+import { DailyLimitService } from '../../../services/daily-limit/daily-limit';
+import { UserService } from '../../../services/user';
 
 export interface LessonWithState {
     lesson: Lesson;
@@ -29,6 +31,8 @@ export class SubmoduleDetail implements OnInit {
     private userLessonService = inject(UserLessonService);
     private userQuizService = inject(UserQuizService);
     private router = inject(Router);
+    protected readonly dailyLimitService = inject(DailyLimitService);
+    private readonly userService = inject(UserService);
 
     submodule = signal<SubModule | null>(null);
     slug = signal<string>('');
@@ -43,8 +47,6 @@ export class SubmoduleDetail implements OnInit {
         const quizMap = new Map<string, UserQuiz>();
         this.userQuizzes().forEach(uq => {
             if (uq.lessonId) {
-                // If there are multiple attempts, we might want the best one or the completed one.
-                // For now, let's take the latest/best.
                 const existing = quizMap.get(uq.lessonId);
                 if (!existing || (uq.score > existing.score)) {
                     quizMap.set(uq.lessonId, uq);
@@ -59,6 +61,8 @@ export class SubmoduleDetail implements OnInit {
             this.userLessons().map(ul => [ul.lesson?.id, ul])
         );
         const sortedLessons = [...this.lessons()].sort((a, b) => (a.order || 0) - (b.order || 0));
+        const isPro = this.userService.currentUser()?.isPro ?? false;
+        const limitReached = !isPro && this.dailyLimitService.isDailyLimitReached();
 
         let previousCompleted = true;
         return sortedLessons.map(lesson => {
@@ -68,6 +72,10 @@ export class SubmoduleDetail implements OnInit {
             if (userLesson) {
                 progressState = userLesson.completed ? 'completed' : 'in-progress';
             } else if (!previousCompleted) {
+                progressState = 'blocked';
+            }
+
+            if (progressState !== 'completed' && progressState !== 'blocked' && limitReached) {
                 progressState = 'blocked';
             }
 
@@ -100,10 +108,15 @@ export class SubmoduleDetail implements OnInit {
                 return;
             }
 
+            const userId = this.userService.currentUser()?.id;
+
             const [submodules, lessons, userLessons] = await Promise.all([
                 this.subModuleService.getSubModulesByModuleSlug(slug),
                 this.lessonService.getLessonsBySubModuleSlug(slugSubmodule),
                 this.userLessonService.getUserLessons(),
+                ...(userId && !this.userService.currentUser()?.isPro
+                    ? [this.dailyLimitService.loadDailyCount(userId)]
+                    : []),
             ]);
 
             const submodule = submodules.find(
@@ -112,8 +125,8 @@ export class SubmoduleDetail implements OnInit {
             ) ?? null;
 
             this.submodule.set(submodule);
-            this.lessons.set(lessons);
-            this.userLessons.set(userLessons);
+            this.lessons.set(lessons as Lesson[]);
+            this.userLessons.set(userLessons as UserLesson[]);
 
             if (submodule) {
                 const quizzes = await this.userQuizService.getUserQuizzesBySubModule(submodule.id);

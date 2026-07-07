@@ -16,6 +16,7 @@ import { UserQuizService } from '../../../services/user-quiz';
 import { XpService } from '../../../services/xp';
 import { SeedService } from '../../../services/seed';
 import { AchievementsService } from '../../../services/achievements';
+import { DailyLimitService } from '../../../services/daily-limit/daily-limit';
 import { MarkdownModule } from 'ngx-markdown';
 
 interface QuizResult {
@@ -48,6 +49,7 @@ export class Quiz implements OnInit {
     private xpService = inject(XpService);
     private seedService = inject(SeedService);
     private achievementsService = inject(AchievementsService);
+    private dailyLimitService = inject(DailyLimitService);
 
     protected readonly lesson = signal<Lesson | null>(null);
     protected readonly quiz = signal<QuizModel | null>(null);
@@ -291,6 +293,11 @@ export class Quiz implements OnInit {
 
                 await this.xpService.refreshXp();
                 await this.achievementsService.checkUnseenAchievements();
+
+                const userId = this.userId;
+                if (userId) {
+                    this.dailyLimitService.loadDailyCount(userId).catch(console.error);
+                }
             } catch (error) {
                 console.error('Error completing quiz via Edge Function:', error);
             } finally {

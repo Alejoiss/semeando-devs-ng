@@ -148,7 +148,7 @@ export class Submodule implements OnInit {
                 }
 
                 if ((sm.order ?? 0) > 1 && !isPro) {
-                    state = 'blocked';
+                    // Bloqueio por plano removido: acesso agora é controlado pelo limite diário de lições.
                 }
 
                 previousCompleted = state === 'completed';

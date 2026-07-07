@@ -11,6 +11,7 @@ import { UserLesson } from '../../../../models/user-lesson/user-lesson';
 import { SectionContent } from '../../../../models/section-content/section-content';
 import { ExtraMaterialService } from '../../../services/extra-material';
 import { ExtraMaterial } from '../../../../models/extra-material/extra-material';
+import { RouterModule } from '@angular/router';
 export interface LessonWithState {
     lesson: LessonModel;
     progressState: 'not-started' | 'in-progress' | 'completed';
@@ -18,7 +19,7 @@ export interface LessonWithState {
 
 @Component({
     selector: 'app-lesson',
-    imports: [CommonModule, RouterLink, MarkdownModule],
+    imports: [CommonModule, RouterLink, MarkdownModule, RouterModule],
     templateUrl: './lesson.html',
     styleUrls: ['./lesson.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
@@ -44,6 +45,7 @@ export class Lesson implements OnInit {
     extraMaterials = signal<ExtraMaterial[]>([]);
     isLoading = signal<boolean>(true);
     error = signal<string | null>(null);
+    isDailyBlocked = signal<boolean>(false);
 
     activeLesson = computed<LessonModel | undefined>(() =>
         this.lessons().find(l => l.id === this.lessonId())
@@ -67,6 +69,9 @@ export class Lesson implements OnInit {
         this.route.paramMap.subscribe(() => {
             this.loadData();
         });
+        this.route.queryParamMap.subscribe(params => {
+            this.isDailyBlocked.set(params.get('bloqueado') === '1');
+        });
     }
 
     async loadData(): Promise<void> {
@@ -86,6 +91,10 @@ export class Lesson implements OnInit {
             this.lessonId.set(lessonId);
             this.slug.set(slug ?? '');
 
+            if (this.isDailyBlocked()) {
+                this.isLoading.set(false);
+                return;
+            }
             const [lessons, userLessons, sectionContents, extraMaterials] = await Promise.all([
                 this.lessonService.getLessonsBySubModuleSlug(slugSubmodule),
                 this.userLessonService.getUserLessons(),
