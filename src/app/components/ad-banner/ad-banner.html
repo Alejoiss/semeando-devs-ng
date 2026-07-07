@@ -1,0 +1,13 @@
+@if (shouldShowAd()) {
+    <div class="ad-wrapper flex flex-col items-center justify-center p-2 rounded-DEFAULT bg-surface-container-low transition-all duration-300 overflow-hidden w-full border border-outline-variant/15">
+        <span class="font-label text-[9px] text-on-surface-variant/40 uppercase tracking-widest font-bold mb-1.5 select-none">Patrocinado</span>
+        <div class="w-full flex justify-center items-center min-h-[50px]">
+            <ins class="adsbygoogle"
+                 [style]="adStyle()"
+                 [attr.data-ad-client]="adClient()"
+                 [attr.data-ad-slot]="adSlot()"
+                 [attr.data-ad-format]="adFormat()"
+                 [attr.data-full-width-responsive]="fullWidthResponsive()"></ins>
+        </div>
+    </div>
+}

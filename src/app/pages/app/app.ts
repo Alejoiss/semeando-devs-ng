@@ -6,6 +6,7 @@ import { InternalHeader } from '../../components/internal-header/internal-header
 import { NewsletterModal } from '../../components/newsletter-modal/newsletter-modal';
 import { NavigationService } from '../../services/navigation';
 import { inject } from '@angular/core';
+import { AdBannerComponent } from '../../components/ad-banner/ad-banner';
 
 @Component({
     selector: 'app-app',
@@ -14,7 +15,8 @@ import { inject } from '@angular/core';
         RouterModule,
         InternalHeader,
         AsideMenu,
-        NewsletterModal
+        NewsletterModal,
+        AdBannerComponent
     ],
     templateUrl: './app.html',
     styleUrl: './app.scss',

@@ -7,8 +7,13 @@
 
     <app-aside-menu></app-aside-menu>
 
-    <main class="md:pl-64 pt-24 pb-24 min-h-screen">
-        <router-outlet></router-outlet>
+    <main class="md:pl-64 pt-24 pb-24 min-h-screen flex flex-col justify-between">
+        <div class="flex-grow w-full">
+            <router-outlet></router-outlet>
+        </div>
+        <div class="w-full max-w-4xl mx-auto px-6 mt-12 select-none">
+            <app-ad-banner adSlot="2222222222" adFormat="horizontal"></app-ad-banner>
+        </div>
     </main>
 
     <app-newsletter-modal></app-newsletter-modal>

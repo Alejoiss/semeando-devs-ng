@@ -18,6 +18,11 @@
             <a class="text-[#dee5ff] opacity-70 hover:text-[#fe69ac] transition-colors duration-300" href="#">Inventário</a>
         </nav> -->
     </div>
+
+    <div class="hidden sm:flex flex-1 justify-center max-w-[200px] md:max-w-[320px] lg:max-w-[468px] mx-2 md:mx-4 overflow-hidden">
+        <app-ad-banner adSlot="1111111111" adFormat="horizontal" [adStyle]="{ display: 'inline-block', width: '100%', height: '50px' }"></app-ad-banner>
+    </div>
+
     <div class="flex items-center gap-4">
         <div class="flex items-center bg-surface-container rounded-full px-3 md:px-4 py-1 md:py-1.5 gap-2 md:gap-3 border border-outline-variant/10 transition-all duration-300"
             [class.animate-xp-pulse]="isPulsing()">
