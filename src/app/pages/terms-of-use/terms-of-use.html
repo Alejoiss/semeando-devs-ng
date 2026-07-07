@@ -20,16 +20,36 @@
         <div #indexSection class="mb-10 p-6 glass-panel rounded-lg border border-outline-variant/15">
             <p class="text-sm font-bold text-on-surface mb-3 uppercase tracking-widest font-label">Neste documento</p>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-2 text-sm text-primary font-body">
-                <a (click)="scrollToSection('termos')" class="hover:underline cursor-pointer transition-all hover:translate-x-1 inline-flex items-center gap-1">→ Termos de Uso</a>
-                <a (click)="scrollToSection('uso-plataforma')" class="hover:underline cursor-pointer transition-all hover:translate-x-1 inline-flex items-center gap-1">→ 02. Uso da Plataforma</a>
-                <a (click)="scrollToSection('gamificacao')" class="hover:underline cursor-pointer transition-all hover:translate-x-1 inline-flex items-center gap-1">→ 03. Sistema de Gamificação</a>
-                <a (click)="scrollToSection('pagamentos')" class="hover:underline cursor-pointer transition-all hover:translate-x-1 inline-flex items-center gap-1">→ 04. Pagamentos e Assinaturas</a>
-                <a (click)="scrollToSection('rescisao')" class="hover:underline cursor-pointer transition-all hover:translate-x-1 inline-flex items-center gap-1">→ 05. Rescisão e Suspensão</a>
-                <a (click)="scrollToSection('privacidade')" class="hover:underline cursor-pointer transition-all hover:translate-x-1 inline-flex items-center gap-1">→ Política de Privacidade</a>
-                <a (click)="scrollToSection('dados-coletados')" class="hover:underline cursor-pointer transition-all hover:translate-x-1 inline-flex items-center gap-1">→ 07. Dados Coletados</a>
-                <a (click)="scrollToSection('uso-ia')" class="hover:underline cursor-pointer transition-all hover:translate-x-1 inline-flex items-center gap-1">→ 08. Uso de Inteligência Artificial</a>
-                <a (click)="scrollToSection('compartilhamento')" class="hover:underline cursor-pointer transition-all hover:translate-x-1 inline-flex items-center gap-1">→ 09. Compartilhamento de Dados</a>
-                <a (click)="scrollToSection('direitos')" class="hover:underline cursor-pointer transition-all hover:translate-x-1 inline-flex items-center gap-1">→ 10. Seus Direitos (LGPD)</a>
+                <a (click)="scrollToSection('termos')"
+                    class="hover:underline cursor-pointer transition-all hover:translate-x-1 inline-flex items-center gap-1">→
+                    Termos de Uso</a>
+                <a (click)="scrollToSection('uso-plataforma')"
+                    class="hover:underline cursor-pointer transition-all hover:translate-x-1 inline-flex items-center gap-1">→
+                    02. Uso da Plataforma</a>
+                <a (click)="scrollToSection('gamificacao')"
+                    class="hover:underline cursor-pointer transition-all hover:translate-x-1 inline-flex items-center gap-1">→
+                    03. Sistema de Gamificação</a>
+                <a (click)="scrollToSection('pagamentos')"
+                    class="hover:underline cursor-pointer transition-all hover:translate-x-1 inline-flex items-center gap-1">→
+                    04. Pagamentos e Assinaturas</a>
+                <a (click)="scrollToSection('rescisao')"
+                    class="hover:underline cursor-pointer transition-all hover:translate-x-1 inline-flex items-center gap-1">→
+                    05. Rescisão e Suspensão</a>
+                <a (click)="scrollToSection('privacidade')"
+                    class="hover:underline cursor-pointer transition-all hover:translate-x-1 inline-flex items-center gap-1">→
+                    Política de Privacidade</a>
+                <a (click)="scrollToSection('dados-coletados')"
+                    class="hover:underline cursor-pointer transition-all hover:translate-x-1 inline-flex items-center gap-1">→
+                    07. Dados Coletados</a>
+                <a (click)="scrollToSection('uso-ia')"
+                    class="hover:underline cursor-pointer transition-all hover:translate-x-1 inline-flex items-center gap-1">→
+                    08. Uso de Inteligência Artificial</a>
+                <a (click)="scrollToSection('compartilhamento')"
+                    class="hover:underline cursor-pointer transition-all hover:translate-x-1 inline-flex items-center gap-1">→
+                    09. Compartilhamento de Dados</a>
+                <a (click)="scrollToSection('direitos')"
+                    class="hover:underline cursor-pointer transition-all hover:translate-x-1 inline-flex items-center gap-1">→
+                    10. Seus Direitos (LGPD)</a>
             </div>
         </div>
 
@@ -96,7 +116,8 @@
                             <div class="flex gap-4 p-4 bg-surface-container-low rounded-lg">
                                 <span class="material-symbols-outlined text-secondary shrink-0">person</span>
                                 <p>
-                                    <span class="text-on-surface font-semibold block mb-1">Finalidade Educacional e Conta Pessoal</span>
+                                    <span class="text-on-surface font-semibold block mb-1">Finalidade Educacional e
+                                        Conta Pessoal</span>
                                     O Semeando Devs é destinado exclusivamente a fins educacionais e de desenvolvimento
                                     profissional individual. Cada conta é pessoal, intransferível e não deve ser
                                     compartilhada com terceiros. O compartilhamento de credenciais ou acessos
@@ -107,7 +128,8 @@
                             <div class="flex gap-4 p-4 bg-surface-container-low rounded-lg">
                                 <span class="material-symbols-outlined text-secondary shrink-0">rule</span>
                                 <p>
-                                    <span class="text-on-surface font-semibold block mb-1">Integridade, Plágio e Automação Indevida</span>
+                                    <span class="text-on-surface font-semibold block mb-1">Integridade, Plágio e
+                                        Automação Indevida</span>
                                     Você se compromete a realizar lições, quizzes e desafios de código de forma honesta.
                                     A submissão de respostas ou códigos que não sejam de sua autoria, a cópia de
                                     soluções sem compreensão real do conteúdo, ou o uso de scripts e bots para
@@ -182,11 +204,16 @@
                         </div>
                         <div class="space-y-4 text-on-surface-variant font-body">
                             <p>
-                                O Semeando Devs adota um modelo de assinatura mensal para acesso completo aos
-                                cursos básicos disponíveis (como HTML, CSS, JavaScript e outros que venham a ser
-                                incluídos). Antes de assinar, você poderá criar uma conta gratuita e acessar,
-                                sem custo, os primeiros submódulos de cada curso básico disponível, para
-                                experimentar a didática e a dinâmica de estudo antes de decidir pela assinatura.
+                                O Semeando Devs adota um modelo de assinatura mensal (Plano Pró) para acesso ilimitado e
+                                sem anúncios a todos os cursos básicos disponíveis (como HTML, CSS, JavaScript e outros
+                                que venham a ser incluídos). Ao criar uma conta gratuita (Plano Gratuito), você poderá
+                                acessar todos os módulos, submódulos e lições disponíveis na plataforma, estando sujeito
+                                a um limite máximo de conclusão de até 5 (cinco) lições por dia calendário (fuso UTC-3)
+                                e à exibição de anúncios publicitários discretos e não intrusivos durante a navegação.
+                            </p>
+                            <p>
+                                O upgrade para o Plano Pró remove imediatamente o limite diário de consumo de lições e
+                                desativa a exibição de qualquer anúncio em sua conta.
                             </p>
                             <p>
                                 As assinaturas podem ser renovadas automaticamente ao final de cada ciclo,
@@ -271,7 +298,7 @@
                         dados coletamos, como os utilizamos, com quem podemos compartilhá-los e quais são os
                         seus direitos como titular, em conformidade com a
                         <span class="text-on-surface font-semibold">Lei Geral de Proteção de Dados (LGPD —
-                        Lei nº 13.709/2018)</span>.
+                            Lei nº 13.709/2018)</span>.
                     </p>
                 </section>
 
@@ -314,7 +341,9 @@
                             <div class="flex gap-4 p-4 bg-surface-container-low rounded-lg">
                                 <span class="material-symbols-outlined text-secondary shrink-0">devices</span>
                                 <p>
-                                    <span class="text-on-surface font-semibold block mb-1">Dados de Acesso e Navegação</span>
+                                    <span class="text-on-surface font-semibold block mb-1">
+                                        Dados de Acesso e Navegação
+                                    </span>
                                     Endereço IP, tipo de dispositivo e navegador, sistema operacional e páginas
                                     acessadas dentro da plataforma. Utilizamos essas informações para melhorar
                                     o desempenho, segurança e a experiência de uso.
@@ -334,34 +363,51 @@
                             <p>Utilizamos seus dados para as seguintes finalidades:</p>
                             <ul class="list-none space-y-3">
                                 <li class="flex items-start gap-2">
-                                    <span class="material-symbols-outlined text-secondary text-sm mt-1">check_circle</span>
+                                    <span
+                                        class="material-symbols-outlined text-secondary text-sm mt-1">check_circle</span>
                                     <span>Criar, autenticar e manter sua conta ativa na plataforma;</span>
                                 </li>
                                 <li class="flex items-start gap-2">
-                                    <span class="material-symbols-outlined text-secondary text-sm mt-1">check_circle</span>
-                                    <span>Registrar e exibir seu progresso nos módulos, quizzes, desafios e rankings;</span>
+                                    <span
+                                        class="material-symbols-outlined text-secondary text-sm mt-1">check_circle</span>
+                                    <span>
+                                        Registrar e exibir seu progresso nos módulos, quizzes, desafios e rankings;
+                                    </span>
                                 </li>
                                 <li class="flex items-start gap-2">
-                                    <span class="material-symbols-outlined text-secondary text-sm mt-1">check_circle</span>
-                                    <span>Personalizar sua experiência de estudo com base no seu histórico de aprendizado;</span>
+                                    <span
+                                        class="material-symbols-outlined text-secondary text-sm mt-1">check_circle</span>
+                                    <span>
+                                        Personalizar sua experiência de estudo com base no seu histórico de aprendizado;
+                                    </span>
                                 </li>
                                 <li class="flex items-start gap-2">
-                                    <span class="material-symbols-outlined text-secondary text-sm mt-1">check_circle</span>
-                                    <span>Processar assinaturas, pagamentos, reembolsos e aplicar cupons de desconto;</span>
+                                    <span
+                                        class="material-symbols-outlined text-secondary text-sm mt-1">check_circle</span>
+                                    <span>
+                                        Processar assinaturas, pagamentos, reembolsos e aplicar cupons de desconto;
+                                    </span>
                                 </li>
                                 <li class="flex items-start gap-2">
-                                    <span class="material-symbols-outlined text-secondary text-sm mt-1">check_circle</span>
-                                    <span>Enviar comunicações relacionadas à sua conta, como confirmações, notificações
-                                    de progresso e atualizações relevantes da plataforma;</span>
+                                    <span
+                                        class="material-symbols-outlined text-secondary text-sm mt-1">check_circle</span>
+                                    <span>
+                                        Enviar comunicações relacionadas à sua conta, como confirmações, notificações de
+                                        progresso e atualizações relevantes da plataforma;
+                                    </span>
                                 </li>
                                 <li class="flex items-start gap-2">
-                                    <span class="material-symbols-outlined text-secondary text-sm mt-1">check_circle</span>
+                                    <span
+                                        class="material-symbols-outlined text-secondary text-sm mt-1">check_circle</span>
                                     <span>Identificar e prevenir fraudes, abusos e violações destes Termos;</span>
                                 </li>
                                 <li class="flex items-start gap-2">
-                                    <span class="material-symbols-outlined text-secondary text-sm mt-1">check_circle</span>
-                                    <span>Melhorar continuamente a plataforma com base em dados agregados e
-                                    anônimos de uso.</span>
+                                    <span
+                                        class="material-symbols-outlined text-secondary text-sm mt-1">check_circle</span>
+                                    <span>
+                                        Melhorar continuamente a plataforma com base em dados agregados e anônimos de
+                                        uso.
+                                    </span>
                                 </li>
                             </ul>
                         </div>
@@ -382,9 +428,12 @@
                                 principais:
                             </p>
                             <div class="flex gap-4 p-4 bg-surface-container-low rounded-lg">
-                                <span class="material-symbols-outlined text-secondary shrink-0">integration_instructions</span>
+                                <span
+                                    class="material-symbols-outlined text-secondary shrink-0">integration_instructions</span>
                                 <p>
-                                    <span class="text-on-surface font-semibold block mb-1">Correção de Desafios de Código</span>
+                                    <span class="text-on-surface font-semibold block mb-1">
+                                        Correção de Desafios de Código
+                                    </span>
                                     Ao submeter sua solução em uma lição de desafio, o código é enviado para análise
                                     por um agente de IA, que avalia se a solução resolve o problema proposto e
                                     gera um feedback textual indicando pontos positivos e oportunidades de melhoria.
@@ -416,7 +465,8 @@
                             </p>
                             <ul class="list-none space-y-3">
                                 <li class="flex items-start gap-2">
-                                    <span class="material-symbols-outlined text-secondary text-sm mt-1">check_circle</span>
+                                    <span
+                                        class="material-symbols-outlined text-secondary text-sm mt-1">check_circle</span>
                                     <span>
                                         <span class="text-on-surface font-semibold">Provedores de serviço:</span>
                                         empresas que nos auxiliam na operação da plataforma, como processadores de
@@ -426,19 +476,35 @@
                                     </span>
                                 </li>
                                 <li class="flex items-start gap-2">
-                                    <span class="material-symbols-outlined text-secondary text-sm mt-1">check_circle</span>
+                                    <span
+                                        class="material-symbols-outlined text-secondary text-sm mt-1">check_circle</span>
                                     <span>
                                         <span class="text-on-surface font-semibold">Cumprimento legal:</span>
                                         quando exigido por lei, ordem judicial ou autoridade competente;
                                     </span>
                                 </li>
                                 <li class="flex items-start gap-2">
-                                    <span class="material-symbols-outlined text-secondary text-sm mt-1">check_circle</span>
+                                    <span
+                                        class="material-symbols-outlined text-secondary text-sm mt-1">check_circle</span>
                                     <span>
                                         <span class="text-on-surface font-semibold">Rankings e perfis públicos:</span>
                                         dados de progresso como XP e posição em rankings podem ser visíveis para
                                         outros usuários nas áreas públicas da plataforma, conforme suas
                                         configurações de privacidade.
+                                    </span>
+                                </li>
+                                <li class="flex items-start gap-2">
+                                    <span
+                                        class="material-symbols-outlined text-secondary text-sm mt-1">check_circle</span>
+                                    <span>
+                                        <span class="text-on-surface font-semibold">
+                                            Parceiros de publicidade (Google AdSense):
+                                        </span>
+                                        exibimos anúncios para usuários da conta gratuita. O Google AdSense pode usar
+                                        cookies para veicular anúncios com base em visitas anteriores dos usuários a
+                                        este ou a outros sites. Os usuários podem desativar a publicidade personalizada
+                                        acessando as Configurações de anúncios do Google ou gerenciar as opções por meio
+                                        do painel de consentimento de privacidade exibido na plataforma.
                                     </span>
                                 </li>
                             </ul>
@@ -463,35 +529,46 @@
                                 <li class="flex items-start gap-2">
                                     <span class="material-symbols-outlined text-secondary text-sm mt-1">verified</span>
                                     <span><span class="text-on-surface font-semibold">Acesso:</span>
-                                    solicitar confirmação de que tratamos seus dados e obter uma cópia deles;</span>
+                                        solicitar confirmação de que tratamos seus dados e obter uma cópia deles;</span>
                                 </li>
                                 <li class="flex items-start gap-2">
                                     <span class="material-symbols-outlined text-secondary text-sm mt-1">verified</span>
-                                    <span><span class="text-on-surface font-semibold">Correção:</span>
-                                    solicitar a atualização ou correção de dados incompletos, inexatos ou desatualizados;</span>
+                                    <span>
+                                        <span class="text-on-surface font-semibold">Correção:</span>
+                                        solicitar a atualização ou correção de dados incompletos, inexatos ou
+                                        desatualizados;
+                                    </span>
                                 </li>
                                 <li class="flex items-start gap-2">
                                     <span class="material-symbols-outlined text-secondary text-sm mt-1">verified</span>
-                                    <span><span class="text-on-surface font-semibold">Eliminação:</span>
-                                    solicitar a exclusão de seus dados pessoais, observados os casos em que a
-                                    retenção seja obrigatória por lei;</span>
+                                    <span>
+                                        <span class="text-on-surface font-semibold">Eliminação:</span>
+                                        solicitar a exclusão de seus dados pessoais, observados os casos em que a
+                                        retenção seja obrigatória por lei;
+                                    </span>
                                 </li>
                                 <li class="flex items-start gap-2">
                                     <span class="material-symbols-outlined text-secondary text-sm mt-1">verified</span>
-                                    <span><span class="text-on-surface font-semibold">Portabilidade:</span>
-                                    solicitar a transferência dos seus dados a outro fornecedor de serviço;</span>
+                                    <span>
+                                        <span class="text-on-surface font-semibold">Portabilidade:</span>
+                                        solicitar a transferência dos seus dados a outro fornecedor de serviço;
+                                    </span>
                                 </li>
                                 <li class="flex items-start gap-2">
                                     <span class="material-symbols-outlined text-secondary text-sm mt-1">verified</span>
-                                    <span><span class="text-on-surface font-semibold">Revogação do consentimento:</span>
-                                    retirar seu consentimento a qualquer momento, quando o tratamento for baseado
-                                    nessa base legal;</span>
+                                    <span>
+                                        <span class="text-on-surface font-semibold">Revogação do consentimento:</span>
+                                        retirar seu consentimento a qualquer momento, quando o tratamento for baseado
+                                        nessa base legal;
+                                    </span>
                                 </li>
                                 <li class="flex items-start gap-2">
                                     <span class="material-symbols-outlined text-secondary text-sm mt-1">verified</span>
-                                    <span><span class="text-on-surface font-semibold">Oposição:</span>
-                                    se opor ao tratamento de dados realizado com base em legítimo interesse,
-                                    quando em desacordo com a legislação.</span>
+                                    <span>
+                                        <span class="text-on-surface font-semibold">Oposição:</span>
+                                        se opor ao tratamento de dados realizado com base em legítimo interesse,
+                                        quando em desacordo com a legislação.
+                                    </span>
                                 </li>
                             </ul>
                             <p>
@@ -549,12 +626,9 @@
 </main>
 
 <!-- Floating Back to Top Button -->
-<button
-    (click)="scrollToTop()"
+<button (click)="scrollToTop()"
     class="fixed bottom-8 right-8 z-50 w-14 h-14 rounded-full bg-primary text-on-primary shadow-[0_0_20px_rgba(63,194,251,0.3)] hover:shadow-[0_0_30px_rgba(63,194,251,0.5)] transition-all duration-500 active:scale-90 group flex items-center justify-center border border-primary-container/20 backdrop-blur-sm opacity-0 scale-50 pointer-events-none translate-y-10"
-    [class.visible-btn]="showBackToTop()"
-    aria-label="Voltar ao topo"
->
+    [class.visible-btn]="showBackToTop()" aria-label="Voltar ao topo">
     <span class="material-symbols-outlined group-hover:-translate-y-1 transition-transform text-2xl">arrow_upward</span>
 </button>
 

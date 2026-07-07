@@ -79,12 +79,12 @@ export class LandingPage implements OnInit {
         },
         {
             question: 'Preciso pagar para começar?',
-            answer: 'Não! Cadastre‑se gratuitamente e tenha acesso aos primeiros submódulos de todos os cursos. Quizzes, desafios, ranking, XP e a possibilidade de usar seeds para comprar dicas de IA também são gratuitos. Quando quiser avançar para o conteúdo completo de todos os módulos, basta assinar.',
+            answer: 'Não! Cadastre-se gratuitamente para ter acesso a todos os módulos, submódulos e lições da plataforma, limitado à conclusão de até 5 lições por dia. O plano gratuito exibe anúncios discretos nas páginas. Quando quiser estudar sem limite diário e sem qualquer anúncio, basta assinar o plano Pró.',
             expanded: false
         },
         {
             question: 'Quanto custa a assinatura e o que inclui?',
-            answer: 'R$ 29,90 /mês – acesso ilimitado a todos os cursos básicos. Cancelamento a qualquer momento.',
+            answer: 'R$ 29,90 / mês – remove o limite diário de lições, oferece uma experiência 100% livre de anúncios, avaliações diárias ilimitadas de IA para desafios e suporte prioritário. O cancelamento pode ser feito a qualquer momento.',
             expanded: false
         },
         {
