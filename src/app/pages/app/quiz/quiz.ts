@@ -123,8 +123,7 @@ export class Quiz implements OnInit {
             this.lesson.set(lesson);
 
             if (lesson.type === LessonType.REVISION) {
-                const quizData = await this.quizService.getQuizByLessonId(lessonId);
-                if (!quizData) return;
+                const quizData = await this.quizService.getOrCreateQuiz(lessonId);
                 this.isRevisionMode.set(true);
 
                 const revisionQuestions = await this.quizService.getRevisionQuestions(lessonId, lesson.subModuleId);
