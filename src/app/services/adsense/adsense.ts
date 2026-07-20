@@ -14,10 +14,13 @@ export class AdsenseService {
     private readonly scriptLoaded = signal<boolean>(false);
     private readonly isAppRoute = signal<boolean>(false);
 
-    // Google AdSense settings from environment (with mock defaults)
-    readonly adClient = (environment as any).adsenseClient || 'ca-pub-1234567890123456';
-    readonly headerAdSlot = (environment as any).adsenseHeaderSlot || '1111111111';
-    readonly footerAdSlot = (environment as any).adsenseFooterSlot || '2222222222';
+    // Google AdSense settings from environment — undefined when not configured
+    readonly adClient: string | undefined = (environment as any).adsenseClient;
+    readonly headerAdSlot: string | undefined = (environment as any).adsenseHeaderSlot;
+    readonly footerAdSlot: string | undefined = (environment as any).adsenseFooterSlot;
+
+    /** Banners são exibidos apenas quando o adClient está configurado no environment. */
+    readonly isEnabled = !!this.adClient;
 
     constructor() {
         // Escuta eventos de navegação para determinar se está sob a rota da área interna /app
@@ -35,7 +38,7 @@ export class AdsenseService {
             const isApp = this.isAppRoute();
             const alreadyLoaded = this.scriptLoaded();
 
-            if (user && !user.isPro && isApp && !alreadyLoaded) {
+            if (this.isEnabled && user && !user.isPro && isApp && !alreadyLoaded) {
                 this.injectAdSenseScript();
             }
         });

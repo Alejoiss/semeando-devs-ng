@@ -24,8 +24,9 @@ export class AdBannerComponent implements AfterViewInit {
 
     readonly shouldShowAd = computed(() => {
         const user = this.userService.currentUser();
-        // Exibe apenas se o usuário for do plano gratuito e o banner não estiver marcado como vazio/bloqueado
-        return user !== null && !user.isPro && !this.isAdEmpty();
+        // Exibe apenas se o AdSense estiver configurado, o usuário for do plano gratuito
+        // e o banner não estiver marcado como vazio/bloqueado
+        return this.adsenseService.isEnabled && user !== null && !user.isPro && !this.isAdEmpty();
     });
 
     readonly adClient = computed(() => this.adsenseService.adClient);
