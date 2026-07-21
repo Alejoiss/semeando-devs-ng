@@ -12,6 +12,7 @@ import { SectionContent } from '../../../../models/section-content/section-conte
 import { ExtraMaterialService } from '../../../services/extra-material';
 import { ExtraMaterial } from '../../../../models/extra-material/extra-material';
 import { RouterModule } from '@angular/router';
+import { UserService } from '../../../services/user';
 export interface LessonWithState {
     lesson: LessonModel;
     progressState: 'not-started' | 'in-progress' | 'completed';
@@ -31,6 +32,9 @@ export class Lesson implements OnInit {
     private sectionContentService = inject(SectionContentService);
     private extraMaterialService = inject(ExtraMaterialService);
     private sanitizer = inject(DomSanitizer);
+    private userService = inject(UserService);
+
+    protected readonly isPro = computed(() => this.userService.currentUser()?.isPro ?? false);
 
     getSafeHtml(html: string | undefined): SafeHtml {
         return this.sanitizer.bypassSecurityTrustHtml(html || '');
@@ -91,7 +95,7 @@ export class Lesson implements OnInit {
             this.lessonId.set(lessonId);
             this.slug.set(slug ?? '');
 
-            if (this.isDailyBlocked()) {
+            if (this.isDailyBlocked() && !this.isPro()) {
                 this.isLoading.set(false);
                 return;
             }

@@ -156,7 +156,7 @@
                                     </a>
                                 }
                             } @else if (isBlocked) {
-                                @if (dailyLimitService.isDailyLimitReached()) {
+                                @if (!isPro() && dailyLimitService.isDailyLimitReached()) {
                                     <div [class]="'flex flex-col gap-3 ' + (isEven ? '' : 'items-end')">
                                         <p class="text-xs text-on-surface-variant/70 leading-relaxed">
                                             Você atingiu o limite máximo de lições diárias no plano gratuito. Faça o upgrade para o plano Pró ou volte amanhã.

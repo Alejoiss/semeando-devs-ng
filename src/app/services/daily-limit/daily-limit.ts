@@ -14,7 +14,10 @@ export class DailyLimitService {
 
     readonly dailyCompletedCount = signal<number>(0);
 
-    readonly isDailyLimitReached = computed(() => this.dailyCompletedCount() >= DAILY_LIMIT);
+    readonly isDailyLimitReached = computed(() => {
+        const isPro = this.userService.currentUser()?.isPro ?? false;
+        return !isPro && this.dailyCompletedCount() >= DAILY_LIMIT;
+    });
 
     readonly dailyIndicators = computed<boolean[]>(() =>
         Array.from({ length: DAILY_LIMIT }, (_, i) => i < this.dailyCompletedCount())

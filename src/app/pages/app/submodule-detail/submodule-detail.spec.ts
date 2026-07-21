@@ -6,6 +6,10 @@ import { LessonService } from '../../../services/lesson';
 import { UserLessonService } from '../../../services/user-lesson';
 import { Lesson, LessonType } from '../../../../models/lesson/lesson';
 import { UserLesson } from '../../../../models/user-lesson/user-lesson';
+import { signal } from '@angular/core';
+import { UserService } from '../../../services/user';
+import { DailyLimitService } from '../../../services/daily-limit/daily-limit';
+import { UserQuizService } from '../../../services/user-quiz';
 
 const MOCK_LESSONS: Lesson[] = [
     { id: 'l1', title: 'Intro', description: 'Desc 1', type: LessonType.LESSON, order: 1, subModuleId: 'sm1', xp: 100 },
@@ -24,6 +28,9 @@ describe('SubmoduleDetail', () => {
     let lessonServiceSpy: jasmine.SpyObj<LessonService>;
     let userLessonServiceSpy: jasmine.SpyObj<UserLessonService>;
     let subModuleServiceSpy: jasmine.SpyObj<SubModuleService>;
+    let userQuizServiceSpy: jasmine.SpyObj<UserQuizService>;
+    let userServiceSpy: any;
+    let dailyLimitServiceSpy: any;
 
     const activatedRouteStub = {
         snapshot: {
@@ -40,10 +47,20 @@ describe('SubmoduleDetail', () => {
         lessonServiceSpy = jasmine.createSpyObj('LessonService', ['getLessonsBySubModuleSlug']);
         userLessonServiceSpy = jasmine.createSpyObj('UserLessonService', ['getUserLessons']);
         subModuleServiceSpy = jasmine.createSpyObj('SubModuleService', ['getSubModulesByModuleSlug']);
+        userQuizServiceSpy = jasmine.createSpyObj('UserQuizService', ['getUserQuizzesBySubModule']);
 
         lessonServiceSpy.getLessonsBySubModuleSlug.and.returnValue(Promise.resolve(MOCK_LESSONS));
         userLessonServiceSpy.getUserLessons.and.returnValue(Promise.resolve(MOCK_USER_LESSONS as UserLesson[]));
         subModuleServiceSpy.getSubModulesByModuleSlug.and.returnValue(Promise.resolve([{ id: 'sm1', slug: 'html-basico', title: 'HTML Básico', description: 'Desc' } as any]));
+        userQuizServiceSpy.getUserQuizzesBySubModule.and.returnValue(Promise.resolve([]));
+
+        const mockUserSignal = signal<any>({ id: 'u1', isPro: false });
+        userServiceSpy = jasmine.createSpyObj('UserService', ['loadUserProfile']);
+        userServiceSpy.currentUser = mockUserSignal;
+
+        dailyLimitServiceSpy = jasmine.createSpyObj('DailyLimitService', ['loadDailyCount', 'isLessonAccessible']);
+        dailyLimitServiceSpy.isDailyLimitReached = signal(false);
+        dailyLimitServiceSpy.dailyCompletedCount = signal(0);
 
         await TestBed.configureTestingModule({
             imports: [SubmoduleDetail],
@@ -52,6 +69,9 @@ describe('SubmoduleDetail', () => {
                 { provide: LessonService, useValue: lessonServiceSpy },
                 { provide: UserLessonService, useValue: userLessonServiceSpy },
                 { provide: SubModuleService, useValue: subModuleServiceSpy },
+                { provide: UserQuizService, useValue: userQuizServiceSpy },
+                { provide: UserService, useValue: userServiceSpy },
+                { provide: DailyLimitService, useValue: dailyLimitServiceSpy },
             ],
         }).compileComponents();
 
@@ -107,7 +127,7 @@ describe('SubmoduleDetail', () => {
         const states = component.lessonsWithState();
         expect(states[0].progressState).toBe('completed');
         expect(states[1].progressState).toBe('in-progress');
-        expect(states[2].progressState).toBe('not-started');
+        expect(states[2].progressState).toBe('blocked');
     });
 
     // Task 4.7 — REQ-8.9: completedCount computed signal

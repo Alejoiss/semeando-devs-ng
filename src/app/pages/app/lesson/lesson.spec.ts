@@ -5,6 +5,12 @@ import { LessonService } from '../../../services/lesson';
 import { UserLessonService } from '../../../services/user-lesson';
 import { Lesson as LessonModel, LessonType } from '../../../../models/lesson/lesson';
 import { UserLesson } from '../../../../models/user-lesson/user-lesson';
+import { signal } from '@angular/core';
+import { UserService } from '../../../services/user';
+import { DailyLimitService } from '../../../services/daily-limit/daily-limit';
+import { SectionContentService } from '../../../services/section-content';
+import { ExtraMaterialService } from '../../../services/extra-material';
+import { of } from 'rxjs';
 
 const MOCK_LESSONS: LessonModel[] = [
     { id: 'l1', title: 'Intro', description: 'Desc 1', type: LessonType.LESSON, order: 1, subModuleId: 'sm1', xp: 100 },
@@ -22,6 +28,10 @@ describe('Lesson Page', () => {
     let fixture: ComponentFixture<Lesson>;
     let lessonServiceSpy: jasmine.SpyObj<LessonService>;
     let userLessonServiceSpy: jasmine.SpyObj<UserLessonService>;
+    let sectionContentServiceSpy: jasmine.SpyObj<SectionContentService>;
+    let extraMaterialServiceSpy: jasmine.SpyObj<ExtraMaterialService>;
+    let userServiceSpy: any;
+    let dailyLimitServiceSpy: any;
 
     const activatedRouteStub = {
         snapshot: {
@@ -36,14 +46,39 @@ describe('Lesson Page', () => {
                 },
             },
         },
+        paramMap: of({
+            get: (key: string) => {
+                const map: Record<string, string> = {
+                    slug: 'html',
+                    slugSubmodule: 'html-basico',
+                    lessonId: 'l2',
+                };
+                return map[key] ?? null;
+            },
+        }),
+        queryParamMap: of({
+            get: (key: string) => null,
+        }),
     };
 
     beforeEach(async () => {
         lessonServiceSpy = jasmine.createSpyObj('LessonService', ['getLessonsBySubModuleSlug']);
         userLessonServiceSpy = jasmine.createSpyObj('UserLessonService', ['getUserLessons']);
+        sectionContentServiceSpy = jasmine.createSpyObj('SectionContentService', ['getSectionContentsByLessonId']);
+        extraMaterialServiceSpy = jasmine.createSpyObj('ExtraMaterialService', ['getExtraMaterialsByLessonId']);
 
         lessonServiceSpy.getLessonsBySubModuleSlug.and.returnValue(Promise.resolve(MOCK_LESSONS));
         userLessonServiceSpy.getUserLessons.and.returnValue(Promise.resolve(MOCK_USER_LESSONS as UserLesson[]));
+        sectionContentServiceSpy.getSectionContentsByLessonId.and.returnValue(Promise.resolve([]));
+        extraMaterialServiceSpy.getExtraMaterialsByLessonId.and.returnValue(Promise.resolve([]));
+
+        const mockUserSignal = signal<any>({ id: 'u1', isPro: false });
+        userServiceSpy = jasmine.createSpyObj('UserService', ['loadUserProfile']);
+        userServiceSpy.currentUser = mockUserSignal;
+
+        dailyLimitServiceSpy = jasmine.createSpyObj('DailyLimitService', ['loadDailyCount', 'isLessonAccessible']);
+        dailyLimitServiceSpy.isDailyLimitReached = signal(false);
+        dailyLimitServiceSpy.dailyCompletedCount = signal(0);
 
         await TestBed.configureTestingModule({
             imports: [Lesson],
@@ -51,6 +86,10 @@ describe('Lesson Page', () => {
                 { provide: ActivatedRoute, useValue: activatedRouteStub },
                 { provide: LessonService, useValue: lessonServiceSpy },
                 { provide: UserLessonService, useValue: userLessonServiceSpy },
+                { provide: SectionContentService, useValue: sectionContentServiceSpy },
+                { provide: ExtraMaterialService, useValue: extraMaterialServiceSpy },
+                { provide: UserService, useValue: userServiceSpy },
+                { provide: DailyLimitService, useValue: dailyLimitServiceSpy },
             ],
         }).compileComponents();
 

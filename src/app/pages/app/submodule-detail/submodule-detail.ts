@@ -33,6 +33,7 @@ export class SubmoduleDetail implements OnInit {
     private router = inject(Router);
     protected readonly dailyLimitService = inject(DailyLimitService);
     private readonly userService = inject(UserService);
+    protected readonly isPro = computed(() => this.userService.currentUser()?.isPro ?? false);
 
     submodule = signal<SubModule | null>(null);
     slug = signal<string>('');
@@ -61,7 +62,7 @@ export class SubmoduleDetail implements OnInit {
             this.userLessons().map(ul => [ul.lesson?.id, ul])
         );
         const sortedLessons = [...this.lessons()].sort((a, b) => (a.order || 0) - (b.order || 0));
-        const isPro = this.userService.currentUser()?.isPro ?? false;
+        const isPro = this.isPro();
         const limitReached = !isPro && this.dailyLimitService.isDailyLimitReached();
 
         let previousCompleted = true;

@@ -40,7 +40,7 @@ export class Submodule implements OnInit {
     private userLessonService = inject(UserLessonService);
     private moduleService = inject(ModuleService);
     private achievementsService = inject(AchievementsService);
-    private userService = inject(UserService);
+    protected readonly userService = inject(UserService);
     private sectionContentService = inject(SectionContentService);
     private sanitizer = inject(DomSanitizer);
 
