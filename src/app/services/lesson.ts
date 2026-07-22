@@ -336,7 +336,9 @@ export class LessonService {
         return hasLanguage && hasInitialCode;
     }
 
-    private async _validateRevisionType(lessonId: string): Promise<boolean> {
+    private async _validateRevisionType(lessonId: string, attempt = 1): Promise<boolean> {
+        if (attempt > 5) return false;
+
         const { data: quizData, error: quizError } = await this.supabase
             .from('quizzes')
             .select('id')
@@ -350,6 +352,8 @@ export class LessonService {
                 .insert({ lesson_id: lessonId });
             
             if (insertError) return false;
+
+            return await this._validateRevisionType(lessonId, attempt + 1);
         } else if (quizData.length > 1) {
             return false;
         }
