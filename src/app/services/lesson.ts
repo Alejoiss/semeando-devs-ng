@@ -167,6 +167,7 @@ export class LessonService {
                 sub_module_id: lesson.subModuleId,
                 xp: lesson.xp,
                 created_by: lesson.createdBy,
+                ...(lesson.isValidated !== undefined ? { is_validated: lesson.isValidated } : {})
             })
             .select('*')
             .single();

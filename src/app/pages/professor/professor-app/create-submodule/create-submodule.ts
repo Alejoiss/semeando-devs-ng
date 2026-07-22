@@ -113,6 +113,7 @@ export class CreateSubmodule {
                 subModuleId: subModuleId,
                 xp: 50,
                 createdBy: user.id,
+                isValidated: false,
             });
 
             await this.loadLessons(subModuleId);
