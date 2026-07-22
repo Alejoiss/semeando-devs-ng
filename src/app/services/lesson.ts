@@ -342,7 +342,17 @@ export class LessonService {
             .select('id')
             .eq('lesson_id', lessonId);
         
-        if (quizError || !quizData || quizData.length !== 1) return false;
+        if (quizError) return false;
+
+        if (!quizData || quizData.length === 0) {
+            const { error: insertError } = await this.supabase
+                .from('quizzes')
+                .insert({ lesson_id: lessonId });
+            
+            if (insertError) return false;
+        } else if (quizData.length > 1) {
+            return false;
+        }
 
         return true;
     }

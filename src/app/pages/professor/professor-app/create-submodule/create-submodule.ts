@@ -5,6 +5,7 @@ import { Router, ActivatedRoute, RouterLink } from '@angular/router';
 import { SubModuleService } from '../../../../services/sub-module';
 import { UserService } from '../../../../services/user';
 import { LessonService } from '../../../../services/lesson';
+import { QuizService } from '../../../../services/quiz';
 import { Lesson, LessonType } from '../../../../../models/lesson/lesson';
 
 @Component({
@@ -21,6 +22,7 @@ export class CreateSubmodule {
     private subModuleService = inject(SubModuleService);
     private userService = inject(UserService);
     private lessonService = inject(LessonService);
+    private quizService = inject(QuizService);
 
     moduleId = signal<string | null>(null);
 
@@ -105,7 +107,7 @@ export class CreateSubmodule {
             const subModuleName = this.form.controls.title.value || '';
             const lessonCount = await this.lessonService.getLessonCountBySubModuleId(subModuleId);
 
-            await this.lessonService.createLesson({
+            const createdLesson = await this.lessonService.createLesson({
                 title: 'Revisão do submódulo ' + subModuleName,
                 description: 'Vamos revisar o que aprendemos até aqui neste submódulo',
                 type: LessonType.REVISION,
@@ -115,6 +117,8 @@ export class CreateSubmodule {
                 createdBy: user.id,
                 isValidated: false,
             });
+
+            await this.quizService.getOrCreateQuiz(createdLesson.id);
 
             await this.loadLessons(subModuleId);
         } catch (err: any) {
