@@ -256,6 +256,8 @@ export class LessonService {
             passed = await this._validateLessonType(lessonId);
         } else if (lessonType === LessonType.CHALLENGE) {
             passed = await this._validateChallengeType(lessonId);
+        } else if (lessonType === LessonType.REVISION) {
+            passed = await this._validateRevisionType(lessonId);
         }
 
         const { error } = await this.supabase
@@ -331,5 +333,16 @@ export class LessonService {
         const hasInitialCode = typeof lesson.initial_code === 'string' && lesson.initial_code.trim().length > 0;
 
         return hasLanguage && hasInitialCode;
+    }
+
+    private async _validateRevisionType(lessonId: string): Promise<boolean> {
+        const { data: quizData, error: quizError } = await this.supabase
+            .from('quizzes')
+            .select('id')
+            .eq('lesson_id', lessonId);
+        
+        if (quizError || !quizData || quizData.length !== 1) return false;
+
+        return true;
     }
 }
