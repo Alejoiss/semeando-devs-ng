@@ -119,7 +119,7 @@ Deno.serve(async (req) => {
                         body: JSON.stringify({
                             from: smtpSender,
                             to: user.email,
-                            subject: 'Novidades do Semeando Devs!',
+                            subject: newsletter.subject || 'Novidades do Semeando Devs!',
                             html: htmlContent
                         })
                     });
@@ -135,7 +135,7 @@ Deno.serve(async (req) => {
                     await transporter.sendMail({
                         from: smtpSender,
                         to: user.email,
-                        subject: 'Novidades do Semeando Devs!',
+                        subject: newsletter.subject || 'Novidades do Semeando Devs!',
                         html: htmlContent,
                         text: `${newsletter.body}${newsletter.cta_url ? `\n\n${newsletter.cta_label || 'Acesse'}: ${newsletter.cta_url}` : ''}`
                     });
