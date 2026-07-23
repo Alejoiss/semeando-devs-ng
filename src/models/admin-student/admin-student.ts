@@ -5,6 +5,9 @@ export interface AdminStudent {
     avatar: string;
     isPro: boolean;
     createdAt: Date;
+    newsletterActive?: boolean;
+    termsAccepted?: boolean;
+    proUntil?: Date | null;
 }
 
 export interface StudentListResult {

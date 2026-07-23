@@ -42,4 +42,28 @@ export class AdminStudentService {
 
         return { students, total: count ?? 0 };
     }
+
+    async getStudentById(id: string): Promise<AdminStudent> {
+        const { data, error } = await this.supabase
+            .from('profiles')
+            .select('id, is_pro, created_at, name, email, avatar, newsletter_active, terms_accepted, pro_until')
+            .eq('id', id)
+            .single();
+
+        if (error) {
+            throw new Error(error.message);
+        }
+
+        return {
+            id: data['id'] as string,
+            name: (data['name'] as string) || '',
+            email: (data['email'] as string) || '',
+            avatar: (data['avatar'] as string) || '',
+            isPro: (data['is_pro'] as boolean) || false,
+            createdAt: new Date(data['created_at'] as string),
+            newsletterActive: data['newsletter_active'] as boolean,
+            termsAccepted: data['terms_accepted'] as boolean,
+            proUntil: data['pro_until'] ? new Date(data['pro_until'] as string) : null,
+        };
+    }
 }

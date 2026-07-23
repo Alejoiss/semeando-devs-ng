@@ -57,11 +57,19 @@ export class AchievementsService {
         try {
             const user = await this.userService.getUserProfile();
             if (!user) return [];
+            return this.getUserAchievementsForUser(user.id);
+        } catch (error) {
+            console.error('Error fetching user achievements:', error);
+            return [];
+        }
+    }
 
+    async getUserAchievementsForUser(userId: string): Promise<UserAchievement[]> {
+        try {
             const { data, error } = await this.supabase
                 .from('user_achievements')
                 .select('*')
-                .eq('user_id', user.id)
+                .eq('user_id', userId)
                 .eq('completed', true);
 
             if (error) {
@@ -91,14 +99,9 @@ export class AchievementsService {
                 .eq('viewed', false)
                 .order('created_at', { ascending: true })
                 .limit(1)
-                .single();
+                .maybeSingle();
 
             if (error) {
-                if (error.code === 'PGRST116') {
-                    console.log('[AchievementsService] No unseen achievements');
-                    this.unseenAchievement.set(null);
-                    return;
-                }
                 console.error('[AchievementsService] Error fetching unseen:', error);
                 throw error;
             }

@@ -72,6 +72,25 @@ export class UserQuizService {
         return (results || []).map(q => this.mapUserQuiz(q));
     }
 
+    async getUserQuizzesForUser(userId: string): Promise<UserQuiz[]> {
+        const { data: results, error: fetchError } = await this.supabase
+            .from('user_quizzes')
+            .select(`
+                *,
+                quiz:quizzes!inner (
+                    lesson_id,
+                    questions:questions (count)
+                )
+            `)
+            .eq('user_id', userId);
+
+        if (fetchError) {
+            throw new Error(fetchError.message);
+        }
+
+        return (results || []).map(q => this.mapUserQuiz(q));
+    }
+
     private mapUserQuiz(data: any): UserQuiz {
         return {
             id: data.id,

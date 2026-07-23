@@ -1,0 +1,368 @@
+<div class="px-6 pb-12 flex flex-col gap-10">
+    <!-- Header with Back Button -->
+    <header class="flex items-center gap-4">
+        <a routerLink="/admin/lista-de-alunos"
+            class="w-10 h-10 flex items-center justify-center rounded-xl bg-[#0f1930] text-[#dee5ff] hover:bg-[#141f38] hover:text-[#3fc2fb] transition-colors">
+            <span class="material-symbols-outlined">arrow_back</span>
+        </a>
+        <h2 class="text-3xl font-bold text-[#dee5ff] font-headline">Detalhes do Aluno</h2>
+    </header>
+
+    @if (isLoading()) {
+    <div class="bg-[#091328] rounded-3xl p-6 flex flex-col items-center justify-center min-h-[300px] animate-pulse">
+        <div class="w-24 h-24 rounded-full bg-[#141f38] mb-4"></div>
+        <div class="h-6 w-48 bg-[#141f38] rounded-md mb-2"></div>
+        <div class="h-4 w-32 bg-[#141f38] rounded-md"></div>
+    </div>
+    } @else if (error()) {
+    <div
+        class="bg-error/10 text-error p-6 rounded-3xl flex flex-col items-center justify-center gap-4 text-center min-h-[300px]">
+        <span class="material-symbols-outlined text-4xl">error</span>
+        <p class="font-body">{{ error() }}</p>
+        <button (click)="loadStudent(studentId()!)"
+            class="bg-error/20 hover:bg-error/30 text-error px-6 py-2 rounded-xl font-label transition-colors">Tentar
+            novamente</button>
+    </div>
+    } @else if (student()) {
+    <div class="flex flex-col gap-6">
+        <!-- Student Header -->
+        <div class="bg-[#091328] rounded-3xl p-6 flex flex-col md:flex-row items-center gap-6 relative overflow-hidden">
+            <div
+                class="w-24 h-24 rounded-full overflow-hidden bg-[#060e20] flex items-center justify-center shrink-0 border-2 border-[#3fc2fb]/20 shadow-[0_0_20px_rgba(63,194,251,0.1)]">
+                @if (student()!.avatar) {
+                <img [ngSrc]="student()!.avatar" alt="Avatar de {{ student()!.name }}" width="96" height="96"
+                    class="object-cover w-full h-full">
+                } @else {
+                <span class="material-symbols-outlined text-[#dee5ff]/30 text-4xl">person</span>
+                }
+            </div>
+
+            <div class="flex flex-col items-center md:items-start text-center md:text-left flex-1">
+                <h3 class="text-2xl font-bold text-[#dee5ff] font-headline mb-1">{{ student()!.name || 'Sem nome' }}
+                </h3>
+                <p class="font-body text-[#dee5ff]/60 mb-2">{{ student()!.email }}</p>
+                <div class="flex items-center gap-3">
+                    @if (student()!.isPro) {
+                    <span
+                        class="font-label text-xs font-bold px-3 py-1.5 rounded-full bg-[#fe69ac]/10 text-[#fe69ac] shadow-[0_0_15px_rgba(254,105,172,0.1)] border border-[#fe69ac]/20 inline-flex items-center gap-1">
+                        <span class="material-symbols-outlined text-[14px]">bolt</span>
+                        PRO
+                    </span>
+                    }
+                    <span
+                        class="font-label text-xs px-3 py-1.5 rounded-full bg-[#060e20] text-[#dee5ff]/60 inline-flex items-center gap-1 border border-[#dee5ff]/10">
+                        Cadastrado em {{ student()!.createdAt | date:'dd MMM yyyy':'':'pt-BR' }}
+                    </span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tabs -->
+        <div class="flex items-center gap-2 border-b border-[#dee5ff]/10">
+            <button (click)="activeTab.set('general')"
+                [class]="activeTab() === 'general' ? 'text-[#3fc2fb] border-[#3fc2fb]' : 'text-[#dee5ff]/60 border-transparent hover:text-[#dee5ff]'"
+                class="font-label text-sm font-bold px-6 py-4 border-b-2 transition-colors">
+                Informações Gerais
+            </button>
+            <button (click)="activeTab.set('progress')"
+                [class]="activeTab() === 'progress' ? 'text-[#3fc2fb] border-[#3fc2fb]' : 'text-[#dee5ff]/60 border-transparent hover:text-[#dee5ff]'"
+                class="font-label text-sm font-bold px-6 py-4 border-b-2 transition-colors">
+                Progresso nos Cursos
+            </button>
+            <button (click)="activeTab.set('achievements')"
+                [class]="activeTab() === 'achievements' ? 'text-[#3fc2fb] border-[#3fc2fb]' : 'text-[#dee5ff]/60 border-transparent hover:text-[#dee5ff]'"
+                class="font-label text-sm font-bold px-6 py-4 border-b-2 transition-colors">
+                Conquistas
+            </button>
+        </div>
+
+        <!-- Tab Content -->
+        <div class="min-h-[400px]">
+            @if (activeTab() === 'general') {
+            <div class="bg-[#091328] rounded-3xl p-6 flex flex-col gap-6 border border-[#dee5ff]/5">
+                <h4 class="font-headline font-bold text-xl text-[#dee5ff]">Informações Adicionais</h4>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- Assinatura -->
+                    <div class="bg-[#0f1930] p-5 rounded-2xl flex flex-col gap-2">
+                        <span class="font-label text-sm text-[#dee5ff]/40 uppercase tracking-wider">Assinatura
+                            PRO</span>
+                        <div class="flex items-center gap-2">
+                            <span class="material-symbols-outlined text-[18px]"
+                                [class.text-[#fe69ac]]="student()!.isPro" [class.text-[#dee5ff]/30]="!student()!.isPro">
+                                {{ student()!.isPro ? 'check_circle' : 'cancel' }}
+                            </span>
+                            <span class="font-body text-[#dee5ff]">{{ student()!.isPro ? 'Ativa' : 'Inativa' }}</span>
+                        </div>
+                        @if (student()!.isPro && student()!.proUntil) {
+                        <span class="font-label text-xs text-[#dee5ff]/40 mt-1">Válida até {{ student()!.proUntil |
+                            date:'dd/MM/yyyy' }}</span>
+                        }
+                    </div>
+
+                    <!-- Termos -->
+                    <div class="bg-[#0f1930] p-5 rounded-2xl flex flex-col gap-2">
+                        <span class="font-label text-sm text-[#dee5ff]/40 uppercase tracking-wider">Termos de Uso</span>
+                        <div class="flex items-center gap-2">
+                            <span class="material-symbols-outlined text-[18px]"
+                                [class.text-[#3fc2fb]]="student()!.termsAccepted"
+                                [class.text-[#dee5ff]/30]="!student()!.termsAccepted">
+                                {{ student()!.termsAccepted ? 'check_circle' : 'cancel' }}
+                            </span>
+                            <span class="font-body text-[#dee5ff]">{{ student()!.termsAccepted ? 'Aceitos' : 'Pendente'
+                                }}</span>
+                        </div>
+                    </div>
+
+                    <!-- Newsletter -->
+                    <div class="bg-[#0f1930] p-5 rounded-2xl flex flex-col gap-2">
+                        <span class="font-label text-sm text-[#dee5ff]/40 uppercase tracking-wider">Newsletter</span>
+                        <div class="flex items-center gap-2">
+                            <span class="material-symbols-outlined text-[18px]"
+                                [class.text-[#3fc2fb]]="student()!.newsletterActive"
+                                [class.text-[#dee5ff]/30]="!student()!.newsletterActive">
+                                {{ student()!.newsletterActive ? 'check_circle' : 'cancel' }}
+                            </span>
+                            <span class="font-body text-[#dee5ff]">{{ student()!.newsletterActive ? 'Inscrito' : 'Não
+                                inscrito' }}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            } @else if (activeTab() === 'progress') {
+            <div class="bg-[#091328] rounded-3xl p-6 border border-[#dee5ff]/5">
+                <h4 class="font-headline font-bold text-xl text-[#dee5ff] mb-6">Trilhas de Aprendizado</h4>
+
+                @if (isProgressLoading()) {
+                <div class="flex flex-col gap-4 animate-pulse">
+                    @for (i of [1,2,3]; track i) {
+                    <div class="bg-[#0f1930] rounded-2xl h-20 w-full"></div>
+                    }
+                </div>
+                } @else if (curriculum().length === 0) {
+                <div class="flex flex-col items-center justify-center py-12 gap-4">
+                    <span class="material-symbols-outlined text-4xl text-[#dee5ff]/20">auto_stories</span>
+                    <p class="text-[#dee5ff]/60 font-body">Nenhum curso disponível.</p>
+                </div>
+                } @else {
+                <div class="flex flex-col gap-4">
+                    @for (mod of curriculum(); track mod.id) {
+                    <!-- Module Item -->
+                    <div class="bg-[#0f1930] rounded-2xl overflow-hidden border border-[#dee5ff]/5">
+                        <button (click)="toggleModule(mod)"
+                            class="w-full flex items-center justify-between p-5 hover:bg-[#141f38] transition-colors text-left">
+
+                            <div class="flex items-center gap-4">
+                                <div
+                                    class="w-12 h-12 rounded-xl bg-[#060e20] flex items-center justify-center overflow-hidden shrink-0">
+                                    @if (mod.avatar) {
+                                    <img [ngSrc]="mod.avatar" width="48" height="48" alt="Módulo"
+                                        class="w-full h-full object-cover">
+                                    } @else {
+                                    <span class="material-symbols-outlined text-[#dee5ff]/30">{{ mod.icon || 'folder'
+                                        }}</span>
+                                    }
+                                </div>
+                                <div class="flex flex-col gap-1">
+                                    <h5 class="font-headline font-bold text-lg text-[#dee5ff]">{{ mod.title }}</h5>
+                                    <div class="flex items-center gap-2">
+                                        <span class="font-label text-xs"
+                                            [class.text-[#fe69ac]]="mod.isStarted && !mod.isCompleted"
+                                            [class.text-[#3fc2fb]]="mod.isCompleted"
+                                            [class.text-[#dee5ff]/40]="!mod.isStarted">
+                                            {{ mod.isCompleted ? 'Concluído' : (mod.isStarted ? 'Em andamento' : 'Não
+                                            iniciado') }}
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="flex items-center gap-6">
+                                <!-- Progress -->
+                                @if (mod.isStarted) {
+                                <div class="hidden md:flex items-center gap-3">
+                                    <div class="w-32 h-2 rounded-full bg-[#060e20] overflow-hidden">
+                                        <div class="h-full bg-gradient-to-r from-[#3fc2fb] to-[#27b4ed] transition-all duration-500"
+                                            [style.width.%]="mod.progressPercentage"></div>
+                                    </div>
+                                    <span
+                                        class="font-label text-sm text-[#dee5ff]/60 font-bold min-w-[40px] text-right">{{
+                                        mod.progressPercentage }}%</span>
+                                </div>
+                                }
+
+                                <span
+                                    class="material-symbols-outlined text-[#dee5ff]/40 transition-transform duration-300"
+                                    [class.rotate-180]="mod.expanded">expand_more</span>
+                            </div>
+                        </button>
+
+                        <!-- Submodules Details -->
+                        @if (mod.expanded) {
+                        <div class="border-t border-[#dee5ff]/5 p-5 flex flex-col gap-4 bg-[#060e20]/50">
+                            @if (mod.submodules.length === 0) {
+                            <p class="font-body text-sm text-[#dee5ff]/40 text-center py-4">Nenhum submódulo cadastrado.
+                            </p>
+                            } @else {
+                            @for (sub of mod.submodules; track sub.id) {
+                            <div class="bg-[#091328] rounded-xl overflow-hidden border border-[#dee5ff]/5">
+                                <button (click)="toggleSubmodule(sub)"
+                                    class="w-full flex items-center justify-between p-4 hover:bg-[#0f1930] transition-colors text-left">
+                                    <div class="flex items-center gap-3">
+                                        <div
+                                            class="w-8 h-8 rounded-lg bg-[#0f1930] flex items-center justify-center shrink-0">
+                                            <span
+                                                class="material-symbols-outlined text-[#dee5ff]/30 text-[18px]">account_tree</span>
+                                        </div>
+                                        <div class="flex flex-col">
+                                            <h6 class="font-headline font-bold text-[#dee5ff]">{{ sub.title }}</h6>
+                                            <span class="font-label text-xs text-[#dee5ff]/40">{{ sub.progressPercentage
+                                                }}% concluído</span>
+                                        </div>
+                                    </div>
+                                    <div class="flex items-center gap-4">
+                                        <div class="hidden sm:flex items-center gap-2">
+                                            <div class="w-20 h-1.5 rounded-full bg-[#060e20] overflow-hidden">
+                                                <div class="h-full bg-gradient-to-r from-[#e8ffc0] to-[#bde082] transition-all duration-500"
+                                                    [style.width.%]="sub.progressPercentage"></div>
+                                            </div>
+                                        </div>
+                                        <span
+                                            class="material-symbols-outlined text-[#dee5ff]/40 transition-transform duration-300"
+                                            [class.rotate-180]="sub.expanded">expand_more</span>
+                                    </div>
+                                </button>
+
+                                <!-- Lessons Details -->
+                                @if (sub.expanded) {
+                                <div class="border-t border-[#dee5ff]/5 p-4 flex flex-col gap-2 bg-[#060e20]/50">
+                                    @if (sub.lessons.length === 0) {
+                                    <p class="font-body text-sm text-[#dee5ff]/40 text-center py-2">Nenhuma lição ou
+                                        quiz cadastrado.</p>
+                                    } @else {
+                                    @for (lesson of sub.lessons; track lesson.id) {
+                                    <div class="flex items-center justify-between p-3 rounded-lg bg-[#0f1930]">
+                                        <div class="flex items-center gap-3">
+                                            <span class="material-symbols-outlined text-[20px]"
+                                                [class.text-[#3fc2fb]]="lesson.isCompleted"
+                                                [class.text-[#dee5ff]/20]="!lesson.isCompleted">
+                                                {{ lesson.isCompleted ? 'check_circle' : 'radio_button_unchecked' }}
+                                            </span>
+                                            <div class="flex flex-col">
+                                                <span class="font-body text-sm text-[#dee5ff]">{{ lesson.title }}</span>
+                                                <span class="font-label text-[10px] text-[#dee5ff]/40 uppercase">{{
+                                                    lesson.type === 'QUIZ' ? 'Quiz' : (lesson.type === 'CHALLENGE' ?
+                                                    'Desafio' : 'Lição') }}</span>
+                                            </div>
+                                        </div>
+                                        @if ((lesson.type === 'LESSON' || lesson.type === 'REVISION') &&
+                                        lesson.isCompleted && lesson.quiz) {
+                                        <span
+                                            class="font-label text-xs font-bold px-2 py-1 rounded bg-[#060e20] border border-[#dee5ff]/5"
+                                            [class.text-[#3fc2fb]]="(lesson.quiz.score / lesson.quiz.totalQuestions) >= 0.7"
+                                            [class.text-[#fe69ac]]="(lesson.quiz.score / lesson.quiz.totalQuestions) < 0.7">
+                                            Nota: {{ lesson.quiz.score }}/{{ lesson.quiz.totalQuestions }}
+                                        </span>
+                                        }
+                                    </div>
+                                    }
+                                    }
+                                </div>
+                                }
+                            </div>
+                            }
+                            }
+                        </div>
+                        }
+                    </div>
+                    }
+                </div>
+                }
+            </div>
+            } @else if (activeTab() === 'achievements') {
+            <div class="bg-[#091328] rounded-3xl p-6 border border-[#dee5ff]/5">
+                <h4 class="font-headline font-bold text-xl text-[#dee5ff] mb-6">Gamificação</h4>
+
+                @if (isGamificationLoading()) {
+                <div class="flex flex-col gap-4 animate-pulse">
+                    <div class="bg-[#0f1930] rounded-2xl h-24 w-full mb-4"></div>
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                        @for (i of [1,2,3,4]; track i) {
+                        <div class="bg-[#0f1930] rounded-2xl h-32"></div>
+                        }
+                    </div>
+                </div>
+                } @else {
+                <!-- Resumo -->
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-16">
+                    <div class="bg-surface-container-low p-6 rounded-2xl border border-primary/10 backdrop-blur-md">
+                        <p class="font-label text-[10px] text-slate-500 uppercase tracking-widest mb-1">Total de XP</p>
+                        <p class="font-headline text-3xl font-black text-primary">{{ totalXp() | number:'1.0-0' }}</p>
+                    </div>
+                    <div class="bg-surface-container-low p-6 rounded-2xl border border-tertiary/10 backdrop-blur-md">
+                        <p class="font-label text-[10px] text-slate-500 uppercase tracking-widest mb-1">Total de Seeds
+                        </p>
+                        <div class="flex items-center gap-3">
+                            <img src="assets/seed/seed.png" alt="Seeds" class="w-8 h-8 object-contain" />
+                            <p class="font-headline text-3xl font-black text-tertiary">{{ totalSeeds() | number:'1.0-0'
+                                }}</p>
+                        </div>
+                    </div>
+                    <div class="bg-surface-container-low p-6 rounded-2xl border border-secondary/10 backdrop-blur-md">
+                        <p class="font-label text-[10px] text-slate-500 uppercase tracking-widest mb-1">Desbloqueadas
+                        </p>
+                        <p class="font-headline text-3xl font-black text-secondary">{{ earnedAchievementsCount() }}/{{
+                            achievements().length }}</p>
+                    </div>
+                </div>
+
+                <!-- Conquistas Grid -->
+                <h5
+                    class="font-headline font-bold text-lg text-on-surface mb-8 border-b border-surface-container-highest pb-4">
+                    Mural de Conquistas</h5>
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-x-8 gap-y-16">
+                    @for (achievement of achievements(); track achievement.id) {
+                    @let earned = isEarned(achievement.id);
+                    <div class="flex flex-col items-center text-center group" [class.opacity-80]="!earned">
+                        <div class="relative w-48 h-48 rounded-full overflow-hidden mb-6 p-1 transition-all duration-300"
+                            [class.bg-gradient-to-tr]="earned"
+                            [class]="earned ? getGradientClasses(achievement.identification) : 'bg-slate-800'"
+                            [class.shadow-[0_0_30px_rgba(63,194,251,0.2)]]="earned"
+                            [class.group-hover:scale-105]="earned">
+
+                            <div
+                                class="w-full h-full rounded-full overflow-hidden bg-surface-container relative flex items-center justify-center">
+                                <img [src]="'assets/achievements/' + achievement.icon" [alt]="achievement.name"
+                                    [class.grayscale]="!earned" class="w-full h-full object-cover" />
+                            </div>
+                        </div>
+                        <h3 class="font-headline text-xl font-bold mb-1" [class.text-on-surface]="earned"
+                            [class.text-slate-500]="!earned">
+                            {{ achievement.name }}
+                        </h3>
+                        <p class="text-xs mb-2 font-body px-4" [class.text-slate-400]="earned"
+                            [class.text-slate-600]="!earned">
+                            {{ achievement.requirement }}
+                        </p>
+                        <div class="flex flex-col items-center gap-2">
+                            <span class="font-label text-sm font-bold px-3 py-1 rounded-full"
+                                [class.text-tertiary-dim]="earned" [class.bg-tertiary-container/10]="earned"
+                                [class.text-slate-600]="!earned" [class.bg-slate-900]="!earned">
+                                {{ achievement.xpAmount }} XP
+                            </span>
+                            @if (earned) {
+                            <span class="font-label text-[10px] text-primary/70">
+                                {{ getEarnedDate(achievement.id) }}
+                            </span>
+                            }
+                        </div>
+                    </div>
+                    }
+                </div>
+                }
+            </div>
+            }
+        </div>
+    </div>
+    }
+</div>

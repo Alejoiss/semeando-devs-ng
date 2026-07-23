@@ -16,21 +16,31 @@ export class XpService {
     async getXp(): Promise<number> {
         try {
             const user = await this.userService.getUserProfile();
-            const { data, error } = await this.supabase
-                .from('xp')
-                .select('total_xp')
-                .eq('user_id', user.id)
-                .single();
-
-            if (error && error.code !== 'PGRST116') {
-                throw new Error(error.message);
-            }
-
-            const xp = data?.total_xp || 0;
+            if (!user) return 0;
+            const xp = await this.getXpForUser(user.id);
             this._totalXp.set(xp);
             return xp;
         } catch (error) {
             console.error('Error fetching XP:', error);
+            return 0;
+        }
+    }
+
+    async getXpForUser(userId: string): Promise<number> {
+        try {
+            const { data, error } = await this.supabase
+                .from('xp')
+                .select('total_xp')
+                .eq('user_id', userId)
+                .maybeSingle();
+
+            if (error) {
+                throw new Error(error.message);
+            }
+
+            return data?.total_xp || 0;
+        } catch (error) {
+            console.error('Error fetching XP for user:', error);
             return 0;
         }
     }

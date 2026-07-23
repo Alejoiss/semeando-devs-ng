@@ -16,21 +16,31 @@ export class SeedService {
     async getSeeds(): Promise<number> {
         try {
             const user = await this.userService.getUserProfile();
-            const { data, error } = await this.supabase
-                .from('seed')
-                .select('total_seeds')
-                .eq('user_id', user.id)
-                .single();
-
-            if (error && error.code !== 'PGRST116') {
-                throw new Error(error.message);
-            }
-
-            const seeds = data?.total_seeds || 0;
+            if (!user) return 0;
+            const seeds = await this.getSeedsForUser(user.id);
             this._totalSeeds.set(seeds);
             return seeds;
         } catch (error) {
             console.error('Error fetching seeds:', error);
+            return 0;
+        }
+    }
+
+    async getSeedsForUser(userId: string): Promise<number> {
+        try {
+            const { data, error } = await this.supabase
+                .from('seed')
+                .select('total_seeds')
+                .eq('user_id', userId)
+                .maybeSingle();
+
+            if (error) {
+                throw new Error(error.message);
+            }
+
+            return data?.total_seeds || 0;
+        } catch (error) {
+            console.error('Error fetching seeds for user:', error);
             return 0;
         }
     }
