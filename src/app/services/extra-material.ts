@@ -1,17 +1,13 @@
-import { Injectable } from '@angular/core';
-import { createClient, SupabaseClient } from '@supabase/supabase-js';
-import { environment } from '../../environments/environment';
+import { inject, Injectable } from '@angular/core';
+import { SupabaseClient } from '@supabase/supabase-js';
 import { ExtraMaterial } from '../../models/extra-material/extra-material';
+import { SupabaseService } from './supabase';
 
 @Injectable({
     providedIn: 'root',
 })
 export class ExtraMaterialService {
-    private supabase: SupabaseClient;
-
-    constructor() {
-        this.supabase = createClient(environment.supabaseUrl, environment.supabaseKey);
-    }
+    private supabase: SupabaseClient = inject(SupabaseService).client;
 
     async getExtraMaterialsByLessonId(lessonId: string): Promise<ExtraMaterial[]> {
         const { data, error } = await this.supabase

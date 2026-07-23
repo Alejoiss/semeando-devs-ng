@@ -1,6 +1,6 @@
 import { Injectable, computed, inject, signal } from '@angular/core';
-import { createClient, SupabaseClient } from '@supabase/supabase-js';
-import { environment } from '../../../environments/environment';
+import { SupabaseClient } from '@supabase/supabase-js';
+import { SupabaseService } from '../supabase';
 import { UserService } from '../user';
 
 export const DAILY_LIMIT = 5;
@@ -9,7 +9,7 @@ export const DAILY_LIMIT = 5;
     providedIn: 'root',
 })
 export class DailyLimitService {
-    private supabase: SupabaseClient = createClient(environment.supabaseUrl, environment.supabaseKey);
+    private supabase: SupabaseClient = inject(SupabaseService).client;
     private userService = inject(UserService);
 
     readonly dailyCompletedCount = signal<number>(0);

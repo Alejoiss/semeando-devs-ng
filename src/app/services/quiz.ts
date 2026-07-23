@@ -1,8 +1,8 @@
 import { Injectable, inject } from '@angular/core';
-import { createClient, SupabaseClient } from '@supabase/supabase-js';
-import { environment } from '../../environments/environment';
+import { SupabaseClient } from '@supabase/supabase-js';
 import { Quiz } from '../../models/quiz/quiz';
 import { Question } from '../../models/question/question';
+import { SupabaseService } from './supabase';
 import { QuestionService } from './question';
 import { LessonService } from './lesson';
 
@@ -10,13 +10,9 @@ import { LessonService } from './lesson';
     providedIn: 'root',
 })
 export class QuizService {
-    private supabase: SupabaseClient;
+    private supabase: SupabaseClient = inject(SupabaseService).client;
     private questionService = inject(QuestionService);
     private lessonService = inject(LessonService);
-
-    constructor() {
-        this.supabase = createClient(environment.supabaseUrl, environment.supabaseKey);
-    }
 
     async getQuizByLessonId(lessonId: string): Promise<Quiz | null> {
         const { data, error } = await this.supabase
@@ -185,4 +181,3 @@ export class QuizService {
         return newArray;
     }
 }
-

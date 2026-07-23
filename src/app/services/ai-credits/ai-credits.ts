@@ -1,6 +1,6 @@
 import { Injectable, computed, signal, inject, effect } from '@angular/core';
-import { SupabaseClient, createClient } from '@supabase/supabase-js';
-import { environment } from '../../../environments/environment';
+import { SupabaseClient } from '@supabase/supabase-js';
+import { SupabaseService } from '../supabase';
 import { UserService } from '../user';
 
 export interface AiCreditsStatus {
@@ -12,7 +12,7 @@ export interface AiCreditsStatus {
     providedIn: 'root',
 })
 export class AiCreditsService {
-    private supabase: SupabaseClient;
+    private supabase: SupabaseClient = inject(SupabaseService).client;
     private userService = inject(UserService);
 
     private creditsState = signal<AiCreditsStatus>({
@@ -25,8 +25,6 @@ export class AiCreditsService {
     readonly submitCodeRemaining = computed(() => Math.max(0, this.creditsState().submitCodeLimit - this.creditsState().submitCodeUsed));
 
     constructor() {
-        this.supabase = createClient(environment.supabaseUrl, environment.supabaseKey);
-        
         effect(() => {
             const user = this.userService.currentUser();
             if (user) {

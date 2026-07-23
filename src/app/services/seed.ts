@@ -1,21 +1,17 @@
 import { inject, Injectable, signal } from '@angular/core';
-import { createClient, SupabaseClient } from '@supabase/supabase-js';
-import { environment } from '../../environments/environment';
+import { SupabaseClient } from '@supabase/supabase-js';
+import { SupabaseService } from './supabase';
 import { UserService } from './user';
 
 @Injectable({
     providedIn: 'root',
 })
 export class SeedService {
-    private supabase: SupabaseClient;
+    private supabase: SupabaseClient = inject(SupabaseService).client;
     private userService = inject(UserService);
 
     private readonly _totalSeeds = signal<number>(0);
     public readonly totalSeeds = this._totalSeeds.asReadonly();
-
-    constructor() {
-        this.supabase = createClient(environment.supabaseUrl, environment.supabaseKey);
-    }
 
     async getSeeds(): Promise<number> {
         try {

@@ -1,19 +1,15 @@
 import { inject, Injectable } from '@angular/core';
-import { createClient, SupabaseClient } from '@supabase/supabase-js';
-import { environment } from '../../environments/environment';
+import { SupabaseClient } from '@supabase/supabase-js';
 import { RankingResult } from '../../models/ranking/ranking';
+import { SupabaseService } from './supabase';
 import { UserService } from './user';
 
 @Injectable({
     providedIn: 'root',
 })
 export class RankingOverallService {
-    private supabase: SupabaseClient;
+    private supabase: SupabaseClient = inject(SupabaseService).client;
     private userService = inject(UserService);
-
-    constructor() {
-        this.supabase = createClient(environment.supabaseUrl, environment.supabaseKey);
-    }
 
     async getRanking(): Promise<RankingResult> {
         try {

@@ -1,21 +1,21 @@
-import { Injectable, signal, computed } from '@angular/core';
-import { createClient, SupabaseClient } from '@supabase/supabase-js';
+import { Injectable, signal, computed, inject } from '@angular/core';
+import { SupabaseClient } from '@supabase/supabase-js';
 import { environment } from '../../environments/environment';
 import { User } from '../../models/user/user';
 import { Profile } from '../../models/profile/profile';
 import { mapAuthError } from '../utils/auth-error-mapper';
+import { SupabaseService } from './supabase';
 
 @Injectable({
     providedIn: 'root',
 })
 export class UserService {
-    private supabase: SupabaseClient;
+    private supabase: SupabaseClient = inject(SupabaseService).client;
     private userSignal = signal<User | null>(null);
 
     readonly currentUser = computed(() => this.userSignal());
 
     constructor() {
-        this.supabase = createClient(environment.supabaseUrl, environment.supabaseKey);
         this.loadUserProfile();
     }
 

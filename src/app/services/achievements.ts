@@ -1,22 +1,18 @@
 import { inject, Injectable, signal } from '@angular/core';
-import { createClient, SupabaseClient } from '@supabase/supabase-js';
-import { environment } from '../../environments/environment';
+import { SupabaseClient } from '@supabase/supabase-js';
 import { Achievements } from '../../models/achievements/achievements';
 import { UserAchievement } from '../../models/user-achievement/user-achievement';
+import { SupabaseService } from './supabase';
 import { UserService } from './user';
 
 @Injectable({
     providedIn: 'root',
 })
 export class AchievementsService {
-    private supabase: SupabaseClient;
+    private supabase: SupabaseClient = inject(SupabaseService).client;
     private userService = inject(UserService);
 
     public unseenAchievement = signal<any | null>(null);
-
-    constructor() {
-        this.supabase = createClient(environment.supabaseUrl, environment.supabaseKey);
-    }
 
     async getAchievements(): Promise<Achievements[]> {
         try {
