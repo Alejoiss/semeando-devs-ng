@@ -1,0 +1,56 @@
+<aside
+    class="fixed left-0 top-0 h-full pt-24 pb-8 flex flex-col z-40 bg-[#091328] w-64 rounded-r-3xl shadow-[20px_0_30px_rgba(0,0,0,0.3)] transition-transform duration-300 -translate-x-full md:translate-x-0"
+    [class.translate-x-0]="navigationService.isSidebarOpen()"
+    aria-label="Menu lateral administrativo">
+    <nav class="flex-1 flex flex-col px-3 gap-1">
+        <a
+            class="flex items-center gap-4 px-4 py-3 transition-all"
+            routerLink="/admin/dashboard"
+            (click)="navigationService.closeSidebar()"
+            routerLinkActive="bg-[#0f1930] text-[#3fc2fb] rounded-xl border-l-4 border-[#fe69ac] translate-x-1"
+            #rlaDashboard="routerLinkActive"
+            [class]="!rlaDashboard.isActive ? 'text-[#dee5ff]/60 hover:bg-[#141f38] hover:text-[#3fc2fb]' : ''">
+            <span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+            <span class="font-label whitespace-nowrap" [class.font-bold]="rlaDashboard.isActive">Dashboard</span>
+        </a>
+        <a
+            class="flex items-center gap-4 px-4 py-3 transition-all"
+            routerLink="/admin/lista-de-alunos"
+            (click)="navigationService.closeSidebar()"
+            routerLinkActive="bg-[#0f1930] text-[#3fc2fb] rounded-xl border-l-4 border-[#fe69ac] translate-x-1"
+            #rlaStudents="routerLinkActive"
+            [class]="!rlaStudents.isActive ? 'text-[#dee5ff]/60 hover:bg-[#141f38] hover:text-[#3fc2fb]' : ''">
+            <span class="material-symbols-outlined" data-icon="group">group</span>
+            <span class="font-label whitespace-nowrap" [class.font-bold]="rlaStudents.isActive">Lista de alunos</span>
+        </a>
+        <a
+            class="flex items-center gap-4 px-4 py-3 transition-all"
+            routerLink="/admin/cadastro-de-cupons"
+            (click)="navigationService.closeSidebar()"
+            routerLinkActive="bg-[#0f1930] text-[#3fc2fb] rounded-xl border-l-4 border-[#fe69ac] translate-x-1"
+            #rlaCoupons="routerLinkActive"
+            [class]="!rlaCoupons.isActive ? 'text-[#dee5ff]/60 hover:bg-[#141f38] hover:text-[#3fc2fb]' : ''">
+            <span class="material-symbols-outlined" data-icon="local_offer">local_offer</span>
+            <span class="font-label whitespace-nowrap" [class.font-bold]="rlaCoupons.isActive">Cadastro de cupons</span>
+        </a>
+        <a
+            class="flex items-center gap-4 px-4 py-3 transition-all"
+            routerLink="/admin/envio-de-newsletter"
+            (click)="navigationService.closeSidebar()"
+            routerLinkActive="bg-[#0f1930] text-[#3fc2fb] rounded-xl border-l-4 border-[#fe69ac] translate-x-1"
+            #rlaNewsletter="routerLinkActive"
+            [class]="!rlaNewsletter.isActive ? 'text-[#dee5ff]/60 hover:bg-[#141f38] hover:text-[#3fc2fb]' : ''">
+            <span class="material-symbols-outlined" data-icon="mail">mail</span>
+            <span class="font-label whitespace-nowrap" [class.font-bold]="rlaNewsletter.isActive">Envio de newsletter</span>
+        </a>
+    </nav>
+    <div class="px-3 flex flex-col gap-1 mt-auto">
+        <a
+            class="flex items-center gap-4 text-error/60 px-4 py-3 hover:bg-error/10 hover:text-error transition-all rounded-xl"
+            routerLink="/"
+            (click)="logout($event)">
+            <span class="material-symbols-outlined" data-icon="logout">logout</span>
+            <span class="font-label">Sair</span>
+        </a>
+    </div>
+</aside>

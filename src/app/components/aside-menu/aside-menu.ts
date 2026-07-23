@@ -25,6 +25,10 @@ export class AsideMenu implements OnInit {
         return user?.role === 'teacher' || user?.role === 'admin';
     });
 
+    protected readonly isAdmin = computed(() => {
+        return this.userService.currentUser()?.role === 'admin';
+    });
+
     async ngOnInit(): Promise<void> {
         const user = this.userService.currentUser();
         if (user?.id && !user.isPro) {

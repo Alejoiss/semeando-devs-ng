@@ -2,6 +2,7 @@ import { Routes } from '@angular/router';
 import { authGuard } from './components/guards/auth.guard';
 import { teacherGuard } from './components/guards/teacher.guard';
 import { dailyLimitGuard } from './components/guards/daily-limit.guard';
+import { adminGuard } from './components/guards/admin.guard';
 
 export const routes: Routes = [
     {
@@ -175,6 +176,39 @@ export const routes: Routes = [
                 path: 'editar-licao/:id',
                 loadComponent: () => import('./pages/professor/professor-app/create-lesson/create-lesson').then(m => m.CreateLesson),
                 title: 'Editar Lição - Semeando Devs'
+            }
+        ]
+    },
+    {
+        path: 'admin',
+        canActivate: [authGuard, adminGuard],
+        loadComponent: () => import('./pages/admin/admin-app/admin-app').then(m => m.AdminApp),
+        title: 'Painel Administrativo - Semeando Devs',
+        children: [
+            {
+                path: '',
+                pathMatch: 'full',
+                redirectTo: 'dashboard'
+            },
+            {
+                path: 'dashboard',
+                loadComponent: () => import('./pages/admin/admin-app/dashboard/dashboard').then(m => m.AdminDashboard),
+                title: 'Dashboard - Semeando Devs'
+            },
+            {
+                path: 'lista-de-alunos',
+                loadComponent: () => import('./pages/admin/admin-app/students/students').then(m => m.AdminStudents),
+                title: 'Lista de Alunos - Semeando Devs'
+            },
+            {
+                path: 'cadastro-de-cupons',
+                loadComponent: () => import('./pages/admin/admin-app/coupons/coupons').then(m => m.AdminCoupons),
+                title: 'Cadastro de Cupons - Semeando Devs'
+            },
+            {
+                path: 'envio-de-newsletter',
+                loadComponent: () => import('./pages/admin/admin-app/newsletter/newsletter').then(m => m.AdminNewsletter),
+                title: 'Envio de Newsletter - Semeando Devs'
             }
         ]
     }

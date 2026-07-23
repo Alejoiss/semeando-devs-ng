@@ -1,0 +1,13 @@
+<div class="min-h-screen bg-background text-on-background font-body selection:bg-primary/30">
+    <app-header-admin></app-header-admin>
+
+    @if (navigationService.isSidebarOpen()) {
+        <div (click)="navigationService.closeSidebar()" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-30 md:hidden"></div>
+    }
+
+    <app-aside-admin></app-aside-admin>
+
+    <main class="md:pl-64 pt-24 pb-24 min-h-screen">
+        <router-outlet></router-outlet>
+    </main>
+</div>
