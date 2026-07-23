@@ -1,18 +1,77 @@
-import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component, effect, inject, signal } from '@angular/core';
+import { AdminStudentService } from '../../../../services/admin-student';
+import { AdminStudent } from '../../../../../models/admin-student/admin-student';
+import { NgOptimizedImage, DatePipe } from '@angular/common';
+import { RouterLink } from '@angular/router';
+import { FormControl, ReactiveFormsModule } from '@angular/forms';
+import { debounceTime } from 'rxjs/operators';
 
 @Component({
     selector: 'app-admin-students',
-    template: `
-        <div class="flex flex-col items-center justify-center min-h-[60vh] gap-6 px-6">
-            <div class="w-20 h-20 rounded-full bg-[#0f1930] flex items-center justify-center shadow-[0_0_30px_rgba(63,194,251,0.15)]">
-                <span class="material-symbols-outlined text-4xl text-[#3fc2fb]">group</span>
-            </div>
-            <div class="text-center">
-                <h2 class="text-2xl font-bold text-[#dee5ff] font-headline mb-2">Lista de Alunos</h2>
-                <p class="text-[#dee5ff]/50 font-body">Esta seção está em construção.</p>
-            </div>
-        </div>
-    `,
+    imports: [NgOptimizedImage, DatePipe, RouterLink, ReactiveFormsModule],
+    templateUrl: './students.html',
+    styleUrl: './students.scss',
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class AdminStudents {}
+export class AdminStudents {
+    private readonly adminStudentService = inject(AdminStudentService);
+
+    readonly searchQuery = signal('');
+    readonly sortField = signal<'name' | 'created_at'>('name');
+    readonly currentPage = signal(0);
+    readonly pageSize = signal(10);
+
+    readonly students = signal<AdminStudent[]>([]);
+    readonly totalCount = signal(0);
+    readonly isLoading = signal(false);
+    readonly error = signal<string | null>(null);
+
+    readonly searchControl = new FormControl('');
+
+    constructor() {
+        this.searchControl.valueChanges.pipe(
+            debounceTime(300)
+        ).subscribe(value => {
+            this.onSearchChange(value || '');
+        });
+
+        effect(() => {
+            // Read signals to trigger effect on change
+            this.searchQuery();
+            this.sortField();
+            this.currentPage();
+            this.pageSize();
+            
+            // Call untracked load
+            this.loadStudents();
+        });
+    }
+
+    onSearchChange(query: string) {
+        this.searchQuery.set(query);
+        this.currentPage.set(0);
+    }
+
+    async loadStudents() {
+        this.isLoading.set(true);
+        this.error.set(null);
+
+        try {
+            const result = await this.adminStudentService.getStudents({
+                search: this.searchQuery(),
+                sortField: this.sortField(),
+                sortDir: this.sortField() === 'created_at' ? 'desc' : 'asc',
+                page: this.currentPage(),
+                pageSize: this.pageSize()
+            });
+            this.students.set(result.students);
+            this.totalCount.set(result.total);
+        } catch (err: any) {
+            this.error.set(err.message || 'Não foi possível carregar os alunos. Tente novamente.');
+            this.students.set([]);
+            this.totalCount.set(0);
+        } finally {
+            this.isLoading.set(false);
+        }
+    }
+}

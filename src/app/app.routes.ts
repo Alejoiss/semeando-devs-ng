@@ -201,6 +201,12 @@ export const routes: Routes = [
                 title: 'Lista de Alunos - Semeando Devs'
             },
             {
+                path: 'lista-de-alunos/:id-aluno',
+                loadComponent: () => import('./pages/admin/admin-app/students/student-detail/student-detail').then(m => m.AdminStudentDetail),
+                title: 'Detalhes do Aluno - Semeando Devs'
+            },
+
+            {
                 path: 'cadastro-de-cupons',
                 loadComponent: () => import('./pages/admin/admin-app/coupons/coupons').then(m => m.AdminCoupons),
                 title: 'Cadastro de Cupons - Semeando Devs'
