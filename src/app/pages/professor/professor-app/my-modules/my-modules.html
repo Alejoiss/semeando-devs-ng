@@ -14,91 +14,89 @@
     </div>
 
     @if (toggleError()) {
-        <div role="alert" class="mb-6 flex items-start gap-3 bg-error/10 text-error rounded-xl px-5 py-4 text-label-md">
-            <span class="material-symbols-rounded text-lg shrink-0 mt-0.5">warning</span>
-            <span>{{ toggleError() }}</span>
-            <button type="button" (click)="toggleError.set(null)" class="ml-auto shrink-0 text-error hover:text-error/70 transition-colors" aria-label="Fechar alerta">
-                <span class="material-symbols-rounded text-lg">close</span>
-            </button>
-        </div>
+    <div role="alert" class="mb-6 flex items-start gap-3 bg-error/10 text-error rounded-xl px-5 py-4 text-label-md">
+        <span class="material-symbols-rounded text-lg shrink-0 mt-0.5">warning</span>
+        <span>{{ toggleError() }}</span>
+        <button type="button" (click)="toggleError.set(null)"
+            class="ml-auto shrink-0 text-error hover:text-error/70 transition-colors" aria-label="Fechar alerta">
+            <span class="material-symbols-rounded text-lg">close</span>
+        </button>
+    </div>
     }
 
     <!-- Grid Layout -->
     @if (isLoading()) {
-        <!-- Skeleton Loading -->
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            @for (_ of [1, 2, 3, 4]; track $index) {
-                <div class="bg-surface-container rounded-lg p-6 animate-pulse h-40"></div>
-            }
-        </div>
+    <!-- Skeleton Loading -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        @for (_ of [1, 2, 3, 4]; track $index) {
+        <div class="bg-surface-container rounded-lg p-6 animate-pulse h-40"></div>
+        }
+    </div>
     } @else if (error()) {
-        <div class="bg-surface-container rounded-lg p-8 flex flex-col items-center gap-4 text-center">
-            <span class="material-symbols-outlined text-5xl text-error">error</span>
-            <h3 class="text-lg font-bold font-headline text-on-surface">Erro ao carregar módulos</h3>
-            <p class="text-on-surface-variant text-sm font-body">{{ error() }}</p>
-        </div>
+    <div class="bg-surface-container rounded-lg p-8 flex flex-col items-center gap-4 text-center">
+        <span class="material-symbols-outlined text-5xl text-error">error</span>
+        <h3 class="text-lg font-bold font-headline text-on-surface">Erro ao carregar módulos</h3>
+        <p class="text-on-surface-variant text-sm font-body">{{ error() }}</p>
+    </div>
     } @else {
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            @for (module of modules(); track module.id) {
-                <div class="group relative overflow-hidden bg-surface-container rounded-lg p-6 transition-all hover:bg-surface-container-high hover:translate-y-[-4px]">
-                    <div class="relative z-10 flex gap-5">
-                        <div class="h-16 w-16 shrink-0 flex items-center justify-center rounded-2xl bg-primary/10 text-primary">
-                            @if (module.icon) {
-                                <span class="material-symbols-outlined text-3xl">{{ module.icon }}</span>
-                            } @else {
-                                <img [src]="module.avatar" [alt]="module.title" class="w-full h-full object-cover rounded-2xl">
-                            }
-                        </div>
-                        <div class="flex-1 pr-16">
-                            <h3 class="text-xl font-bold font-headline mb-1 text-on-surface">{{ module.title }}</h3>
-                            <p class="text-on-surface-variant text-sm line-clamp-2">{{ module.description }}</p>
-                        </div>
-                    </div>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        @for (module of modules(); track module.id) {
+        <div
+            class="group relative overflow-hidden bg-surface-container rounded-lg p-6 transition-all hover:bg-surface-container-high hover:translate-y-[-4px]">
+            <div class="relative z-10 flex gap-5">
+                <div class="h-16 w-16 shrink-0 flex items-center justify-center rounded-2xl bg-[#fff] p-1 text-primary">
+                    @if (module.icon) {
+                    <span class="material-symbols-outlined text-3xl">{{ module.icon }}</span>
+                    } @else {
+                    <img [src]="module.avatar" [alt]="module.title" class="w-full h-full object-cover rounded-2xl">
+                    }
+                </div>
+                <div class="flex-1 pr-16">
+                    <h3 class="text-xl font-bold font-headline mb-1 text-on-surface">{{ module.title }}</h3>
+                    <p class="text-on-surface-variant text-sm line-clamp-2">{{ module.description }}</p>
+                </div>
+            </div>
 
-                    <!-- Actions Row -->
-                    <div class="ml-auto mt-4 flex items-center gap-3 w-fit">
-                        @if (isAdmin()) {
-                            <label
-                                class="flex items-center gap-2 cursor-pointer select-none"
-                                [attr.aria-label]="'Disponível: ' + (!module.inRevision ? 'sim' : 'não')">
-                                <span class="text-label-sm text-on-surface-variant font-medium">Disponível</span>
-                                <button
-                                    type="button"
-                                    role="switch"
-                                    [attr.aria-checked]="!module.inRevision"
-                                    [disabled]="togglingModuleId() === module.id"
-                                    (click)="toggleAvailability(module, !!module.inRevision)"
-                                    class="relative h-6 w-11 rounded-full transition-colors duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary disabled:opacity-50 disabled:cursor-not-allowed"
-                                    [style.background-color]="!module.inRevision ? '#4ade80' : '#f87171'">
-                                    @if (togglingModuleId() === module.id) {
-                                        <span class="absolute inset-0 flex items-center justify-center">
-                                            <div class="h-3 w-3 rounded-full border-2 border-on-surface border-t-transparent animate-spin"></div>
-                                        </span>
-                                    } @else {
-                                        <span
-                                            class="absolute top-0.5 left-0.5 h-5 w-5 rounded-full shadow-md transition-transform duration-300"
-                                            style="background-color: #ffffff;"
-                                            [class.translate-x-5]="!module.inRevision">
-                                        </span>
-                                    }
-                                </button>
-                            </label>
+            <!-- Actions Row -->
+            <div class="ml-auto mt-4 flex items-center gap-3 w-fit">
+                @if (isAdmin()) {
+                <label class="flex items-center gap-2 cursor-pointer select-none"
+                    [attr.aria-label]="'Disponível: ' + (!module.inRevision ? 'sim' : 'não')">
+                    <span class="text-label-sm text-on-surface-variant font-medium">Disponível</span>
+                    <button type="button" role="switch" [attr.aria-checked]="!module.inRevision"
+                        [disabled]="togglingModuleId() === module.id"
+                        (click)="toggleAvailability(module, !!module.inRevision)"
+                        class="relative h-6 w-11 rounded-full transition-colors duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary disabled:opacity-50 disabled:cursor-not-allowed"
+                        [style.background-color]="!module.inRevision ? '#4ade80' : '#f87171'">
+                        @if (togglingModuleId() === module.id) {
+                        <span class="absolute inset-0 flex items-center justify-center">
+                            <div
+                                class="h-3 w-3 rounded-full border-2 border-on-surface border-t-transparent animate-spin">
+                            </div>
+                        </span>
+                        } @else {
+                        <span
+                            class="absolute top-0.5 left-0.5 h-5 w-5 rounded-full shadow-md transition-transform duration-300"
+                            style="background-color: #ffffff;" [class.translate-x-5]="!module.inRevision">
+                        </span>
                         }
-                        <a
-                            [routerLink]="['/professor/editar-modulo', module.id]"
-                            class="flex items-center gap-2 px-6 py-2 bg-gradient-to-r from-primary to-primary-container text-on-primary-container font-headline font-bold rounded-xl glow-primary hover:scale-105 active:scale-95 transition-all text-sm no-underline"
-                            [attr.aria-label]="'Editar módulo ' + module.title">
-                            <span class="material-symbols-outlined text-sm">edit</span>
-                            Editar
-                        </a>
-                    </div>
-                </div>
-            } @empty {
-                <div class="col-span-full bg-surface-container rounded-lg p-12 flex flex-col items-center gap-4 text-center">
-                    <span class="material-symbols-outlined text-5xl text-on-surface-variant">inbox</span>
-                    <p class="text-on-surface-variant text-lg font-body">Você ainda não possui módulos vinculados.</p>
-                </div>
-            }
+                    </button>
+                </label>
+                }
+                <a [routerLink]="['/professor/editar-modulo', module.id]"
+                    class="flex items-center gap-2 px-6 py-2 bg-gradient-to-r from-primary to-primary-container text-on-primary-container font-headline font-bold rounded-xl glow-primary hover:scale-105 active:scale-95 transition-all text-sm no-underline"
+                    [attr.aria-label]="'Editar módulo ' + module.title">
+                    <span class="material-symbols-outlined text-sm">edit</span>
+                    Editar
+                </a>
+            </div>
         </div>
+        } @empty {
+        <div class="col-span-full bg-surface-container rounded-lg p-12 flex flex-col items-center gap-4 text-center">
+            <span class="material-symbols-outlined text-5xl text-on-surface-variant">inbox</span>
+            <p class="text-on-surface-variant text-lg font-body">Você ainda não possui módulos vinculados.</p>
+        </div>
+        }
+    </div>
     }
 </div>
