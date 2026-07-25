@@ -1,0 +1,114 @@
+<div class="flex flex-col gap-8 px-6 py-8 max-w-screen-xl mx-auto">
+
+    <!-- Header -->
+    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div>
+            <h1 class="text-2xl font-bold font-headline text-[#dee5ff]">Dashboard</h1>
+            <p class="text-sm text-[#dee5ff]/50 font-body mt-1">Visão geral da plataforma</p>
+        </div>
+
+        <!-- Period filter -->
+        <nav aria-label="Filtro de período" class="flex gap-2 flex-wrap">
+            @for (opt of periodOptions; track opt.value) {
+                <button
+                    type="button"
+                    [id]="'period-' + opt.value"
+                    (click)="setPeriod(opt.value)"
+                    [class.bg-[#3fc2fb]]="service.selectedPeriod() === opt.value"
+                    [class.text-[#060e20]]="service.selectedPeriod() === opt.value"
+                    [class.font-semibold]="service.selectedPeriod() === opt.value"
+                    [class.bg-[#0f1930]]="service.selectedPeriod() !== opt.value"
+                    [class.text-[#dee5ff]]="service.selectedPeriod() !== opt.value"
+                    [attr.aria-pressed]="service.selectedPeriod() === opt.value"
+                    class="px-4 py-2 rounded-full text-sm font-label transition-all duration-200 hover:opacity-80">
+                    {{ opt.label }}
+                </button>
+            }
+        </nav>
+    </div>
+
+    <!-- KPI Cards -->
+    <section aria-label="Métricas principais">
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            @for (kpi of service.kpis(); track kpi.label) {
+                <app-kpi-card
+                    [label]="kpi.label"
+                    [value]="kpi.value"
+                    [icon]="kpi.icon"
+                    [trend]="kpi.trend"
+                    [isLoading]="kpi.isLoading"
+                    [hasError]="kpi.hasError" />
+            }
+        </div>
+    </section>
+
+    <!-- Users & Growth -->
+    <section aria-label="Usuários e crescimento">
+        <h2 class="text-base font-semibold font-headline text-[#dee5ff]/70 uppercase tracking-widest mb-4">Usuários & Crescimento</h2>
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+            <div class="bg-[#0f1930] rounded-2xl p-4">
+                <h3 class="text-sm font-label text-[#dee5ff]/60 mb-3">Novos cadastros (12 meses)</h3>
+                <app-line-chart
+                    [options]="service.userGrowthOption()"
+                    ariaLabel="Gráfico de linha mostrando novos cadastros de alunos por mês nos últimos 12 meses" />
+            </div>
+            <div class="bg-[#0f1930] rounded-2xl p-4">
+                <h3 class="text-sm font-label text-[#dee5ff]/60 mb-3">PRO vs. Gratuito</h3>
+                <app-donut-chart
+                    [options]="service.proFreeOption()"
+                    ariaLabel="Gráfico de rosca mostrando a proporção de usuários PRO versus gratuitos" />
+            </div>
+        </div>
+    </section>
+
+    <!-- Revenue & Subscriptions -->
+    <section aria-label="Receita e assinaturas">
+        <h2 class="text-base font-semibold font-headline text-[#dee5ff]/70 uppercase tracking-widest mb-4">Receita & Assinaturas</h2>
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+            <div class="bg-[#0f1930] rounded-2xl p-4">
+                <h3 class="text-sm font-label text-[#dee5ff]/60 mb-3">Receita mensal (12 meses)</h3>
+                <app-bar-chart
+                    [options]="service.revenueOption()"
+                    ariaLabel="Gráfico de barras mostrando a receita mensal em reais nos últimos 12 meses" />
+            </div>
+            <div class="bg-[#0f1930] rounded-2xl p-4">
+                <h3 class="text-sm font-label text-[#dee5ff]/60 mb-3">Status das assinaturas</h3>
+                <app-donut-chart
+                    [options]="service.subStatusOption()"
+                    ariaLabel="Gráfico de rosca mostrando a distribuição de assinaturas por status" />
+            </div>
+            <div class="bg-[#0f1930] rounded-2xl p-4">
+                <h3 class="text-sm font-label text-[#dee5ff]/60 mb-3">Ciclo de cobrança</h3>
+                <app-bar-chart
+                    [options]="service.billingCycleOption()"
+                    ariaLabel="Gráfico de barras horizontais mostrando a distribuição de assinaturas entre ciclos mensal e anual" />
+            </div>
+        </div>
+    </section>
+
+    <!-- Engagement & Platform Activity -->
+    <section aria-label="Engajamento e atividade da plataforma">
+        <h2 class="text-base font-semibold font-headline text-[#dee5ff]/70 uppercase tracking-widest mb-4">Engajamento & Atividade</h2>
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+            <div class="bg-[#0f1930] rounded-2xl p-4">
+                <h3 class="text-sm font-label text-[#dee5ff]/60 mb-3">XP distribuído (12 meses)</h3>
+                <app-bar-chart
+                    [options]="service.xpOption()"
+                    ariaLabel="Gráfico de barras empilhadas mostrando o XP distribuído por mês agrupado por motivo" />
+            </div>
+            <div class="bg-[#0f1930] rounded-2xl p-4">
+                <h3 class="text-sm font-label text-[#dee5ff]/60 mb-3">Uso de IA (período)</h3>
+                <app-line-chart
+                    [options]="service.aiUsageOption()"
+                    ariaLabel="Gráfico de linha mostrando o uso diário de recursos de IA por tipo de ação" />
+            </div>
+            <div class="bg-[#0f1930] rounded-2xl p-4">
+                <h3 class="text-sm font-label text-[#dee5ff]/60 mb-3">Seeds distribuídas (12 meses)</h3>
+                <app-bar-chart
+                    [options]="service.seedOption()"
+                    ariaLabel="Gráfico de barras mostrando o total de seeds distribuídas por mês" />
+            </div>
+        </div>
+    </section>
+
+</div>
