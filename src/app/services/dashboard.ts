@@ -97,6 +97,7 @@ export class DashboardService {
     readonly xpOption = signal<EChartsOption>(emptyOption('Carregando...'));
     readonly aiUsageOption = signal<EChartsOption>(emptyOption('Carregando...'));
     readonly seedOption = signal<EChartsOption>(emptyOption('Carregando...'));
+    readonly lessonsPerModuleOption = signal<EChartsOption>(emptyOption('Carregando...'));
 
     constructor() {
         effect(() => {
@@ -120,6 +121,7 @@ export class DashboardService {
             this.loadXp(),
             this.loadAiUsage(),
             this.loadSeeds(),
+            this.loadLessonsPerModule(),
         ]);
     }
 
@@ -363,6 +365,49 @@ export class DashboardService {
             yAxis: { type: 'value', axisLabel: { color: DASHBOARD_PALETTE.onSurface }, splitLine: { lineStyle: { color: 'rgba(222,229,255,0.08)' } } },
             series: [{ type: 'bar', data: values, itemStyle: { color: DASHBOARD_PALETTE.tertiary, borderRadius: [4, 4, 0, 0] } }],
             grid: { left: 16, right: 16, top: 16, bottom: 24, containLabel: true },
+        });
+    }
+
+    private async loadLessonsPerModule(): Promise<void> {
+        const { data, error } = await this.supabase
+            .from('user_lessons')
+            .select(`
+                id,
+                lesson:lesson_id (
+                    sub_module:sub_module_id (
+                        module:module_id (
+                            title
+                        )
+                    )
+                )
+            `)
+            .eq('completed', true);
+
+        if (error) { this.lessonsPerModuleOption.set(emptyOption('Erro ao carregar dados')); return; }
+
+        const counts: Record<string, number> = {};
+        for (const row of data ?? []) {
+            const moduleTitle = (row.lesson as any)?.sub_module?.module?.title;
+            if (moduleTitle) {
+                counts[moduleTitle] = (counts[moduleTitle] ?? 0) + 1;
+            }
+        }
+
+        const keys = Object.keys(counts).sort((a, b) => counts[b] - counts[a]); // Sort descending
+        if (keys.length === 0) {
+            this.lessonsPerModuleOption.set(emptyOption('Sem lições concluídas'));
+            return;
+        }
+
+        const values = keys.map(k => counts[k]);
+
+        this.lessonsPerModuleOption.set({
+            ...baseChartDefaults(),
+            tooltip: { trigger: 'axis', axisPointer: { type: 'shadow' } },
+            xAxis: { type: 'value', axisLabel: { color: DASHBOARD_PALETTE.onSurface }, splitLine: { lineStyle: { color: 'rgba(222,229,255,0.08)' } } },
+            yAxis: { type: 'category', data: keys, axisLabel: { color: DASHBOARD_PALETTE.onSurface, width: 120, overflow: 'truncate' }, axisLine: { lineStyle: { color: DASHBOARD_PALETTE.onSurfaceMuted } }, inverse: true },
+            series: [{ type: 'bar', data: values, itemStyle: { color: DASHBOARD_PALETTE.primary, borderRadius: [0, 4, 4, 0] }, label: { show: true, position: 'right', color: DASHBOARD_PALETTE.onSurface, formatter: '{c}' } }],
+            grid: { left: 16, right: 48, top: 8, bottom: 8, containLabel: true },
         });
     }
 }
