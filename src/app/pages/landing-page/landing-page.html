@@ -6,7 +6,8 @@
         <section id="hero" class="relative py-24 md:py-40 px-6 text-center overflow-hidden">
             <div class="hero-backdrop absolute inset-0 -z-10 opacity-50"></div>
             <div class="max-w-4xl mx-auto space-y-8 relative z-10">
-                <div class="inline-block px-4 py-1.5 rounded-full bg-primary/10 border border-primary/20 text-primary text-xs font-bold tracking-widest uppercase mb-4">
+                <div
+                    class="inline-block px-4 py-1.5 rounded-full bg-primary/10 border border-primary/20 text-primary text-xs font-bold tracking-widest uppercase mb-4">
                     Plataforma de aprendizado gamificada
                 </div>
                 <h1 class="font-headline text-4xl md:text-7xl font-extrabold leading-tight tracking-tighter">
@@ -14,10 +15,12 @@
                     <span class="gradient-text">Desenvolvimento Web</span>
                 </h1>
                 <p class="text-on-surface-variant text-lg md:text-xl max-w-2xl mx-auto leading-relaxed">
-                    Transforme o aprendizado de código em uma jornada épica. Domine as tecnologias mais quentes do mercado com desafios práticos e feedback de IA em tempo real.
+                    Transforme o aprendizado de código em uma jornada épica. Domine as tecnologias mais quentes do
+                    mercado com desafios práticos e feedback de IA em tempo real.
                 </p>
                 <div class="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4">
-                    <button routerLink="/auth/login" class="btn-primary w-full sm:w-auto text-lg px-8 py-4 shadow-primary/20">
+                    <button routerLink="/auth/login"
+                        class="btn-primary w-full sm:w-auto text-lg px-8 py-4 shadow-primary/20">
                         Começar Minha Jornada
                     </button>
                     <button routerLink="/cursos" class="btn-secondary w-full sm:w-auto text-lg px-8 py-4">
@@ -28,11 +31,8 @@
 
             <div class="mt-20 relative max-w-5xl mx-auto px-4">
                 <div class="glass-card rounded-2xl overflow-hidden border border-outline-variant/10 shadow-2xl">
-                    <img
-                        src="assets/screens/home.png"
-                        alt="Plataforma Semeando Devs"
-                        class="w-full h-auto opacity-90 hover:scale-[1.02] transition-transform duration-700"
-                    />
+                    <img src="assets/screens/home.png" alt="Plataforma Semeando Devs"
+                        class="w-full h-auto opacity-90 hover:scale-[1.02] transition-transform duration-700" />
                 </div>
             </div>
         </section>
@@ -43,44 +43,45 @@
                 <span>Sua Jornada Começa Aqui</span>
                 <h2>Módulos de Aprendizado</h2>
                 <p class="text-on-surface-variant max-w-2xl mx-auto">
-                    Escolha sua porta de entrada para o mundo do desenvolvimento. Nossas trilhas são estruturadas para levar você do zero ao domínio total.
+                    Escolha sua porta de entrada para o mundo do desenvolvimento. Nossas trilhas são estruturadas para
+                    levar você do zero ao domínio total.
                 </p>
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                 @for(module of modules(); track module.id) {
-                    <article class="track-card transition-all"
-                             [class.opacity-60]="module.inRevision"
-                             [class.grayscale-[0.5]]="module.inRevision"
-                             [class.hover:grayscale-0]="module.inRevision">
+                <article class="track-card transition-all" [class.opacity-60]="module.inRevision"
+                    [class.grayscale-[0.5]]="module.inRevision" [class.hover:grayscale-0]="module.inRevision">
 
-                        <!-- Using inline styles for colors just for mock or we can map them. We use module.icon string to show the material icon -->
-                        <div class="card-icon bg-primary/10 text-primary">
-                            <span class="material-symbols-outlined text-4xl">{{ module.icon }}</span>
+                    <!-- Using inline styles for colors just for mock or we can map them. We use module.icon string to show the material icon -->
+                    <div class="card-icon bg-primary/10 text-primary">
+                        <span class="material-symbols-outlined text-4xl">{{ module.icon }}</span>
+                    </div>
+
+                    <h3>{{ module.title }}</h3>
+                    <p>{{ module.description }}</p>
+
+                    @if(module.inRevision) {
+                    <div class="mt-auto">
+                        <span
+                            class="px-3 py-1 rounded-full bg-surface-container-highest text-[10px] font-bold uppercase tracking-[0.2em]">Em
+                            Breve</span>
+                    </div>
+                    } @else {
+                    <div class="space-y-4">
+                        <div class="flex justify-between text-xs font-bold uppercase tracking-wider">
+                            <span class="text-on-surface-variant">
+                                <!-- Replace with real count if available -->
+                                Lições
+                            </span>
+                            <span class="text-primary">Disponível</span>
                         </div>
-
-                        <h3>{{ module.title }}</h3>
-                        <p>{{ module.description }}</p>
-
-                        @if(module.inRevision) {
-                            <div class="mt-auto">
-                                <span class="px-3 py-1 rounded-full bg-surface-container-highest text-[10px] font-bold uppercase tracking-[0.2em]">Em Breve</span>
-                            </div>
-                        } @else {
-                            <div class="space-y-4">
-                                <div class="flex justify-between text-xs font-bold uppercase tracking-wider">
-                                    <span class="text-on-surface-variant">
-                                        <!-- Replace with real count if available -->
-                                        Lições
-                                    </span>
-                                    <span class="text-primary">Disponível</span>
-                                </div>
-                                <div class="progress-track">
-                                    <div class="progress-fill bg-primary w-0"></div>
-                                </div>
-                            </div>
-                        }
-                    </article>
+                        <div class="progress-track">
+                            <div class="progress-fill bg-primary w-0"></div>
+                        </div>
+                    </div>
+                    }
+                </article>
                 }
             </div>
         </section>
@@ -92,54 +93,62 @@
                     <span>Metodologia Semeando</span>
                     <h2>Aprenda, Revise e Desafie-se</h2>
                     <p class="text-on-surface-variant max-w-2xl mx-auto">
-                        Nossa abordagem é focada na retenção de conhecimento e na prática real. Você não apenas assiste, você constrói.
+                        Nossa abordagem é focada na retenção de conhecimento e na prática real. Você não apenas assiste,
+                        você constrói.
                     </p>
                 </div>
 
                 <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-20">
                     <!-- Normal Lesson -->
                     <div (click)="selectMethodology('teoria')"
-                         class="p-8 rounded-[2rem] cursor-pointer transition-colors border-2"
-                         [class]="activeMethodology() === 'teoria' ? 'bg-surface-container-high border-primary/20' : 'bg-surface-container hover:bg-surface-container-high border-transparent'">
-                        <div class="w-12 h-12 rounded-xl bg-primary/10 text-primary flex items-center justify-center mb-6">
+                        class="p-8 rounded-[2rem] cursor-pointer transition-colors border-2"
+                        [class]="activeMethodology() === 'teoria' ? 'bg-surface-container-high border-primary/20' : 'bg-surface-container hover:bg-surface-container-high border-transparent'">
+                        <div
+                            class="w-12 h-12 rounded-xl bg-primary/10 text-primary flex items-center justify-center mb-6">
                             <span class="material-symbols-outlined">menu_book</span>
                         </div>
                         <h3 class="text-xl font-bold mb-4 font-headline">1. Teoria & Quiz</h3>
                         <p class="text-on-surface-variant text-sm leading-relaxed">
-                            Conteúdo direto ao ponto com textos, vídeos e códigos. Valide seu conhecimento com quizes e avance apenas quando estiver pronto.
+                            Conteúdo direto ao ponto com textos, vídeos e códigos. Valide seu conhecimento com quizes e
+                            avance apenas quando estiver pronto.
                         </p>
                     </div>
 
                     <!-- Review Lesson -->
                     <div (click)="selectMethodology('revisao')"
-                         class="p-8 rounded-[2rem] cursor-pointer transition-colors border-2"
-                         [class]="activeMethodology() === 'revisao' ? 'bg-surface-container-high border-secondary/20' : 'bg-surface-container hover:bg-surface-container-high border-transparent'">
-                        <div class="w-12 h-12 rounded-xl bg-secondary/10 text-secondary flex items-center justify-center mb-6">
+                        class="p-8 rounded-[2rem] cursor-pointer transition-colors border-2"
+                        [class]="activeMethodology() === 'revisao' ? 'bg-surface-container-high border-secondary/20' : 'bg-surface-container hover:bg-surface-container-high border-transparent'">
+                        <div
+                            class="w-12 h-12 rounded-xl bg-secondary/10 text-secondary flex items-center justify-center mb-6">
                             <span class="material-symbols-outlined">history</span>
                         </div>
                         <h3 class="text-xl font-bold mb-4 font-headline">2. Revisão Inteligente</h3>
                         <p class="text-on-surface-variant text-sm leading-relaxed">
-                            Não esqueça o que aprendeu. Nossas lições de revisão compilam os pontos mais importantes e as questões que você mais precisa praticar.
+                            Não esqueça o que aprendeu. Nossas lições de revisão compilam os pontos mais importantes e
+                            as questões que você mais precisa praticar.
                         </p>
                     </div>
 
                     <!-- Challenge Lesson -->
                     <div (click)="selectMethodology('desafio')"
-                         class="p-8 rounded-[2rem] cursor-pointer transition-colors border-2"
-                         [class]="activeMethodology() === 'desafio' ? 'bg-surface-container-high border-tertiary/20' : 'bg-surface-container hover:bg-surface-container-high border-transparent'">
-                        <div class="w-12 h-12 rounded-xl bg-tertiary/10 text-tertiary flex items-center justify-center mb-6">
+                        class="p-8 rounded-[2rem] cursor-pointer transition-colors border-2"
+                        [class]="activeMethodology() === 'desafio' ? 'bg-surface-container-high border-tertiary/20' : 'bg-surface-container hover:bg-surface-container-high border-transparent'">
+                        <div
+                            class="w-12 h-12 rounded-xl bg-tertiary/10 text-tertiary flex items-center justify-center mb-6">
                             <span class="material-symbols-outlined">code</span>
                         </div>
                         <h3 class="text-xl font-bold mb-4 font-headline">3. Desafios de Código</h3>
                         <p class="text-on-surface-variant text-sm leading-relaxed">
-                            Mão na massa! Resolva problemas reais escrevendo código diretamente na plataforma e receba feedback imediato.
+                            Mão na massa! Resolva problemas reais escrevendo código diretamente na plataforma e receba
+                            feedback imediato.
                         </p>
                     </div>
                 </div>
 
                 <!-- Methodology Preview -->
                 <div class="flex justify-center mt-12 w-full max-w-4xl mx-auto">
-                    <img [src]="methodologyImages[activeMethodology()]" alt="Preview da metodologia" class="w-full h-auto rounded-2xl shadow-2xl border border-outline-variant/10 transition-all duration-300">
+                    <img [src]="methodologyImages[activeMethodology()]" alt="Preview da metodologia"
+                        class="w-full h-auto rounded-2xl shadow-2xl border border-outline-variant/10 transition-all duration-300">
                 </div>
             </div>
         </section>
@@ -153,7 +162,8 @@
                             <span>Ecossistema de Progressão</span>
                             <h2>Jogue enquanto aprende</h2>
                             <p class="text-on-surface-variant">
-                                Transformamos o esforço em recompensa. Cada lição concluída, cada desafio vencido e cada conquista desbloqueada aproxima você do topo.
+                                Transformamos o esforço em recompensa. Cada lição concluída, cada desafio vencido e cada
+                                conquista desbloqueada aproxima você do topo.
                             </p>
                         </div>
 
@@ -165,7 +175,8 @@
                                 </div>
                                 <div>
                                     <h4 class="font-bold mb-1">XP & Evolução</h4>
-                                    <p class="text-xs text-on-surface-variant">Ganhe experiência em cada atividade e suba de nível no seu próprio ritmo.</p>
+                                    <p class="text-xs text-on-surface-variant">Ganhe experiência em cada atividade e
+                                        suba de nível no seu próprio ritmo.</p>
                                 </div>
                             </div>
 
@@ -176,7 +187,8 @@
                                 </div>
                                 <div>
                                     <h4 class="font-bold mb-1">Seeds (Moeda)</h4>
-                                    <p class="text-xs text-on-surface-variant">Acumule sementes e troque por dicas valiosas nos quizes mais difíceis.</p>
+                                    <p class="text-xs text-on-surface-variant">Acumule sementes e troque por dicas
+                                        valiosas nos quizes mais difíceis.</p>
                                 </div>
                             </div>
 
@@ -187,7 +199,8 @@
                                 </div>
                                 <div>
                                     <h4 class="font-bold mb-1">Rankings</h4>
-                                    <p class="text-xs text-on-surface-variant">Dispute o topo com outros desenvolvedores em rankings semanais e mensais.</p>
+                                    <p class="text-xs text-on-surface-variant">Dispute o topo com outros desenvolvedores
+                                        em rankings semanais e mensais.</p>
                                 </div>
                             </div>
 
@@ -198,7 +211,8 @@
                                 </div>
                                 <div>
                                     <h4 class="font-bold mb-1">Conquistas</h4>
-                                    <p class="text-xs text-on-surface-variant">Desbloqueie medalhas exclusivas por consistência, perfeição e maestria.</p>
+                                    <p class="text-xs text-on-surface-variant">Desbloqueie medalhas exclusivas por
+                                        consistência, perfeição e maestria.</p>
                                 </div>
                             </div>
                         </div>
@@ -208,36 +222,40 @@
                         <!-- Visual representation of ranking/achievements -->
                         <div class="relative z-10 space-y-4 max-w-sm mx-auto">
                             @for(user of mockRanking(); track user.position) {
-                                <div class="glass-card p-6 rounded-2xl transition-all duration-500"
-                                     [class.shadow-xl]="user.isCurrentUser"
-                                     [class.hover:-translate-x-4]="user.isCurrentUser"
-                                     [class.opacity-80]="!user.isCurrentUser && user.position === 2"
-                                     [class.scale-95]="!user.isCurrentUser && user.position === 2"
-                                     [class.opacity-60]="!user.isCurrentUser && user.position === 3"
-                                     [class.scale-90]="!user.isCurrentUser && user.position === 3"
-                                     [class.opacity-40]="!user.isCurrentUser && user.position > 3"
-                                     [class.scale-75]="!user.isCurrentUser && user.position > 3">
-                                    <div class="flex items-center gap-4">
-                                        <div class="w-10 h-10 rounded-full flex items-center justify-center font-bold"
-                                             [class.bg-secondary]="user.isCurrentUser"
-                                             [class.bg-opacity-20]="user.isCurrentUser"
-                                             [class.text-secondary]="user.isCurrentUser"
-                                             [class.bg-surface-container]="!user.isCurrentUser"
-                                             [class.text-on-surface-variant]="!user.isCurrentUser">
-                                            {{ user.position }}
-                                        </div>
-                                        <div class="flex-1">
-                                            <div class="text-sm font-bold">{{ user.name }}</div>
-                                            <div class="text-[10px] text-on-surface-variant uppercase">{{ user.xp }} XP</div>
+                            <div class="glass-card p-6 rounded-2xl transition-all duration-500"
+                                [class.shadow-xl]="user.isCurrentUser" [class.hover:-translate-x-4]="user.isCurrentUser"
+                                [class.opacity-80]="!user.isCurrentUser && user.position === 2"
+                                [class.scale-95]="!user.isCurrentUser && user.position === 2"
+                                [class.opacity-60]="!user.isCurrentUser && user.position === 3"
+                                [class.scale-90]="!user.isCurrentUser && user.position === 3"
+                                [class.opacity-40]="!user.isCurrentUser && user.position > 3"
+                                [class.scale-75]="!user.isCurrentUser && user.position > 3">
+                                <div class="flex items-center gap-4">
+                                    <div class="w-10 h-10 rounded-full flex items-center justify-center font-bold"
+                                        [class.bg-secondary]="user.isCurrentUser"
+                                        [class.bg-opacity-20]="user.isCurrentUser"
+                                        [class.text-secondary]="user.isCurrentUser"
+                                        [class.bg-surface-container]="!user.isCurrentUser"
+                                        [class.text-on-surface-variant]="!user.isCurrentUser">
+                                        {{ user.position }}
+                                    </div>
+                                    <div class="flex-1">
+                                        <div class="text-sm font-bold">{{ user.name }}</div>
+                                        <div class="text-[10px] text-on-surface-variant uppercase">{{ user.xp }} XP
                                         </div>
                                     </div>
                                 </div>
+                            </div>
                             }
                         </div>
 
                         <!-- Decorative elements -->
-                        <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-primary/20 blur-[100px] -z-10 rounded-full"></div>
-                        <div class="absolute -top-10 -right-10 w-40 h-40 bg-secondary/10 blur-[80px] -z-10 rounded-full"></div>
+                        <div
+                            class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-primary/20 blur-[100px] -z-10 rounded-full">
+                        </div>
+                        <div
+                            class="absolute -top-10 -right-10 w-40 h-40 bg-secondary/10 blur-[80px] -z-10 rounded-full">
+                        </div>
                     </div>
                 </div>
             </div>
@@ -252,19 +270,22 @@
                 </div>
                 <div class="space-y-4">
                     @for(item of faqItems(); track $index) {
-                        <div class="glass-card rounded-2xl overflow-hidden cursor-pointer" (click)="toggleFaq($index)">
-                            <div class="p-6 flex items-center justify-between bg-surface-container hover:bg-surface-container-high transition-colors">
-                                <h3 class="font-bold text-lg">{{ item.question }}</h3>
-                                <span class="material-symbols-outlined text-primary transition-transform duration-300" [class.rotate-180]="item.expanded">
-                                    expand_more
-                                </span>
-                            </div>
-                            @if(item.expanded) {
-                                <div class="p-6 pt-0 bg-surface-container text-on-surface-variant border-t border-outline-variant/10">
-                                    {{ item.answer }}
-                                </div>
-                            }
+                    <div class="glass-card rounded-2xl overflow-hidden cursor-pointer" (click)="toggleFaq($index)">
+                        <div
+                            class="p-6 flex items-center justify-between bg-surface-container hover:bg-surface-container-high transition-colors">
+                            <h3 class="font-bold text-lg">{{ item.question }}</h3>
+                            <span class="material-symbols-outlined text-primary transition-transform duration-300"
+                                [class.rotate-180]="item.expanded">
+                                expand_more
+                            </span>
                         </div>
+                        @if(item.expanded) {
+                        <div
+                            class="p-6 pt-0 bg-surface-container text-on-surface-variant border-t border-outline-variant/10">
+                            {{ item.answer }}
+                        </div>
+                        }
+                    </div>
                     }
                 </div>
             </div>
@@ -273,10 +294,12 @@
         <!-- Final CTA Section -->
         <section id="cta-final" class="py-24 px-6 relative overflow-hidden">
             <div class="max-w-4xl mx-auto text-center relative z-10">
-                <div class="glass-card p-12 md:p-20 rounded-[3rem] border border-primary/10 shadow-2xl relative overflow-hidden">
+                <div
+                    class="glass-card p-12 md:p-20 rounded-[3rem] border border-primary/10 shadow-2xl relative overflow-hidden">
                     <!-- Background Glow -->
                     <div class="absolute -top-24 -left-24 w-64 h-64 bg-primary/20 blur-[100px] rounded-full"></div>
-                    <div class="absolute -bottom-24 -right-24 w-64 h-64 bg-secondary/20 blur-[100px] rounded-full"></div>
+                    <div class="absolute -bottom-24 -right-24 w-64 h-64 bg-secondary/20 blur-[100px] rounded-full">
+                    </div>
 
                     <div class="relative z-10 space-y-8">
                         <h2 class="font-headline text-4xl md:text-6xl font-extrabold tracking-tighter leading-tight">
@@ -284,12 +307,15 @@
                             <span class="gradient-text">Desenvolvedor?</span>
                         </h2>
                         <p class="text-on-surface-variant text-lg max-w-xl mx-auto">
-                            Junte-se a milhares de outros estudantes e comece sua jornada hoje mesmo. O futuro do seu código começa aqui.
+                            Junte-se a milhares de outros estudantes e comece sua jornada hoje mesmo. O futuro do seu
+                            código começa aqui.
                         </p>
                         <div class="pt-4">
-                            <button routerLink="/auth/register" class="btn-primary px-12 py-5 text-xl shadow-xl shadow-primary/20 group">
+                            <button routerLink="/auth/register"
+                                class="btn-primary px-12 py-5 text-xl shadow-xl shadow-primary/20 group">
                                 Começar Agora — É Grátis
-                                <span class="material-symbols-outlined ml-2 group-hover:translate-x-1 transition-transform">arrow_forward</span>
+                                <span
+                                    class="material-symbols-outlined ml-2 group-hover:translate-x-1 transition-transform">arrow_forward</span>
                             </button>
                         </div>
                         <p class="text-[10px] text-on-surface-variant uppercase tracking-[0.2em] pt-4">
