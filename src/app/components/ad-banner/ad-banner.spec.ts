@@ -2,7 +2,7 @@ import { TestBed, ComponentFixture, fakeAsync, tick } from '@angular/core/testin
 import { AdBannerComponent } from './ad-banner';
 import { AdsenseService } from '../../services/adsense/adsense';
 import { UserService } from '../../services/user';
-import { signal } from '@angular/core';
+import { computed, signal } from '@angular/core';
 
 describe('AdBannerComponent', () => {
     let component: AdBannerComponent;
@@ -11,13 +11,15 @@ describe('AdBannerComponent', () => {
     let userServiceMock: any;
 
     beforeEach(async () => {
-        adsenseServiceMock = {
-            adClient: 'ca-pub-1234567890123456',
-            pushAdBlock: jasmine.createSpy('pushAdBlock'),
-        };
-
         userServiceMock = {
             currentUser: signal<any>({ id: 'user-123', isPro: false }),
+        };
+
+        adsenseServiceMock = {
+            adClient: 'ca-pub-1234567890123456',
+            footerAdSlot: '2222222222',
+            shouldShowAds: computed(() => !!userServiceMock.currentUser() && !userServiceMock.currentUser().isPro),
+            pushAdBlock: jasmine.createSpy('pushAdBlock'),
         };
 
         await TestBed.configureTestingModule({
@@ -55,13 +57,13 @@ describe('AdBannerComponent', () => {
 
     it('should call pushAdBlock on AdsenseService after view init', fakeAsync(() => {
         fixture.detectChanges();
-        tick(150); // wait for setTimeout in ngAfterViewInit
+        tick(150);
         expect(adsenseServiceMock.pushAdBlock).toHaveBeenCalled();
     }));
 
     it('should collapse the banner if detectAdFailure finds no iframe', fakeAsync(() => {
         fixture.detectChanges();
-        tick(150); // run ngAfterViewInit
+        tick(150);
         
         // At this point, the template has no iframe inside ins.adsbygoogle
         tick(1500); // wait for detectAdFailure
@@ -70,6 +72,12 @@ describe('AdBannerComponent', () => {
         const compiled = fixture.nativeElement as HTMLElement;
         expect(compiled.querySelector('.ad-wrapper')).toBeNull(); // Should be destroyed due to shouldShowAd computed becoming false
     }));
+
+    it('should fall back to the footer slot when no adSlot input is given', () => {
+        fixture.detectChanges();
+        const ins = fixture.nativeElement.querySelector('ins.adsbygoogle');
+        expect(ins.getAttribute('data-ad-slot')).toBe('2222222222');
+    });
 
     it('should bind inputs to ins element attributes correctly', () => {
         fixture.componentRef.setInput('adSlot', '9876543210');

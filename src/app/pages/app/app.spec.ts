@@ -3,7 +3,7 @@ import { RouterTestingModule } from '@angular/router/testing';
 import { App } from './app';
 import { UserService } from '../../services/user';
 import { AdsenseService } from '../../services/adsense/adsense';
-import { signal } from '@angular/core';
+import { computed, signal } from '@angular/core';
 
 describe('App Layout Integration', () => {
     let component: App;
@@ -18,6 +18,8 @@ describe('App Layout Integration', () => {
 
         adsenseServiceMock = {
             adClient: 'ca-pub-1234567890123456',
+            footerAdSlot: '2222222222',
+            shouldShowAds: computed(() => !!userServiceMock.currentUser() && !userServiceMock.currentUser().isPro),
             pushAdBlock: jasmine.createSpy('pushAdBlock'),
         };
 
@@ -40,30 +42,24 @@ describe('App Layout Integration', () => {
         expect(component).toBeTruthy();
     });
 
-    it('should render header and footer ad banners for Free users', () => {
+    it('should render only the footer ad banner for Free users', () => {
         userServiceMock.currentUser.set({ id: 'user-123', isPro: false });
         fixture.detectChanges();
 
         const compiled = fixture.nativeElement as HTMLElement;
-        
-        // InternalHeader has an app-ad-banner
-        const headerAd = compiled.querySelector('app-internal-header app-ad-banner .ad-wrapper');
-        expect(headerAd).toBeTruthy();
 
-        // App (layout rodapé) has an app-ad-banner
+        expect(compiled.querySelector('app-internal-header app-ad-banner')).toBeNull();
+
         const footerAd = compiled.querySelector('main > div + div app-ad-banner .ad-wrapper');
         expect(footerAd).toBeTruthy();
     });
 
-    it('should NOT render header and footer ad banners for Pro users', () => {
+    it('should NOT render the footer ad banner for Pro users', () => {
         userServiceMock.currentUser.set({ id: 'user-123', isPro: true });
         fixture.detectChanges();
 
         const compiled = fixture.nativeElement as HTMLElement;
         
-        const headerAd = compiled.querySelector('app-internal-header app-ad-banner .ad-wrapper');
-        expect(headerAd).toBeNull();
-
         const footerAd = compiled.querySelector('main > div + div app-ad-banner .ad-wrapper');
         expect(footerAd).toBeNull();
     });

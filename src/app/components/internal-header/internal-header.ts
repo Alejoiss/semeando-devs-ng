@@ -5,12 +5,11 @@ import { XpService } from '../../services/xp';
 import { SeedService } from '../../services/seed';
 import { UserService } from '../../services/user';
 import { NavigationService } from '../../services/navigation';
-import { AdBannerComponent } from '../ad-banner/ad-banner';
 
 @Component({
     selector: 'app-internal-header',
     standalone: true,
-    imports: [CommonModule, RouterLink, AdBannerComponent],
+    imports: [CommonModule, RouterLink],
     templateUrl: './internal-header.html',
     styleUrls: ['./internal-header.scss']
 })

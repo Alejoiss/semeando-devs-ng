@@ -1,7 +1,7 @@
 import { TestBed } from '@angular/core/testing';
 import { Router, NavigationEnd, Event } from '@angular/router';
 import { Subject } from 'rxjs';
-import { AdsenseService } from './adsense';
+import { ADSENSE_CONFIG, AdsenseService } from './adsense';
 import { UserService } from '../user';
 import { signal } from '@angular/core';
 
@@ -11,10 +11,22 @@ describe('AdsenseService', () => {
     let routerEventsSubject: Subject<Event>;
     let routerMock: any;
 
+    const setCurrentRouteData = (data: Record<string, unknown>) => {
+        routerMock.routerState = {
+            snapshot: { root: { data: {}, firstChild: { data: {}, firstChild: { data, firstChild: null } } } },
+        };
+    };
+
+    const navigate = (url: string, data: Record<string, unknown>) => {
+        setCurrentRouteData(data);
+        routerEventsSubject.next(new NavigationEnd(1, url, url));
+        TestBed.flushEffects();
+    };
+
+    const adScript = () => document.querySelector('script[src*="pagead2.googlesyndication.com"]');
+
     beforeEach(() => {
-        // Remove scripts previously injected in DOM to ensure clean tests
-        const existingScripts = document.querySelectorAll('script[src*="pagead2.googlesyndication.com"]');
-        existingScripts.forEach(el => el.remove());
+        document.querySelectorAll('script[src*="pagead2.googlesyndication.com"]').forEach(el => el.remove());
 
         userServiceMock = {
             currentUser: signal<any>(null),
@@ -22,15 +34,16 @@ describe('AdsenseService', () => {
 
         routerEventsSubject = new Subject<Event>();
         routerMock = {
-            url: '/app',
             events: routerEventsSubject.asObservable(),
         };
+        setCurrentRouteData({});
 
         TestBed.configureTestingModule({
             providers: [
                 AdsenseService,
                 { provide: UserService, useValue: userServiceMock },
                 { provide: Router, useValue: routerMock },
+                { provide: ADSENSE_CONFIG, useValue: { client: 'ca-pub-1234567890123456', footerSlot: '2222222222' } },
             ],
         });
     });
@@ -40,46 +53,55 @@ describe('AdsenseService', () => {
         expect(service).toBeTruthy();
     });
 
-    it('should inject AdSense script tag for free users in /app route', () => {
+    it('should inject AdSense script tag for free users on routes that allow ads', () => {
         userServiceMock.currentUser.set({ id: 'user-123', isPro: false });
-        routerMock.url = '/app/modulo-1';
-        
         service = TestBed.inject(AdsenseService);
-        
-        // Simulates route change ending
-        routerEventsSubject.next(new NavigationEnd(1, '/app/modulo-1', '/app/modulo-1'));
-        
-        // Wait for effect to run
-        TestBed.flushEffects();
 
-        const script = document.querySelector('script[src*="pagead2.googlesyndication.com"]');
-        expect(script).toBeTruthy();
-        expect(script?.getAttribute('src')).toContain('client=ca-pub-1234567890123456');
+        navigate('/app/s/modulo-1', { showAds: true });
+
+        expect(service.shouldShowAds()).toBeTrue();
+        expect(adScript()?.getAttribute('src')).toContain('client=ca-pub-1234567890123456');
     });
 
-    it('should not inject AdSense script tag for Pro users in /app route', () => {
+    it('should not inject AdSense script tag for Pro users', () => {
         userServiceMock.currentUser.set({ id: 'user-123', isPro: true });
-        routerMock.url = '/app/modulo-1';
-        
         service = TestBed.inject(AdsenseService);
-        
-        routerEventsSubject.next(new NavigationEnd(1, '/app/modulo-1', '/app/modulo-1'));
-        TestBed.flushEffects();
 
-        const script = document.querySelector('script[src*="pagead2.googlesyndication.com"]');
-        expect(script).toBeNull();
+        navigate('/app/s/modulo-1', { showAds: true });
+
+        expect(service.shouldShowAds()).toBeFalse();
+        expect(adScript()).toBeNull();
     });
 
-    it('should not inject AdSense script tag outside /app route even for free users', () => {
+    it('should not show ads on app routes without content, such as checkout', () => {
         userServiceMock.currentUser.set({ id: 'user-123', isPro: false });
-        routerMock.url = '/home';
-        
         service = TestBed.inject(AdsenseService);
-        
-        routerEventsSubject.next(new NavigationEnd(1, '/home', '/home'));
-        TestBed.flushEffects();
 
-        const script = document.querySelector('script[src*="pagead2.googlesyndication.com"]');
-        expect(script).toBeNull();
+        navigate('/app/checkout', {});
+
+        expect(service.shouldShowAds()).toBeFalse();
+        expect(adScript()).toBeNull();
+    });
+
+    it('should stop showing ads when navigating from a content route to a non-content route', () => {
+        userServiceMock.currentUser.set({ id: 'user-123', isPro: false });
+        service = TestBed.inject(AdsenseService);
+
+        navigate('/app/s/modulo-1', { showAds: true });
+        expect(service.shouldShowAds()).toBeTrue();
+
+        navigate('/app/upgrade', {});
+        expect(service.shouldShowAds()).toBeFalse();
+    });
+
+    it('should stay disabled when no AdSense client is configured', () => {
+        TestBed.overrideProvider(ADSENSE_CONFIG, { useValue: {} });
+        userServiceMock.currentUser.set({ id: 'user-123', isPro: false });
+        service = TestBed.inject(AdsenseService);
+
+        navigate('/app/s/modulo-1', { showAds: true });
+
+        expect(service.isEnabled).toBeFalse();
+        expect(adScript()).toBeNull();
     });
 });

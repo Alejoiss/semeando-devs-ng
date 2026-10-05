@@ -3,6 +3,7 @@ import { authGuard } from './components/guards/auth.guard';
 import { teacherGuard } from './components/guards/teacher.guard';
 import { dailyLimitGuard } from './components/guards/daily-limit.guard';
 import { adminGuard } from './components/guards/admin.guard';
+import { SHOW_ADS_ROUTE_DATA } from './services/adsense/adsense';
 
 export const routes: Routes = [
     {
@@ -59,23 +60,27 @@ export const routes: Routes = [
             {
                 path: '',
                 loadComponent: () => import('./pages/app/modules/modules').then((m) => m.Modules),
-                title: 'Semeando Devs - Módulos'
+                title: 'Semeando Devs - Módulos',
+                data: SHOW_ADS_ROUTE_DATA
             },
             {
                 path: 's/:slug',
                 loadComponent: () => import('./pages/app/submodule/submodule').then((m) => m.Submodule),
-                title: 'Semeando Devs - Submódulo'
+                title: 'Semeando Devs - Submódulo',
+                data: SHOW_ADS_ROUTE_DATA
             },
             {
                 path: 's/:slug/ss/:slugSubmodule',
                 loadComponent: () => import('./pages/app/submodule-detail/submodule-detail').then((m) => m.SubmoduleDetail),
-                title: 'Semeando Devs - Submódulo Detalhe'
+                title: 'Semeando Devs - Submódulo Detalhe',
+                data: SHOW_ADS_ROUTE_DATA
             },
             {
                 path: 's/:slug/ss/:slugSubmodule/lesson/:lessonId',
                 canActivate: [dailyLimitGuard],
                 loadComponent: () => import('./pages/app/lesson/lesson').then((m) => m.Lesson),
-                title: 'Semeando Devs - Aula'
+                title: 'Semeando Devs - Aula',
+                data: SHOW_ADS_ROUTE_DATA
             },
             {
                 path: 's/:slug/ss/:slugSubmodule/lesson/:lessonId/quiz',

@@ -1,6 +1,5 @@
-import { Component, ChangeDetectionStrategy, ElementRef, AfterViewInit, inject, input, signal, computed } from '@angular/core';
+import { Component, ChangeDetectionStrategy, ElementRef, effect, inject, input, signal, computed, viewChild } from '@angular/core';
 import { AdsenseService } from '../../services/adsense/adsense';
-import { UserService } from '../../services/user';
 
 @Component({
     selector: 'app-ad-banner',
@@ -9,12 +8,9 @@ import { UserService } from '../../services/user';
     styleUrl: './ad-banner.scss',
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class AdBannerComponent implements AfterViewInit {
+export class AdBannerComponent {
     private readonly adsenseService = inject(AdsenseService);
-    private readonly userService = inject(UserService);
-    private readonly elementRef = inject(ElementRef);
 
-    // Inputs using input() signals
     readonly adSlot = input<string>('');
     readonly adFormat = input<string>('auto');
     readonly fullWidthResponsive = input<boolean>(true);
@@ -22,45 +18,38 @@ export class AdBannerComponent implements AfterViewInit {
 
     readonly isAdEmpty = signal<boolean>(false);
 
-    readonly shouldShowAd = computed(() => {
-        const user = this.userService.currentUser();
-        // Exibe apenas se o AdSense estiver configurado, o usuário for do plano gratuito
-        // e o banner não estiver marcado como vazio/bloqueado
-        return this.adsenseService.isEnabled && user !== null && !user.isPro && !this.isAdEmpty();
-    });
+    readonly slot = computed(() => this.adSlot() || this.adsenseService.footerAdSlot || '');
+
+    readonly shouldShowAd = computed(() =>
+        this.adsenseService.shouldShowAds() && !!this.slot() && !this.isAdEmpty()
+    );
 
     readonly adClient = computed(() => this.adsenseService.adClient);
 
-    ngAfterViewInit(): void {
-        if (this.shouldShowAd()) {
-            // Executa a inicialização do bloco de anúncio após uma pequena folga para renderização do DOM
+    private readonly insElement = viewChild<ElementRef<HTMLElement>>('adIns');
+
+    constructor() {
+        // O bloco é recriado a cada vez que volta a ser exibido (ex.: navegação entre rotas), e cada <ins> novo precisa de um push
+        effect(() => {
+            const ins = this.insElement();
+            if (!ins) {
+                return;
+            }
             setTimeout(() => {
                 this.adsenseService.pushAdBlock();
-                this.detectAdFailure();
+                this.detectAdFailure(ins.nativeElement);
             }, 100);
-        }
+        });
     }
 
-    private detectAdFailure(): void {
+    private detectAdFailure(ins: HTMLElement): void {
         setTimeout(() => {
-            try {
-                const insElement = this.elementRef.nativeElement.querySelector('ins.adsbygoogle');
-                if (insElement) {
-                    const hasIframe = insElement.querySelector('iframe');
-                    const adStatus = insElement.getAttribute('data-ad-status');
-                    
-                    // Se não houver iframe ou o status estiver explicitamente unfilled, colapsamos o layout
-                    if (!hasIframe || adStatus === 'unfilled') {
-                        this.isAdEmpty.set(true);
-                        console.warn(`[AdBannerComponent] Bloco ${this.adSlot()} vazio ou bloqueado. Colapsando.`);
-                    }
-                } else {
-                    this.isAdEmpty.set(true);
-                }
-            } catch (e) {
-                console.error('[AdBannerComponent] Erro na detecção de adblock/status:', e);
+            const hasIframe = ins.querySelector('iframe');
+            const adStatus = ins.getAttribute('data-ad-status');
+
+            if (!hasIframe || adStatus === 'unfilled') {
                 this.isAdEmpty.set(true);
             }
-        }, 1500); // 1.5s é tempo suficiente para o AdSense injetar o iframe
+        }, 1500);
     }
 }
