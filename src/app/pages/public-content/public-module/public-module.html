@@ -1,0 +1,76 @@
+<div class="bg-background text-on-background min-h-screen flex flex-col">
+    <app-header></app-header>
+
+    <main class="flex-grow pt-32 pb-24 px-4 sm:px-6 max-w-5xl mx-auto w-full">
+        <nav aria-label="Trilha de navegação" class="mb-8 text-sm text-on-surface-variant">
+            <ol class="flex flex-wrap items-center gap-2">
+                <li><a routerLink="/cursos" class="hover:text-primary transition-colors">Cursos</a></li>
+                <li aria-hidden="true">/</li>
+                <li aria-current="page" class="text-on-surface">{{ module().title }}</li>
+            </ol>
+        </nav>
+
+        <header class="mb-14">
+            <div class="flex items-center gap-4 mb-6">
+                @if (module().icon) {
+                    <div class="w-14 h-14 rounded-2xl bg-primary/10 text-primary flex items-center justify-center shrink-0">
+                        <span class="material-symbols-outlined text-3xl" aria-hidden="true">{{ module().icon }}</span>
+                    </div>
+                }
+                <p class="font-label text-xs uppercase tracking-[0.2em] text-secondary">
+                    {{ module().submodules.length }} capítulos · {{ lessonCount() }} aulas
+                </p>
+            </div>
+            <h1 class="font-headline text-4xl md:text-5xl font-extrabold tracking-tighter mb-4 text-on-surface">
+                Curso de {{ module().title }}
+            </h1>
+            @if (module().description) {
+                <p class="text-on-surface-variant text-lg leading-relaxed max-w-3xl">{{ module().description }}</p>
+            }
+        </header>
+
+        <div class="space-y-8">
+            @for (sub of module().submodules; track sub.id; let index = $index) {
+                <section [id]="sub.slug" class="glass-card rounded-3xl p-6 md:p-8" [attr.aria-labelledby]="sub.slug + '-title'">
+                    <div class="flex items-start gap-4 mb-5">
+                        <span class="font-headline text-sm font-bold text-primary bg-primary/10 rounded-xl w-10 h-10 flex items-center justify-center shrink-0">
+                            {{ index + 1 }}
+                        </span>
+                        <div>
+                            <h2 [id]="sub.slug + '-title'" class="font-headline text-xl md:text-2xl font-bold text-on-surface">{{ sub.title }}</h2>
+                            @if (sub.description) {
+                                <p class="text-on-surface-variant mt-2 leading-relaxed">{{ sub.description }}</p>
+                            }
+                        </div>
+                    </div>
+
+                    <ol class="grid gap-2 sm:pl-14">
+                        @for (lesson of sub.lessons; track lesson.id) {
+                            <li>
+                                <a [routerLink]="lessonPath(module().slug, sub.slug, lesson.slug)"
+                                   class="flex items-center gap-3 px-4 py-3 rounded-xl bg-surface-container-low hover:bg-surface-container-high transition-colors group">
+                                    <span class="material-symbols-outlined text-tertiary text-lg" aria-hidden="true">article</span>
+                                    <span class="text-on-surface group-hover:text-primary transition-colors">{{ lesson.title }}</span>
+                                </a>
+                            </li>
+                        }
+                    </ol>
+                </section>
+            }
+        </div>
+
+        <aside class="mt-16 rounded-3xl p-8 md:p-10 bg-surface-container text-center">
+            <h2 class="font-headline text-2xl font-bold text-on-surface mb-3">Quer praticar o que aprendeu?</h2>
+            <p class="text-on-surface-variant max-w-xl mx-auto mb-6">
+                Crie sua conta gratuita para fazer os quizzes, resolver desafios de código corrigidos por IA e acompanhar seu progresso.
+            </p>
+            <a routerLink="/auth/register"
+               class="inline-flex items-center gap-2 px-8 py-4 rounded-2xl font-headline font-bold bg-gradient-to-r from-primary to-primary-container text-on-primary-container hover:brightness-110 transition-all">
+                Começar grátis
+                <span class="material-symbols-outlined" aria-hidden="true">arrow_forward</span>
+            </a>
+        </aside>
+    </main>
+
+    <app-footer></app-footer>
+</div>

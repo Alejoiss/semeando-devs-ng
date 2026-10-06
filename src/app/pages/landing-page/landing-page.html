@@ -58,7 +58,13 @@
                         <span class="material-symbols-outlined text-4xl">{{ module.icon }}</span>
                     </div>
 
-                    <h3>{{ module.title }}</h3>
+                    <h3>
+                        @if (module.inRevision) {
+                        {{ module.title }}
+                        } @else {
+                        <a [routerLink]="['/cursos', module.slug]" class="hover:text-primary transition-colors">{{ module.title }}</a>
+                        }
+                    </h3>
                     <p>{{ module.description }}</p>
 
                     @if(module.inRevision) {

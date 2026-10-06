@@ -1,79 +1,80 @@
 <div class="courses-page bg-background text-on-background min-h-screen flex flex-col">
     <app-header></app-header>
 
-    <main class="flex-grow pt-32 pb-24 px-6 max-w-5xl mx-auto w-full">
+    <main class="flex-grow pt-32 pb-24 px-4 sm:px-6 max-w-5xl mx-auto w-full">
         <div class="mb-16">
             <h1 class="font-headline text-4xl md:text-5xl font-extrabold tracking-tighter mb-4">
                 Currículo dos <span class="gradient-text">Cursos</span>
             </h1>
             <p class="text-on-surface-variant text-lg">
-                Explore a estrutura completa da nossa formação.
+                Explore a estrutura completa da nossa formação. Todas as aulas teóricas são gratuitas e abertas para leitura.
             </p>
         </div>
 
         <div class="space-y-6">
-            @for(module of curriculum(); track module.id) {
-                <div class="glass-card rounded-2xl overflow-hidden shadow-lg border border-outline-variant/10">
-                    <div class="p-6 cursor-pointer bg-surface-container hover:bg-surface-container-high transition-colors flex items-center justify-between"
-                         (click)="toggleModule(module)">
-                        <div class="flex items-center gap-4">
-                            <div class="w-12 h-12 rounded-xl bg-primary/10 text-primary flex items-center justify-center">
-                                <span class="material-symbols-outlined text-2xl">{{ module.icon }}</span>
+            @for (module of curriculum(); track module.id) {
+                <section class="glass-card rounded-2xl overflow-hidden shadow-lg" [attr.aria-labelledby]="'modulo-' + module.slug">
+                    <div class="p-6 bg-surface-container flex items-center justify-between gap-4">
+                        <div class="flex items-center gap-4 min-w-0">
+                            <div class="w-12 h-12 rounded-xl bg-primary/10 text-primary flex items-center justify-center shrink-0">
+                                <span class="material-symbols-outlined text-2xl" aria-hidden="true">{{ module.icon }}</span>
                             </div>
-                            <div>
-                                <h2 class="text-xl font-bold">{{ module.title }}</h2>
-                                <p class="text-xs text-on-surface-variant mt-1">{{ module.description }}</p>
+                            <div class="min-w-0">
+                                <h2 [id]="'modulo-' + module.slug" class="text-xl font-bold">
+                                    <a [routerLink]="['/cursos', module.slug]" class="hover:text-primary transition-colors">{{ module.title }}</a>
+                                </h2>
+                                <p class="text-sm text-on-surface-variant mt-1">{{ module.description }}</p>
                             </div>
                         </div>
-                        <span class="material-symbols-outlined text-on-surface-variant transition-transform"
-                              [class.rotate-180]="module.expanded">
-                            expand_more
-                        </span>
+                        <button type="button" (click)="toggleModule(module.id)"
+                                class="w-11 h-11 shrink-0 rounded-xl flex items-center justify-center text-on-surface-variant hover:bg-surface-container-high transition-colors"
+                                [attr.aria-expanded]="expandedModules().has(module.id)"
+                                [attr.aria-controls]="'conteudo-' + module.slug"
+                                [attr.aria-label]="'Mostrar capítulos de ' + module.title">
+                            <span class="material-symbols-outlined transition-transform" aria-hidden="true"
+                                  [class.rotate-180]="expandedModules().has(module.id)">expand_more</span>
+                        </button>
                     </div>
 
-                    @if(module.expanded) {
-                        <div class="p-6 pt-0 bg-surface-container border-t border-outline-variant/10">
+                    @if (expandedModules().has(module.id)) {
+                        <div [id]="'conteudo-' + module.slug" class="p-6 pt-0 bg-surface-container">
                             <div class="space-y-4 mt-6">
-                                @for(sub of module.submodules; track sub.id) {
-                                    <div class="rounded-xl overflow-hidden border border-outline-variant/10 bg-surface-container-low">
-                                        <div class="p-4 cursor-pointer hover:bg-surface-container-high transition-colors flex items-center justify-between"
-                                             (click)="toggleSubmodule(sub)">
-                                            <div class="flex items-center gap-3">
-                                                <div class="w-8 h-8 rounded-lg bg-secondary/10 text-secondary flex items-center justify-center">
-                                                    <span class="material-symbols-outlined text-sm">{{ sub.icon || 'folder' }}</span>
-                                                </div>
+                                @for (sub of module.submodules; track sub.id) {
+                                    <div class="rounded-xl overflow-hidden bg-surface-container-low">
+                                        <button type="button" (click)="toggleSubmodule(sub.id)"
+                                                class="w-full p-4 hover:bg-surface-container-high transition-colors flex items-center justify-between text-left"
+                                                [attr.aria-expanded]="expandedSubmodules().has(sub.id)">
+                                            <span class="flex items-center gap-3">
+                                                <span class="w-8 h-8 rounded-lg bg-secondary/10 text-secondary flex items-center justify-center">
+                                                    <span class="material-symbols-outlined text-sm" aria-hidden="true">{{ sub.icon || 'folder' }}</span>
+                                                </span>
                                                 <span class="font-semibold">{{ sub.title }}</span>
-                                            </div>
-                                            <span class="material-symbols-outlined text-on-surface-variant transition-transform"
-                                                  [class.rotate-180]="sub.expanded">
-                                                expand_more
                                             </span>
-                                        </div>
+                                            <span class="material-symbols-outlined text-on-surface-variant transition-transform" aria-hidden="true"
+                                                  [class.rotate-180]="expandedSubmodules().has(sub.id)">expand_more</span>
+                                        </button>
 
-                                        @if(sub.expanded) {
-                                            <div class="px-4 pb-4 border-t border-outline-variant/10 pt-4">
-                                                <div class="flex flex-col space-y-2">
-                                                    @for(lesson of sub.lessons; track lesson.id) {
-                                                        <div class="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-surface-container-highest transition-colors">
-                                                            <span class="material-symbols-outlined text-tertiary text-sm">play_circle</span>
+                                        @if (expandedSubmodules().has(sub.id)) {
+                                            <ol class="px-4 pb-4 pt-2 flex flex-col space-y-1">
+                                                @for (lesson of sub.lessons; track lesson.id) {
+                                                    <li>
+                                                        <a [routerLink]="lessonPath(module.slug, sub.slug, lesson.slug)"
+                                                           class="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-surface-container-highest transition-colors">
+                                                            <span class="material-symbols-outlined text-tertiary text-sm" aria-hidden="true">article</span>
                                                             <span class="text-sm text-on-surface-variant">{{ lesson.title }}</span>
-                                                        </div>
-                                                    }
-                                                    @if(sub.lessons.length === 0) {
-                                                        <p class="text-sm text-on-surface-variant/50 px-4 py-2 italic">Nenhuma lição disponível</p>
-                                                    }
-                                                </div>
-                                            </div>
+                                                        </a>
+                                                    </li>
+                                                }
+                                            </ol>
                                         }
                                     </div>
-                                }
-                                @if(module.submodules.length === 0) {
-                                    <p class="text-sm text-on-surface-variant/50 italic text-center py-4">Módulo em construção</p>
                                 }
                             </div>
                         </div>
                     }
-                </div>
+                </section>
+            } @empty {
+                <p class="text-on-surface-variant">Nenhum curso disponível no momento.</p>
             }
         </div>
     </main>

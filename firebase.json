@@ -7,10 +7,50 @@
             "**/.*",
             "**/node_modules/**"
         ],
+        "trailingSlash": false,
+        "redirects": [
+            {
+                "source": "/",
+                "destination": "/home",
+                "type": 301
+            }
+        ],
         "rewrites": [
             {
-                "source": "**",
-                "destination": "/index.html"
+                "source": "/app",
+                "destination": "/index.csr.html"
+            },
+            {
+                "source": "/app/**",
+                "destination": "/index.csr.html"
+            },
+            {
+                "source": "/professor",
+                "destination": "/index.csr.html"
+            },
+            {
+                "source": "/professor/**",
+                "destination": "/index.csr.html"
+            },
+            {
+                "source": "/admin",
+                "destination": "/index.csr.html"
+            },
+            {
+                "source": "/admin/**",
+                "destination": "/index.csr.html"
+            },
+            {
+                "source": "/auth/**",
+                "destination": "/index.csr.html"
+            },
+            {
+                "source": "/recuperar-senha",
+                "destination": "/index.csr.html"
+            },
+            {
+                "source": "/redefinir-senha",
+                "destination": "/index.csr.html"
             }
         ]
     }

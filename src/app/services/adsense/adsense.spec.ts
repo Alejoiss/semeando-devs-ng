@@ -30,6 +30,7 @@ describe('AdsenseService', () => {
 
         userServiceMock = {
             currentUser: signal<any>(null),
+            isProfileResolved: signal<boolean>(true),
         };
 
         routerEventsSubject = new Subject<Event>();
@@ -69,6 +70,30 @@ describe('AdsenseService', () => {
 
         navigate('/app/s/modulo-1', { showAds: true });
 
+        expect(service.shouldShowAds()).toBeFalse();
+        expect(adScript()).toBeNull();
+    });
+
+    it('should show ads to anonymous visitors on public content routes', () => {
+        service = TestBed.inject(AdsenseService);
+
+        navigate('/cursos/css/introducao-ao-css/o-que-e-css', { showAds: true });
+
+        expect(service.shouldShowAds()).toBeTrue();
+        expect(adScript()).not.toBeNull();
+    });
+
+    it('should wait for the user profile before showing ads', () => {
+        userServiceMock.isProfileResolved.set(false);
+        service = TestBed.inject(AdsenseService);
+
+        navigate('/app/s/modulo-1', { showAds: true });
+        expect(service.shouldShowAds()).toBeFalse();
+        expect(adScript()).toBeNull();
+
+        userServiceMock.currentUser.set({ id: 'user-123', isPro: true });
+        userServiceMock.isProfileResolved.set(true);
+        TestBed.flushEffects();
         expect(service.shouldShowAds()).toBeFalse();
         expect(adScript()).toBeNull();
     });

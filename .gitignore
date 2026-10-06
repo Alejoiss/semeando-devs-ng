@@ -48,3 +48,6 @@ Thumbs.db
 .idea/
 *.sublime-project
 *.sublime-workspace
+
+# Snapshot do conteúdo público gerado antes do build (scripts/fetch-public-catalog.mjs)
+/src/app/services/public-catalog/public-catalog.snapshot.json

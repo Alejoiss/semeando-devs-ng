@@ -1,4 +1,5 @@
-import { Injectable, signal, computed, inject } from '@angular/core';
+import { Injectable, PLATFORM_ID, signal, computed, inject } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
 import { SupabaseClient } from '@supabase/supabase-js';
 import { environment } from '../../environments/environment';
 import { User } from '../../models/user/user';
@@ -13,10 +14,16 @@ export class UserService {
     private supabase: SupabaseClient = inject(SupabaseService).client;
     private userSignal = signal<User | null>(null);
 
+    private profileResolved = signal<boolean>(false);
+
     readonly currentUser = computed(() => this.userSignal());
+    /** Indica se já se sabe se há (ou não) um usuário logado. */
+    readonly isProfileResolved = this.profileResolved.asReadonly();
 
     constructor() {
-        this.loadUserProfile();
+        if (isPlatformBrowser(inject(PLATFORM_ID))) {
+            this.loadUserProfile();
+        }
     }
 
     public async loadUserProfile() {
@@ -25,6 +32,8 @@ export class UserService {
             this.userSignal.set(user);
         } catch (error) {
             this.userSignal.set(null);
+        } finally {
+            this.profileResolved.set(true);
         }
     }
 

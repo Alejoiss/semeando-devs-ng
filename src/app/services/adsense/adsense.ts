@@ -1,4 +1,5 @@
-import { Injectable, InjectionToken, computed, effect, inject, signal } from '@angular/core';
+import { Injectable, InjectionToken, PLATFORM_ID, computed, effect, inject, signal } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
 import { Router, NavigationEnd, ActivatedRouteSnapshot } from '@angular/router';
 import { filter } from 'rxjs/operators';
 import { UserService } from '../user';
@@ -31,6 +32,7 @@ export class AdsenseService {
     private readonly userService = inject(UserService);
     private readonly router = inject(Router);
     private readonly config = inject(ADSENSE_CONFIG);
+    private readonly isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
 
     private readonly scriptLoaded = signal<boolean>(false);
     private readonly isAdRoute = signal<boolean>(false);
@@ -41,11 +43,18 @@ export class AdsenseService {
     readonly isEnabled = !!this.adClient && !!this.footerAdSlot;
 
     readonly shouldShowAds = computed(() => {
-        const user = this.userService.currentUser();
-        return this.isEnabled && !!user && !user.isPro && this.isAdRoute();
+        if (!this.isBrowser || !this.isEnabled || !this.isAdRoute()) {
+            return false;
+        }
+        // Aguarda a sessão ser resolvida para não exibir anúncio a um assinante Pró enquanto o perfil carrega
+        return this.userService.isProfileResolved() && !this.userService.currentUser()?.isPro;
     });
 
     constructor() {
+        if (!this.isBrowser) {
+            return;
+        }
+
         this.isAdRoute.set(this.routeAllowsAds(this.router.routerState?.snapshot?.root));
 
         this.router.events.pipe(

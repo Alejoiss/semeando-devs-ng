@@ -8,7 +8,6 @@ import {
 import { provideAnimations } from '@angular/platform-browser/animations';
 import { provideRouter } from '@angular/router';
 import { MarkdownModule, MARKED_OPTIONS, MarkedOptions, MarkedRenderer } from 'ngx-markdown';
-import { CodeEditorModule } from '@ngstack/code-editor';
 import { provideEchartsCore } from 'ngx-echarts';
 
 import { routes } from './app.routes';
@@ -16,6 +15,7 @@ import { provideServiceWorker } from '@angular/service-worker';
 import { LOCALE_ID } from '@angular/core';
 import localePt from '@angular/common/locales/pt';
 import { registerLocaleData } from '@angular/common';
+import { provideClientHydration, withEventReplay } from '@angular/platform-browser';
 
 registerLocaleData(localePt);
 
@@ -43,7 +43,7 @@ export const appConfig: ApplicationConfig = {
         provideRouter(routes),
         provideHttpClient(),
         provideAnimations(),
-        importProvidersFrom(MarkdownModule.forRoot(), CodeEditorModule.forRoot()),
+        importProvidersFrom(MarkdownModule.forRoot()),
         {
             provide: MARKED_OPTIONS,
             useFactory: markedOptionsFactory,
@@ -53,5 +53,6 @@ export const appConfig: ApplicationConfig = {
             registrationStrategy: 'registerWhenStable:30000'
         }),
         provideEchartsCore({ echarts: () => import('echarts') }),
+        provideClientHydration(withEventReplay()),
     ]
 };

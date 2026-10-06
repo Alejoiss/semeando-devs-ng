@@ -1,46 +1,36 @@
-import { ChangeDetectionStrategy, Component, OnInit, signal, inject } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { ChangeDetectionStrategy, Component, signal, inject } from '@angular/core';
+import { ActivatedRoute, RouterLink } from '@angular/router';
 import { Header } from '../../components/header/header';
 import { Footer } from '../../components/footer/footer';
-import { ModuleService } from '../../services/module';
+import { PublicModule, publicLessonPath } from '../../services/public-catalog/public-catalog';
 
 @Component({
     selector: 'app-courses',
     standalone: true,
-    imports: [CommonModule, Header, Footer],
+    imports: [RouterLink, Header, Footer],
     templateUrl: './courses.html',
     styleUrls: ['./courses.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class Courses implements OnInit {
-    private readonly moduleService = inject(ModuleService);
-    protected readonly curriculum = signal<any[]>([]);
+export class Courses {
+    protected readonly curriculum = signal<PublicModule[]>(inject(ActivatedRoute).snapshot.data['curriculum'] ?? []);
+    protected readonly expandedModules = signal<ReadonlySet<string>>(new Set());
+    protected readonly expandedSubmodules = signal<ReadonlySet<string>>(new Set());
+    protected readonly lessonPath = publicLessonPath;
 
-    async ngOnInit() {
-        try {
-            const data = await this.moduleService.getCurriculum();
-            const processed = data.map(mod => {
-                return {
-                    ...mod,
-                    expanded: false,
-                    submodules: mod.submodules.map((sub: any) => ({
-                        ...sub,
-                        expanded: false,
-                        lessons: sub.lessons.filter((l: any) => l.type === 'LESSON')
-                    }))
-                };
-            });
-            this.curriculum.set(processed);
-        } catch (error) {
-            console.error('Error loading curriculum', error);
-        }
+    protected toggleModule(id: string) {
+        this.expandedModules.update(ids => toggle(ids, id));
     }
 
-    protected toggleModule(mod: any) {
-        mod.expanded = !mod.expanded;
+    protected toggleSubmodule(id: string) {
+        this.expandedSubmodules.update(ids => toggle(ids, id));
     }
+}
 
-    protected toggleSubmodule(sub: any) {
-        sub.expanded = !sub.expanded;
+function toggle(ids: ReadonlySet<string>, id: string): ReadonlySet<string> {
+    const next = new Set(ids);
+    if (!next.delete(id)) {
+        next.add(id);
     }
+    return next;
 }

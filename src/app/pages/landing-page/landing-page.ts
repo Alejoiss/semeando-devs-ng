@@ -1,13 +1,12 @@
-import { ChangeDetectionStrategy, Component, signal, inject, OnInit } from '@angular/core';
-import { RouterModule } from '@angular/router';
+import { ChangeDetectionStrategy, Component, signal, inject } from '@angular/core';
+import { ActivatedRoute, RouterModule } from '@angular/router';
 
 import { MarkdownModule } from 'ngx-markdown';
 
 import { Footer } from '../../components/footer/footer';
 import { Header } from '../../components/header/header';
 import { CommonModule } from '@angular/common';
-import { ModuleService } from '../../services/module';
-import { Module } from '../../../models/module/module';
+import { ShowcaseModule } from '../../services/public-catalog/public-catalog';
 
 @Component({
     selector: 'app-landing-page',
@@ -17,9 +16,8 @@ import { Module } from '../../../models/module/module';
     styleUrls: ['./landing-page.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class LandingPage implements OnInit {
-    private readonly moduleService = inject(ModuleService);
-    protected readonly modules = signal<Module[]>([]);
+export class LandingPage {
+    protected readonly modules = signal<ShowcaseModule[]>(inject(ActivatedRoute).snapshot.data['modules'] ?? []);
     protected readonly activeMethodology = signal<'teoria' | 'revisao' | 'desafio'>('teoria');
 
     protected readonly methodologyImages = {
@@ -104,14 +102,5 @@ export class LandingPage implements OnInit {
             newItems[index].expanded = !newItems[index].expanded;
             return newItems;
         });
-    }
-
-    async ngOnInit() {
-        try {
-            const modulesData = await this.moduleService.getModules();
-            this.modules.set(modulesData.sort((a, b) => (a.inRevision ? 1 : 0) - (b.inRevision ? 1 : 0)));
-        } catch (error) {
-            console.error('Error fetching modules', error);
-        }
     }
 }

@@ -1,0 +1,23 @@
+<div class="bg-background text-on-background min-h-screen flex flex-col">
+    <app-header></app-header>
+
+    <main class="flex-grow flex flex-col items-center justify-center text-center pt-32 pb-24 px-4 sm:px-6">
+        <p class="font-headline text-7xl font-black text-primary mb-4">404</p>
+        <h1 class="font-headline text-3xl md:text-4xl font-extrabold text-on-surface mb-4">Página não encontrada</h1>
+        <p class="text-on-surface-variant text-lg max-w-md mb-8">
+            O endereço que você acessou não existe ou foi movido. Que tal explorar nossos cursos gratuitos?
+        </p>
+        <div class="flex flex-col sm:flex-row gap-4">
+            <a routerLink="/cursos"
+               class="px-8 py-4 rounded-2xl font-headline font-bold bg-gradient-to-r from-primary to-primary-container text-on-primary-container hover:brightness-110 transition-all">
+                Ver cursos
+            </a>
+            <a routerLink="/home"
+               class="px-8 py-4 rounded-2xl font-headline font-bold bg-surface-container text-on-surface hover:bg-surface-container-high transition-colors">
+                Ir para o início
+            </a>
+        </div>
+    </main>
+
+    <app-footer></app-footer>
+</div>

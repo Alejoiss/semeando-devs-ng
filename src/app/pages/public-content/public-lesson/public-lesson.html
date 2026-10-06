@@ -1,0 +1,101 @@
+<div class="bg-background text-on-background min-h-screen flex flex-col">
+    <app-header></app-header>
+
+    <main class="flex-grow pt-32 pb-24 px-4 sm:px-6 max-w-4xl mx-auto w-full">
+        <nav aria-label="Trilha de navegação" class="mb-8 text-sm text-on-surface-variant">
+            <ol class="flex flex-wrap items-center gap-2">
+                <li><a routerLink="/cursos" class="hover:text-primary transition-colors">Cursos</a></li>
+                <li aria-hidden="true">/</li>
+                <li><a [routerLink]="['/cursos', page().module.slug]" class="hover:text-primary transition-colors">{{ page().module.title }}</a></li>
+                <li aria-hidden="true">/</li>
+                <li>
+                    <a [routerLink]="['/cursos', page().module.slug]" [fragment]="page().submodule.slug"
+                       class="hover:text-primary transition-colors">{{ page().submodule.title }}</a>
+                </li>
+            </ol>
+        </nav>
+
+        <article>
+            <header class="mb-10">
+                <h1 class="font-headline text-3xl md:text-5xl font-extrabold tracking-tight text-on-surface mb-4">
+                    {{ page().lesson.title }}
+                </h1>
+                @if (page().lesson.description) {
+                    <p class="text-on-surface-variant text-lg leading-relaxed">{{ page().lesson.description }}</p>
+                }
+            </header>
+
+            <div class="space-y-8">
+                @for (section of sections(); track section.id) {
+                    @switch (section.type) {
+                        @case ('MARKDOWN') {
+                            <div class="glass-card rounded-3xl p-6 md:p-10">
+                                <div class="prose prose-invert prose-blue max-w-none">
+                                    <markdown ngSkipHydration [data]="section.content ?? ''"></markdown>
+                                </div>
+                            </div>
+                        }
+                        @case ('TEXT') {
+                            <div class="glass-card rounded-3xl p-6 md:p-10">
+                                <p class="text-on-surface-variant leading-relaxed text-lg whitespace-pre-line">{{ section.content }}</p>
+                            </div>
+                        }
+                        @case ('IMAGE') {
+                            @if (section.file) {
+                                <figure class="rounded-3xl overflow-hidden bg-surface-container-highest">
+                                    <img [src]="section.file" [alt]="section.fileDescription || ''" loading="lazy" class="w-full h-auto" />
+                                    @if (section.fileDescription) {
+                                        <figcaption class="p-4 text-sm text-on-surface-variant bg-surface-container">{{ section.fileDescription }}</figcaption>
+                                    }
+                                </figure>
+                            }
+                        }
+                        @case ('VIDEO') {
+                            @if (section.content) {
+                                <div class="rounded-3xl overflow-hidden bg-surface-container-lowest aspect-video video-embed"
+                                     [innerHTML]="trustedEmbed(section.content)"></div>
+                            }
+                        }
+                    }
+                }
+            </div>
+        </article>
+
+        @defer (on idle) {
+            <div class="mt-12">
+                <app-ad-banner></app-ad-banner>
+            </div>
+        }
+
+        <aside class="mt-12 rounded-3xl p-6 md:p-8 bg-surface-container flex flex-col md:flex-row md:items-center justify-between gap-6">
+            <div>
+                <h2 class="font-headline text-xl font-bold text-on-surface mb-2">Teste o que você aprendeu</h2>
+                <p class="text-on-surface-variant">Faça o quiz desta aula, ganhe XP e acompanhe seu progresso com uma conta gratuita.</p>
+            </div>
+            <a [routerLink]="practicePath()"
+               class="shrink-0 inline-flex items-center justify-center gap-2 px-6 py-4 rounded-2xl font-headline font-bold bg-gradient-to-r from-primary to-primary-container text-on-primary-container hover:brightness-110 transition-all">
+                Fazer o quiz
+                <span class="material-symbols-outlined" aria-hidden="true">quiz</span>
+            </a>
+        </aside>
+
+        <nav aria-label="Navegação entre aulas" class="mt-12 grid gap-4 sm:grid-cols-2">
+            @if (page().previous; as previous) {
+                <a [routerLink]="previous.path" class="rounded-2xl p-5 bg-surface-container-low hover:bg-surface-container-high transition-colors">
+                    <span class="block text-xs uppercase tracking-widest text-on-surface-variant mb-1">Aula anterior</span>
+                    <span class="font-headline font-bold text-on-surface">{{ previous.title }}</span>
+                </a>
+            } @else {
+                <span aria-hidden="true"></span>
+            }
+            @if (page().next; as next) {
+                <a [routerLink]="next.path" class="rounded-2xl p-5 bg-surface-container-low hover:bg-surface-container-high transition-colors sm:text-right">
+                    <span class="block text-xs uppercase tracking-widest text-on-surface-variant mb-1">Próxima aula</span>
+                    <span class="font-headline font-bold text-on-surface">{{ next.title }}</span>
+                </a>
+            }
+        </nav>
+    </main>
+
+    <app-footer></app-footer>
+</div>

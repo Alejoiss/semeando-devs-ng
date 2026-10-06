@@ -1,6 +1,6 @@
 #!/bin/bash
 echo "🔨 Building semeando devs app..."
-ng build --configuration production
+npm run build -- --configuration production
 
 echo "🚀 Deploying to Firebase..."
 firebase deploy --only hosting

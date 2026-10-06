@@ -4,6 +4,12 @@ import { teacherGuard } from './components/guards/teacher.guard';
 import { dailyLimitGuard } from './components/guards/daily-limit.guard';
 import { adminGuard } from './components/guards/admin.guard';
 import { SHOW_ADS_ROUTE_DATA } from './services/adsense/adsense';
+import {
+    publicCurriculumResolver,
+    publicLessonResolver,
+    publicModuleResolver,
+    showcaseModulesResolver,
+} from './services/public-catalog/public-catalog.resolvers';
 
 export const routes: Routes = [
     {
@@ -14,7 +20,8 @@ export const routes: Routes = [
     {
         path: 'home',
         loadComponent: () => import('./pages/landing-page/landing-page').then((m) => m.LandingPage),
-        title: 'Semeando Devs - Home'
+        title: 'Semeando Devs - Home',
+        resolve: { modules: showcaseModulesResolver }
     },
     {
         path: 'auth/login',
@@ -49,7 +56,19 @@ export const routes: Routes = [
     {
         path: 'cursos',
         loadComponent: () => import('./pages/courses/courses').then((m) => m.Courses),
-        title: 'Cursos - Semeando Devs'
+        title: 'Cursos - Semeando Devs',
+        resolve: { curriculum: publicCurriculumResolver }
+    },
+    {
+        path: 'cursos/:moduleSlug',
+        loadComponent: () => import('./pages/public-content/public-module/public-module').then((m) => m.PublicModule),
+        resolve: { module: publicModuleResolver }
+    },
+    {
+        path: 'cursos/:moduleSlug/:submoduleSlug/:lessonSlug',
+        loadComponent: () => import('./pages/public-content/public-lesson/public-lesson').then((m) => m.PublicLesson),
+        resolve: { lesson: publicLessonResolver },
+        data: SHOW_ADS_ROUTE_DATA
     },
     {
         path: 'app',
@@ -222,5 +241,15 @@ export const routes: Routes = [
                 title: 'Envio de Newsletter - Semeando Devs'
             }
         ]
+    },
+    {
+        path: 'nao-encontrado',
+        loadComponent: () => import('./pages/not-found/not-found').then(m => m.NotFound),
+        title: 'Página não encontrada - Semeando Devs'
+    },
+    {
+        path: '**',
+        loadComponent: () => import('./pages/not-found/not-found').then(m => m.NotFound),
+        title: 'Página não encontrada - Semeando Devs'
     }
 ];
