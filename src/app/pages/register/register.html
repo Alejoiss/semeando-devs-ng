@@ -36,7 +36,7 @@
                             <span
                                 class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-outline-variant">person</span>
                             <input id="name" formControlName="name" type="text" placeholder="Como devemos te chamar?"
-                                class="w-full bg-surface-container-lowest border-none rounded-DEFAULT py-4 pl-12 pr-4 text-on-surface placeholder:text-outline focus:ring-2 focus:ring-primary/50 transition-all" />
+                                class="w-full bg-surface-container-lowest border-none rounded py-4 pl-12 pr-4 text-on-surface placeholder:text-outline focus:ring-2 focus:ring-primary/50 transition-all" />
                         </div>
                         @if (submitted && f.name.invalid) {
                             <p class="text-error text-sm mt-1">
@@ -57,7 +57,7 @@
                             <span
                                 class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-outline-variant">alternate_email</span>
                             <input id="email" formControlName="email" type="email" placeholder="seu@email.com"
-                                class="w-full bg-surface-container-lowest border-none rounded-DEFAULT py-4 pl-12 pr-4 text-on-surface placeholder:text-outline focus:ring-2 focus:ring-primary/50 transition-all" />
+                                class="w-full bg-surface-container-lowest border-none rounded py-4 pl-12 pr-4 text-on-surface placeholder:text-outline focus:ring-2 focus:ring-primary/50 transition-all" />
                         </div>
                         @if (submitted && f.email.invalid) {
                             <p class="text-error text-sm mt-1">
@@ -78,7 +78,7 @@
                             <span
                                 class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-outline-variant">lock</span>
                             <input id="password" formControlName="password" type="password" placeholder="••••••••"
-                                class="w-full bg-surface-container-lowest border-none rounded-DEFAULT py-4 pl-12 pr-4 text-on-surface placeholder:text-outline focus:ring-2 focus:ring-primary/50 transition-all" />
+                                class="w-full bg-surface-container-lowest border-none rounded py-4 pl-12 pr-4 text-on-surface placeholder:text-outline focus:ring-2 focus:ring-primary/50 transition-all" />
                         </div>
                         @if (submitted && f.password.invalid) {
                             <p class="text-error text-sm mt-1">
@@ -101,7 +101,7 @@
                                 class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-outline-variant">lock</span>
                             <input id="confirmPassword" formControlName="confirmPassword" type="password"
                                 placeholder="••••••••"
-                                class="w-full bg-surface-container-lowest border-none rounded-DEFAULT py-4 pl-12 pr-4 text-on-surface placeholder:text-outline focus:ring-2 focus:ring-primary/50 transition-all" />
+                                class="w-full bg-surface-container-lowest border-none rounded py-4 pl-12 pr-4 text-on-surface placeholder:text-outline focus:ring-2 focus:ring-primary/50 transition-all" />
                         </div>
                         @if (submitted && f.confirmPassword.invalid) {
                             <p class="text-error text-sm mt-1">
@@ -148,7 +148,7 @@
                     </div>
 
                     <button type="submit" [disabled]="busy"
-                        class="w-full group relative flex items-center justify-center py-4 bg-gradient-to-r from-primary to-primary-container text-on-primary font-headline font-bold rounded-DEFAULT overflow-hidden hover:shadow-[0_0_20px_rgba(63,194,251,0.4)] active:scale-[0.98] transition-all">
+                        class="w-full group relative flex items-center justify-center py-4 bg-gradient-to-r from-primary to-primary-container text-on-primary font-headline font-bold rounded overflow-hidden hover:shadow-[0_0_20px_rgba(63,194,251,0.4)] active:scale-[0.98] transition-all">
                         <span class="relative z-10 flex items-center gap-2">
                             {{ busy ? 'Criando conta...' : 'Criar Minha Conta' }} <span class="material-symbols-outlined text-xl">bolt</span></span>
                     </button>
@@ -175,7 +175,7 @@
 
     @if (showSuccessModal()) {
         <div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-background/80 backdrop-blur-md modal-overlay">
-            <div class="relative w-full max-w-md bg-surface-bright/70 backdrop-blur-xl border border-outline-variant/15 rounded-DEFAULT p-8 md:p-10 shadow-2xl flex flex-col items-center text-center overflow-hidden modal-content">
+            <div class="relative w-full max-w-md bg-surface-bright/70 backdrop-blur-xl border border-outline-variant/15 rounded p-8 md:p-10 shadow-2xl flex flex-col items-center text-center overflow-hidden modal-content">
                 <!-- Glowing Top line -->
                 <div class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-primary via-tertiary to-secondary"></div>
                 
@@ -196,7 +196,7 @@
 
                 <!-- CTA Button -->
                 <button (click)="onCloseSuccessModal()" 
-                    class="w-full py-4 bg-gradient-to-r from-primary to-primary-container text-on-primary font-headline font-bold rounded-DEFAULT hover:shadow-[0_0_25px_rgba(63,194,251,0.5)] active:scale-[0.98] transition-all flex items-center justify-center gap-2">
+                    class="w-full py-4 bg-gradient-to-r from-primary to-primary-container text-on-primary font-headline font-bold rounded hover:shadow-[0_0_25px_rgba(63,194,251,0.5)] active:scale-[0.98] transition-all flex items-center justify-center gap-2">
                     Ir para o Login
                     <span class="material-symbols-outlined text-xl font-bold">arrow_forward</span>
                 </button>

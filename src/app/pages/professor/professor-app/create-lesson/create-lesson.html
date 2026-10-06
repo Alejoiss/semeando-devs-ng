@@ -2,14 +2,14 @@
     <!-- Header with Back Button -->
     <div class="flex items-center gap-4">
         <button type="button" (click)="goBack()" class="flex items-center gap-2 text-on-surface-variant hover:text-primary transition-colors pl-4">
-            <span class="material-symbols-rounded">arrow_back</span>
+            <span class="material-symbols-rounded" aria-hidden="true">arrow_back</span>
             <span class="text-label-lg font-bold">Voltar ao Submódulo</span>
         </button>
     </div>
 
     <!-- Main Title -->
     <div class="flex flex-col gap-2 pl-4">
-        <h1 class="text-display-sm text-on-surface font-bold">
+        <h1 class="text-display-sm font-headline text-on-surface font-extrabold tracking-tight">
             {{ lessonType() === LessonType.CHALLENGE ? (lessonId() ? 'Editar Desafio' : 'Criar Novo Desafio') : (lessonId() ? 'Editar Lição' : 'Criar Nova Lição') }}
         </h1>
         <p class="text-on-surface-variant text-body-md">
@@ -20,14 +20,14 @@
     <!-- Tabs Container -->
     <div class="flex flex-col gap-6 bg-surface-container-low p-6 md:p-8 rounded-2xl shadow-lg">
         <!-- Tabs Navigation -->
-        <div class="flex items-center gap-4 bg-surface-container-lowest/30 p-1 rounded-xl w-fit">
+        <div class="flex items-center gap-1 bg-surface-container-lowest/40 p-1 rounded-xl w-fit max-w-full overflow-x-auto">
             <button
                 type="button"
                 (click)="setTab('content')"
                 [class]="activeTab() === 'content' ? 'bg-surface-bright/80 text-primary shadow-lg backdrop-blur-md' : 'text-on-surface-variant hover:text-on-surface hover:bg-surface-container-highest/50'"
-                class="px-8 py-3 rounded-lg text-label-lg font-bold transition-all flex items-center gap-2"
+                class="px-5 md:px-8 py-3 rounded-xl text-label-lg font-bold transition-all flex items-center gap-2 whitespace-nowrap shrink-0"
             >
-                <span class="material-symbols-rounded text-[20px]">article</span>
+                <span class="material-symbols-rounded text-[20px]" aria-hidden="true">article</span>
                 Conteúdo
             </button>
             @if (lessonType() !== LessonType.CHALLENGE) {
@@ -37,9 +37,10 @@
                     [class]="activeTab() === 'extra' ? 'bg-surface-bright/80 text-primary shadow-lg backdrop-blur-md' : 'text-on-surface-variant hover:text-on-surface hover:bg-surface-container-highest/50'"
                     [class.opacity-50]="!lessonId()"
                     [class.cursor-not-allowed]="!lessonId()"
-                    class="px-8 py-3 rounded-lg text-label-lg font-bold transition-all flex items-center gap-2"
+                    [attr.aria-disabled]="!lessonId()"
+                    class="px-5 md:px-8 py-3 rounded-xl text-label-lg font-bold transition-all flex items-center gap-2 whitespace-nowrap shrink-0"
                 >
-                    <span class="material-symbols-rounded text-[20px]">attachment</span>
+                    <span class="material-symbols-rounded text-[20px]" aria-hidden="true">attachment</span>
                     Materiais extras
                 </button>
                 <button
@@ -48,9 +49,10 @@
                     [class]="activeTab() === 'quiz' ? 'bg-surface-bright/80 text-primary shadow-lg backdrop-blur-md' : 'text-on-surface-variant hover:text-on-surface hover:bg-surface-container-highest/50'"
                     [class.opacity-50]="!lessonId()"
                     [class.cursor-not-allowed]="!lessonId()"
-                    class="px-8 py-3 rounded-lg text-label-lg font-bold transition-all flex items-center gap-2"
+                    [attr.aria-disabled]="!lessonId()"
+                    class="px-5 md:px-8 py-3 rounded-xl text-label-lg font-bold transition-all flex items-center gap-2 whitespace-nowrap shrink-0"
                 >
-                    <span class="material-symbols-rounded text-[20px]">quiz</span>
+                    <span class="material-symbols-rounded text-[20px]" aria-hidden="true">quiz</span>
                     Quiz
                 </button>
             } @else {
@@ -60,9 +62,10 @@
                     [class]="activeTab() === 'code' ? 'bg-surface-bright/80 text-primary shadow-lg backdrop-blur-md' : 'text-on-surface-variant hover:text-on-surface hover:bg-surface-container-highest/50'"
                     [class.opacity-50]="!lessonId()"
                     [class.cursor-not-allowed]="!lessonId()"
-                    class="px-8 py-3 rounded-lg text-label-lg font-bold transition-all flex items-center gap-2"
+                    [attr.aria-disabled]="!lessonId()"
+                    class="px-5 md:px-8 py-3 rounded-xl text-label-lg font-bold transition-all flex items-center gap-2 whitespace-nowrap shrink-0"
                 >
-                    <span class="material-symbols-rounded text-[20px]">code</span>
+                    <span class="material-symbols-rounded text-[20px]" aria-hidden="true">code</span>
                     Código
                 </button>
             }

@@ -1,176 +1,164 @@
 @if (!lessonId()) {
-    <div class="glass-alert p-6 text-center rounded-2xl max-w-lg mx-auto my-12">
-        <svg xmlns="http://www.w3.org/2000/svg" class="w-12 h-12 mx-auto mb-4 text-[#fe69ac] opacity-80 animate-pulse" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-        </svg>
-        <h3 class="jakarta-display text-lg font-bold text-[#dee5ff] mb-2">Lição Não Salva</h3>
-        <p class="inter-body text-sm text-[#dee5ff]/70">
+    <div class="glass max-w-lg mx-auto my-12 p-8 rounded-2xl text-center flex flex-col items-center gap-3">
+        <span class="material-symbols-rounded text-5xl text-secondary" aria-hidden="true">warning</span>
+        <h3 class="font-headline text-title-lg font-bold text-on-surface">Lição Não Salva</h3>
+        <p class="text-body-md text-on-surface-variant">
             Você precisa salvar os dados básicos da lição antes de poder adicionar ou gerenciar materiais extras para ela.
         </p>
     </div>
 } @else {
-    <div class="materials-container flex flex-col gap-8">
-        
-        <!-- Feedback messages -->
+    <div class="flex flex-col gap-8 p-6 md:p-8 bg-surface-container rounded-2xl shadow-lg">
+
+        <!-- Section Header -->
+        <div class="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
+            <div class="flex flex-col gap-2">
+                <h3 class="text-title-lg text-on-surface font-bold font-headline flex items-center gap-3">
+                    <span class="material-symbols-rounded text-primary" aria-hidden="true">attachment</span>
+                    Materiais Extras
+                </h3>
+                <p class="text-on-surface-variant text-body-md">Forneça links de apoio, documentações e referências relevantes para os alunos.</p>
+            </div>
+
+            <div class="flex items-center gap-3 flex-wrap sm:justify-end shrink-0">
+                <button
+                    type="button"
+                    id="import-json-btn"
+                    (click)="openImportModal()"
+                    class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl font-label text-label-lg font-bold text-secondary ring-1 ring-inset ring-secondary/25 hover:bg-secondary/10 hover:ring-secondary/50 active:scale-95 transition-all"
+                    aria-label="Importar materiais via JSON">
+                    <span class="material-symbols-rounded text-[20px]" aria-hidden="true">upload_file</span>
+                    Importar JSON
+                </button>
+
+                <button
+                    type="button"
+                    (click)="addMaterial()"
+                    class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl font-label text-label-lg font-bold bg-gradient-to-r from-primary to-primary-container text-on-primary-container glow-primary hover:brightness-110 active:scale-95 transition-all">
+                    <span class="material-symbols-rounded text-[20px]" aria-hidden="true">add</span>
+                    Adicionar Material
+                </button>
+            </div>
+        </div>
+
         @if (errorMessage()) {
-            <div class="bg-red-500/10 border-l-4 border-red-500 p-4 rounded-xl flex items-center justify-between">
-                <p class="inter-body text-sm text-red-200">{{ errorMessage() }}</p>
-                <button (click)="errorMessage.set(null)" class="text-red-200 hover:text-white transition-colors">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 20 20" fill="currentColor">
-                        <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
-                    </svg>
+            <div class="bg-error/10 text-error p-4 rounded flex items-center gap-3 animate-shake" role="alert">
+                <span class="material-symbols-rounded" aria-hidden="true">error</span>
+                <span class="text-label-lg font-bold flex-1">{{ errorMessage() }}</span>
+                <button
+                    type="button"
+                    (click)="errorMessage.set(null)"
+                    class="w-8 h-8 flex items-center justify-center rounded-full hover:bg-error/15 transition-colors"
+                    aria-label="Fechar mensagem de erro">
+                    <span class="material-symbols-rounded text-[20px]" aria-hidden="true">close</span>
                 </button>
             </div>
         }
 
-        @if (showSuccess()) {
-            <div class="bg-green-500/10 border-l-4 border-green-500 p-4 rounded-xl flex items-center gap-3 animate-fade-in">
-                <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-green-400" viewBox="0 0 20 20" fill="currentColor">
-                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
-                </svg>
-                <p class="inter-body text-sm text-green-200">Materiais extras salvos com sucesso!</p>
-            </div>
-        }
-
-        <!-- Header Actions -->
-        <div class="flex items-center justify-between flex-wrap gap-4">
-            <div>
-                <h2 class="jakarta-display text-xl font-bold text-[#dee5ff] mb-1">Materiais Extras</h2>
-                <p class="inter-body text-xs text-[#dee5ff]/60">Forneça links de apoio, documentações e referências relevantes para os alunos.</p>
-            </div>
-            
-        <div class="flex items-center gap-3 flex-wrap">
-            <button
-                type="button"
-                id="import-json-btn"
-                (click)="openImportModal()"
-                class="btn-secondary flex items-center gap-2 px-5 py-2.5 rounded-xl font-semibold transition-all duration-300 transform active:scale-95 text-sm"
-                aria-label="Importar materiais via JSON">
-                <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
-                </svg>
-                <span class="space-grotesk tracking-wide">Importar JSON</span>
-            </button>
-
-            <button
-                type="button"
-                (click)="addMaterial()"
-                class="btn-primary flex items-center gap-2 px-5 py-2.5 rounded-xl font-semibold transition-all duration-300 transform active:scale-95 text-[#060e20]">
-                <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
-                </svg>
-                <span class="space-grotesk text-sm tracking-wide">Adicionar Material</span>
-            </button>
-        </div>
-        </div>
-
         @if (isLoading()) {
             <div class="flex flex-col items-center justify-center py-20 gap-4">
-                <div class="w-10 h-10 border-4 border-[#3fc2fb]/20 border-t-[#3fc2fb] rounded-full animate-spin"></div>
-                <p class="inter-body text-sm text-[#dee5ff]/60">Buscando materiais salvos...</p>
+                <div class="w-10 h-10 border-4 border-primary/20 border-t-primary rounded-full animate-spin" aria-hidden="true"></div>
+                <p class="text-body-md text-on-surface-variant">Buscando materiais salvos...</p>
             </div>
         } @else {
             <form [formGroup]="form" (ngSubmit)="save()" class="flex flex-col gap-6">
-                
+
                 @if (materials.length === 0) {
-                    <div class="empty-state p-12 text-center rounded-2xl bg-[#091328] transition-all duration-300">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="w-16 h-16 mx-auto mb-4 text-[#3fc2fb] opacity-60" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
-                        </svg>
-                        <h4 class="jakarta-display text-base font-bold text-[#dee5ff] mb-2">Nenhum material de apoio ainda</h4>
-                        <p class="inter-body text-sm text-[#dee5ff]/50 max-w-sm mx-auto mb-6">
+                    <div class="empty-state p-12 rounded-2xl bg-surface-container-low flex flex-col items-center text-center gap-3">
+                        <span class="material-symbols-rounded text-6xl text-primary/70" aria-hidden="true">link</span>
+                        <h4 class="font-headline text-title-md font-bold text-on-surface">Nenhum material de apoio ainda</h4>
+                        <p class="text-body-md text-on-surface-variant max-w-sm">
                             Adicione links úteis como repositórios Git, artigos ou documentações técnicas para enriquecer o aprendizado.
                         </p>
-                        <button 
-                            type="button" 
-                            (click)="addMaterial()" 
-                            class="btn-secondary px-5 py-2.5 rounded-xl text-sm font-semibold transition-all duration-300">
+                        <button
+                            type="button"
+                            (click)="addMaterial()"
+                            class="mt-3 inline-flex items-center gap-2 px-5 py-2.5 rounded-xl font-label text-label-lg font-bold bg-surface-container-highest hover:bg-surface-bright text-on-surface transition-colors">
+                            <span class="material-symbols-rounded text-[20px] text-primary" aria-hidden="true">add_link</span>
                             Adicionar Novo Link
                         </button>
                     </div>
                 } @else {
                     <div formArrayName="materials" class="flex flex-col gap-4">
                         @for (item of materials.controls; track item.value.id; let i = $index) {
-                            <div 
-                                [formGroupName]="i" 
-                                class="material-card p-6 rounded-2xl bg-[#0f1930] hover:bg-[#141f38] transition-all duration-300 flex items-start gap-4">
-                                
+                            <div
+                                [formGroupName]="i"
+                                class="p-5 md:p-6 rounded-2xl bg-surface-container-high hover:bg-surface-bright/60 transition-colors flex items-start gap-4">
+
                                 <div class="flex-grow grid grid-cols-1 md:grid-cols-2 gap-4">
-                                    <!-- Title Input -->
-                                    <div class="flex flex-col gap-1.5">
-                                        <label class="space-grotesk text-xs tracking-wider text-[#dee5ff]/60 font-semibold uppercase">
-                                            Título do Material *
+                                    <div class="flex flex-col gap-2">
+                                        <label [attr.for]="'material-title-' + i" class="text-label-lg font-bold text-on-surface flex items-center gap-2">
+                                            Título do Material
+                                            <span class="text-secondary">*</span>
                                         </label>
-                                        <input 
-                                            type="text" 
-                                            formControlName="title" 
-                                            placeholder="Ex: Documentação oficial do TypeScript" 
-                                            class="input-field rounded-xl px-4 py-3 bg-[#060e20] text-[#dee5ff] focus:outline-none focus:ring-2 focus:ring-[#3fc2fb]/50 transition-all text-sm" />
-                                        
+                                        <input
+                                            [id]="'material-title-' + i"
+                                            type="text"
+                                            formControlName="title"
+                                            placeholder="Ex: Documentação oficial do TypeScript"
+                                            class="w-full bg-surface-container-lowest text-on-surface px-4 py-3 rounded outline-none focus:ring-2 focus:ring-primary/30 transition-all placeholder:text-on-surface-variant/50 text-body-md" />
+
                                         @if (item.get('title')?.touched && item.get('title')?.invalid) {
-                                            <span class="inter-body text-xs text-[#ff716c] mt-1 flex items-center gap-1">
-                                                <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" viewBox="0 0 20 20" fill="currentColor">
-                                                    <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
-                                                </svg>
+                                            <p class="text-error text-label-md font-medium flex items-center gap-1 animate-fade-in">
+                                                <span class="material-symbols-rounded text-[16px]" aria-hidden="true">error</span>
                                                 O título é obrigatório.
-                                            </span>
+                                            </p>
                                         }
                                     </div>
 
-                                    <!-- URL Input -->
-                                    <div class="flex flex-col gap-1.5">
-                                        <label class="space-grotesk text-xs tracking-wider text-[#dee5ff]/60 font-semibold uppercase">
-                                            URL do Link *
+                                    <div class="flex flex-col gap-2">
+                                        <label [attr.for]="'material-url-' + i" class="text-label-lg font-bold text-on-surface flex items-center gap-2">
+                                            URL do Link
+                                            <span class="text-secondary">*</span>
                                         </label>
-                                        <input 
-                                            type="text" 
-                                            formControlName="url" 
-                                            placeholder="Ex: https://www.typescriptlang.org" 
-                                            class="input-field rounded-xl px-4 py-3 bg-[#060e20] text-[#dee5ff] focus:outline-none focus:ring-2 focus:ring-[#3fc2fb]/50 transition-all text-sm" />
-                                        
+                                        <input
+                                            [id]="'material-url-' + i"
+                                            type="text"
+                                            formControlName="url"
+                                            placeholder="Ex: https://www.typescriptlang.org"
+                                            class="w-full bg-surface-container-lowest text-on-surface px-4 py-3 rounded outline-none focus:ring-2 focus:ring-primary/30 transition-all placeholder:text-on-surface-variant/50 text-body-md" />
+
                                         @if (item.get('url')?.touched && item.get('url')?.invalid) {
-                                            <span class="inter-body text-xs text-[#ff716c] mt-1 flex items-center gap-1">
-                                                <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" viewBox="0 0 20 20" fill="currentColor">
-                                                    <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
-                                                </svg>
+                                            <p class="text-error text-label-md font-medium flex items-center gap-1 animate-fade-in">
+                                                <span class="material-symbols-rounded text-[16px]" aria-hidden="true">error</span>
                                                 @if (item.get('url')?.errors?.['required']) {
                                                     O link URL é obrigatório.
                                                 } @else {
                                                     Por favor, insira uma URL válida (ex: http:// ou https://).
                                                 }
-                                            </span>
+                                            </p>
                                         }
                                     </div>
                                 </div>
 
-                                <!-- Remove Button -->
-                                <button 
-                                    type="button" 
-                                    (click)="removeMaterial(i)" 
-                                    class="remove-btn self-center p-2.5 rounded-xl hover:bg-[#ff716c]/10 text-[#ff716c]/70 hover:text-[#ff716c] transition-all duration-300 transform active:scale-90"
-                                    title="Remover este material">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                                    </svg>
+                                <button
+                                    type="button"
+                                    (click)="removeMaterial(i)"
+                                    class="self-center p-2 rounded-full text-on-surface-variant hover:text-error hover:bg-error/10 transition-colors"
+                                    title="Remover este material"
+                                    [attr.aria-label]="'Remover material ' + (i + 1)">
+                                    <span class="material-symbols-rounded" aria-hidden="true">delete</span>
                                 </button>
                             </div>
                         }
                     </div>
 
                     <!-- Footer Actions -->
-                    <div class="flex justify-end pt-6 mt-8 border-t border-[#0f1930]/40">
+                    <div class="flex justify-end pt-4">
                         <div class="flex items-center gap-4">
                             @if (showSuccess()) {
-                                <span class="success-message text-tertiary text-label-md font-bold animate-fade-in">Salvo com sucesso!</span>
+                                <span class="text-tertiary text-label-lg font-bold flex items-center gap-1.5 animate-fade-in" role="status">
+                                    <span class="material-symbols-rounded text-[18px]" aria-hidden="true">check_circle</span>
+                                    Materiais extras salvos com sucesso!
+                                </span>
                             }
 
-                            <button 
-                                type="submit" 
-                                [disabled]="isSaving() || form.invalid" 
-                                class="w-full sm:w-auto py-4 px-8 bg-gradient-to-r from-secondary to-secondary-dim text-on-secondary font-headline font-extrabold rounded-xl shadow-lg shadow-primary/20 active:scale-95 hover:scale-[1.02] transition-all disabled:opacity-50 disabled:cursor-not-allowed">
+                            <button
+                                type="submit"
+                                [disabled]="isSaving() || form.invalid"
+                                class="w-full sm:w-auto py-4 px-8 bg-gradient-to-r from-secondary to-secondary-dim text-on-secondary font-headline font-extrabold rounded-xl shadow-lg shadow-secondary/20 active:scale-95 hover:scale-[1.02] transition-all disabled:opacity-50 disabled:cursor-not-allowed">
                                 @if (isSaving()) {
                                     <span class="flex items-center justify-center gap-2">
-                                        <div class="animate-spin rounded-full h-4 w-4 border-t-2 border-on-secondary border-transparent"></div>
+                                        <div class="animate-spin rounded-full h-4 w-4 border-2 border-on-secondary/30 border-t-on-secondary" aria-hidden="true"></div>
                                         Salvando...
                                     </span>
                                 } @else {
@@ -183,7 +171,6 @@
 
             </form>
         }
-
     </div>
 }
 
@@ -195,44 +182,40 @@
         aria-labelledby="import-extra-modal-title">
 
         <div
-            class="absolute inset-0 bg-[#060e20]/70 backdrop-blur-xl"
+            class="absolute inset-0 bg-surface/70 backdrop-blur-xl"
             (click)="closeImportModal()"
             aria-hidden="true">
         </div>
 
         <div
-            class="relative w-full max-w-lg flex flex-col bg-[#0f1930] rounded-2xl shadow-[0_8px_60px_rgba(0,0,0,0.6)] overflow-hidden"
+            class="relative w-full max-w-3xl max-h-[90vh] flex flex-col bg-surface-container-high rounded-2xl shadow-[0_8px_60px_rgba(0,0,0,0.6)] overflow-hidden"
             (click)="$event.stopPropagation()">
 
-            <div class="flex items-center justify-between px-6 py-4 bg-[#141f38]">
-                <div class="flex flex-col gap-0.5">
-                    <span class="space-grotesk text-xs tracking-widest text-[#fe69ac] font-semibold uppercase">// Importação em Lote</span>
-                    <h2 id="import-extra-modal-title" class="jakarta-display text-lg font-bold text-[#dee5ff]">
+            <div class="flex items-start justify-between gap-4 px-6 py-5 bg-surface-container-highest shrink-0">
+                <div class="flex flex-col gap-1">
+                    <span class="font-label text-label-md tracking-widest uppercase font-bold text-secondary">Importação em lote</span>
+                    <h2 id="import-extra-modal-title" class="font-headline text-title-lg font-bold text-on-surface">
                         Importar Materiais via JSON
                     </h2>
                 </div>
                 <button
                     type="button"
                     (click)="closeImportModal()"
-                    class="w-9 h-9 flex items-center justify-center text-[#dee5ff]/50 hover:text-[#dee5ff] hover:bg-[#091328] rounded-xl transition-colors"
+                    class="w-10 h-10 shrink-0 flex items-center justify-center rounded-full text-on-surface-variant hover:text-on-surface hover:bg-surface-bright transition-colors"
                     aria-label="Fechar modal de importação">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                    </svg>
+                    <span class="material-symbols-rounded" aria-hidden="true">close</span>
                 </button>
             </div>
 
-            <div class="px-6 pt-4 pb-2">
-                <p class="inter-body text-xs text-[#dee5ff]/60 leading-relaxed">
-                    Cole um array JSON onde cada objeto deve ter:
-                    <span class="text-[#3fc2fb] font-semibold">"title"</span> (string) e
-                    <span class="text-[#e8ffc0] font-semibold">"url"</span> (string começando com http:// ou https://).
-                </p>
-            </div>
+            <p class="px-6 pt-5 pb-3 text-body-md text-on-surface-variant shrink-0">
+                Cole um array JSON onde cada objeto deve ter:
+                <code class="font-mono text-primary">"title"</code> (string) e
+                <code class="font-mono text-tertiary">"url"</code> (string começando com http:// ou https://).
+            </p>
 
-            <div class="px-6 pb-4">
+            <div class="px-6 pb-5 flex-1 min-h-0">
                 <textarea
-                    class="input-field w-full bg-[#060e20] text-[#dee5ff] rounded-xl p-4 min-h-[200px] resize-y font-mono text-sm focus:outline-none focus:ring-2 focus:ring-[#3fc2fb]/30 transition-all placeholder:text-[#dee5ff]/30"
+                    class="w-full h-full min-h-[240px] bg-surface-container-lowest text-on-surface rounded p-4 resize-y font-mono text-body-md outline-none focus:ring-2 focus:ring-primary/30 transition-all placeholder:text-on-surface-variant/50"
                     placeholder='[&#10;  { "title": "MDN Web Docs", "url": "https://developer.mozilla.org" }&#10;]'
                     [value]="importRawJson()"
                     (input)="updateImportJson($any($event.target).value)"
@@ -241,31 +224,27 @@
             </div>
 
             @if (importError()) {
-                <div class="mx-6 mb-4 flex items-start gap-2 px-4 py-3 bg-red-500/10 border-l-4 border-red-500 rounded-r-xl" role="alert">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-red-400 flex-shrink-0 mt-0.5" viewBox="0 0 20 20" fill="currentColor">
-                        <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
-                    </svg>
-                    <span class="inter-body text-xs text-red-200">{{ importError() }}</span>
+                <div class="mx-6 mb-5 flex items-start gap-2 px-4 py-3 bg-error/10 text-error rounded text-label-lg font-bold shrink-0 animate-shake" role="alert">
+                    <span class="material-symbols-rounded text-[20px]" aria-hidden="true">error</span>
+                    <span>{{ importError() }}</span>
                 </div>
             }
 
-            <div class="flex items-center justify-end gap-3 px-6 py-4 bg-[#141f38]">
+            <div class="flex items-center justify-end gap-3 px-6 py-4 bg-surface-container-highest shrink-0">
                 <button
                     type="button"
                     id="import-extra-cancel-btn"
                     (click)="closeImportModal()"
-                    class="px-5 py-2.5 space-grotesk text-xs font-bold tracking-wide uppercase text-[#dee5ff]/60 hover:text-[#dee5ff] hover:bg-[#091328] rounded-xl transition-all">
+                    class="px-5 py-2.5 rounded-xl font-label text-label-lg font-bold text-on-surface-variant hover:text-on-surface hover:bg-surface-bright transition-all">
                     Cancelar
                 </button>
                 <button
                     type="button"
                     id="import-extra-submit-btn"
                     (click)="importFromJson()"
-                    class="btn-primary flex items-center gap-2 px-5 py-2.5 rounded-xl font-semibold transition-all duration-300 transform active:scale-95 text-[#060e20] space-grotesk text-xs tracking-wide uppercase"
+                    class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl font-label text-label-lg font-bold bg-gradient-to-r from-primary to-primary-container text-on-primary-container glow-primary hover:brightness-110 active:scale-95 transition-all"
                     aria-label="Confirmar importação dos materiais">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
-                    </svg>
+                    <span class="material-symbols-rounded text-[20px]" aria-hidden="true">download_done</span>
                     Importar
                 </button>
             </div>

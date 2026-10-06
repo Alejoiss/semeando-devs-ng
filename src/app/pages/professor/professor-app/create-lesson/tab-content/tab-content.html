@@ -1,10 +1,10 @@
 <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
     <!-- LEFT COLUMN -->
     <div class="flex flex-col gap-10">
-        <div [formGroup]="lessonForm" class="flex flex-col gap-10 p-6 md:p-8 bg-surface-container-low rounded-2xl shadow-lg">
+        <div [formGroup]="lessonForm" class="flex flex-col gap-10 p-6 md:p-8 bg-surface-container rounded-2xl shadow-lg">
             <!-- Section Header -->
             <div class="flex flex-col gap-2">
-                <h3 class="text-title-lg text-on-surface font-bold font-plus-jakarta flex items-center gap-3">
+                <h3 class="text-title-lg text-on-surface font-bold font-headline flex items-center gap-3">
                     <span class="material-symbols-rounded text-primary">article</span>
                     Informações da Lição
                 </h3>
@@ -25,7 +25,7 @@
                             type="text"
                             formControlName="title"
                             placeholder="Ex: Introdução ao TypeScript"
-                            class="w-full bg-surface-container-lowest text-on-surface p-4 outline-none focus:ring-2 focus:ring-primary/20 transition-all placeholder:text-on-surface-variant/30 font-medium"
+                            class="w-full bg-surface-container-lowest text-on-surface p-4 outline-none focus:ring-2 focus:ring-primary/20 transition-all placeholder:text-on-surface-variant/30 font-medium rounded"
                         />
                     </div>
                     @if (lessonForm.get('title')?.invalid && lessonForm.get('title')?.touched) {
@@ -52,7 +52,7 @@
                             formControlName="description"
                             rows="4"
                             placeholder="Descreva brevemente o que será abordado nesta lição..."
-                            class="w-full bg-surface-container-lowest text-on-surface p-4 outline-none focus:ring-2 focus:ring-primary/20 transition-all placeholder:text-on-surface-variant/30 font-medium resize-none"
+                            class="w-full bg-surface-container-lowest text-on-surface p-4 outline-none focus:ring-2 focus:ring-primary/20 transition-all placeholder:text-on-surface-variant/30 font-medium resize-none rounded"
                         ></textarea>
                     </div>
                     @if (lessonForm.get('description')?.invalid && lessonForm.get('description')?.touched) {
@@ -71,10 +71,10 @@
 
         @if (lessonId()) {
             <!-- Contents Authoring -->
-            <div class="flex flex-col gap-6 p-6 md:p-8 bg-surface-container-low rounded-2xl shadow-lg">
+            <div class="flex flex-col gap-6 p-6 md:p-8 bg-surface-container rounded-2xl shadow-lg">
                 <!-- Header -->
                 <div class="flex flex-col gap-2">
-                    <h3 class="text-title-lg text-on-surface font-bold font-plus-jakarta flex items-center gap-3">
+                    <h3 class="text-title-lg text-on-surface font-bold font-headline flex items-center gap-3">
                         <span class="material-symbols-rounded text-primary">view_carousel</span>
                         Conteúdos da Lição
                     </h3>
@@ -84,9 +84,9 @@
                 <!-- Drag and Drop List -->
                 <div cdkDropList (cdkDropListDropped)="dropContent($event)" class="flex flex-col gap-4">
                     @for (content of contentList(); track content.id; let i = $index) {
-                        <div cdkDrag class="flex flex-col bg-surface-container rounded-2xl border border-outline-variant/15 overflow-hidden shadow-sm hover:shadow-md transition-all">
+                        <div cdkDrag class="flex flex-col bg-surface-container-high rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-all">
                             <!-- Accordion Header -->
-                            <div class="flex items-center justify-between p-4 bg-surface-container hover:bg-surface-bright/50 transition-colors cursor-pointer" (click)="toggleContent(content.id!)">
+                            <div class="flex items-center justify-between p-4 bg-surface-container-high hover:bg-surface-bright/50 transition-colors cursor-pointer" (click)="toggleContent(content.id!)">
                                 <div class="flex items-center gap-4">
                                     <span cdkDragHandle class="material-symbols-rounded text-on-surface-variant hover:text-primary cursor-grab active:cursor-grabbing">drag_indicator</span>
                                     <span class="text-label-lg font-bold text-on-surface">
@@ -103,7 +103,7 @@
 
                             <!-- Accordion Body -->
                             @if (expandedContentIds().has(content.id!)) {
-                                <div class="p-4 border-t border-outline-variant/15 flex flex-col gap-4 animate-fade-in bg-surface-container/20 rounded-b-2xl">
+                                <div class="p-4 flex flex-col gap-4 animate-fade-in bg-surface-container-highest/40 rounded-b-2xl">
                                     @if (content.type === SectionContentType.VIDEO) {
                                         <div class="flex flex-col gap-2">
                                             <label class="text-label-md font-bold text-on-surface">Código Iframe do Vídeo (ex: YouTube/Vimeo)</label>
@@ -145,7 +145,7 @@
                                             </div>
                                             <div class="flex flex-col gap-2">
                                                 <label class="text-label-md font-bold text-on-surface">Descrição Acessível (alt)</label>
-                                                <input type="text" [value]="content.fileDescription || ''" (input)="updateContent(i, {fileDescription: $any($event.target).value})" placeholder="Descrição da imagem para leitores de tela..." class="w-full bg-surface-container-lowest border border-outline-variant/15 p-3 outline-none focus:ring-2 focus:ring-primary/20 text-on-surface animate-fade-in">
+                                                <input type="text" [value]="content.fileDescription || ''" (input)="updateContent(i, {fileDescription: $any($event.target).value})" placeholder="Descrição da imagem para leitores de tela..." class="w-full bg-surface-container-lowest border border-outline-variant/15 p-3 outline-none focus:ring-2 focus:ring-primary/20 text-on-surface animate-fade-in rounded">
                                             </div>
                                         </div>
                                     }
@@ -187,10 +187,10 @@
                 </div>
 
                 <!-- AI Evaluation Section -->
-                <div class="flex flex-col gap-6 p-6 md:p-8 bg-surface-container-low rounded-2xl shadow-lg mt-8">
+                <div class="flex flex-col gap-6 p-6 md:p-8 bg-surface-container rounded-2xl shadow-lg mt-8">
                     <!-- Header -->
                     <div class="flex flex-col gap-2">
-                        <h3 class="text-title-lg text-on-surface font-bold font-plus-jakarta flex items-center gap-3">
+                        <h3 class="text-title-lg text-on-surface font-bold font-headline flex items-center gap-3">
                             <span class="material-symbols-rounded text-secondary">psychology</span>
                             Avaliação Pedagógica com IA
                         </h3>
@@ -211,7 +211,7 @@
                             class="w-full sm:w-auto py-3 px-6 bg-surface-container-highest hover:bg-surface-bright text-on-surface hover:text-primary transition-all rounded-lg font-bold text-label-md disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                         >
                             @if (isEvaluating()) {
-                                <div class="animate-spin rounded-full h-4 w-4 border-t-2 border-primary border-transparent"></div>
+                                <div class="animate-spin rounded-full h-4 w-4 border-2 border-primary/30 border-t-primary" aria-hidden="true"></div>
                                 <span>Avaliando Conteúdo...</span>
                             } @else {
                                 <span class="material-symbols-rounded text-[20px] text-secondary">analytics</span>
@@ -232,7 +232,7 @@
                         <div class="ai-feedback-container glass rounded-2xl p-6 border border-outline-variant/10 bg-surface-container/30 transition-all duration-300">
                             <div class="flex items-center gap-3 mb-4">
                                 <span class="material-symbols-rounded text-tertiary">sentiment_satisfied</span>
-                                <h4 class="text-title-md text-on-surface font-bold font-plus-jakarta">Feedback do Professor IA</h4>
+                                <h4 class="text-title-md text-on-surface font-bold font-headline">Feedback do Professor IA</h4>
                             </div>
                             <div class="prose prose-invert prose-blue max-w-none">
                                 <markdown [data]="aiFeedback()"></markdown>
@@ -262,11 +262,11 @@
                     type="button"
                     (click)="saveLesson()"
                     [disabled]="lessonForm.invalid || isSaving()"
-                    class="w-full sm:w-auto py-4 px-8 bg-gradient-to-r from-secondary to-secondary-dim text-on-secondary font-headline font-extrabold rounded-xl shadow-lg shadow-primary/20 active:scale-95 hover:scale-[1.02] transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                    class="w-full sm:w-auto py-4 px-8 bg-gradient-to-r from-secondary to-secondary-dim text-on-secondary font-headline font-extrabold rounded-xl shadow-lg shadow-secondary/20 active:scale-95 hover:scale-[1.02] transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                     @if (isSaving()) {
                         <span class="flex items-center justify-center gap-2">
-                            <div class="animate-spin rounded-full h-4 w-4 border-t-2 border-on-primary border-transparent"></div>
+                            <div class="animate-spin rounded-full h-4 w-4 border-2 border-on-secondary/30 border-t-on-secondary" aria-hidden="true"></div>
                             Salvando...
                         </span>
                     } @else {
@@ -279,8 +279,8 @@
 
     <!-- RIGHT COLUMN -->
     @if (lessonId()) {
-        <div class="hidden lg:flex flex-col gap-6 p-6 md:p-8 bg-surface-container-low rounded-2xl shadow-lg sticky top-14 h-[calc(100vh-100px)] overflow-y-auto custom-scrollbar">
-            <h3 class="text-title-lg text-on-surface font-bold font-plus-jakarta flex items-center gap-3">
+        <div class="hidden lg:flex flex-col gap-6 p-6 md:p-8 bg-surface-container rounded-2xl shadow-lg sticky top-14 h-[calc(100vh-100px)] overflow-y-auto custom-scrollbar">
+            <h3 class="text-title-lg text-on-surface font-bold font-headline flex items-center gap-3">
                 <span class="material-symbols-rounded text-primary">visibility</span>
                 Preview da Lição
             </h3>
@@ -312,7 +312,7 @@
                                             class="w-full h-auto object-cover group-hover:scale-105 transition-transform duration-700" />
                                         @if (section.fileDescription) {
                                             <div class="absolute bottom-0 left-0 w-full p-4 bg-black">
-                                                <p class="text-[10px] font-label uppercase tracking-widest text-white">
+                                                <p class="text-[10px] font-label uppercase tracking-widest text-on-surface">
                                                     {{ section.fileDescription }}
                                                 </p>
                                             </div>

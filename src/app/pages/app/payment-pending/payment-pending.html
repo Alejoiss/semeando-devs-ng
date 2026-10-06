@@ -21,7 +21,7 @@
             </div>
         </div>
 
-        <h1 class="font-display font-extrabold text-3xl text-on-surface mb-3">
+        <h1 class="font-headline font-extrabold text-3xl text-on-surface mb-3">
             Aguardando Confirmação
         </h1>
         <p class="font-body text-on-surface-variant text-base mb-2">
@@ -38,7 +38,7 @@
         <div class="mt-8 bg-surface-container rounded-2xl p-6 shadow-2xl shadow-primary/5">
             <div class="flex flex-col items-center gap-5">
                 <img [src]="'data:image/jpeg;base64,' + pixQrCodeBase64()" alt="QR Code PIX"
-                    class="w-48 h-48 rounded-xl bg-white p-2">
+                    class="w-48 h-48 rounded bg-white p-3">
                 @if (pixQrCode()) {
                 <div class="w-full">
                     <label class="block text-sm font-label text-on-surface-variant mb-2 text-left">
@@ -101,7 +101,7 @@
             </div>
         </div>
 
-        <h2 id="success-modal-title" class="font-display font-extrabold text-2xl text-on-surface mb-2">
+        <h2 id="success-modal-title" class="font-headline font-extrabold text-2xl text-on-surface mb-2">
             Pagamento Aprovado!
         </h2>
         <p class="font-body text-on-surface-variant mb-2">

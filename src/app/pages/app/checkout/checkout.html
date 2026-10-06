@@ -1,6 +1,6 @@
 <div class="min-h-[calc(100vh-80px)] p-6 bg-surface">
     <div class="max-w-4xl mx-auto">
-        <h1 class="font-display font-extrabold text-3xl text-on-surface mb-8">Finalizar Assinatura</h1>
+        <h1 class="font-headline font-extrabold text-3xl text-on-surface mb-8">Finalizar Assinatura</h1>
 
         @if (isLoading()) {
             <div class="flex items-center justify-center h-64">
@@ -33,7 +33,7 @@
                         <div class="border-t border-outline-variant/50 pt-4 mt-6">
                             <div class="flex justify-between items-center">
                                 <span class="font-headline font-bold text-on-surface">Total</span>
-                                <span class="font-display font-extrabold text-2xl text-primary">R$ {{ finalPrice() | number:'1.2-2' }}</span>
+                                <span class="font-headline font-extrabold text-2xl text-primary">R$ {{ finalPrice() | number:'1.2-2' }}</span>
                             </div>
                         </div>
                     </div>

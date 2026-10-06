@@ -7,6 +7,24 @@ module.exports = {
     ],
     theme: {
         extend: {
+            // Escala tipográfica (Material 3) usada nos templates via text-display-*, text-title-*, text-label-* etc.
+            fontSize: {
+                'display-lg': ['3.5rem', { lineHeight: '4rem', letterSpacing: '-0.02em' }],
+                'display-md': ['2.8rem', { lineHeight: '3.25rem', letterSpacing: '-0.02em' }],
+                'display-sm': ['2.25rem', { lineHeight: '2.75rem', letterSpacing: '-0.01em' }],
+                'headline-lg': ['2rem', { lineHeight: '2.5rem' }],
+                'headline-md': ['1.75rem', { lineHeight: '2.25rem' }],
+                'headline-sm': ['1.5rem', { lineHeight: '2rem' }],
+                'title-lg': ['1.375rem', { lineHeight: '1.75rem' }],
+                'title-md': ['1rem', { lineHeight: '1.5rem' }],
+                'title-sm': ['0.875rem', { lineHeight: '1.25rem' }],
+                'body-lg': ['1rem', { lineHeight: '1.5rem' }],
+                'body-md': ['0.875rem', { lineHeight: '1.25rem' }],
+                'body-sm': ['0.75rem', { lineHeight: '1rem' }],
+                'label-lg': ['0.875rem', { lineHeight: '1.25rem' }],
+                'label-md': ['0.75rem', { lineHeight: '1rem' }],
+                'label-sm': ['0.6875rem', { lineHeight: '1rem' }],
+            },
             typography: ({ theme }) => ({
                 invert: {
                     css: {
@@ -59,6 +77,10 @@ module.exports = {
             }),
         },
         colors: {
+            "transparent": "transparent",
+            "current": "currentColor",
+            "black": "#000000",
+            "white": "#ffffff",
             "background": "#060e20",
             "on-tertiary-container": "#3d5e00",
             "secondary-fixed": "#ffc1d6",
@@ -115,9 +137,21 @@ module.exports = {
         fontFamily: {
             "headline": ["Plus Jakarta Sans"],
             "body": ["Inter"],
-            "label": ["Space Grotesk"]
+            "label": ["Space Grotesk"],
+            "mono": ["ui-monospace", "SFMono-Regular", "Menlo", "Consolas", "monospace"]
         },
-        borderRadius: { "DEFAULT": "1rem", "lg": "2rem", "xl": "3rem", "full": "9999px" },
+        // "2xl"/"3xl" são aliases de "md"/"lg" (escala do design system), pois a escala padrão do Tailwind não existe aqui.
+        borderRadius: {
+            "none": "0",
+            "sm": "0.5rem",
+            "DEFAULT": "1rem",
+            "md": "1.5rem",
+            "lg": "2rem",
+            "xl": "3rem",
+            "2xl": "1.5rem",
+            "3xl": "2rem",
+            "full": "9999px"
+        },
     },
     plugins: [
         require('@tailwindcss/typography'),
