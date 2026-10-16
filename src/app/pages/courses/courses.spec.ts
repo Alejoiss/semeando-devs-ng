@@ -9,7 +9,7 @@ describe('Courses', () => {
   let fixture: ComponentFixture<Courses>;
 
   const curriculum: PublicModule[] = [{
-    id: 'm1', slug: 'css', title: 'CSS', description: 'Estilos', icon: 'palette',
+    id: 'm1', slug: 'css', title: 'CSS', description: 'Estilos', icon: null, avatar: 'css.png',
     submodules: [{
       id: 's1', slug: 'introducao', title: 'Introdução', description: '', icon: null,
       lessons: [{ id: 'l1', slug: 'o-que-e-css', title: 'O que é CSS', description: '' }],
@@ -35,7 +35,7 @@ describe('Courses', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should link each module to its public page and reveal lesson links when expanded', () => {
+  it('should link each module to its public page and each lesson to its preview when expanded', () => {
     const element: HTMLElement = fixture.nativeElement;
     expect(element.querySelector('a[href="/cursos/css"]')).toBeTruthy();
 
@@ -44,6 +44,6 @@ describe('Courses', () => {
     element.querySelector<HTMLButtonElement>('#conteudo-css button')!.click();
     fixture.detectChanges();
 
-    expect(element.querySelector('a[href="/cursos/css/introducao/o-que-e-css"]')).toBeTruthy();
+    expect(element.querySelector('a[href="/cursos/css/introducao/o-que-e-css"]')?.textContent).toContain('O que é CSS');
   });
 });

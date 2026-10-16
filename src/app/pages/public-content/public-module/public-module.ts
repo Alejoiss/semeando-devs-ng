@@ -31,9 +31,9 @@ export class PublicModule {
         effect(() => {
             const module = this.module();
             this.seo.update({
-                title: `Curso de ${module.title} grátis - Semeando Devs`,
+                title: `Curso de ${module.title} - Semeando Devs`,
                 description: module.description ||
-                    `Aprenda ${module.title} do zero com ${this.lessonCount()} aulas gratuitas em português.`,
+                    `Conheça o currículo do curso de ${module.title}: ${this.lessonCount()} aulas com quizzes e desafios práticos.`,
             });
         });
     }

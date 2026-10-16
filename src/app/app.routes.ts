@@ -68,8 +68,7 @@ export const routes: Routes = [
     {
         path: 'cursos/:moduleSlug/:submoduleSlug/:lessonSlug',
         loadComponent: () => import('./pages/public-content/public-lesson/public-lesson').then((m) => m.PublicLesson),
-        resolve: { lesson: publicLessonResolver },
-        data: SHOW_ADS_ROUTE_DATA
+        resolve: { lesson: publicLessonResolver }
     },
     {
         path: 'app',

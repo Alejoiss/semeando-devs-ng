@@ -1,6 +1,5 @@
 import { InjectionToken, inject } from '@angular/core';
 import { SupabaseService } from '../supabase';
-import { SectionContentType } from '../../../models/section-content/section-content';
 
 export interface ShowcaseRow {
     id: string;
@@ -8,6 +7,7 @@ export interface ShowcaseRow {
     title: string;
     description: string | null;
     icon: string | null;
+    avatar: string | null;
     in_revision: boolean;
 }
 
@@ -17,6 +17,7 @@ export interface CurriculumRow {
     title: string;
     description: string | null;
     icon: string | null;
+    avatar: string | null;
     submodules: {
         id: string;
         slug: string;
@@ -28,29 +29,28 @@ export interface CurriculumRow {
     }[];
 }
 
-export interface PublicSection {
-    id: string;
-    type: SectionContentType;
-    content: string | null;
-    file: string | null;
-    fileDescription: string | null;
+export interface LessonPreviewRow {
+    lesson_id: string;
+    preview: string;
 }
 
-/** De onde vêm os dados públicos: Supabase no navegador, snapshot gerado antes do build na pré-renderização. */
+/**
+ * De onde vêm os dados públicos: Supabase no navegador, snapshot gerado antes do build na pré-renderização.
+ * Expõe o catálogo e só a prévia de cada aula (função get_lesson_previews); o conteúdo completo exige login.
+ */
 export interface PublicCatalogSource {
     showcase(): Promise<ShowcaseRow[]>;
     curriculum(): Promise<CurriculumRow[]>;
-    sections(lessonId: string): Promise<PublicSection[]>;
+    preview(lessonId: string): Promise<string | null>;
 }
 
 // Mantenha em sincronia com scripts/fetch-public-catalog.mjs, que gera o snapshot usado na pré-renderização
-export const SHOWCASE_SELECT = 'id, slug, title, description, icon, in_revision';
+export const SHOWCASE_SELECT = 'id, slug, title, description, icon, avatar, in_revision';
 export const CURRICULUM_SELECT = `
-    id, slug, title, description, icon,
+    id, slug, title, description, icon, avatar,
     submodules ( id, slug, title, description, icon, order,
         lessons ( id, title, description, type, order )
     )`;
-export const SECTION_SELECT = 'id, type, content, file, fileDescription:file_description';
 
 export const PUBLIC_CATALOG_SOURCE = new InjectionToken<PublicCatalogSource>('PUBLIC_CATALOG_SOURCE', {
     providedIn: 'root',
@@ -75,12 +75,11 @@ export const PUBLIC_CATALOG_SOURCE = new InjectionToken<PublicCatalogSource>('PU
                 .order('order', { foreignTable: 'submodules', ascending: true })
                 .order('order', { foreignTable: 'submodules.lessons', ascending: true })
                 .returns<CurriculumRow[]>()) ?? [],
-            sections: async lessonId => unwrap(await supabase
-                .from('section_content')
-                .select(SECTION_SELECT)
-                .eq('lesson_id', lessonId)
-                .order('order', { ascending: true })
-                .returns<PublicSection[]>()) ?? [],
+            preview: async lessonId => {
+                const { data, error } = await supabase.rpc('get_lesson_previews', { p_lesson_id: lessonId });
+                const rows = unwrap({ data: data as LessonPreviewRow[] | null, error }) ?? [];
+                return rows[0]?.preview ?? null;
+            },
         };
     },
 });

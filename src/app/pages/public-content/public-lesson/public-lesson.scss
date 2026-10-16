@@ -1,5 +1,12 @@
-.video-embed ::ng-deep iframe {
-    width: 100%;
-    height: 100%;
-    border: 0;
+.preview {
+    position: relative;
+}
+
+// Esmaece o fim da prévia para indicar que a aula continua; a cor é a do glass-card sobre o fundo da página
+.preview-fade {
+    position: absolute;
+    inset: auto 0 0 0;
+    height: 7rem;
+    background: linear-gradient(to bottom, rgba(12, 22, 43, 0), rgb(12, 22, 43));
+    pointer-events: none;
 }

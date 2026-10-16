@@ -1,6 +1,17 @@
 {
     "$schema": "./node_modules/@angular/service-worker/config/schema.json",
     "index": "/index.csr.html",
+    "navigationUrls": [
+        "/**",
+        "!/**/*.*",
+        "!/**/*__*",
+        "!/**/*__*/**",
+        "!/",
+        "!/cursos",
+        "!/cursos/**",
+        "!/termos-de-uso",
+        "!/support/**"
+    ],
     "assetGroups": [
         {
             "name": "app",

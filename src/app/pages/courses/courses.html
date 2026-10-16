@@ -7,7 +7,7 @@
                 Currículo dos <span class="gradient-text">Cursos</span>
             </h1>
             <p class="text-on-surface-variant text-lg">
-                Explore a estrutura completa da nossa formação. Todas as aulas teóricas são gratuitas e abertas para leitura.
+                Explore a estrutura completa da nossa formação e veja uma prévia de cada aula. Crie sua conta gratuita para acessar as aulas completas.
             </p>
         </div>
 
@@ -16,9 +16,15 @@
                 <section class="glass-card rounded-2xl overflow-hidden shadow-lg" [attr.aria-labelledby]="'modulo-' + module.slug">
                     <div class="p-6 bg-surface-container flex items-center justify-between gap-4">
                         <div class="flex items-center gap-4 min-w-0">
-                            <div class="w-12 h-12 rounded-xl bg-primary/10 text-primary flex items-center justify-center shrink-0">
-                                <span class="material-symbols-outlined text-2xl" aria-hidden="true">{{ module.icon }}</span>
-                            </div>
+                            @if (module.avatar) {
+                                <div class="w-12 h-12 rounded-xl bg-[#fff] p-1 overflow-hidden flex items-center justify-center shrink-0">
+                                    <img [src]="module.avatar" alt="" width="48" height="48" class="w-full h-full object-contain rounded-lg" />
+                                </div>
+                            } @else {
+                                <div class="w-12 h-12 rounded-xl bg-primary/10 text-primary flex items-center justify-center shrink-0">
+                                    <span class="material-symbols-outlined text-2xl" aria-hidden="true">{{ module.icon || 'school' }}</span>
+                                </div>
+                            }
                             <div class="min-w-0">
                                 <h2 [id]="'modulo-' + module.slug" class="text-xl font-bold">
                                     <a [routerLink]="['/cursos', module.slug]" class="hover:text-primary transition-colors">{{ module.title }}</a>

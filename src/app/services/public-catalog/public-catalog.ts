@@ -1,9 +1,7 @@
 import { Injectable, PLATFORM_ID, TransferState, inject, makeStateKey } from '@angular/core';
 import { isPlatformServer } from '@angular/common';
 import { slugify } from '../../utils/slug';
-import { CurriculumRow, PUBLIC_CATALOG_SOURCE, PublicSection } from './public-catalog.source';
-
-export type { PublicSection } from './public-catalog.source';
+import { CurriculumRow, PUBLIC_CATALOG_SOURCE } from './public-catalog.source';
 
 export interface PublicLessonSummary {
     id: string;
@@ -27,6 +25,7 @@ export interface PublicModule {
     title: string;
     description: string;
     icon: string | null;
+    avatar: string | null;
     submodules: PublicSubmodule[];
 }
 
@@ -36,6 +35,7 @@ export interface ShowcaseModule {
     title: string;
     description: string;
     icon: string | null;
+    avatar: string | null;
     inRevision: boolean;
 }
 
@@ -48,7 +48,8 @@ export interface PublicLessonPage {
     module: Pick<PublicModule, 'slug' | 'title'>;
     submodule: Pick<PublicSubmodule, 'slug' | 'title'>;
     lesson: PublicLessonSummary;
-    sections: PublicSection[];
+    /** Trecho inicial da aula em markdown; o restante exige login. */
+    preview: string;
     previous: PublicLessonLink | null;
     next: PublicLessonLink | null;
 }
@@ -81,6 +82,7 @@ function toPublicModules(rows: CurriculumRow[]): PublicModule[] {
         title: module.title,
         description: module.description ?? '',
         icon: module.icon,
+        avatar: module.avatar,
         submodules: [...module.submodules]
             .sort(byOrder)
             .map(sub => ({
@@ -96,7 +98,7 @@ function toPublicModules(rows: CurriculumRow[]): PublicModule[] {
 }
 
 /**
- * Conteúdo público (sem login) das páginas pré-renderizadas. O que é carregado no servidor vai no
+ * Catálogo público (sem login) das páginas pré-renderizadas: módulos, submódulos e títulos das aulas. O que é carregado no servidor vai no
  * TransferState para que a hidratação no navegador reutilize exatamente o mesmo conteúdo.
  */
 @Injectable({
@@ -123,6 +125,7 @@ export class PublicCatalogService {
                     title: module.title,
                     description: module.description ?? '',
                     icon: module.icon,
+                    avatar: module.avatar,
                     inRevision: module.in_revision,
                 }))
                 .sort((a, b) => Number(a.inRevision) - Number(b.inRevision) || byTitle(a, b));
@@ -143,7 +146,11 @@ export class PublicCatalogService {
             }
 
             const lesson = submodule.lessons[index];
-            const sections = await this.source.sections(lesson.id);
+            const preview = await this.source.preview(lesson.id);
+            if (!preview) {
+                return null;
+            }
+
             const toLink = (target: PublicLessonSummary | undefined): PublicLessonLink | null =>
                 target ? { title: target.title, path: publicLessonPath(module.slug, submodule.slug, target.slug) } : null;
 
@@ -151,7 +158,7 @@ export class PublicCatalogService {
                 module: { slug: module.slug, title: module.title },
                 submodule: { slug: submodule.slug, title: submodule.title },
                 lesson,
-                sections,
+                preview,
                 previous: toLink(submodule.lessons[index - 1]),
                 next: toLink(submodule.lessons[index + 1]),
             };

@@ -51,14 +51,14 @@
                 <div class="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
                     <div class="flex gap-5">
                         <div
-                            class="h-16 w-16 shrink-0 flex items-center justify-center rounded-2xl bg-[#fff] p-1 text-primary">
+                            class="h-16 w-16 shrink-0 flex items-center justify-center rounded-2xl bg-[#fff] p-1 overflow-hidden text-primary">
                             @if ( item.module.icon) {
                             <span class="material-symbols-outlined text-3xl" [attr.data-icon]="item.module.icon">
                                 {{ item.module.icon }}
                             </span>
                             } @else {
                             <img [src]="item.module.avatar" alt="{{ item.module.title }}"
-                                class="w-full h-full object-cover">
+                                class="w-full h-full object-contain rounded-xl">
                             }
                         </div>
                         <div>

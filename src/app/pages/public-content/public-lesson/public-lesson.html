@@ -17,6 +17,7 @@
 
         <article>
             <header class="mb-10">
+                <p class="font-label text-xs uppercase tracking-[0.2em] text-secondary mb-3">Prévia da aula</p>
                 <h1 class="font-headline text-3xl md:text-5xl font-extrabold tracking-tight text-on-surface mb-4">
                     {{ page().lesson.title }}
                 </h1>
@@ -25,58 +26,42 @@
                 }
             </header>
 
-            <div class="space-y-8">
-                @for (section of sections(); track section.id) {
-                    @switch (section.type) {
-                        @case ('MARKDOWN') {
-                            <div class="glass-card rounded-3xl p-6 md:p-10">
-                                <div class="prose prose-invert prose-blue max-w-none">
-                                    <markdown ngSkipHydration [data]="section.content ?? ''"></markdown>
-                                </div>
-                            </div>
-                        }
-                        @case ('TEXT') {
-                            <div class="glass-card rounded-3xl p-6 md:p-10">
-                                <p class="text-on-surface-variant leading-relaxed text-lg whitespace-pre-line">{{ section.content }}</p>
-                            </div>
-                        }
-                        @case ('IMAGE') {
-                            @if (section.file) {
-                                <figure class="rounded-3xl overflow-hidden bg-surface-container-highest">
-                                    <img [src]="section.file" [alt]="section.fileDescription || ''" loading="lazy" class="w-full h-auto" />
-                                    @if (section.fileDescription) {
-                                        <figcaption class="p-4 text-sm text-on-surface-variant bg-surface-container">{{ section.fileDescription }}</figcaption>
-                                    }
-                                </figure>
-                            }
-                        }
-                        @case ('VIDEO') {
-                            @if (section.content) {
-                                <div class="rounded-3xl overflow-hidden bg-surface-container-lowest aspect-video video-embed"
-                                     [innerHTML]="trustedEmbed(section.content)"></div>
-                            }
-                        }
-                    }
-                }
+            <div class="preview glass-card rounded-3xl p-6 md:p-10 overflow-hidden">
+                <div class="prose prose-invert prose-blue max-w-none">
+                    <markdown ngSkipHydration [data]="page().preview"></markdown>
+                </div>
+                <div class="preview-fade" aria-hidden="true"></div>
             </div>
         </article>
 
-        @defer (on idle) {
-            <div class="mt-12">
-                <app-ad-banner></app-ad-banner>
-            </div>
-        }
-
-        <aside class="mt-12 rounded-3xl p-6 md:p-8 bg-surface-container flex flex-col md:flex-row md:items-center justify-between gap-6">
-            <div>
-                <h2 class="font-headline text-xl font-bold text-on-surface mb-2">Teste o que você aprendeu</h2>
-                <p class="text-on-surface-variant">Faça o quiz desta aula, ganhe XP e acompanhe seu progresso com uma conta gratuita.</p>
-            </div>
-            <a [routerLink]="practicePath()"
-               class="shrink-0 inline-flex items-center justify-center gap-2 px-6 py-4 rounded-2xl font-headline font-bold bg-gradient-to-r from-primary to-primary-container text-on-primary-container hover:brightness-110 transition-all">
-                Fazer o quiz
-                <span class="material-symbols-outlined" aria-hidden="true">quiz</span>
-            </a>
+        <aside class="mt-8 rounded-3xl p-6 md:p-10 bg-surface-container text-center" aria-labelledby="continuar-aula">
+            <span class="material-symbols-outlined text-4xl text-primary mb-3" aria-hidden="true">lock_open</span>
+            <h2 id="continuar-aula" class="font-headline text-2xl font-bold text-on-surface mb-3">Continue esta aula</h2>
+            @if (isLoggedIn()) {
+                <p class="text-on-surface-variant max-w-xl mx-auto mb-6">
+                    Leia a aula completa, faça o quiz e ganhe XP na sua área de estudos.
+                </p>
+                <a [routerLink]="appLessonPath()"
+                   class="inline-flex items-center gap-2 px-8 py-4 rounded-2xl font-headline font-bold bg-gradient-to-r from-primary to-primary-container text-on-primary-container hover:brightness-110 transition-all">
+                    Continuar aula
+                    <span class="material-symbols-outlined" aria-hidden="true">arrow_forward</span>
+                </a>
+            } @else {
+                <p class="text-on-surface-variant max-w-xl mx-auto mb-6">
+                    Crie sua conta gratuita para ler a aula completa, fazer o quiz, resolver desafios de código corrigidos por IA e acompanhar seu progresso.
+                </p>
+                <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
+                    <a routerLink="/auth/register"
+                       class="inline-flex items-center gap-2 px-8 py-4 rounded-2xl font-headline font-bold bg-gradient-to-r from-primary to-primary-container text-on-primary-container hover:brightness-110 transition-all">
+                        Criar conta grátis
+                        <span class="material-symbols-outlined" aria-hidden="true">arrow_forward</span>
+                    </a>
+                    <a routerLink="/auth/login"
+                       class="inline-flex items-center gap-2 px-8 py-4 rounded-2xl font-headline font-bold bg-surface-container-high text-on-surface hover:bg-surface-bright transition-colors">
+                        Já tenho conta
+                    </a>
+                </div>
+            }
         </aside>
 
         <nav aria-label="Navegação entre aulas" class="mt-12 grid gap-4 sm:grid-cols-2">

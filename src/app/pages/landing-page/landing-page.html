@@ -53,10 +53,15 @@
                 <article class="track-card transition-all" [class.opacity-60]="module.inRevision"
                     [class.grayscale-[0.5]]="module.inRevision" [class.hover:grayscale-0]="module.inRevision">
 
-                    <!-- Using inline styles for colors just for mock or we can map them. We use module.icon string to show the material icon -->
-                    <div class="card-icon bg-primary/10 text-primary">
-                        <span class="material-symbols-outlined text-4xl">{{ module.icon }}</span>
+                    @if (module.avatar) {
+                    <div class="card-icon bg-[#fff] p-1 overflow-hidden">
+                        <img [src]="module.avatar" alt="" width="64" height="64" class="w-full h-full object-contain rounded-lg" />
                     </div>
+                    } @else {
+                    <div class="card-icon bg-primary/10 text-primary">
+                        <span class="material-symbols-outlined text-4xl">{{ module.icon || 'school' }}</span>
+                    </div>
+                    }
 
                     <h3>
                         @if (module.inRevision) {
