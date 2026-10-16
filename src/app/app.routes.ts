@@ -15,13 +15,14 @@ export const routes: Routes = [
     {
         path: '',
         pathMatch: 'full',
-        redirectTo: 'home'
-    },
-    {
-        path: 'home',
         loadComponent: () => import('./pages/landing-page/landing-page').then((m) => m.LandingPage),
         title: 'Semeando Devs - Home',
         resolve: { modules: showcaseModulesResolver }
+    },
+    {
+        path: 'home',
+        pathMatch: 'full',
+        redirectTo: ''
     },
     {
         path: 'auth/login',

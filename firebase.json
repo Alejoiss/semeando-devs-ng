@@ -10,8 +10,8 @@
         "trailingSlash": false,
         "redirects": [
             {
-                "source": "/",
-                "destination": "/home",
+                "source": "/home",
+                "destination": "/",
                 "type": 301
             }
         ],

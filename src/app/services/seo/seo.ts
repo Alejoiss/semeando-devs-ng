@@ -28,7 +28,7 @@ export class SeoService {
             .pipe(filter((event): event is NavigationEnd => event instanceof NavigationEnd))
             .subscribe(event => {
                 const path = event.urlAfterRedirects.split(/[?#]/)[0];
-                const url = `${environment.production ? SITE_URL : environment.urlBase}${path === '/' ? '' : path}`;
+                const url = `${environment.production ? SITE_URL : environment.urlBase}${path}`;
                 this.setCanonical(url);
                 this.meta.updateTag({ property: 'og:url', content: url });
                 this.meta.updateTag({ name: 'twitter:url', content: url });

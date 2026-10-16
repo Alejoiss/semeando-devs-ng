@@ -8,10 +8,10 @@ const SITE_URL = 'https://semeandodevs.com.br';
 const DIST = 'dist/semeandodevsapp';
 const BROWSER = join(DIST, 'browser');
 const NOT_FOUND_ROUTE = 'nao-encontrado';
-const EXCLUDED = new Set(['', NOT_FOUND_ROUTE]);
+const EXCLUDED = new Set(['home', NOT_FOUND_ROUTE]);
 
 const priorityFor = path => {
-    if (path === 'home') return '1.0';
+    if (path === '') return '1.0';
     if (path === 'cursos') return '0.9';
     if (/^cursos\/[^/]+$/.test(path)) return '0.8';
     if (path.startsWith('cursos/')) return '0.7';
