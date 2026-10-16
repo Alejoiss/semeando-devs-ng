@@ -27,11 +27,6 @@ export class PublicLesson {
         initialValue: this.route.snapshot.data['lesson'] as PublicLessonPage,
     });
 
-    protected readonly appLessonPath = computed(() => {
-        const page = this.page();
-        return ['/app/s', page.module.slug, 'ss', page.submodule.slug, 'lesson', page.lesson.id];
-    });
-
     constructor() {
         effect(() => {
             const { lesson, module } = this.page();

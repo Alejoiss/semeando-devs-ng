@@ -47,5 +47,7 @@ const [showcase, curriculum, previewRows] = await Promise.all([
 const previews = Object.fromEntries(previewRows.map(row => [row.lesson_id, row.preview]));
 
 await writeFile(OUTPUT, JSON.stringify({ showcase, curriculum, previews }));
-const lessons = curriculum.flatMap(module => module.submodules.flatMap(sub => sub.lessons)).length;
-console.log(`fetch-public-catalog: ${curriculum.length} módulos, ${lessons} lições e ${previewRows.length} prévias.`);
+const lessons = curriculum.flatMap(module => module.submodules.flatMap(sub => sub.lessons)).filter(lesson => lesson.type === 'LESSON');
+const withoutPreview = lessons.filter(lesson => !previews[lesson.id]).length;
+console.log(`fetch-public-catalog: ${curriculum.length} módulos, ${lessons.length} aulas teóricas, ${previewRows.length} prévias` +
+    (withoutPreview ? ` (${withoutPreview} aulas sem prévia)` : '') + '.');

@@ -39,11 +39,11 @@
             <h2 id="continuar-aula" class="font-headline text-2xl font-bold text-on-surface mb-3">Continue esta aula</h2>
             @if (isLoggedIn()) {
                 <p class="text-on-surface-variant max-w-xl mx-auto mb-6">
-                    Leia a aula completa, faça o quiz e ganhe XP na sua área de estudos.
+                    As aulas são liberadas em sequência. Continue de onde parou na sua área de estudos.
                 </p>
-                <a [routerLink]="appLessonPath()"
+                <a routerLink="/app"
                    class="inline-flex items-center gap-2 px-8 py-4 rounded-2xl font-headline font-bold bg-gradient-to-r from-primary to-primary-container text-on-primary-container hover:brightness-110 transition-all">
-                    Continuar aula
+                    Continuar meu aprendizado
                     <span class="material-symbols-outlined" aria-hidden="true">arrow_forward</span>
                 </a>
             } @else {
