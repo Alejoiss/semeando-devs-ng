@@ -52,12 +52,12 @@ export class LandingPage {
         },
         {
             question: 'Como funcionam as lições e os quizzes?',
-            answer: 'Cada lição traz vídeo e/ou texto, materiais extras e, ao final, um quiz de 10 questões. Acertando pelo menos 7 você avança para a próxima etapa.',
+            answer: 'Cada lição traz conteúdo em texto, materiais extras e, ao final, um quiz de 10 questões. Acertando pelo menos 7 você avança para a próxima etapa.',
             expanded: false
         },
         {
             question: 'O que são as lições de desafio e de revisão?',
-            answer: 'Desafio: escreva código e receba avaliação automática de uma IA, que aponta o que está ótimo e o que pode melhorar. Revisão: 10 perguntas aleatórias das lições que você já completou, para reforçar o conhecimento e evitar o esquecimento.',
+            answer: 'Desafio: escreva código e receba avaliação automática de uma IA, que aponta o que está ótimo e o que pode melhorar. Revisão: 10 perguntas aleatórias das lições anteriores do mesmo submódulo, para reforçar o conhecimento e evitar o esquecimento.',
             expanded: false
         },
         {
@@ -77,12 +77,12 @@ export class LandingPage {
         },
         {
             question: 'Preciso pagar para começar?',
-            answer: 'Não! Cadastre-se gratuitamente para ter acesso a todos os módulos, submódulos e lições da plataforma, limitado à conclusão de até 5 lições por dia. O plano gratuito exibe anúncios discretos nas páginas. Quando quiser estudar sem limite diário e sem qualquer anúncio, basta assinar o plano Pró.',
+            answer: 'Não! Cadastre-se gratuitamente para ter acesso a todos os módulos, submódulos e lições da plataforma, limitado à conclusão de até 5 lições por dia. Quando quiser estudar sem limite diário, basta assinar o plano Pró.',
             expanded: false
         },
         {
             question: 'Quanto custa a assinatura e o que inclui?',
-            answer: 'R$ 29,90 / mês – remove o limite diário de lições, oferece uma experiência 100% livre de anúncios, avaliações diárias ilimitadas de IA para desafios e suporte prioritário. O cancelamento pode ser feito a qualquer momento.',
+            answer: 'R$ 29,90 por mês ou R$ 299,90 por ano. O plano Pró remove o limite diário de lições e amplia as avaliações de código por IA de 5 para 30 por dia. Não há conteúdo exclusivo: todos os módulos estão disponíveis também no plano gratuito. O cancelamento pode ser feito a qualquer momento e o acesso Pró continua até o fim do período já pago.',
             expanded: false
         },
         {

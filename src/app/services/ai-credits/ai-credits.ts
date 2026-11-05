@@ -39,9 +39,11 @@ export class AiCreditsService {
 
         const limit = user.isPro ? 30 : 5;
 
-        const today = new Date();
-        today.setUTCHours(0, 0, 0, 0);
-        const startOfDayStr = today.toISOString();
+        const brtOffsetMs = 3 * 60 * 60 * 1000;
+        const nowBrt = new Date(Date.now() - brtOffsetMs);
+        const startOfDayStr = new Date(
+            Date.UTC(nowBrt.getUTCFullYear(), nowBrt.getUTCMonth(), nowBrt.getUTCDate()) + brtOffsetMs
+        ).toISOString();
 
         const { count } = await this.supabase
             .from('ai_usage_logs')

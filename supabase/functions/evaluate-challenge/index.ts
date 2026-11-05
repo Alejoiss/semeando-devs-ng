@@ -60,10 +60,12 @@ serve(async (req: { method: string; headers: { get: (arg0: string) => any }; jso
         const isPro = profile?.is_pro ?? false;
         const dailyLimit = isPro ? 30 : 5;
 
-        // Get start of current day UTC
-        const today = new Date();
-        today.setUTCHours(0, 0, 0, 0);
-        const startOfDayStr = today.toISOString();
+        // Dia de Brasília (UTC-3, sem horário de verão): o limite renova à meia-noite local
+        const BRT_OFFSET_MS = 3 * 60 * 60 * 1000;
+        const nowBrt = new Date(Date.now() - BRT_OFFSET_MS);
+        const startOfDayStr = new Date(
+            Date.UTC(nowBrt.getUTCFullYear(), nowBrt.getUTCMonth(), nowBrt.getUTCDate()) + BRT_OFFSET_MS
+        ).toISOString();
 
         const { count, error: countError } = await userClient
             .from('ai_usage_logs')
