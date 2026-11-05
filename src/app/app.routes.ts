@@ -6,6 +6,7 @@ import { adminGuard } from './components/guards/admin.guard';
 import { SHOW_ADS_ROUTE_DATA } from './services/adsense/adsense';
 import {
     publicCurriculumResolver,
+    publicLessonAdsResolver,
     publicLessonResolver,
     publicModuleResolver,
     showcaseModulesResolver,
@@ -68,7 +69,8 @@ export const routes: Routes = [
     {
         path: 'cursos/:moduleSlug/:submoduleSlug/:lessonSlug',
         loadComponent: () => import('./pages/public-content/public-lesson/public-lesson').then((m) => m.PublicLesson),
-        resolve: { lesson: publicLessonResolver }
+        // showAds resolvido por aula: a AdsenseService exibe anúncios só quando ele é true (aulas gratuitas)
+        resolve: { lesson: publicLessonResolver, showAds: publicLessonAdsResolver }
     },
     {
         path: 'app',

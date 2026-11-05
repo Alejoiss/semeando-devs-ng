@@ -55,6 +55,9 @@
                                    class="flex items-center gap-3 px-4 py-3 rounded-xl bg-surface-container-low hover:bg-surface-container-high transition-colors group">
                                     <span class="material-symbols-outlined text-tertiary text-lg" aria-hidden="true">article</span>
                                     <span class="text-on-surface group-hover:text-primary transition-colors">{{ lesson.title }}</span>
+                                    @if (lesson.isFree) {
+                                        <span class="ml-auto shrink-0 px-2 py-0.5 rounded-full bg-tertiary/10 text-tertiary font-label text-[10px] uppercase tracking-widest">Grátis</span>
+                                    }
                                 </a>
                             </li>
                         }

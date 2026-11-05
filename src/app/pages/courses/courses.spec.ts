@@ -12,7 +12,7 @@ describe('Courses', () => {
     id: 'm1', slug: 'css', title: 'CSS', description: 'Estilos', icon: null, avatar: 'css.png',
     submodules: [{
       id: 's1', slug: 'introducao', title: 'Introdução', description: '', icon: null,
-      lessons: [{ id: 'l1', slug: 'o-que-e-css', title: 'O que é CSS', description: '' }],
+      lessons: [{ id: 'l1', slug: 'o-que-e-css', title: 'O que é CSS', description: '', isFree: true }],
     }],
   }];
 
@@ -44,6 +44,8 @@ describe('Courses', () => {
     element.querySelector<HTMLButtonElement>('#conteudo-css button')!.click();
     fixture.detectChanges();
 
-    expect(element.querySelector('a[href="/cursos/css/introducao/o-que-e-css"]')?.textContent).toContain('O que é CSS');
+    const lessonLink = element.querySelector('a[href="/cursos/css/introducao/o-que-e-css"]');
+    expect(lessonLink?.textContent).toContain('O que é CSS');
+    expect(lessonLink?.textContent).toContain('Grátis');
   });
 });

@@ -1,5 +1,6 @@
 import { InjectionToken, inject } from '@angular/core';
 import { SupabaseService } from '../supabase';
+import { SectionContentType } from '../../../models/section-content/section-content';
 
 export interface ShowcaseRow {
     id: string;
@@ -34,15 +35,37 @@ export interface LessonPreviewRow {
     preview: string;
 }
 
+export interface PublicSection {
+    id: string;
+    type: SectionContentType;
+    content: string | null;
+    file: string | null;
+    fileDescription: string | null;
+}
+
+interface FreeSectionRow {
+    lesson_id: string;
+    id: string;
+    type: SectionContentType;
+    content: string | null;
+    file: string | null;
+    file_description: string | null;
+}
+
 /**
  * De onde vêm os dados públicos: Supabase no navegador, snapshot gerado antes do build na pré-renderização.
- * Expõe o catálogo e só a prévia de cada aula (função get_lesson_previews); o conteúdo completo exige login.
+ * Expõe o catálogo, a prévia de cada aula (get_lesson_previews) e o conteúdo completo apenas das aulas
+ * gratuitas (get_free_lesson_sections); o restante exige login.
  */
 export interface PublicCatalogSource {
     showcase(): Promise<ShowcaseRow[]>;
     curriculum(): Promise<CurriculumRow[]>;
     preview(lessonId: string): Promise<string | null>;
+    freeSections(lessonId: string): Promise<PublicSection[]>;
 }
+
+export const toPublicSection = ({ id, type, content, file, file_description }: FreeSectionRow): PublicSection =>
+    ({ id, type, content, file, fileDescription: file_description });
 
 // Mantenha em sincronia com scripts/fetch-public-catalog.mjs, que gera o snapshot usado na pré-renderização
 export const SHOWCASE_SELECT = 'id, slug, title, description, icon, avatar, in_revision';
@@ -79,6 +102,10 @@ export const PUBLIC_CATALOG_SOURCE = new InjectionToken<PublicCatalogSource>('PU
                 const { data, error } = await supabase.rpc('get_lesson_previews', { p_lesson_id: lessonId });
                 const rows = unwrap({ data: data as LessonPreviewRow[] | null, error }) ?? [];
                 return rows[0]?.preview ?? null;
+            },
+            freeSections: async lessonId => {
+                const { data, error } = await supabase.rpc('get_free_lesson_sections', { p_lesson_id: lessonId });
+                return (unwrap({ data: data as FreeSectionRow[] | null, error }) ?? []).map(toPublicSection);
             },
         };
     },

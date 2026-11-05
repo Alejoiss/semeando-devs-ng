@@ -60,6 +60,14 @@ export const publicModuleResolver: ResolveFn<PublicModule> = (route, state) => {
     return loadOrReload(state.url, () => catalog.getModule(route.paramMap.get('moduleSlug') ?? ''));
 };
 
+/** Anúncios só nas aulas gratuitas, que têm conteúdo completo; nunca nas prévias. */
+export const publicLessonAdsResolver: ResolveFn<boolean> = route => {
+    const params = route.paramMap;
+    return inject(PublicCatalogService)
+        .getLessonPage(params.get('moduleSlug') ?? '', params.get('submoduleSlug') ?? '', params.get('lessonSlug') ?? '')
+        .then(page => page?.content.kind === 'full', () => false);
+};
+
 export const publicLessonResolver: ResolveFn<PublicLessonPage> = (route, state) => {
     const catalog = inject(PublicCatalogService);
     const params = route.paramMap;

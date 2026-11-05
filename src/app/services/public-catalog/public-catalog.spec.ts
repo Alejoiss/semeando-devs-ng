@@ -1,6 +1,7 @@
 import { TestBed } from '@angular/core/testing';
 import { PublicCatalogService } from './public-catalog';
 import { CurriculumRow, PUBLIC_CATALOG_SOURCE, PublicCatalogSource } from './public-catalog.source';
+import { SectionContentType } from '../../../models/section-content/section-content';
 
 describe('PublicCatalogService', () => {
     let service: PublicCatalogService;
@@ -26,9 +27,12 @@ describe('PublicCatalogService', () => {
     }];
 
     beforeEach(() => {
-        source = jasmine.createSpyObj<PublicCatalogSource>('PublicCatalogSource', ['showcase', 'curriculum', 'preview']);
+        source = jasmine.createSpyObj<PublicCatalogSource>('PublicCatalogSource', ['showcase', 'curriculum', 'preview', 'freeSections']);
         source.curriculum.and.resolveTo(curriculum);
         source.preview.and.callFake(async id => (id === 'l3' ? null : `Prévia de ${id}`));
+        source.freeSections.and.callFake(async id => (id === 'l1'
+            ? [{ id: 'sec1', type: SectionContentType.MARKDOWN, content: 'Aula completa', file: null, fileDescription: null }]
+            : []));
 
         TestBed.configureTestingModule({
             providers: [{ provide: PUBLIC_CATALOG_SOURCE, useValue: source }],
@@ -50,11 +54,28 @@ describe('PublicCatalogService', () => {
         expect(module.submodules[0].lessons.map(lesson => lesson.slug)).toEqual(['o-que-e-css', 'sintaxe', 'sintaxe-2']);
     });
 
-    it('builds the lesson page with only the preview and its neighbours', async () => {
+    it('marks only the first theory lesson of each submodule as free', async () => {
+        const [module] = await service.getCurriculum();
+
+        expect(module.submodules[0].lessons.map(lesson => lesson.isFree)).toEqual([true, false, false]);
+    });
+
+    it('serves the full content of free lessons', async () => {
+        const page = await service.getLessonPage('css', 'introducao', 'o-que-e-css');
+
+        expect(page?.content).toEqual({
+            kind: 'full',
+            sections: [{ id: 'sec1', type: SectionContentType.MARKDOWN, content: 'Aula completa', file: null, fileDescription: null }],
+        });
+        expect(source.preview).not.toHaveBeenCalled();
+    });
+
+    it('builds the other lesson pages with only the preview and their neighbours', async () => {
         const page = await service.getLessonPage('css', 'introducao', 'sintaxe');
 
+        expect(source.freeSections).not.toHaveBeenCalled();
         expect(source.preview).toHaveBeenCalledWith('l2');
-        expect(page?.preview).toBe('Prévia de l2');
+        expect(page?.content).toEqual({ kind: 'preview', markdown: 'Prévia de l2' });
         expect(page?.previous?.path).toEqual(['/cursos', 'css', 'introducao', 'o-que-e-css']);
         expect(page?.next?.path).toEqual(['/cursos', 'css', 'introducao', 'sintaxe-2']);
     });
@@ -66,6 +87,16 @@ describe('PublicCatalogService', () => {
 
     it('returns null for unknown modules', async () => {
         expect(await service.getModule('nao-existe')).toBeNull();
+    });
+
+    it('shares the same request when a lesson page is resolved twice', async () => {
+        const [first, second] = await Promise.all([
+            service.getLessonPage('css', 'introducao', 'sintaxe'),
+            service.getLessonPage('css', 'introducao', 'sintaxe'),
+        ]);
+
+        expect(first).toBe(second);
+        expect(source.preview).toHaveBeenCalledTimes(1);
     });
 
     it('loads the curriculum only once', async () => {

@@ -17,7 +17,9 @@
 
         <article>
             <header class="mb-10">
-                <p class="font-label text-xs uppercase tracking-[0.2em] text-secondary mb-3">Prévia da aula</p>
+                <p class="font-label text-xs uppercase tracking-[0.2em] text-secondary mb-3">
+                    {{ isFull() ? 'Aula gratuita' : 'Prévia da aula' }}
+                </p>
                 <h1 class="font-headline text-3xl md:text-5xl font-extrabold tracking-tight text-on-surface mb-4">
                     {{ page().lesson.title }}
                 </h1>
@@ -26,17 +28,67 @@
                 }
             </header>
 
-            <div class="preview glass-card rounded-3xl p-6 md:p-10 overflow-hidden">
-                <div class="prose prose-invert prose-blue max-w-none">
-                    <markdown ngSkipHydration [data]="page().preview"></markdown>
-                </div>
-                <div class="preview-fade" aria-hidden="true"></div>
-            </div>
+            @switch (page().content.kind) {
+                @case ('full') {
+                    <div class="space-y-8">
+                        @for (section of sections(); track section.id) {
+                            @switch (section.type) {
+                                @case ('MARKDOWN') {
+                                    <div class="glass-card rounded-3xl p-6 md:p-10">
+                                        <div class="prose prose-invert prose-blue max-w-none">
+                                            <markdown ngSkipHydration [data]="section.content ?? ''"></markdown>
+                                        </div>
+                                    </div>
+                                }
+                                @case ('TEXT') {
+                                    <div class="glass-card rounded-3xl p-6 md:p-10">
+                                        <p class="text-on-surface-variant leading-relaxed text-lg whitespace-pre-line">{{ section.content }}</p>
+                                    </div>
+                                }
+                                @case ('IMAGE') {
+                                    @if (section.file) {
+                                        <figure class="rounded-3xl overflow-hidden bg-surface-container-highest">
+                                            <img [src]="section.file" [alt]="section.fileDescription || ''" loading="lazy" class="w-full h-auto" />
+                                            @if (section.fileDescription) {
+                                                <figcaption class="p-4 text-sm text-on-surface-variant bg-surface-container">{{ section.fileDescription }}</figcaption>
+                                            }
+                                        </figure>
+                                    }
+                                }
+                                @case ('VIDEO') {
+                                    @if (section.content) {
+                                        <div class="rounded-3xl overflow-hidden bg-surface-container-lowest aspect-video video-embed"
+                                             [innerHTML]="trustedEmbed(section.content)"></div>
+                                    }
+                                }
+                            }
+                        }
+                    </div>
+                }
+                @case ('preview') {
+                    <div class="preview glass-card rounded-3xl p-6 md:p-10 overflow-hidden">
+                        <div class="prose prose-invert prose-blue max-w-none">
+                            <markdown ngSkipHydration [data]="previewMarkdown()"></markdown>
+                        </div>
+                        <div class="preview-fade" aria-hidden="true"></div>
+                    </div>
+                }
+            }
         </article>
 
+        @if (isFull()) {
+            @defer (on idle) {
+                <div class="mt-12">
+                    <app-ad-banner></app-ad-banner>
+                </div>
+            }
+        }
+
         <aside class="mt-8 rounded-3xl p-6 md:p-10 bg-surface-container text-center" aria-labelledby="continuar-aula">
-            <span class="material-symbols-outlined text-4xl text-primary mb-3" aria-hidden="true">lock_open</span>
-            <h2 id="continuar-aula" class="font-headline text-2xl font-bold text-on-surface mb-3">Continue esta aula</h2>
+            <span class="material-symbols-outlined text-4xl text-primary mb-3" aria-hidden="true">{{ isFull() ? 'quiz' : 'lock_open' }}</span>
+            <h2 id="continuar-aula" class="font-headline text-2xl font-bold text-on-surface mb-3">
+                {{ isFull() ? 'Teste o que você aprendeu' : 'Continue esta aula' }}
+            </h2>
             @if (isLoggedIn()) {
                 <p class="text-on-surface-variant max-w-xl mx-auto mb-6">
                     As aulas são liberadas em sequência. Continue de onde parou na sua área de estudos.
@@ -48,7 +100,11 @@
                 </a>
             } @else {
                 <p class="text-on-surface-variant max-w-xl mx-auto mb-6">
-                    Crie sua conta gratuita para ler a aula completa, fazer o quiz, resolver desafios de código corrigidos por IA e acompanhar seu progresso.
+                    @if (isFull()) {
+                        Esta aula é gratuita. Crie sua conta para fazer o quiz, ganhar XP e seguir para as próximas aulas do curso.
+                    } @else {
+                        Crie sua conta gratuita para ler a aula completa, fazer o quiz, resolver desafios de código corrigidos por IA e acompanhar seu progresso.
+                    }
                 </p>
                 <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
                     <a routerLink="/auth/register"

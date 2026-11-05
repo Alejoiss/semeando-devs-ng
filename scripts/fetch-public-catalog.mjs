@@ -1,4 +1,4 @@
-// Baixa uma única vez o catálogo público (módulos, submódulos, aulas e a prévia de cada aula) para a pré-renderização.
+// Baixa uma única vez o catálogo público (módulos, submódulos, aulas, prévias e as aulas gratuitas) para a pré-renderização.
 // Sem isso, cada worker do build consultaria o Supabase em paralelo e as páginas estourariam o timeout.
 import { readFile, writeFile } from 'node:fs/promises';
 
@@ -38,16 +38,22 @@ async function query(path, body) {
     }
 }
 
-const [showcase, curriculum, previewRows] = await Promise.all([
+const [showcase, curriculum, previewRows, freeRows] = await Promise.all([
     query(`modules?select=${SHOWCASE_SELECT}`),
     query(`modules?select=${CURRICULUM_SELECT}&in_revision=eq.false`),
-    // Só a prévia: o conteúdo completo das aulas não é legível sem login
+    // O conteúdo completo das aulas não é legível sem login: só a prévia e as aulas gratuitas
     query('rpc/get_lesson_previews', {}),
+    query('rpc/get_free_lesson_sections', {}),
 ]);
 const previews = Object.fromEntries(previewRows.map(row => [row.lesson_id, row.preview]));
+const freeSections = {};
+for (const { lesson_id, file_description, order, ...section } of freeRows) {
+    (freeSections[lesson_id] ??= []).push({ ...section, fileDescription: file_description });
+}
 
-await writeFile(OUTPUT, JSON.stringify({ showcase, curriculum, previews }));
+await writeFile(OUTPUT, JSON.stringify({ showcase, curriculum, previews, freeSections }));
 const lessons = curriculum.flatMap(module => module.submodules.flatMap(sub => sub.lessons)).filter(lesson => lesson.type === 'LESSON');
 const withoutPreview = lessons.filter(lesson => !previews[lesson.id]).length;
-console.log(`fetch-public-catalog: ${curriculum.length} módulos, ${lessons.length} aulas teóricas, ${previewRows.length} prévias` +
+console.log(`fetch-public-catalog: ${curriculum.length} módulos, ${lessons.length} aulas teóricas, ${previewRows.length} prévias, ` +
+    `${Object.keys(freeSections).length} aulas gratuitas` +
     (withoutPreview ? ` (${withoutPreview} aulas sem prévia)` : '') + '.');
