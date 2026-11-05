@@ -20,7 +20,7 @@ O fluxo ocorre na rota `/app/s/:slug/finished`.
 
 ## 5. Dúvidas Frequentes e Suporte
 - **Problema:** "Terminei tudo mas não fui pra tela final".
-  - **Solução:** O aluno provavelmente pulou alguma lição teórica ou deixou de dar o *check* nela ao longo do caminho. O backend exige 100% de lições validadas.
+  - **Solução:** O módulo só é concluído quando todas as lições estão concluídas. Cada lição só é concluída após aprovação no quiz (70% ou mais) ou após o envio do desafio.
 
 ## 6. Casos de Erro e Tratamento
 - Acesso indevido pela URL bloqueado pela lógica do componente.

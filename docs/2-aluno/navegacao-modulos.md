@@ -25,14 +25,14 @@ A navegação é dividida em três níveis de profundidade:
 1. Semelhante ao Nível 2, mas focado no micro.
 2. Lista sequencialmente todas as Aulas Teóricas, Desafios e Revisões.
 3. Mostra o status de conclusão de cada lição (icone de *check*).
-4. O aluno clica em uma lição para consumi-la, sendo barrado se houver limitação de vidas/lições diárias (plano gratuito).
+4. O aluno clica em uma lição para consumi-la, sendo barrado se o limite de 5 lições concluídas por dia do plano gratuito já tiver sido atingido (o plano PRÓ não tem limite).
 
 ## 4. Gatilhos de Marketing e Comunicação
 - **Restrição de Plano:** Usuários *Free* podem bater no teto de lições diárias, exibindo o gatilho visual para assinar o plano PRÓ (*Upgrade*).
 
 ## 5. Dúvidas Frequentes e Suporte
-- **Problema:** "O Módulo 2 está bloqueado (cadeado)".
-  - **Solução:** Explicar ao aluno a premissa gamificada de que o conhecimento é linear. Ele precisa terminar 100% das lições do Módulo 1 para desbloquear o Módulo 2.
+- **Problema:** "O Submódulo 2 está bloqueado (cadeado)".
+  - **Solução:** Os módulos são independentes e o aluno pode iniciar qualquer um. O bloqueio acontece entre submódulos: o aluno precisa concluir o submódulo anterior (e suas lições, em ordem) para liberar o próximo.
 
 ## 6. Casos de Erro e Tratamento
 - Em qualquer das 3 telas, falhas de rede ao comunicar com a API disparam a mensagem de erro padrão: `"Erro ao carregar os módulos/submódulos"`.

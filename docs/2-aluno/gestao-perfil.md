@@ -1,4 +1,4 @@
-# Perfil do Aluno
+# Gestão de Perfil
 
 ## 1. Objetivo do Fluxo
 Permitir a gestão autônoma dos dados pessoais, avatar, preferências de comunicação e credenciais de acesso da conta do usuário.
@@ -13,7 +13,7 @@ O painel é dividido em três seções de atualização independentes:
 
 **Avatar / Foto de Perfil:**
 1. O usuário clica na foto atual (ou ícone padrão).
-2. O sistema operacional abre a janela de seleção de arquivo.
+2. O sistema operacional abre a janela de seleção de arquivo (o e-mail não pode ser alterado).
 3. Ao selecionar, o arquivo é automaticamente enviado (Upload). Se sucesso, a foto atualiza.
 
 **Dados Pessoais:**
@@ -33,7 +33,7 @@ O painel é dividido em três seções de atualização independentes:
 - **Problema:** "Esqueci minha senha atual para poder trocar".
   - **Solução:** Orientar a sair da conta (Logout) e utilizar o fluxo de 'Esqueci minha Senha' público.
 - **Problema:** "A foto não carrega".
-  - **Solução:** Certificar que o tamanho/formato estão dentro dos padrões (normalmente <2MB em `.png` ou `.jpg`).
+  - **Solução:** Tentar novamente com outra imagem. O front não valida tamanho nem formato da foto, então a falha costuma ser de rede ou do armazenamento.
 
 ## 6. Casos de Erro e Tratamento
 - Senhas divergentes são bloqueadas na própria interface e o botão de salvar não é liberado.

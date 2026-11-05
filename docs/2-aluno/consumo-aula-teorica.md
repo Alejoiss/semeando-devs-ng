@@ -10,14 +10,14 @@ Alunos logados na plataforma.
 A página de consumo da aula teórica reside em `/app/s/:slug/ss/:slugSubmodule/lesson/:lessonId`.
 
 1. O aluno seleciona a lição na lista do submódulo.
-2. Ao acessar a rota, o componente (`lesson.ts`) verifica se o aluno tem vidas/tentativas diárias disponíveis (plano *Free*). Se sim, registra o início da aula no banco de dados (`startLesson`).
+2. Ao acessar a rota, o componente (`lesson.ts`) verifica se o aluno ainda não atingiu o limite diário de 5 lições concluídas (plano *Free*). Se sim, registra o início da aula no banco de dados (`startLesson`).
 3. A interface apresenta o conteúdo teórico formatado (texto rico, *Markdown*, imagens).
 4. É apresentada a lista de "Material Extra" caso o professor tenha cadastrado links de aprofundamento.
 5. Ao concluir a leitura, o aluno deve clicar no botão de prosseguir.
 6. O sistema verifica o banco: se a lição possuir um *Quiz* atrelado, o aluno é direcionado para a rota do Quiz. Se não possuir (apenas aula teórica pura), a lição é dada como completa, o XP é concedido e o aluno é redirecionado de volta à trilha (ou recebe o aviso de Módulo/Submódulo concluído).
 
 ## 4. Gatilhos de Marketing e Comunicação
-- Nenhum específico nesta view, exceto bloqueios de *daily limit* (usuário excede limite de lições e precisa de plano PRÓ).
+- Nenhum específico nesta view, exceto o bloqueio de limite diário (usuário Free que já concluiu 5 lições no dia e precisa esperar o dia seguinte ou assinar o PRÓ).
 
 ## 5. Dúvidas Frequentes e Suporte
 - **Problema:** "Terminei de ler, clico em continuar, e a lição não consta como finalizada".

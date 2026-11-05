@@ -2,7 +2,7 @@
 
 ## 1. Objetivo do Fluxo
 Oferecer uma ferramenta interna para a equipe administrativa redigir e disparar e-mails em massa para a base de alunos cadastrados, permitindo engajamento e venda sem depender de ferramentas externas.
-*(Nota: Funcionalidade atualmente **Em Construção** na plataforma).*
+*(Nota: A **tela** está em construção. Hoje o envio é feito via API, sem interface. A opção "receber novidades" no cadastro e no perfil já registra quem aceitou receber.)*
 
 ## 2. Público-Alvo
 Administradores da plataforma (Equipe de Conteúdo e Marketing).

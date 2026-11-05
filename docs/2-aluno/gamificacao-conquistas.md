@@ -21,7 +21,7 @@ O fluxo ocorre na rota `/app/conquistas`.
 
 ## 5. Dúvidas Frequentes e Suporte
 - **Problema:** "Como desbloqueio a conquista X?".
-  - **Solução:** Faz parte da experiência gamificada que algumas conquistas sejam *secretas* ou descobertas organicamente, mas a descrição técnica costuma indicar o requisito (ex: 'Maratonista do Código: Resolva 10 desafios').
+  - **Solução:** Faz parte da experiência gamificada que algumas conquistas sejam *secretas* ou descobertas organicamente, mas a descrição técnica costuma indicar o requisito (ex: 'Maratonista do Código: Resolva 10 desafios'). Cada conquista também concede XP, valor cadastrado no banco.
 
 ## 6. Casos de Erro e Tratamento
 - Em caso de falha no carregamento, o array de medalhas fica vazio.

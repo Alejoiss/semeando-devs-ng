@@ -12,19 +12,19 @@ A plataforma atende a três perfis distintos, cada um com sua própria jornada e
 
 - **Aluno:** Consome o conteúdo, ganha XP, acumula sementes (*Seeds*), concorre no ranking e faz gestão da sua assinatura (Gratuita ou PRÓ).
 - **Professor:** Cria e estrutura o conteúdo didático (Módulos, Submódulos, Lições, Material Extra e Desafios de Código).
-- **Administrador:** Gerencia a saúde da plataforma, visualiza relatórios, gerencia usuários, aprova cupons de desconto e dispara comunicações (Newsletter).
+- **Administrador:** Gerencia a saúde da plataforma, visualiza relatórios, gerencia usuários, acompanha alunos e assinaturas. As telas de cupons e newsletter ainda são placeholders: cupons são criados no banco e a newsletter é enviada via API.
 
 ## 3. Principais Features (Funcionalidades)
 
 ### 3.1. Motor de Gamificação
-- **Sistema de Pontuação (XP e Seeds):** Alunos ganham experiência (XP) ao completarem lições, o que dita suas posições no ranking. Ocasionalmente, ganham *Seeds* (moedas virtuais) que podem ser gastas para obter dicas (*Hints*) durante quizzes difíceis.
+- **Sistema de Pontuação (XP e Seeds):** Alunos ganham experiência (XP) ao completarem lições, o que dita suas posições no ranking. Sempre que ganham XP, ganham também *Seeds* (moeda virtual) equivalentes a 10% desse XP. Os Seeds podem ser gastos (50 por vez) para obter dicas (*Hints*) nos quizzes.
 - **Rankings (Geral, Mensal e Semanal):** Uma tabela de classificação global e temporal para promover a competição amigável.
-- **Conquistas (Medalhas/Badges):** Um sistema de recompensas visuais entregues quando o aluno atinge marcos específicos (ex: completar um módulo, atingir 10 dias seguidos de ofensiva, etc.).
+- **Conquistas (Medalhas/Badges):** Um sistema de recompensas visuais entregues quando o aluno atinge marcos específicos (ex: completar um módulo ou manter dias seguidos de estudo). O streak (dias seguidos) não é exibido ao aluno, serve apenas para duas conquistas..
 
 ### 3.2. Aprendizagem Ativa e Desafios
-- **Módulos Lineares:** A arquitetura do curso exige que o aluno avance cronologicamente. Um submódulo só é liberado quando o anterior é finalizado, simulando fases de um jogo.
+- **Módulos independentes, submódulos sequenciais:** O aluno pode iniciar qualquer módulo sem ter feito outro. Dentro de um módulo, um submódulo só é liberado quando o anterior é finalizado, simulando fases de um jogo.
 - **Quizzes Dinâmicos:** Testes de múltipla escolha para validar a absorção imediata do conhecimento teórico, com embaralhamento automático e feedback explicativo.
-- **Editor de Código no Navegador:** Uma IDE embutida (*Monaco/VS Code web*) onde o aluno tenta resolver problemas. A submissão é corrigida e avaliada usando ferramentas modernas (Testes Unitários ou Inteligência Artificial), gerando feedback instantâneo.
+- **Editor de Código no Navegador:** Uma IDE embutida (*Monaco/VS Code web*) onde o aluno tenta resolver problemas. A submissão recebe feedback de uma Inteligência Artificial, que considera a descrição do problema e o código inicial. A IA não executa testes unitários. Cada envio gasta 1 crédito de IA.
 
 ### 3.3. Painel do Criador (Professor)
 - **Gestão Hierárquica de Conteúdo:** Estruturação em `Módulo > Submódulo > Lição`.
@@ -32,10 +32,10 @@ A plataforma atende a três perfis distintos, cada um com sua própria jornada e
 - **Rich Text & Markdown:** Professores podem escrever aulas teóricas ricas e cadastrar materiais de apoio associados a cada aula.
 
 ### 3.4. Monetização e Gestão (Admin / Aluno)
-- **Paywall e Limites (Freemium):** Usuários do plano gratuito (*Free*) possuem limites diários de consumo de lições e desafios.
-- **Integração de Pagamento (Mercado Pago):** Fluxo nativo de Checkout (via Cartão de Crédito e PIX) para converter alunos gratuitos em assinantes do plano PRÓ.
-- **Sistema de Cupons:** Professores e Admins podem criar campanhas promocionais de percentual ou valor fixo (incluindo descontos de 100%).
-- **Gestão de Perfil e Assinatura:** O aluno tem autonomia para atualizar sua senha, foto, cancelar a assinatura ou acompanhar as próximas datas de faturamento.
+- **Paywall e Limites (Freemium):** O plano gratuito (*Free*) permite concluir 5 lições por dia e enviar 5 códigos por dia à IA. O PRÓ tem lições ilimitadas e 30 envios por dia. Não há conteúdo exclusivo, a diferença é só de limites.
+- **Integração de Pagamento (Mercado Pago):** Fluxo de Checkout via Cartão de Crédito (PIX ainda não está disponível) para converter alunos gratuitos em assinantes do plano PRÓ (R$ 29,90/mês ou R$ 299,90/ano).
+- **Sistema de Cupons:** Apenas administradores criam cupons (percentual ou valor fixo, incluindo 100%). Hoje isso é feito direto no banco, a tela de cadastro ainda não existe.
+- **Gestão de Perfil e Assinatura:** O aluno tem autonomia para atualizar sua senha, foto, cancelar a assinatura ou acompanhar as próximas datas de faturamento. Não há reembolso: após cancelar, o aluno segue PRÓ até o fim do período pago.
 
 ## 4. Tecnologias Core
 - **Frontend:** Angular 20+ (Standalone Components, Signals, Control Flow) e Tailwind CSS (Design Utility-first sem componentes pré-moldados pesados).

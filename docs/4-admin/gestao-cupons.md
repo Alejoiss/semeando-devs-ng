@@ -2,7 +2,7 @@
 
 ## 1. Objetivo do Fluxo
 Permitir que a equipe administrativa crie, edite e gerencie cupons de desconto promocionais para incentivar assinaturas do plano PRÓ da plataforma.
-*(Nota: Funcionalidade atualmente **Em Construção** na plataforma).*
+*(Nota: A **tela** está em construção. Hoje os cupons são criados diretamente no banco de dados e funcionam normalmente na tela de assinatura. Apenas administradores criam cupons.)*
 
 ## 2. Público-Alvo
 Administradores da plataforma (Equipes de Marketing, Vendas e Suporte).

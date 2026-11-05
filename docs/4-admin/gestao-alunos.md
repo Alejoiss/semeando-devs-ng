@@ -8,11 +8,11 @@ Administradores da plataforma.
 
 ## 3. Passo a Passo (Jornada do Usuário)
 1. O administrador acessa a aba de alunos (`/admin/lista-de-alunos`).
-2. A interface exibe uma tabela listando os estudantes. O carregamento possui um esqueleto visual (*skeleton*) enquanto os dados são buscados no servidor.
+2. A interface exibe uma tabela listando os estudantes com nome, foto, data de cadastro e plano (Free ou PRÓ). O carregamento possui um esqueleto visual (*skeleton*) enquanto os dados são buscados no servidor.
 3. **Pesquisa Inteligente:** O administrador pode utilizar a Barra de Pesquisa. Ao digitar, o sistema aguarda 300ms (*debounce*) e realiza a busca automaticamente por nome ou e-mail (retornando à primeira página de resultados).
 4. **Ordenação:** É possível ordenar a lista clicando nas colunas "Nome" ou "Data de Cadastro" (crescente ou decrescente).
 5. **Paginação:** A lista é paginada por lotes (10 alunos por página por padrão). O admin usa os controles de navegação para ir e voltar.
-6. **Detalhes do Aluno:** Ao clicar sobre a linha de um estudante, o administrador é direcionado para a rota `/admin/lista-de-alunos/:id-aluno` para investigar a fundo os dados, progresso e faturamento daquele usuário específico.
+6. **Detalhes do Aluno:** Ao clicar sobre a linha de um estudante, o administrador é direcionado para a rota `/admin/lista-de-alunos/:id-aluno` onde vê: se aceitou os termos de uso, se aceitou a newsletter, o progresso em todos os cursos (por módulo, submódulo e lição), as conquistas, o total de XP e o total de Seeds.
 
 ## 4. Gatilhos de Marketing e Comunicação
 - Nenhum gatilho direto a partir da listagem. No entanto, é desta listagem que a equipe extrai ou visualiza o status (ativo/inativo) de um lead ou aluno PRO.

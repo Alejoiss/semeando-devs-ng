@@ -9,7 +9,7 @@ Visitantes (tráfego orgânico, tráfego pago) e Usuários logados (principalmen
 ## 3. Passo a Passo (Jornada do Usuário)
 As páginas institucionais são abertas e não exigem autenticação.
 
-**Landing Page (`/home`):**
+**Landing Page (`/`; `/home` redireciona para ela):**
 1. O usuário chega à página principal. O bloco inicial (Hero) destaca o modelo de aprendizado e fornece um Call To Action (CTA) claro: "Começar Minha Jornada", que direciona para a criação de conta ou login.
 2. Ao rolar, ele encontra os Módulos de Aprendizado em formato de vitrine.
 3. Em seguida, descobre a Metodologia dividida em 3 passos (Teoria, Revisão e Desafios de Código).
@@ -22,11 +22,14 @@ As páginas institucionais são abertas e não exigem autenticação.
 2. A tela exibe o canal oficial (E-mail de Suporte) em um painel estilizado.
 3. Existe um botão de conveniência **"Copiar E-mail"** que envia o endereço de e-mail automaticamente para a área de transferência do usuário, facilitando o envio via seu aplicativo de e-mail favorito.
 
-**Demais Páginas (`/cursos`, `/termos-de-uso`):**
-- Listam os cursos disponíveis ou exibem conteúdo puramente textual referente às políticas e regulamentos da Semeando Devs.
+**Catálogo público (`/cursos`):**
+- Lista módulos, submódulos e lições. A primeira lição de cada submódulo é gratuita e aberta, com conteúdo completo. As demais exibem apenas uma prévia e um convite para criar conta.
+
+**Termos de uso (`/termos-de-uso`):**
+- Conteúdo textual das políticas e regulamentos da Semeando Devs.
 
 ## 4. Gatilhos de Marketing e Comunicação
-- **Pixels e Analytics:** A Landing Page é o coração das campanhas. Visualizações nela disparam eventos básicos de `page_view` vitais para remarketing em ferramentas de tráfego (Google Ads, Meta Ads).
+- **Pixels e Analytics:** A Landing Page é o coração das campanhas. O site tem o Google Analytics instalado. O pixel do Meta Ads não está implementado.
 - **Sem formulários embutidos:** Atualmente, a página de Contato não coleta a dúvida e dispara um e-mail. Ela atua como um redirecionador (informa o e-mail oficial ao usuário).
 
 ## 5. Dúvidas Frequentes e Suporte

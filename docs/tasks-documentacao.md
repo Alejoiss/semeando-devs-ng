@@ -12,6 +12,7 @@ Consulte o [Guideline de Documentação](guideline.md) para entender o padrão p
 
 ## 2. Fluxos do Aluno (`/docs/2-aluno/`)
 - [x] [Navegação de Módulos](2-aluno/navegacao-modulos.md): Como o aluno visualiza e navega pela trilha de módulos e submódulos.
+- [x] [Consumo de Lições (Visão Geral)](2-aluno/consumo-licoes.md): Tipos de lição, regras de conclusão, XP e limite diário.
 - [x] [Consumo de Aula Teórica](2-aluno/consumo-aula-teorica.md): O fluxo de leitura de conteúdo, marcação de conclusão e avanço.
 - [x] [Consumo de Quiz](2-aluno/consumo-quiz.md): A experiência do aluno ao responder testes de múltipla escolha.
 - [x] [Consumo de Desafio de Código](2-aluno/consumo-desafio-codigo.md): O fluxo do editor de código embutido e validação das respostas via IA/Testes.
@@ -33,3 +34,6 @@ Consulte o [Guideline de Documentação](guideline.md) para entender o padrão p
 - [x] [Gestão de Alunos](4-admin/gestao-alunos.md): Como listar todos os alunos cadastrados e visualizar os detalhes individuais (progresso, dados).
 - [x] [Gestão de Cupons](4-admin/gestao-cupons.md): Como cadastrar, editar e gerenciar cupons de desconto para a assinatura PRÓ.
 - [x] [Newsletter](4-admin/newsletter.md): Como funciona a criação e o disparo de newsletters para a base de usuários.
+
+## 5. Base de Conhecimento
+- [x] [Base de Conhecimento para Marketing](base-de-conhecimento-marketing.md): Resumo validado do produto, usado como guia para os posts em redes sociais.

@@ -15,14 +15,14 @@ A página de gestão fica em `/app/gerenciar-assinatura`.
    - **Próxima Cobrança:** A data em que o cartão será faturado novamente (calculada baseada na data de assinatura `createdAt` somada ao ciclo).
 3. **Casos Especiais (Cupons/Descontos):** Se a assinatura atual tiver sido fechada usando um cupom promocional que possui duração (ex: *12 meses de desconto*), o sistema calcula os meses restantes de benefício e exibe para o aluno.
 4. **Cancelamento:** Há um botão perigoso (Danger) para cancelar a assinatura. Ao clicar, o navegador exige uma confirmação via alerta padrão (`confirm`).
-5. Ao aceitar o cancelamento, a API notifica o processador de pagamento (ex: Stripe/MercadoPago) e o status do usuário recarrega para refletir a mudança.
+5. Ao aceitar o cancelamento, a API notifica o Mercado Pago (único processador de pagamento) e o status do usuário recarrega para refletir a mudança.
 
 ## 4. Gatilhos de Marketing e Comunicação
 - **Churn:** O cancelamento de assinatura deve gerar um forte evento no sistema para a equipe de Marketing engatilhar um e-mail de recuperação de *Churn* ("Por que você nos deixou?").
 
 ## 5. Dúvidas Frequentes e Suporte
 - **Problema:** "Cancelei minha assinatura, e agora?".
-  - **Solução:** Em integrações padrões de recorrência, o cancelamento para de cobrar o usuário no próximo ciclo. Ele continua tendo acesso PRÓ até que o mês já pago acabe.
+  - **Solução:** O cancelamento interrompe as cobranças futuras. Não há reembolso: o aluno continua PRÓ até o fim do período já pago.
 
 ## 6. Casos de Erro e Tratamento
 - Se a integração com a provedora de pagamentos falhar no momento de cancelar, um `alert()` simples é exibido informando: `"Houve um erro ao cancelar a assinatura. Tente novamente."`
