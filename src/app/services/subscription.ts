@@ -1,4 +1,5 @@
 import { inject, Injectable } from '@angular/core';
+import { FunctionsHttpError } from '@supabase/supabase-js';
 import { RealtimeChannel } from '@supabase/supabase-js';
 import { SupabaseService } from './supabase';
 import { Coupon } from '../../models/coupon/coupon';
@@ -14,20 +15,27 @@ export class SubscriptionService {
         billingCycle: 'monthly' | 'yearly',
         paymentMethod: 'card' | 'pix',
         couponCode?: string,
-        cardTokenId?: string
+        cardTokenId?: string,
+        deviceSessionId?: string
     ): Promise<any> {
         const { data: { session } } = await this.supabase.client.auth.getSession();
         if (!session) throw new Error('Sessão não encontrada. Faça login novamente.');
 
         const { data, error } = await this.supabase.client.functions.invoke('create-subscription', {
-            body: { planId, billingCycle, couponCode, paymentMethod, cardTokenId },
+            body: { planId, billingCycle, couponCode, paymentMethod, cardTokenId, deviceSessionId },
             headers: {
                 Authorization: `Bearer ${session.access_token}`
             }
         });
 
         if (error) {
-            throw { message: error.message || 'Erro ao criar assinatura', code: 'unknown' };
+            if (error instanceof FunctionsHttpError) {
+                const body = await error.context.json().catch(() => null);
+                if (body?.error) {
+                    throw { message: body.error, code: body.code || 'unknown', details: body.details };
+                }
+            }
+            throw { message: 'Não foi possível concluir a assinatura. Tente novamente em instantes.', code: 'unknown' };
         }
 
         if (data?.error) {

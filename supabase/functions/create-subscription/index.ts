@@ -47,7 +47,7 @@ serve(async (req: { method: string; headers: { get: (arg0: string) => any }; jso
         }
 
         const body = await req.json()
-        const { planId, billingCycle, couponCode, paymentMethod, cardTokenId } = body
+        const { planId, billingCycle, couponCode, paymentMethod, cardTokenId, deviceSessionId } = body
 
         if (!planId || !billingCycle || !paymentMethod) {
             return new Response(
@@ -75,6 +75,7 @@ serve(async (req: { method: string; headers: { get: (arg0: string) => any }; jso
             : Number(planData.yearly_price)
 
         let couponId: string | null = null
+        let couponUsedCount = 0
 
         // 2. Handle Coupon
         if (couponCode) {
@@ -131,12 +132,8 @@ serve(async (req: { method: string; headers: { get: (arg0: string) => any }; jso
 
             transactionAmount = Math.max(0, Math.round(transactionAmount * 100) / 100)
 
-            await serviceRoleClient
-                .from('coupons')
-                .update({ used_count: (couponData.used_count || 0) + 1 })
-                .eq('id', couponData.id)
-
             couponId = couponData.id
+            couponUsedCount = couponData.used_count || 0
         }
 
         const frequency = billingCycle === 'monthly' ? 1 : 12
@@ -150,7 +147,7 @@ serve(async (req: { method: string; headers: { get: (arg0: string) => any }; jso
                 external_reference: `user_${user.id}_plan_${planId}`,
                 payer_email: user.email,
                 card_token_id: cardTokenId,
-                back_url: 'https://semeandodevs.com/app/home',
+                back_url: 'https://semeandodevs.com.br/app/home',
                 auto_recurring: {
                     frequency,
                     frequency_type: 'months',
@@ -165,12 +162,41 @@ serve(async (req: { method: string; headers: { get: (arg0: string) => any }; jso
                 headers: {
                     'Content-Type': 'application/json',
                     'Authorization': `Bearer ${mlAccessToken}`,
+                    ...(deviceSessionId && { 'X-meli-session-id': String(deviceSessionId) }),
                 },
                 body: JSON.stringify(preapprovalPayload),
             })
 
             const mpData = await mpResponse.json()
             if (!mpResponse.ok) {
+                const tokenParts = String(mlAccessToken ?? '').split('-')
+                let mpAccount: Record<string, unknown> | null = null
+                try {
+                    const meResponse = await fetch('https://api.mercadopago.com/users/me', {
+                        headers: { 'Authorization': `Bearer ${mlAccessToken}` },
+                    })
+                    const me = await meResponse.json()
+                    mpAccount = { httpStatus: meResponse.status, id: me.id, site_id: me.site_id, tags: me.tags, message: me.message }
+                } catch (e) {
+                    mpAccount = { error: String(e) }
+                }
+                console.error('MP token diagnostics', JSON.stringify({
+                    tokenPrefix: tokenParts[0],
+                    tokenAppId: tokenParts[1],
+                    tokenUserId: tokenParts[tokenParts.length - 1],
+                    mpAccount,
+                }))
+                console.error('MP preapproval failed', JSON.stringify({
+                    httpStatus: mpResponse.status,
+                    userId: user.id,
+                    planId,
+                    billingCycle,
+                    couponCode: couponCode ?? null,
+                    transactionAmount,
+                    hasDeviceSessionId: Boolean(deviceSessionId),
+                    payerEmail: user.email,
+                    mpResponse: mpData,
+                }))
                 return new Response(
                     JSON.stringify({
                         error: 'Erro ao processar pagamento.',
@@ -196,13 +222,20 @@ serve(async (req: { method: string; headers: { get: (arg0: string) => any }; jso
                 headers: {
                     'Content-Type': 'application/json',
                     'Authorization': `Bearer ${mlAccessToken}`,
-                    'X-Idempotency-Key': crypto.randomUUID()
+                    'X-Idempotency-Key': crypto.randomUUID(),
+                    ...(deviceSessionId && { 'X-meli-session-id': String(deviceSessionId) })
                 },
                 body: JSON.stringify(paymentPayload),
             })
 
             const mpData = await mpResponse.json()
             if (!mpResponse.ok) {
+                console.error('MP pix payment failed', JSON.stringify({
+                    httpStatus: mpResponse.status,
+                    userId: user.id,
+                    transactionAmount,
+                    mpResponse: mpData,
+                }))
                 return new Response(
                     JSON.stringify({
                         error: 'Erro ao gerar PIX no Mercado Pago',
@@ -213,13 +246,19 @@ serve(async (req: { method: string; headers: { get: (arg0: string) => any }; jso
             }
 
             mpPreapprovalId = mpData.id.toString()
-            subscriptionStatus = 'pending'
             responseData = {
                 status: 'pending',
                 payment_id: mpData.id,
                 qr_code: mpData.point_of_interaction?.transaction_data?.qr_code,
                 qr_code_base64: mpData.point_of_interaction?.transaction_data?.qr_code_base64,
             }
+        }
+
+        if (couponId) {
+            await serviceRoleClient
+                .from('coupons')
+                .update({ used_count: couponUsedCount + 1 })
+                .eq('id', couponId)
         }
 
         // 4. Save Subscription (using serviceRoleClient)
