@@ -169,23 +169,6 @@ serve(async (req: { method: string; headers: { get: (arg0: string) => any }; jso
 
             const mpData = await mpResponse.json()
             if (!mpResponse.ok) {
-                const tokenParts = String(mlAccessToken ?? '').split('-')
-                let mpAccount: Record<string, unknown> | null = null
-                try {
-                    const meResponse = await fetch('https://api.mercadopago.com/users/me', {
-                        headers: { 'Authorization': `Bearer ${mlAccessToken}` },
-                    })
-                    const me = await meResponse.json()
-                    mpAccount = { httpStatus: meResponse.status, id: me.id, site_id: me.site_id, tags: me.tags, message: me.message }
-                } catch (e) {
-                    mpAccount = { error: String(e) }
-                }
-                console.error('MP token diagnostics', JSON.stringify({
-                    tokenPrefix: tokenParts[0],
-                    tokenAppId: tokenParts[1],
-                    tokenUserId: tokenParts[tokenParts.length - 1],
-                    mpAccount,
-                }))
                 console.error('MP preapproval failed', JSON.stringify({
                     httpStatus: mpResponse.status,
                     userId: user.id,

@@ -255,7 +255,7 @@ export class Checkout implements OnInit, AfterViewInit {
             } else if (errorCode === 'pending' || errorMessage.includes('CONT')) {
                 friendlyMessage = 'O pagamento está pendente de análise. Aguarde a confirmação.';
             } else if (String(err.details ?? '').includes('CC_VAL_433')) {
-                friendlyMessage = 'Não foi possível validar o seu cartão. Confira os dados ou tente outro cartão. Se o problema continuar, fale com o suporte.';
+                friendlyMessage = 'O pagamento não foi aprovado pela análise de segurança do Mercado Pago. Tente novamente mais tarde ou use outro cartão. Se o problema continuar, fale com o suporte.';
             } else if (err.message) {
                 friendlyMessage = err.message; // Fallback to whatever message came from the backend
             }
