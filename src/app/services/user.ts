@@ -239,6 +239,23 @@ export class UserService {
         }
     }
 
+    async resetPasswordWithToken(tokenHash: string, newPassword: string): Promise<void> {
+        const { error: verifyError } = await this.supabase.auth.verifyOtp({
+            type: 'recovery',
+            token_hash: tokenHash,
+        });
+
+        if (verifyError) {
+            throw new Error(mapAuthError(verifyError.message));
+        }
+
+        const { error: updateError } = await this.supabase.auth.updateUser({ password: newPassword });
+
+        if (updateError) {
+            throw new Error(mapAuthError(updateError.message));
+        }
+    }
+
     async sendPasswordResetEmail(email: string): Promise<void> {
         const { error } = await this.supabase.auth.resetPasswordForEmail(email, {
             redirectTo: `${environment.urlBase}/redefinir-senha`,

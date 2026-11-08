@@ -58,8 +58,9 @@
                         <div class="relative">
                             <span
                                 class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-outline-variant">lock</span>
-                            <input id="password" type="password" formControlName="password" placeholder="••••••••"
-                                class="w-full bg-surface-container-lowest border-none rounded py-4 pl-12 pr-4 text-on-surface placeholder:text-outline focus:ring-2 focus:ring-primary/50 transition-all" />
+                            <input #pwd1 id="password" type="password" formControlName="password" placeholder="••••••••"
+                                class="w-full bg-surface-container-lowest border-none rounded py-4 pl-12 pr-14 text-on-surface placeholder:text-outline focus:ring-2 focus:ring-primary/50 transition-all" />
+                            <app-password-toggle [input]="pwd1" />
                         </div>
                         @if (submitted && f.password.invalid) {
                             <p class="text-error text-sm mt-1">

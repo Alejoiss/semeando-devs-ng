@@ -62,7 +62,7 @@
     <table role="presentation" border="0" cellspacing="0" cellpadding="0" align="center" style="margin: 0 auto;">
       <tr>
         <td align="center" bgcolor="#3fc2fb" style="border-radius: 24px; background: linear-gradient(90deg, #3fc2fb, #27b4ed); padding: 16px 32px; box-shadow: 0 4px 15px rgba(63, 194, 251, 0.4);">
-          <a href="{{ .ConfirmationURL }}" class="btn" style="color: #060e20; text-decoration: none; font-weight: bold; font-size: 16px; display: inline-block; font-family: 'Inter', sans-serif;">Redefinir Senha</a>
+          <a href="{{ .RedirectTo }}?token_hash={{ .TokenHash }}&type=recovery" class="btn" style="color: #060e20; text-decoration: none; font-weight: bold; font-size: 16px; display: inline-block; font-family: 'Inter', sans-serif;">Redefinir Senha</a>
         </td>
       </tr>
     </table>

@@ -3,6 +3,7 @@ import { Component, signal } from '@angular/core';
 import { AbstractControl, FormBuilder, FormGroup, ReactiveFormsModule, ValidatorFn, Validators } from '@angular/forms';
 import { RouterModule, Router } from '@angular/router';
 
+import { PasswordToggle } from '../../components/password-toggle/password-toggle';
 import { Footer } from '../../components/footer/footer';
 import { UserService } from '../../services/user';
 
@@ -15,7 +16,7 @@ const passwordMatchValidator: ValidatorFn = (group: AbstractControl) => {
 @Component({
     selector: 'app-register',
     standalone: true,
-    imports: [CommonModule, RouterModule, ReactiveFormsModule, Footer],
+    imports: [CommonModule, RouterModule, ReactiveFormsModule, Footer, PasswordToggle],
     templateUrl: './register.html',
     styleUrls: ['./register.scss']
 })

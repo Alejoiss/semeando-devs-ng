@@ -11,6 +11,8 @@ export function mapAuthError(message: string): string {
         'Password should be at least 6 characters': 'A senha deve ter pelo menos 6 caracteres.',
         'Email rate limit exceeded': 'Muitas tentativas. Aguarde alguns minutos e tente novamente.',
         'Token has expired or is invalid': 'O link expirou. Solicite um novo.',
+        'Email link is invalid or has expired': 'O link expirou ou já foi utilizado. Solicite um novo.',
+        'Auth session missing': 'O link expirou ou já foi utilizado. Solicite um novo.',
         'User not found': 'Usuário não encontrado.',
         'Invalid grant': 'Credenciais inválidas ou expiradas.',
         'New password should be different from the old password': 'A nova senha deve ser diferente da antiga.',

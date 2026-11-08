@@ -3,13 +3,14 @@ import { Component } from '@angular/core';
 import { AbstractControl, FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
 
+import { PasswordToggle } from '../../components/password-toggle/password-toggle';
 import { Footer } from '../../components/footer/footer';
 import { UserService } from '../../services/user';
 
 @Component({
     selector: 'app-login',
     standalone: true,
-    imports: [CommonModule, RouterModule, ReactiveFormsModule, Footer],
+    imports: [CommonModule, RouterModule, ReactiveFormsModule, Footer, PasswordToggle],
     templateUrl: './login.html',
     styleUrls: ['./login.scss']
 })
