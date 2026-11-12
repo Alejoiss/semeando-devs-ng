@@ -25,7 +25,7 @@
                 type="button"
                 (click)="setTab('content')"
                 [class]="activeTab() === 'content' ? 'bg-surface-bright/80 text-primary shadow-lg backdrop-blur-md' : 'text-on-surface-variant hover:text-on-surface hover:bg-surface-container-highest/50'"
-                class="px-5 md:px-8 py-3 rounded-xl text-label-lg font-bold transition-all flex items-center gap-2 whitespace-nowrap shrink-0"
+                class="px-5 md:px-8 py-3 rounded-xl text-label-lg font-bold transition flex items-center gap-2 whitespace-nowrap shrink-0"
             >
                 <span class="material-symbols-rounded text-[20px]" aria-hidden="true">article</span>
                 Conteúdo
@@ -38,7 +38,7 @@
                     [class.opacity-50]="!lessonId()"
                     [class.cursor-not-allowed]="!lessonId()"
                     [attr.aria-disabled]="!lessonId()"
-                    class="px-5 md:px-8 py-3 rounded-xl text-label-lg font-bold transition-all flex items-center gap-2 whitespace-nowrap shrink-0"
+                    class="px-5 md:px-8 py-3 rounded-xl text-label-lg font-bold transition flex items-center gap-2 whitespace-nowrap shrink-0"
                 >
                     <span class="material-symbols-rounded text-[20px]" aria-hidden="true">attachment</span>
                     Materiais extras
@@ -50,7 +50,7 @@
                     [class.opacity-50]="!lessonId()"
                     [class.cursor-not-allowed]="!lessonId()"
                     [attr.aria-disabled]="!lessonId()"
-                    class="px-5 md:px-8 py-3 rounded-xl text-label-lg font-bold transition-all flex items-center gap-2 whitespace-nowrap shrink-0"
+                    class="px-5 md:px-8 py-3 rounded-xl text-label-lg font-bold transition flex items-center gap-2 whitespace-nowrap shrink-0"
                 >
                     <span class="material-symbols-rounded text-[20px]" aria-hidden="true">quiz</span>
                     Quiz
@@ -63,7 +63,7 @@
                     [class.opacity-50]="!lessonId()"
                     [class.cursor-not-allowed]="!lessonId()"
                     [attr.aria-disabled]="!lessonId()"
-                    class="px-5 md:px-8 py-3 rounded-xl text-label-lg font-bold transition-all flex items-center gap-2 whitespace-nowrap shrink-0"
+                    class="px-5 md:px-8 py-3 rounded-xl text-label-lg font-bold transition flex items-center gap-2 whitespace-nowrap shrink-0"
                 >
                     <span class="material-symbols-rounded text-[20px]" aria-hidden="true">code</span>
                     Código

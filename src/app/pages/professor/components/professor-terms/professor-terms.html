@@ -18,19 +18,19 @@
         <div class="mx-6 md:mx-8 mb-4 p-4 bg-surface-container rounded-xl shrink-0">
             <p class="text-xs font-bold text-on-surface mb-2 uppercase tracking-widest font-label">Índice</p>
             <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-1 text-xs text-primary font-body">
-                <button (click)="scrollToSection('pt-sec-1')" class="text-left hover:underline cursor-pointer transition-all hover:translate-x-1 inline-flex items-center gap-1">→ 1. Disponibilização de Cursos</button>
-                <button (click)="scrollToSection('pt-sec-2')" class="text-left hover:underline cursor-pointer transition-all hover:translate-x-1 inline-flex items-center gap-1">→ 2. Modelo de Remuneração</button>
-                <button (click)="scrollToSection('pt-sec-3')" class="text-left hover:underline cursor-pointer transition-all hover:translate-x-1 inline-flex items-center gap-1">→ 3. Revisão do Modelo</button>
-                <button (click)="scrollToSection('pt-sec-4')" class="text-left hover:underline cursor-pointer transition-all hover:translate-x-1 inline-flex items-center gap-1">→ 4. Vigência e Permanência</button>
-                <button (click)="scrollToSection('pt-sec-5')" class="text-left hover:underline cursor-pointer transition-all hover:translate-x-1 inline-flex items-center gap-1">→ 5. Atualização dos Cursos</button>
-                <button (click)="scrollToSection('pt-sec-6')" class="text-left hover:underline cursor-pointer transition-all hover:translate-x-1 inline-flex items-center gap-1">→ 6. Substituição do Professor</button>
-                <button (click)="scrollToSection('pt-sec-7')" class="text-left hover:underline cursor-pointer transition-all hover:translate-x-1 inline-flex items-center gap-1">→ 7. Forma de Pagamento</button>
-                <button (click)="scrollToSection('pt-sec-8')" class="text-left hover:underline cursor-pointer transition-all hover:translate-x-1 inline-flex items-center gap-1">→ 8. Ética e Conduta</button>
-                <button (click)="scrollToSection('pt-sec-9')" class="text-left hover:underline cursor-pointer transition-all hover:translate-x-1 inline-flex items-center gap-1">→ 9. Responsabilidades do Professor</button>
-                <button (click)="scrollToSection('pt-sec-10')" class="text-left hover:underline cursor-pointer transition-all hover:translate-x-1 inline-flex items-center gap-1">→ 10. Responsabilidades da Plataforma</button>
-                <button (click)="scrollToSection('pt-sec-11')" class="text-left hover:underline cursor-pointer transition-all hover:translate-x-1 inline-flex items-center gap-1">→ 11. Divulgação e Marketing</button>
-                <button (click)="scrollToSection('pt-sec-12')" class="text-left hover:underline cursor-pointer transition-all hover:translate-x-1 inline-flex items-center gap-1">→ 12. Visão Filantrópica</button>
-                <button (click)="scrollToSection('pt-sec-13')" class="text-left hover:underline cursor-pointer transition-all hover:translate-x-1 inline-flex items-center gap-1">→ 13. Disposições Gerais</button>
+                <button (click)="scrollToSection('pt-sec-1')" class="text-left hover:underline cursor-pointer transition hover:translate-x-1 inline-flex items-center gap-1">→ 1. Disponibilização de Cursos</button>
+                <button (click)="scrollToSection('pt-sec-2')" class="text-left hover:underline cursor-pointer transition hover:translate-x-1 inline-flex items-center gap-1">→ 2. Modelo de Remuneração</button>
+                <button (click)="scrollToSection('pt-sec-3')" class="text-left hover:underline cursor-pointer transition hover:translate-x-1 inline-flex items-center gap-1">→ 3. Revisão do Modelo</button>
+                <button (click)="scrollToSection('pt-sec-4')" class="text-left hover:underline cursor-pointer transition hover:translate-x-1 inline-flex items-center gap-1">→ 4. Vigência e Permanência</button>
+                <button (click)="scrollToSection('pt-sec-5')" class="text-left hover:underline cursor-pointer transition hover:translate-x-1 inline-flex items-center gap-1">→ 5. Atualização dos Cursos</button>
+                <button (click)="scrollToSection('pt-sec-6')" class="text-left hover:underline cursor-pointer transition hover:translate-x-1 inline-flex items-center gap-1">→ 6. Substituição do Professor</button>
+                <button (click)="scrollToSection('pt-sec-7')" class="text-left hover:underline cursor-pointer transition hover:translate-x-1 inline-flex items-center gap-1">→ 7. Forma de Pagamento</button>
+                <button (click)="scrollToSection('pt-sec-8')" class="text-left hover:underline cursor-pointer transition hover:translate-x-1 inline-flex items-center gap-1">→ 8. Ética e Conduta</button>
+                <button (click)="scrollToSection('pt-sec-9')" class="text-left hover:underline cursor-pointer transition hover:translate-x-1 inline-flex items-center gap-1">→ 9. Responsabilidades do Professor</button>
+                <button (click)="scrollToSection('pt-sec-10')" class="text-left hover:underline cursor-pointer transition hover:translate-x-1 inline-flex items-center gap-1">→ 10. Responsabilidades da Plataforma</button>
+                <button (click)="scrollToSection('pt-sec-11')" class="text-left hover:underline cursor-pointer transition hover:translate-x-1 inline-flex items-center gap-1">→ 11. Divulgação e Marketing</button>
+                <button (click)="scrollToSection('pt-sec-12')" class="text-left hover:underline cursor-pointer transition hover:translate-x-1 inline-flex items-center gap-1">→ 12. Visão Filantrópica</button>
+                <button (click)="scrollToSection('pt-sec-13')" class="text-left hover:underline cursor-pointer transition hover:translate-x-1 inline-flex items-center gap-1">→ 13. Disposições Gerais</button>
             </div>
         </div>
 
@@ -275,7 +275,7 @@
                     id="professor-terms-accept-btn"
                     (click)="onAccept()"
                     [disabled]="isAccepting()"
-                    class="shrink-0 px-8 py-3 bg-gradient-to-r from-primary to-primary-container text-on-primary font-bold rounded-2xl transition-all hover:shadow-[0_0_20px_rgba(63,194,251,0.4)] active:scale-95 disabled:opacity-60 disabled:cursor-not-allowed disabled:active:scale-100 flex items-center gap-2"
+                    class="shrink-0 px-8 py-3 bg-gradient-to-r from-primary to-primary-container text-on-primary font-bold rounded-2xl transition hover:shadow-[0_0_20px_rgba(63,194,251,0.4)] active:scale-95 disabled:opacity-60 disabled:cursor-not-allowed disabled:active:scale-100 flex items-center gap-2"
                     [attr.aria-busy]="isAccepting()"
                     aria-label="Aceitar os termos do professor parceiro"
                 >

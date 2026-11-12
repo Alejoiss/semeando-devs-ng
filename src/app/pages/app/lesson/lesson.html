@@ -33,12 +33,12 @@
         </div>
         <div class="flex flex-col sm:flex-row items-center gap-4">
             <a routerLink="/app/upgrade"
-               class="px-8 py-4 bg-gradient-to-r from-secondary to-primary-container text-on-primary-container font-headline font-bold rounded-2xl flex items-center gap-3 hover:scale-105 active:scale-95 transition-all shadow-[0_0_20px_rgba(254,105,172,0.3)]">
+               class="px-8 py-4 bg-gradient-to-r from-secondary to-primary-container text-on-primary-container font-headline font-bold rounded-2xl flex items-center gap-3 hover:scale-105 active:scale-95 transition shadow-[0_0_20px_rgba(254,105,172,0.3)]">
                 <span class="material-symbols-outlined">rocket_launch</span>
                 Fazer upgrade para Pró
             </a>
             <button onclick="history.back()"
-                    class="px-8 py-4 bg-surface-container text-on-surface-variant font-headline font-bold rounded-2xl hover:bg-surface-container-high transition-all">
+                    class="px-8 py-4 bg-surface-container text-on-surface-variant font-headline font-bold rounded-2xl hover:bg-surface-container-high transition">
                 Voltar
             </button>
         </div>
@@ -132,7 +132,7 @@
                             @for (material of extraMaterials(); track material.id) {
                                 <li>
                                     @if (material.type === 'URL') {
-                                        <a [href]="material.url" target="_blank" class="flex items-center justify-between p-3 rounded-xl hover:bg-surface-bright transition-all group">
+                                        <a [href]="material.url" target="_blank" class="flex items-center justify-between p-3 rounded-xl hover:bg-surface-bright transition group">
                                             <div class="flex items-center gap-3">
                                                 <span class="material-symbols-outlined text-secondary">description</span>
                                                 <span class="text-xs text-on-surface">{{ material.title }}</span>
@@ -140,7 +140,7 @@
                                             <span class="material-symbols-outlined text-on-surface-variant group-hover:text-secondary text-sm">open_in_new</span>
                                         </a>
                                     } @else if (material.type === 'FILE') {
-                                        <a [href]="material.file" target="_blank" download class="flex items-center justify-between p-3 rounded-xl hover:bg-surface-bright transition-all group">
+                                        <a [href]="material.file" target="_blank" download class="flex items-center justify-between p-3 rounded-xl hover:bg-surface-bright transition group">
                                             <div class="flex items-center gap-3">
                                                 <span class="material-symbols-outlined text-secondary">download</span>
                                                 <span class="text-xs text-on-surface">{{ material.title }}</span>
@@ -174,7 +174,7 @@
             </div>
             <div class="flex items-center gap-4 w-full sm:w-auto">
                 <button [routerLink]="['quiz']"
-                    class="flex-1 sm:flex-none px-6 py-4 rounded-2xl font-headline font-bold text-sm bg-gradient-to-r from-primary to-primary-container text-on-primary-container flex items-center justify-center gap-3 neon-glow-primary hover:brightness-110 active:scale-95 transition-all">
+                    class="flex-1 sm:flex-none px-6 py-4 rounded-2xl font-headline font-bold text-sm bg-gradient-to-r from-primary to-primary-container text-on-primary-container flex items-center justify-center gap-3 neon-glow-primary hover:brightness-110 active:scale-95 transition">
                     Próximo: Iniciar Quiz (10 questões)
                     <span class="material-symbols-outlined">arrow_forward</span>
                 </button>

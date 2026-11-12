@@ -39,7 +39,7 @@
             @if (lessonsWithState().length > 0) {
                 <div class="mt-8 flex items-center gap-4">
                     <div class="w-full max-w-xs h-3 bg-surface-container rounded-full overflow-hidden">
-                        <div class="h-full bg-gradient-to-r from-primary to-tertiary shadow-[0_0_12px_rgba(63,194,251,0.5)] transition-all duration-500"
+                        <div class="h-full bg-gradient-to-r from-primary to-tertiary shadow-[0_0_12px_rgba(63,194,251,0.5)] transition-[width] duration-500"
                              [style.width.%]="completionPercentage()">
                         </div>
                     </div>
@@ -95,7 +95,7 @@
                         </div>
 
                         <div [class]="
-                            'glass-card p-6 rounded-2xl transition-all md:col-span-4 ' +
+                            'glass-card p-6 rounded-2xl transition md:col-span-4 ' +
                             (isEven ? 'md:col-start-6 border-l-4 ' : 'md:col-start-1 md:row-start-1 border-r-4 ') +
                             (isCompleted
                                 ? (isChallenge ? 'border-secondary' : 'border-primary')

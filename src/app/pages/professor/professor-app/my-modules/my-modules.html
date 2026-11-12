@@ -42,7 +42,7 @@
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
         @for (module of modules(); track module.id) {
         <div
-            class="group relative overflow-hidden bg-surface-container rounded-lg p-6 transition-all hover:bg-surface-container-high hover:translate-y-[-4px]">
+            class="group relative overflow-hidden bg-surface-container rounded-lg p-6 transition hover:bg-surface-container-high hover:translate-y-[-4px]">
             <div class="relative z-10 flex gap-5">
                 <div class="h-16 w-16 shrink-0 flex items-center justify-center rounded-2xl bg-[#fff] p-1 text-primary">
                     @if (module.icon) {
@@ -84,7 +84,7 @@
                 </label>
                 }
                 <a [routerLink]="['/professor/editar-modulo', module.id]"
-                    class="flex items-center gap-2 px-6 py-2 bg-gradient-to-r from-primary to-primary-container text-on-primary-container font-headline font-bold rounded-xl glow-primary hover:scale-105 active:scale-95 transition-all text-sm no-underline"
+                    class="flex items-center gap-2 px-6 py-2 bg-gradient-to-r from-primary to-primary-container text-on-primary-container font-headline font-bold rounded-xl glow-primary hover:scale-105 active:scale-95 transition text-sm no-underline"
                     [attr.aria-label]="'Editar módulo ' + module.title">
                     <span class="material-symbols-outlined text-sm">edit</span>
                     Editar

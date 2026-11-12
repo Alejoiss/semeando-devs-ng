@@ -25,7 +25,7 @@
     <section class="mb-12 relative animate-fade-in">
         <div class="glass-panel rounded-2xl border border-outline-variant/10 overflow-hidden">
             <button (click)="togglePresentation()"
-                class="w-full flex items-center justify-between p-6 hover:bg-surface-container-high transition-all text-left">
+                class="w-full flex items-center justify-between p-6 hover:bg-surface-container-high transition text-left">
                 <div class="flex items-center gap-3 text-on-surface">
                     <span class="material-symbols-outlined text-primary text-2xl"
                         data-icon="rocket_launch">rocket_launch</span>
@@ -111,7 +111,7 @@
         </div>
         } @else {
         @for (item of submodulesWithState(); track item.submodule.id) {
-        <div class="group relative bg-surface-container rounded-lg p-8 transition-all"
+        <div class="group relative bg-surface-container rounded-lg p-8 transition"
             [class]="item.progressState === 'in-progress' ? 'border-t-2 border-primary/20 cursor-pointer hover:bg-surface-container-high' : item.progressState === 'blocked' ? 'opacity-50 grayscale select-none' : 'cursor-pointer hover:bg-surface-container-high'">
             <div class="absolute top-0 right-0 p-4">
                 @if (item.progressState === 'completed') {
@@ -139,7 +139,7 @@
 
             <div class="flex items-start gap-6 mb-8"
                 [routerLink]="item.progressState !== 'blocked' ? ['s', item.submodule.slug] : null">
-                <div class="w-16 h-16 rounded-xl flex items-center justify-center ring-1 transition-all"
+                <div class="w-16 h-16 rounded-xl flex items-center justify-center ring-1 transition"
                     [class]="item.progressState === 'completed'
                                      ? 'bg-tertiary/10 text-tertiary ring-tertiary/20'
                                      : item.progressState === 'in-progress'
@@ -196,18 +196,18 @@
             <div class="mt-6 flex justify-end">
                 @if (item.progressState === 'completed') {
                 <button [routerLink]="['ss', item.submodule.slug]"
-                    class="flex items-center gap-2 px-8 py-3 bg-gradient-to-r from-primary to-primary-container text-on-primary-container font-headline font-bold rounded-xl glow-primary hover:scale-105 active:scale-95 transition-all">
+                    class="flex items-center gap-2 px-8 py-3 bg-gradient-to-r from-primary to-primary-container text-on-primary-container font-headline font-bold rounded-xl glow-primary hover:scale-105 active:scale-95 transition">
                     <span class="material-symbols-outlined text-sm" data-icon="check_circle">check_circle</span>
                     Revisar
                 </button>
                 } @else if (item.progressState === 'in-progress') {
                 <button [routerLink]="['ss', item.submodule.slug]"
-                    class="px-8 py-3 bg-gradient-to-r from-secondary to-primary-container text-on-primary-container font-headline font-bold rounded-xl hover:scale-105 active:scale-95 transition-all">
+                    class="px-8 py-3 bg-gradient-to-r from-secondary to-primary-container text-on-primary-container font-headline font-bold rounded-xl hover:scale-105 active:scale-95 transition">
                     Continuar
                 </button>
                 } @else {
                 <button (click)="onStartSubmodule(item.submodule.id, item.submodule.slug)"
-                    class="px-8 py-3 bg-gradient-to-r from-primary to-primary-container text-on-primary-container font-headline font-bold rounded-xl glow-primary hover:scale-105 active:scale-95 transition-all">
+                    class="px-8 py-3 bg-gradient-to-r from-primary to-primary-container text-on-primary-container font-headline font-bold rounded-xl glow-primary hover:scale-105 active:scale-95 transition">
                     Iniciar
                 </button>
                 }
@@ -222,7 +222,7 @@
                 </button>
                 } @else {
                 <button routerLink="/app/upgrade"
-                    class="flex items-center gap-2 px-8 py-3 bg-gradient-to-r from-secondary to-primary-container text-on-primary-container font-headline font-bold rounded-xl hover:scale-105 active:scale-95 transition-all">
+                    class="flex items-center gap-2 px-8 py-3 bg-gradient-to-r from-secondary to-primary-container text-on-primary-container font-headline font-bold rounded-xl hover:scale-105 active:scale-95 transition">
                     <span class="material-symbols-outlined text-sm" data-icon="rocket_launch">rocket_launch</span>
                     Liberar com PRÓ
                 </button>

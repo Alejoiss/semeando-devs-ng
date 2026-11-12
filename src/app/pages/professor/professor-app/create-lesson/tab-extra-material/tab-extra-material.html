@@ -24,7 +24,7 @@
                     type="button"
                     id="import-json-btn"
                     (click)="openImportModal()"
-                    class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl font-label text-label-lg font-bold text-secondary ring-1 ring-inset ring-secondary/25 hover:bg-secondary/10 hover:ring-secondary/50 active:scale-95 transition-all"
+                    class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl font-label text-label-lg font-bold text-secondary ring-1 ring-inset ring-secondary/25 hover:bg-secondary/10 hover:ring-secondary/50 active:scale-95 transition"
                     aria-label="Importar materiais via JSON">
                     <span class="material-symbols-rounded text-[20px]" aria-hidden="true">upload_file</span>
                     Importar JSON
@@ -33,7 +33,7 @@
                 <button
                     type="button"
                     (click)="addMaterial()"
-                    class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl font-label text-label-lg font-bold bg-gradient-to-r from-primary to-primary-container text-on-primary-container glow-primary hover:brightness-110 active:scale-95 transition-all">
+                    class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl font-label text-label-lg font-bold bg-gradient-to-r from-primary to-primary-container text-on-primary-container glow-primary hover:brightness-110 active:scale-95 transition">
                     <span class="material-symbols-rounded text-[20px]" aria-hidden="true">add</span>
                     Adicionar Material
                 </button>
@@ -95,7 +95,7 @@
                                             type="text"
                                             formControlName="title"
                                             placeholder="Ex: Documentação oficial do TypeScript"
-                                            class="w-full bg-surface-container-lowest text-on-surface px-4 py-3 rounded outline-none focus:ring-2 focus:ring-primary/30 transition-all placeholder:text-on-surface-variant/50 text-body-md" />
+                                            class="w-full bg-surface-container-lowest text-on-surface px-4 py-3 rounded outline-none focus:ring-2 focus:ring-primary/30 transition placeholder:text-on-surface-variant/50 text-body-md" />
 
                                         @if (item.get('title')?.touched && item.get('title')?.invalid) {
                                             <p class="text-error text-label-md font-medium flex items-center gap-1 animate-fade-in">
@@ -115,7 +115,7 @@
                                             type="text"
                                             formControlName="url"
                                             placeholder="Ex: https://www.typescriptlang.org"
-                                            class="w-full bg-surface-container-lowest text-on-surface px-4 py-3 rounded outline-none focus:ring-2 focus:ring-primary/30 transition-all placeholder:text-on-surface-variant/50 text-body-md" />
+                                            class="w-full bg-surface-container-lowest text-on-surface px-4 py-3 rounded outline-none focus:ring-2 focus:ring-primary/30 transition placeholder:text-on-surface-variant/50 text-body-md" />
 
                                         @if (item.get('url')?.touched && item.get('url')?.invalid) {
                                             <p class="text-error text-label-md font-medium flex items-center gap-1 animate-fade-in">
@@ -155,7 +155,7 @@
                             <button
                                 type="submit"
                                 [disabled]="isSaving() || form.invalid"
-                                class="w-full sm:w-auto py-4 px-8 bg-gradient-to-r from-secondary to-secondary-dim text-on-secondary font-headline font-extrabold rounded-xl shadow-lg shadow-secondary/20 active:scale-95 hover:scale-[1.02] transition-all disabled:opacity-50 disabled:cursor-not-allowed">
+                                class="w-full sm:w-auto py-4 px-8 bg-gradient-to-r from-secondary to-secondary-dim text-on-secondary font-headline font-extrabold rounded-xl shadow-lg shadow-secondary/20 active:scale-95 hover:scale-[1.02] transition disabled:opacity-50 disabled:cursor-not-allowed">
                                 @if (isSaving()) {
                                     <span class="flex items-center justify-center gap-2">
                                         <div class="animate-spin rounded-full h-4 w-4 border-2 border-on-secondary/30 border-t-on-secondary" aria-hidden="true"></div>
@@ -215,7 +215,7 @@
 
             <div class="px-6 pb-5 flex-1 min-h-0">
                 <textarea
-                    class="w-full h-full min-h-[240px] bg-surface-container-lowest text-on-surface rounded p-4 resize-y font-mono text-body-md outline-none focus:ring-2 focus:ring-primary/30 transition-all placeholder:text-on-surface-variant/50"
+                    class="w-full h-full min-h-[240px] bg-surface-container-lowest text-on-surface rounded p-4 resize-y font-mono text-body-md outline-none focus:ring-2 focus:ring-primary/30 transition placeholder:text-on-surface-variant/50"
                     placeholder='[&#10;  { "title": "MDN Web Docs", "url": "https://developer.mozilla.org" }&#10;]'
                     [value]="importRawJson()"
                     (input)="updateImportJson($any($event.target).value)"
@@ -235,14 +235,14 @@
                     type="button"
                     id="import-extra-cancel-btn"
                     (click)="closeImportModal()"
-                    class="px-5 py-2.5 rounded-xl font-label text-label-lg font-bold text-on-surface-variant hover:text-on-surface hover:bg-surface-bright transition-all">
+                    class="px-5 py-2.5 rounded-xl font-label text-label-lg font-bold text-on-surface-variant hover:text-on-surface hover:bg-surface-bright transition">
                     Cancelar
                 </button>
                 <button
                     type="button"
                     id="import-extra-submit-btn"
                     (click)="importFromJson()"
-                    class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl font-label text-label-lg font-bold bg-gradient-to-r from-primary to-primary-container text-on-primary-container glow-primary hover:brightness-110 active:scale-95 transition-all"
+                    class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl font-label text-label-lg font-bold bg-gradient-to-r from-primary to-primary-container text-on-primary-container glow-primary hover:brightness-110 active:scale-95 transition"
                     aria-label="Confirmar importação dos materiais">
                     <span class="material-symbols-rounded text-[20px]" aria-hidden="true">download_done</span>
                     Importar

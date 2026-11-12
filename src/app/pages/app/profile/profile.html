@@ -10,7 +10,7 @@
 
     <main class="max-w-4xl mx-auto space-y-8">
         <!-- Profile Info Section -->
-        <section class="bg-surface-container-low rounded-2xl p-8 shadow-ambient transition-all duration-300">
+        <section class="bg-surface-container-low rounded-2xl p-8 shadow-ambient transition duration-300">
             <h2 class="text-xl font-bold text-on-surface mb-8 font-headline flex items-center gap-3">
                 <span class="material-symbols-outlined text-primary">person</span>
                 Informações Pessoais
@@ -35,7 +35,7 @@
                         }
                     </div>
 
-                    <label for="avatar-upload" class="absolute -bottom-2 -right-2 bg-primary p-2 rounded-full cursor-pointer shadow-lg hover:scale-110 active:scale-95 transition-all duration-300">
+                    <label for="avatar-upload" class="absolute -bottom-2 -right-2 bg-primary p-2 rounded-full cursor-pointer shadow-lg hover:scale-110 active:scale-95 transition duration-300">
                         <span class="material-symbols-outlined text-surface text-xl">photo_camera</span>
                         <input type="file" id="avatar-upload" class="hidden" (change)="onFileSelected($event)" accept="image/*" [disabled]="isUploadingAvatar()" />
                     </label>
@@ -50,7 +50,7 @@
                                 formControlName="name"
                                 type="text"
                                 placeholder="Seu nome completo"
-                                class="w-full bg-surface-container-lowest border-none rounded-xl px-4 py-3 text-on-surface focus:ring-2 focus:ring-primary/50 transition-all duration-300 font-body"
+                                class="w-full bg-surface-container-lowest border-none rounded-xl px-4 py-3 text-on-surface focus:ring-2 focus:ring-primary/50 transition duration-300 font-body"
                             />
                         </div>
                         @if (profileForm.get('name')?.invalid && profileForm.get('name')?.touched) {
@@ -73,7 +73,7 @@
                         <label class="flex items-start gap-3 cursor-pointer group/check">
                             <div class="relative flex items-center mt-1">
                                 <input id="newsletter_active" formControlName="newsletter_active" type="checkbox"
-                                    class="peer h-5 w-5 cursor-pointer appearance-none rounded border border-outline-variant bg-surface-container-lowest checked:bg-primary checked:border-primary transition-all" />
+                                    class="peer h-5 w-5 cursor-pointer appearance-none rounded border border-outline-variant bg-surface-container-lowest checked:bg-primary checked:border-primary transition" />
                                 <span
                                     class="material-symbols-outlined absolute text-on-primary opacity-0 peer-checked:opacity-100 transition-opacity pointer-events-none text-base font-bold left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">check</span>
                             </div>
@@ -93,7 +93,7 @@
                         <button
                             type="submit"
                             [disabled]="profileForm.invalid || isUpdatingProfile()"
-                            class="bg-gradient-to-r from-primary to-primary-dim text-surface font-bold py-3 px-8 rounded-xl shadow-lg hover:shadow-primary/20 hover:scale-[1.02] active:scale-[0.98] transition-all duration-300 disabled:opacity-50 disabled:scale-100 flex items-center gap-2"
+                            class="bg-gradient-to-r from-primary to-primary-dim text-surface font-bold py-3 px-8 rounded-xl shadow-lg hover:shadow-primary/20 hover:scale-[1.02] active:scale-[0.98] transition duration-300 disabled:opacity-50 disabled:scale-100 flex items-center gap-2"
                         >
                             @if (isUpdatingProfile()) {
                                 <div class="w-4 h-4 border-2 border-surface border-t-transparent rounded-full animate-spin"></div>
@@ -106,7 +106,7 @@
         </section>
 
         <!-- Security Section -->
-        <section class="bg-surface-container-low rounded-2xl p-8 shadow-ambient transition-all duration-300">
+        <section class="bg-surface-container-low rounded-2xl p-8 shadow-ambient transition duration-300">
             <h2 class="text-xl font-bold text-on-surface mb-8 font-headline flex items-center gap-3">
                 <span class="material-symbols-outlined text-secondary">security</span>
                 Segurança da Conta
@@ -121,7 +121,7 @@
                             formControlName="currentPassword"
                             type="password"
                             placeholder="Digite sua senha atual"
-                            class="w-full bg-surface-container-lowest border-none rounded-xl pl-4 pr-14 py-3 text-on-surface focus:ring-2 focus:ring-secondary/50 transition-all duration-300 font-body"
+                            class="w-full bg-surface-container-lowest border-none rounded-xl pl-4 pr-14 py-3 text-on-surface focus:ring-2 focus:ring-secondary/50 transition duration-300 font-body"
                         />
                             <app-password-toggle [input]="pwd1" />
                         </div>
@@ -134,7 +134,7 @@
                             formControlName="newPassword"
                             type="password"
                             placeholder="Mínimo 6 caracteres"
-                            class="w-full bg-surface-container-lowest border-none rounded-xl pl-4 pr-14 py-3 text-on-surface focus:ring-2 focus:ring-secondary/50 transition-all duration-300 font-body"
+                            class="w-full bg-surface-container-lowest border-none rounded-xl pl-4 pr-14 py-3 text-on-surface focus:ring-2 focus:ring-secondary/50 transition duration-300 font-body"
                         />
                             <app-password-toggle [input]="pwd2" />
                         </div>
@@ -147,7 +147,7 @@
                             formControlName="confirmPassword"
                             type="password"
                             placeholder="Repita a nova senha"
-                            class="w-full bg-surface-container-lowest border-none rounded-xl pl-4 pr-14 py-3 text-on-surface focus:ring-2 focus:ring-secondary/50 transition-all duration-300 font-body"
+                            class="w-full bg-surface-container-lowest border-none rounded-xl pl-4 pr-14 py-3 text-on-surface focus:ring-2 focus:ring-secondary/50 transition duration-300 font-body"
                         />
                             <app-password-toggle [input]="pwd3" />
                         </div>
@@ -168,7 +168,7 @@
                     <button
                         type="submit"
                         [disabled]="passwordForm.invalid || isUpdatingPassword()"
-                        class="bg-transparent border-2 border-secondary/20 text-secondary hover:bg-secondary/10 font-bold py-3 px-8 rounded-xl transition-all duration-300 disabled:opacity-50 flex items-center gap-2"
+                        class="bg-transparent border-2 border-secondary/20 text-secondary hover:bg-secondary/10 font-bold py-3 px-8 rounded-xl transition duration-300 disabled:opacity-50 flex items-center gap-2"
                     >
                         @if (isUpdatingPassword()) {
                             <div class="w-4 h-4 border-2 border-secondary border-t-transparent rounded-full animate-spin"></div>

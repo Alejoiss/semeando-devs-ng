@@ -16,7 +16,7 @@
         <p class="text-on-surface-variant text-lg text-center max-w-md">{{ error() }}</p>
         <button
             (click)="goBack()"
-            class="px-6 py-3 rounded-2xl font-headline font-bold text-sm bg-surface border border-outline-variant/20 text-on-surface hover:bg-surface-bright transition-all">
+            class="px-6 py-3 rounded-2xl font-headline font-bold text-sm bg-surface border border-outline-variant/20 text-on-surface hover:bg-surface-bright transition">
             Voltar para o Submódulo
         </button>
     </main>
@@ -136,14 +136,14 @@
             <button
                 (click)="saveDraft()"
                 [disabled]="isSubmitting()"
-                class="px-6 py-3 rounded-2xl font-headline font-bold text-sm bg-surface border border-outline-variant/20 text-on-surface hover:bg-surface-bright transition-all disabled:opacity-50">
+                class="px-6 py-3 rounded-2xl font-headline font-bold text-sm bg-surface border border-outline-variant/20 text-on-surface hover:bg-surface-bright transition disabled:opacity-50">
                 Salvar Rascunho
             </button>
 
             <button
                 (click)="submitChallenge()"
                 [disabled]="isSubmitting()"
-                class="px-8 py-3 rounded-2xl font-headline font-bold text-sm bg-gradient-to-r from-primary to-primary-container text-on-primary-container flex items-center gap-2 neon-glow-primary hover:brightness-110 active:scale-95 transition-all disabled:opacity-50 disabled:pointer-events-none">
+                class="px-8 py-3 rounded-2xl font-headline font-bold text-sm bg-gradient-to-r from-primary to-primary-container text-on-primary-container flex items-center gap-2 neon-glow-primary hover:brightness-110 active:scale-95 transition disabled:opacity-50 disabled:pointer-events-none">
                 @if (isSubmitting()) {
                     <span class="material-symbols-outlined animate-spin">refresh</span>
                     Enviando...
@@ -155,7 +155,7 @@
             @if (passed()) {
                 <button
                     (click)="continueChallenge()"
-                    class="px-8 py-3 rounded-2xl font-headline font-bold text-sm bg-gradient-to-r from-tertiary to-tertiary-container text-on-tertiary-container flex items-center gap-2 hover:brightness-110 active:scale-95 transition-all">
+                    class="px-8 py-3 rounded-2xl font-headline font-bold text-sm bg-gradient-to-r from-tertiary to-tertiary-container text-on-tertiary-container flex items-center gap-2 hover:brightness-110 active:scale-95 transition">
                     Continuar
                     <span class="material-symbols-outlined">arrow_forward</span>
                 </button>

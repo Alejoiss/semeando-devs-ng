@@ -47,7 +47,7 @@
             <!-- Dynamic Module Cards -->
             @for (item of modulesWithState(); track item.module.id) {
             <div
-                class="group relative overflow-hidden bg-surface-container rounded-lg p-6 transition-all hover:bg-surface-container-high hover:translate-y-[-4px]">
+                class="group relative overflow-hidden bg-surface-container rounded-lg p-6 transition hover:bg-surface-container-high hover:translate-y-[-4px]">
                 <div class="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
                     <div class="flex gap-5">
                         <div
@@ -66,7 +66,7 @@
                             <p class="text-on-surface-variant text-sm mb-4">{{ item.module.description }}</p>
                             <div class="flex items-center gap-3">
                                 <div class="w-48 h-2 bg-surface-container-highest rounded-full overflow-hidden">
-                                    <div class="h-full bg-gradient-to-r from-primary to-tertiary shadow-[0_0_10px_rgba(63,194,251,0.5)] transition-all duration-500"
+                                    <div class="h-full bg-gradient-to-r from-primary to-tertiary shadow-[0_0_10px_rgba(63,194,251,0.5)] transition-[width] duration-500"
                                         [style.width.%]="item.progressPercentage">
                                     </div>
                                 </div>
@@ -85,18 +85,18 @@
 
                     @if (item.progressState === 'completed') {
                     <button [routerLink]="['s', item.module.slug]"
-                        class="flex items-center gap-2 px-8 py-3 bg-gradient-to-r from-primary to-primary-container text-on-primary-container font-headline font-bold rounded-xl glow-primary hover:scale-105 active:scale-95 transition-all">
+                        class="flex items-center gap-2 px-8 py-3 bg-gradient-to-r from-primary to-primary-container text-on-primary-container font-headline font-bold rounded-xl glow-primary hover:scale-105 active:scale-95 transition">
                         <span class="material-symbols-outlined text-sm" data-icon="check_circle">check_circle</span>
                         Revisar
                     </button>
                     } @else if (item.progressState === 'in-progress') {
                     <button [routerLink]="['s', item.module.slug]"
-                        class="px-8 py-3 bg-gradient-to-r from-secondary to-primary-container text-on-primary-container font-headline font-bold rounded-xl hover:scale-105 active:scale-95 transition-all">
+                        class="px-8 py-3 bg-gradient-to-r from-secondary to-primary-container text-on-primary-container font-headline font-bold rounded-xl hover:scale-105 active:scale-95 transition">
                         Continuar
                     </button>
                     } @else {
                     <button (click)="onStartModule(item.module.id, item.module.slug)"
-                        class="px-8 py-3 bg-gradient-to-r from-primary to-primary-container text-on-primary-container font-headline font-bold rounded-xl glow-primary hover:scale-105 active:scale-95 transition-all">
+                        class="px-8 py-3 bg-gradient-to-r from-primary to-primary-container text-on-primary-container font-headline font-bold rounded-xl glow-primary hover:scale-105 active:scale-95 transition">
                         Iniciar
                     </button>
                     }
@@ -142,7 +142,7 @@
                     <div class="space-y-3 mb-6">
                         @for (user of podiumUsers(); track user.userId) {
                         <div
-                            class="flex items-center justify-between p-3 bg-background/40 rounded-xl transition-all hover:bg-background/60">
+                            class="flex items-center justify-between p-3 bg-background/40 rounded-xl transition hover:bg-background/60">
                             <div class="flex items-center gap-3">
                                 <span
                                     [class]="$index === 0 ? 'text-primary font-bold' : $index === 1 ? 'text-secondary font-bold' : 'text-tertiary font-bold'">
@@ -182,7 +182,7 @@
                         }
                     </div>
                     <button routerLink="/app/ranking"
-                        class="w-full py-3 bg-surface-container-highest hover:bg-surface-bright text-on-surface font-headline font-bold rounded-xl transition-all flex items-center justify-center gap-2">
+                        class="w-full py-3 bg-surface-container-highest hover:bg-surface-bright text-on-surface font-headline font-bold rounded-xl transition flex items-center justify-center gap-2">
                         Ver Leaderboard Completo
                         <span class="material-symbols-outlined text-sm" data-icon="arrow_forward">arrow_forward</span>
                     </button>

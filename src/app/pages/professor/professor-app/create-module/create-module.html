@@ -12,7 +12,7 @@
                         <div class="flex flex-col gap-2">
                             <label class="text-label-lg font-bold text-on-surface flex items-center gap-2">Título do Módulo <span class="text-secondary">*</span></label>
                             <input type="text" formControlName="title"
-                                class="bg-surface-container-lowest text-on-surface border-none p-4 focus:ring-2 focus:ring-primary outline-none transition-all rounded"
+                                class="bg-surface-container-lowest text-on-surface border-none p-4 focus:ring-2 focus:ring-primary outline-none transition rounded"
                                 placeholder="Ex: Introdução ao Angular">
                             @if (form.get('title')?.invalid && form.get('title')?.touched) {
                             <p class="text-error text-label-sm mt-1 animate-fade-in">
@@ -38,7 +38,7 @@
                     <div class="flex flex-col gap-2">
                         <label class="text-label-lg font-bold text-on-surface flex items-center gap-2">Descrição <span class="text-secondary">*</span></label>
                         <textarea formControlName="description" rows="4"
-                            class="bg-surface-container-lowest text-on-surface border-none p-4 focus:ring-2 focus:ring-primary outline-none resize-none transition-all rounded"
+                            class="bg-surface-container-lowest text-on-surface border-none p-4 focus:ring-2 focus:ring-primary outline-none resize-none transition rounded"
                             placeholder="Uma breve descrição do que os alunos aprenderão neste módulo..."></textarea>
                         @if (form.get('description')?.invalid && form.get('description')?.touched) {
                         <p class="text-error text-label-sm mt-1 animate-fade-in">
@@ -61,10 +61,10 @@
                             <div class="flex bg-surface-container-lowest p-1 w-max shrink-0">
                                 <button type="button" (click)="setVisualMode('image')"
                                     [class]="visualMode() === 'image' ? 'bg-surface-container-highest text-primary shadow-sm' : 'text-on-surface-variant hover:text-on-surface'"
-                                    class="px-6 py-2 rounded-md text-label-md transition-all">Imagem</button>
+                                    class="px-6 py-2 rounded-md text-label-md transition">Imagem</button>
                                 <button type="button" (click)="setVisualMode('icon')"
                                     [class]="visualMode() === 'icon' ? 'bg-surface-container-highest text-primary shadow-sm' : 'text-on-surface-variant hover:text-on-surface'"
-                                    class="px-6 py-2 rounded-md text-label-md transition-all">Ícone</button>
+                                    class="px-6 py-2 rounded-md text-label-md transition">Ícone</button>
                             </div>
 
                             <!-- Inputs -->
@@ -105,7 +105,7 @@
                             }
 
                             <button type="button" (click)="saveModule()" [disabled]="isSaving()"
-                                class="w-full sm:w-auto py-4 px-8 bg-gradient-to-r from-secondary to-secondary-dim text-on-secondary font-headline font-extrabold rounded-xl shadow-lg shadow-primary/20 active:scale-95 hover:scale-[1.02] transition-all disabled:opacity-50 disabled:cursor-not-allowed">
+                                class="w-full sm:w-auto py-4 px-8 bg-gradient-to-r from-secondary to-secondary-dim text-on-secondary font-headline font-extrabold rounded-xl shadow-lg shadow-primary/20 active:scale-95 hover:scale-[1.02] transition disabled:opacity-50 disabled:cursor-not-allowed">
                                 @if (isSaving()) {
                                 <span class="flex items-center justify-center gap-2">
                                     <div
@@ -130,7 +130,7 @@
                 class="bg-surface-container-low p-6 rounded-2xl flex items-center justify-center min-h-[300px] h-full shadow-lg">
                 <!-- Module Card -->
                 <div
-                    class="w-full relative overflow-hidden bg-surface-container rounded-2xl p-6 transition-all hover:bg-surface-container-high hover:-translate-y-1 hover:shadow-xl hover:shadow-primary/5">
+                    class="w-full relative overflow-hidden bg-surface-container rounded-2xl p-6 transition hover:bg-surface-container-high hover:-translate-y-1 hover:shadow-xl hover:shadow-primary/5">
                     <div class="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
                         <div class="flex gap-5">
                             <div
@@ -154,7 +154,7 @@
                                     {{ previewModule().description }}</p>
                                 <div class="flex items-center gap-3">
                                     <div class="w-48 h-2 bg-surface-container-highest rounded-full overflow-hidden">
-                                        <div class="h-full bg-gradient-to-r from-primary to-tertiary shadow-[0_0_10px_rgba(63,194,251,0.5)] transition-all duration-500"
+                                        <div class="h-full bg-gradient-to-r from-primary to-tertiary shadow-[0_0_10px_rgba(63,194,251,0.5)] transition duration-500"
                                             style="width: 0%"></div>
                                     </div>
                                     <span class="font-label text-xs text-on-surface-variant">Não iniciado</span>
@@ -163,7 +163,7 @@
                         </div>
 
                         <button type="button"
-                            class="px-8 py-3 bg-gradient-to-r from-primary to-primary-container text-on-primary-container font-headline font-bold rounded-xl glow-primary hover:scale-105 active:scale-95 transition-all opacity-50 cursor-not-allowed">
+                            class="px-8 py-3 bg-gradient-to-r from-primary to-primary-container text-on-primary-container font-headline font-bold rounded-xl glow-primary hover:scale-105 active:scale-95 transition opacity-50 cursor-not-allowed">
                             Iniciar
                         </button>
                     </div>
@@ -178,7 +178,7 @@
         <div class="flex items-center justify-between">
             <h2 class="text-headline-sm font-headline text-on-surface font-bold">Submódulos</h2>
             <button type="button" (click)="createSubModule()"
-                class="bg-surface-container-highest hover:bg-surface-container-highest/80 text-primary font-bold py-3 px-6 rounded-xl transition-all flex items-center gap-2 shadow-sm hover:scale-[1.02]">
+                class="bg-surface-container-highest hover:bg-surface-container-highest/80 text-primary font-bold py-3 px-6 rounded-xl transition flex items-center gap-2 shadow-sm hover:scale-[1.02]">
                 <span class="material-symbols-rounded text-sm">add</span>
                 Adicionar Submódulo
             </button>
@@ -201,7 +201,7 @@
         } @else {
         <div class="flex flex-col gap-4">
             @for (sm of subModules(); track sm.id) {
-            <div class="flex items-center justify-between bg-surface-container p-4 rounded-xl group hover:bg-surface-container-high transition-all hover:-translate-y-0.5 shadow-sm hover:shadow-md cursor-move"
+            <div class="flex items-center justify-between bg-surface-container p-4 rounded-xl group hover:bg-surface-container-high transition hover:-translate-y-0.5 shadow-sm hover:shadow-md cursor-move"
                 draggable="true" (dragstart)="onDragStart($index)" (dragover)="onDragOver($event, $index)"
                 (drop)="onDrop()" [class.opacity-50]="draggedIndex() === $index">
                 <div class="flex items-center gap-4">
@@ -254,7 +254,7 @@
             <div cdkDropList (cdkDropListDropped)="dropPresentationContent($event)" class="flex flex-col gap-4">
                 @for (content of presentationContents(); track content.id; let i = $index) {
                 <div cdkDrag
-                    class="flex flex-col bg-surface-container rounded-2xl border border-outline-variant/15 overflow-hidden shadow-sm hover:shadow-md transition-all">
+                    class="flex flex-col bg-surface-container rounded-2xl border border-outline-variant/15 overflow-hidden shadow-sm hover:shadow-md transition">
                     <!-- Accordion Header -->
                     <div class="flex items-center justify-between p-4 bg-surface-container hover:bg-surface-bright/50 transition-colors cursor-pointer"
                         (click)="togglePresentationContent(content.id!)">
@@ -308,7 +308,7 @@
                                 </div>
                                 } @else {
                                 <label
-                                    class="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed border-outline-variant/30 hover:border-primary/50 cursor-pointer bg-surface-container-lowest hover:bg-surface-container/20 rounded-xl transition-all gap-2 group">
+                                    class="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed border-outline-variant/30 hover:border-primary/50 cursor-pointer bg-surface-container-lowest hover:bg-surface-container/20 rounded-xl transition gap-2 group">
                                     <span
                                         class="material-symbols-rounded text-3xl text-on-surface-variant group-hover:text-primary transition-colors">cloud_upload</span>
                                     <span
@@ -384,7 +384,7 @@
                     }
 
                     <button type="button" (click)="savePresentation()" [disabled]="isSavingPresentation()"
-                        class="w-full sm:w-auto py-4 px-8 bg-gradient-to-r from-primary to-primary-container text-on-primary-container font-headline font-bold rounded-xl glow-primary hover:scale-[1.02] active:scale-95 transition-all disabled:opacity-50 disabled:cursor-not-allowed">
+                        class="w-full sm:w-auto py-4 px-8 bg-gradient-to-r from-primary to-primary-container text-on-primary-container font-headline font-bold rounded-xl glow-primary hover:scale-[1.02] active:scale-95 transition disabled:opacity-50 disabled:cursor-not-allowed">
                         @if (isSavingPresentation()) {
                         <span class="flex items-center justify-center gap-2">
                             <div
