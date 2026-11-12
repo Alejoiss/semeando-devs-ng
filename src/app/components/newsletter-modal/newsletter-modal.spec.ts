@@ -1,7 +1,6 @@
 import { ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
 import { NewsletterModal } from './newsletter-modal';
 import { NewsletterService } from '../../services/newsletter';
-import { provideNoopAnimations } from '@angular/platform-browser/animations';
 
 describe('NewsletterModal', () => {
   let component: NewsletterModal;
@@ -15,7 +14,6 @@ describe('NewsletterModal', () => {
       imports: [NewsletterModal],
       providers: [
         { provide: NewsletterService, useValue: mockNewsletterService },
-        provideNoopAnimations()
       ]
     })
     .compileComponents();

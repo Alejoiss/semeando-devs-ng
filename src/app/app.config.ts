@@ -5,7 +5,6 @@ import {
     provideBrowserGlobalErrorListeners,
     provideZoneChangeDetection, isDevMode,
 } from '@angular/core';
-import { provideAnimations } from '@angular/platform-browser/animations';
 import { provideRouter } from '@angular/router';
 import { MarkdownModule, MARKED_OPTIONS, MarkedOptions, MarkedRenderer } from 'ngx-markdown';
 import { provideEchartsCore } from 'ngx-echarts';
@@ -42,7 +41,6 @@ export const appConfig: ApplicationConfig = {
         provideZoneChangeDetection({ eventCoalescing: true }),
         provideRouter(routes),
         provideHttpClient(),
-        provideAnimations(),
         importProvidersFrom(MarkdownModule.forRoot()),
         {
             provide: MARKED_OPTIONS,

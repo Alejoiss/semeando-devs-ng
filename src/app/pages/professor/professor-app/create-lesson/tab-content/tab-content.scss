@@ -26,33 +26,10 @@
     }
 }
 
-.success-message {
-    animation: fadeInOut 3s forwards;
-}
-
-@keyframes fadeInOut {
-    0% {
-        opacity: 0;
-        transform: translateX(10px);
-    }
-    10% {
-        opacity: 1;
-        transform: translateX(0);
-    }
-    90% {
-        opacity: 1;
-        transform: translateX(0);
-    }
-    100% {
-        opacity: 0;
-        transform: translateX(-10px);
-    }
-}
-
 .ai-feedback-container {
     background: rgba(15, 25, 48, 0.4);
     backdrop-filter: blur(16px);
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: background-color var(--motion-base) var(--ease-standard);
     animation: slideDown 0.4s ease-out forwards;
 }
 

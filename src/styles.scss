@@ -12,6 +12,13 @@
         font-family: "Inter", sans-serif;
         background-color: #060e20;
         color: #cae1fc;
+
+        --motion-fast: 150ms;
+        --motion-base: 300ms;
+        --motion-slow: 500ms;
+        --ease-standard: cubic-bezier(0.4, 0, 0.2, 1);
+        --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+        --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
     }
 
     body {
@@ -86,19 +93,81 @@ pre[class*=language-] {
 
 @layer utilities {
     .animate-fade-in {
-        animation: sd-fade-in 0.3s cubic-bezier(0.4, 0, 0.2, 1) both;
+        animation: sd-fade-in var(--motion-base) var(--ease-standard) both;
     }
 
     .animate-shake {
         animation: sd-shake 0.4s ease-in-out;
     }
 
-    @media (prefers-reduced-motion: reduce) {
-        .animate-fade-in,
-        .animate-shake {
-            animation: none;
+    .success-message {
+        animation: sd-toast 3s forwards;
+    }
+
+    .sd-overlay-enter {
+        animation: sd-overlay-in var(--motion-base) var(--ease-standard) both;
+    }
+
+    .sd-overlay-leave {
+        animation: sd-overlay-out var(--motion-base) var(--ease-standard) forwards;
+
+        > .relative {
+            animation: sd-modal-out var(--motion-base) var(--ease-out) forwards;
         }
     }
+
+    .sd-modal-enter {
+        animation: sd-modal-in 400ms var(--ease-out) both;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+    }
+
+    .animate-spin {
+        animation-duration: 1.5s !important;
+        animation-iteration-count: infinite !important;
+    }
+
+    .success-message {
+        animation-name: sd-toast-fade;
+        animation-duration: 3s !important;
+    }
+}
+
+@keyframes sd-toast {
+    0% { opacity: 0; transform: translateX(10px); }
+    10%, 90% { opacity: 1; transform: translateX(0); }
+    100% { opacity: 0; transform: translateX(-10px); }
+}
+
+@keyframes sd-toast-fade {
+    0% { opacity: 0; }
+    10%, 90% { opacity: 1; }
+    100% { opacity: 0; }
+}
+
+@keyframes sd-overlay-in {
+    from { opacity: 0; }
+}
+
+@keyframes sd-overlay-out {
+    to { opacity: 0; }
+}
+
+@keyframes sd-modal-in {
+    from { opacity: 0; transform: scale(0.9) translateY(20px); }
+}
+
+@keyframes sd-modal-out {
+    to { opacity: 0; transform: scale(0.9) translateY(20px); }
 }
 
 @keyframes sd-fade-in {
