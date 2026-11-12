@@ -10,3 +10,9 @@ grant insert, update, delete on
   public.user_submodules
 to authenticated;
 -- Para desfazer: revoke insert, update, delete on <as mesmas tabelas> from authenticated;
+
+-- As edge functions (ex.: complete-quiz) acessam o banco com `service_role`, que no banco local também nasce sem permissão
+-- nas tabelas públicas ("permission denied for table lessons"). Em produção ele tem acesso total.
+grant all on all tables in schema public to service_role;
+grant all on all sequences in schema public to service_role;
+-- Para desfazer: revoke all on all tables in schema public from service_role; (e conceda de volta o que `profiles` já tinha).

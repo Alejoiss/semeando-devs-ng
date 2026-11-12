@@ -28,12 +28,20 @@
                 </div>
                 <div class="flex gap-3 text-xs font-label uppercase tracking-widest">
                     <span>Questão: <strong>{{ progress() }} / {{ totalQuestions() }}</strong></span>
-                    <span>Corretas: <strong class="text-tertiary">{{ correctCount() }}</strong></span>
-                    <span>Erradas: <strong class="text-error">{{ wrongCount() }}</strong></span>
+                    <span>Corretas: @for (value of [correctCount()]; track value) {<strong class="inline-block text-tertiary" animate.enter="quiz-count-pulse">{{ value }}</strong>}</span>
+                    <span>Erradas: @for (value of [wrongCount()]; track value) {<strong class="inline-block text-error" animate.enter="quiz-count-pulse">{{ value }}</strong>}</span>
                 </div>
             </div>
 
+            <div class="mb-6 h-1.5 w-full overflow-hidden rounded-full bg-surface-container-highest" role="progressbar"
+                aria-label="Progresso do quiz" aria-valuemin="0" [attr.aria-valuenow]="answeredCount()" [attr.aria-valuemax]="totalQuestions()">
+                <div class="h-full rounded-full bg-gradient-to-r from-primary via-secondary to-tertiary transition-[width] duration-500 ease-out"
+                    [style.width.%]="progressPercent()"></div>
+            </div>
+
             <div class="glass-card border border-outline-variant/20 rounded-xl p-6">
+                @for (question of [currentQuestion()]; track question?.id) {
+                <div animate.enter="quiz-question-enter">
                 <p class="text-primary font-label uppercase tracking-widest text-xs mb-2">Pergunta {{ progress() }}</p>
 
                 <div class="mb-6 space-y-4">
@@ -53,7 +61,10 @@
                 <div class="grid grid-cols-1 gap-3">
                     @for (option of currentAnswers(); track option.id; let i = $index) {
                         <button
-                            class="text-left p-4 rounded-lg border border-outline-variant/20 bg-surface-container-high transition duration-200"
+                            class="quiz-option flex items-center text-left p-4 rounded-lg border border-outline-variant/20 bg-surface-container-high transition duration-200 active:scale-[0.99]"
+                            [style.--i]="i"
+                            [class.quiz-option--correct]="confirmed() && option.isCorrect && selectedOptionId() === option.id"
+                            [class.quiz-option--wrong]="confirmed() && selectedOptionId() === option.id && !option.isCorrect"
                             [class.!border-primary]="selectedOptionId() === option.id && !confirmed()"
                             [class.!border-tertiary]="confirmed() && option.isCorrect && selectedOptionId() === option.id"
                             [class.!border-error]="confirmed() && selectedOptionId() === option.id && !option.isCorrect"
@@ -61,14 +72,22 @@
                             [class.!bg-tertiary/20]="confirmed() && option.isCorrect && selectedOptionId() === option.id"
                             [class.!bg-error/20]="confirmed() && selectedOptionId() === option.id && !option.isCorrect"
                             (click)="answer(option.id)">
-                            <span class="font-headline font-bold">{{ ['A','B','C','D','E'][i] }}.</span>
+                            <span class="font-headline font-bold transition-colors duration-200"
+                                [class.text-primary]="selectedOptionId() === option.id && !confirmed()">{{ ['A','B','C','D','E'][i] }}.</span>
                             <span class="ml-2">{{ option.text }}</span>
+                            @if (confirmed() && selectedOptionId() === option.id) {
+                                <span class="material-symbols-outlined ml-auto pl-3" aria-hidden="true" animate.enter="quiz-result-icon"
+                                    [class.text-tertiary]="option.isCorrect" [class.text-error]="!option.isCorrect"
+                                    style="font-variation-settings: 'FILL' 1;">{{ option.isCorrect ? 'check_circle' : 'cancel' }}</span>
+                            }
                         </button>
                     }
                 </div>
+                </div>
+                }
 
                 @if (showHintConfirm()) {
-                    <div class="mt-4 p-4 rounded-lg bg-surface-container-highest border border-secondary/30 flex flex-col items-center gap-4 animate-fade-in">
+                    <div class="quiz-collapse" animate.enter="quiz-collapse-enter"><div class="min-h-0 overflow-hidden"><div class="pt-4"><div class="p-4 rounded-lg bg-surface-container-highest border border-secondary/30 flex flex-col items-center gap-4">
                         <p class="text-sm text-on-surface text-center">Gastar <span class="text-tertiary font-bold">50 seeds</span> para ver uma dica?</p>
                         <div class="flex gap-4">
                             <button (click)="confirmHint()" class="px-4 py-2 bg-secondary text-on-secondary rounded-lg font-bold text-sm hover:scale-105 transition-transform">
@@ -78,32 +97,34 @@
                                 Cancelar
                             </button>
                         </div>
-                    </div>
+                    </div></div></div></div>
                 }
 
                 @if (hintVisible()) {
-                    <div class="mt-4 p-4 rounded-lg bg-surface-container-highest border-l-4 border-secondary animate-fade-in">
+                    <div class="quiz-collapse" animate.enter="quiz-collapse-enter"><div class="min-h-0 overflow-hidden"><div class="pt-4"><div class="p-4 rounded-lg bg-surface-container-highest border-l-4 border-secondary">
                         <div class="flex items-center gap-2 mb-2 text-secondary">
                             <span class="material-symbols-outlined text-sm">lightbulb</span>
                             <span class="text-xs font-label uppercase font-bold tracking-widest">Dica</span>
                         </div>
                         <p class="text-on-surface-variant text-sm">{{ correctReason() }}</p>
-                    </div>
+                    </div></div></div></div>
                 }
 
                 @if (confirmed() && selectedAnswer()?.reason) {
                     @if ((hintVisible() && !selectedAnswer()?.isCorrect) || !hintVisible()) {
-                            <div class="mt-6 p-4 rounded-lg bg-surface-container-highest border-l-4"
+                            <div class="quiz-collapse" animate.enter="quiz-collapse-enter"><div class="min-h-0 overflow-hidden"><div class="pt-6"><div class="p-4 rounded-lg bg-surface-container-highest border-l-4"
                             [class.border-tertiary]="selectedAnswer()?.isCorrect"
                             [class.border-error]="!selectedAnswer()?.isCorrect">
                             <p class="text-sm font-bold mb-1" [class.text-tertiary]="selectedAnswer()?.isCorrect" [class.text-error]="!selectedAnswer()?.isCorrect">
                                 {{ selectedAnswer()?.isCorrect ? 'Correto!' : 'Incorreto' }}
                             </p>
                             <p class="text-on-surface-variant text-sm">{{ selectedAnswer()?.reason }}</p>
-                        </div>
+                        </div></div></div></div>
                     }
                 }
             </div>
+
+            <p class="sr-only" role="status">@if (confirmed() && selectedAnswer()) {{{ selectedAnswer()?.isCorrect ? 'Resposta correta.' : 'Resposta incorreta.' }}}</p>
 
             <div class="mt-6 flex flex-col md:flex-row justify-between items-center gap-4">
                 <div class="flex flex-col gap-2">
@@ -125,7 +146,7 @@
                         </button>
                     }
                 </div>
-                <button class="px-5 py-2 rounded-lg font-bold text-on-primary-container inline-flex items-center justify-center gap-2" [class.bg-primary]="!confirmed()"
+                <button class="px-5 py-2 rounded-lg font-bold text-on-primary-container inline-flex items-center justify-center gap-2 transition-colors duration-200" [class.bg-primary]="!confirmed()"
                     [class.bg-tertiary]="confirmed()" [class.cursor-not-allowed]="(!confirmed() && selectedOptionId() === null) || isConfirming()"
                     [class.opacity-70]="isConfirming()"
                     [disabled]="(!confirmed() && selectedOptionId() === null) || isConfirming()" (click)="confirmed() ? next() : confirmAnswer()">

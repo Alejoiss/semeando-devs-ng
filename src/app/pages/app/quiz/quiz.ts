@@ -87,6 +87,11 @@ export class Quiz implements OnInit {
 
     protected readonly progress = computed(() => this.currentIndex() + 1);
     protected readonly totalQuestions = computed(() => this.questions().length);
+    protected readonly answeredCount = computed(() => this.results().length);
+    protected readonly progressPercent = computed(() => {
+        const total = this.totalQuestions();
+        return total > 0 ? Math.round((this.answeredCount() / total) * 100) : 0;
+    });
 
     protected readonly correctCount = computed(() => this.results().filter(r => r.correct).length);
     protected readonly wrongCount = computed(() => this.results().filter(r => !r.correct).length);

@@ -16,6 +16,7 @@ Tudo foi verificado por teste automatizado, build e navegador, mas o checklist c
 | 7 | **LinkedIn** | Ícone no rodapé e na barra lateral, com `aria-label`. |
 | 8 | **Voltar ao site** | Logo clicável e link "Voltar ao site" em `/auth/login` e `/auth/register`. |
 | 9 | **Dados de teste locais** | Scripts em `supabase/dev-seed/` (seção 2). |
+| 10 | **Animações dentro do quiz** | Barra de progresso, transição entre questões com opções em cascata, feedback de acerto (pulso e check) e erro (tremida e X), justificativa/dica que abrem deslizando, pulso nos contadores e anúncio de "Resposta correta/incorreta" para leitor de tela. |
 
 Arquivos novos: `src/app/utils/motion.ts`, `src/app/directives/motion-reveal.ts`, `src/app/components/brand-loader/`, `src/app/pages/landing-page/landing-motion.ts`, `supabase/dev-seed/`.
 
@@ -27,6 +28,8 @@ Arquivos novos: `src/app/utils/motion.ts`, `src/app/directives/motion-reveal.ts`
    docker exec -i supabase_db_semeandodevsapp psql -U postgres < supabase/dev-seed/local-grants.sql
    ```
    Só vale para o banco local e não mexe em migrations. A RLS continua valendo, e `profiles` fica de fora de propósito.
+   - O script também dá acesso às tabelas públicas ao `service_role`, que é o papel das edge functions. Sem isso, o `complete-quiz` falha com `permission denied for table lessons` (visto na aba Network).
+   - Se você já tinha rodado o script antes, rode de novo: ele é idempotente.
 3. **Popular conteúdo de teste** (pode repetir, é idempotente):
    ```bash
    docker exec -i supabase_db_semeandodevsapp psql -U postgres < supabase/dev-seed/seed-test-content.sql
@@ -36,6 +39,8 @@ Arquivos novos: `src/app/utils/motion.ts`, `src/app/directives/motion-reveal.ts`
 5. **Edge functions** (só para concluir quiz): `npx supabase functions serve --env-file .env`.
    - O `debug.sh` usa `--inspect-mode brk`, que pausa a execução esperando um debugger. Rode sem essa flag.
    - Sem as functions no ar, o resultado do quiz fica sem XP/seeds (`complete-quiz` responde 503).
+   - Sintoma: você termina o quiz, a tela de resultado aparece, mas XP, seeds e progresso **não mudam**, e as tentativas ficam sem conclusão em `user_quizzes` (`completed = false`). O app só registra o erro no console. Para checar: `curl -s -o /dev/null -w "%{http_code}" -X OPTIONS http://127.0.0.1:54321/functions/v1/complete-quiz` deve dar `200`, não `503`.
+   - O processo precisa continuar rodando em um terminal seu enquanto você testa.
 
 ### O que o seed cria
 
@@ -100,6 +105,16 @@ Forçar o carregamento: DevTools → Network → "Slow 3G" e recarregar cada tel
 - [ ] O quiz tem 10 questões e a justificativa aparece ao confirmar a resposta
 - [ ] **Aprovado (≥ 7/10):** a tela de resultado mostra score, precisão, XP e seeds **contando de 0 até o valor**, o anel se preenchendo, os cards em cascata e confete
 - [ ] **Reprovado (< 7/10):** a tela "Quase lá" mostra o anel e a contagem, sem confete
+- [ ] **Barra de progresso** no topo do card enche a cada questão respondida (10% por questão) e acompanha o "Questão X / 10"
+- [ ] **Trocar de questão:** a pergunta entra deslizando da direita e as 4 opções aparecem em cascata, sem travar o clique
+- [ ] **Selecionar uma opção** destaca a borda, o fundo e a letra (A/B/C/D). Vale também para as teclas A–D e 1–4
+- [ ] **Resposta certa:** a opção dá um pulso verde e mostra um check; "Corretas" faz um pulso e sobe 1
+- [ ] **Resposta errada:** a opção treme e mostra um X vermelho; "Erradas" faz um pulso e sobe 1. A resposta certa **não** é revelada (o servidor não a expõe)
+- [ ] **Justificativa** abre deslizando (sem "pulo" de layout) e a distância até as opções é a mesma nos dois casos
+- [ ] **Pedir dica** (precisa de 50 seeds): a confirmação e a dica também abrem deslizando
+- [ ] O botão muda de "Confirmar resposta" para "Próxima questão" com troca de cor suave
+- [ ] Leitor de tela (ou a árvore de acessibilidade) anuncia "Resposta correta." / "Resposta incorreta." ao confirmar
+- [ ] Com `prefers-reduced-motion`, nada se move: só as cores mudam
 - [ ] Refazer o quiz repete a animação
 - [ ] Os valores finais batem com o que foi ganho (nenhum fica em 0 ou parado no meio)
 - [ ] Lição de **revisão** (Primeiros passos, lição 3) sorteia perguntas das lições anteriores
@@ -145,6 +160,7 @@ Forçar o carregamento: DevTools → Network → "Slow 3G" e recarregar cada tel
 
 ## 4. Pontos em aberto
 
+- Abrir a página de um quiz já cria uma tentativa em `user_quizzes` (sem conclusão). Recarregar várias vezes deixa tentativas vazias, e isso é comportamento do app, não da animação.
 - As **22 falhas de teste** são anteriores a esta rodada e ainda não foram investigadas.
 - O `border-t` do rodapé e da barra lateral segue o padrão antigo e contraria a regra de "sem bordas de 1px" do `AGENTS.md`. Não foi mexido.
 - Os **erros de console** do Lighthouse na landing (build local) parecem vir de chamadas ao Supabase de produção a partir de `localhost`. Não foi investigado.
