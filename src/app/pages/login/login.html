@@ -11,6 +11,18 @@
 
     <main class="relative z-10 flex-grow flex items-center justify-center px-6 py-12">
         <div class="w-full max-w-[480px]">
+            <div class="flex flex-col items-center gap-4 mb-8">
+                <a routerLink="/" aria-label="Voltar ao site principal da Semeando Devs"
+                    class="rounded focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary">
+                    <img src="assets/logos/semeando.devs.horizontal.darkbg.small.svg" alt="Semeando Devs" class="h-10 w-auto" />
+                </a>
+                <a routerLink="/"
+                    class="inline-flex items-center gap-1.5 text-sm font-medium text-on-surface-variant hover:text-primary transition-colors rounded focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary">
+                    <span class="material-symbols-outlined text-base" aria-hidden="true">arrow_back</span>
+                    Voltar ao site
+                </a>
+            </div>
+
             <div class="text-center mb-10">
                 <div
                     class="inline-flex items-center justify-center p-3 mb-6 bg-surface-container rounded-2xl shadow-xl shadow-primary/5 border border-outline-variant/10">
@@ -36,7 +48,7 @@
                             <span
                                 class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-outline-variant">mail</span>
                             <input id="email" type="email" formControlName="email" placeholder="seu@email.com"
-                                class="w-full bg-surface-container-lowest border-none rounded py-4 pl-12 pr-4 text-on-surface placeholder:text-outline focus:ring-2 focus:ring-primary/50 transition-all" />
+                                class="w-full bg-surface-container-lowest border-none rounded py-4 pl-12 pr-4 text-on-surface placeholder:text-outline focus:ring-2 focus:ring-primary/50 transition" />
                         </div>
                         @if (submitted && f.email.invalid) {
                             <p class="text-error text-sm mt-1">
@@ -59,7 +71,7 @@
                             <span
                                 class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-outline-variant">lock</span>
                             <input #pwd1 id="password" type="password" formControlName="password" placeholder="••••••••"
-                                class="w-full bg-surface-container-lowest border-none rounded py-4 pl-12 pr-14 text-on-surface placeholder:text-outline focus:ring-2 focus:ring-primary/50 transition-all" />
+                                class="w-full bg-surface-container-lowest border-none rounded py-4 pl-12 pr-14 text-on-surface placeholder:text-outline focus:ring-2 focus:ring-primary/50 transition" />
                             <app-password-toggle [input]="pwd1" />
                         </div>
                         @if (submitted && f.password.invalid) {
@@ -75,7 +87,7 @@
                     </div>
 
                     <button type="submit"
-                        class="w-full group relative flex items-center justify-center py-4 bg-gradient-to-r from-primary to-primary-container text-on-primary font-headline font-bold rounded overflow-hidden hover:shadow-[0_0_20px_rgba(63,194,251,0.4)] active:scale-[0.98] transition-all"
+                        class="w-full group relative flex items-center justify-center py-4 bg-gradient-to-r from-primary to-primary-container text-on-primary font-headline font-bold rounded overflow-hidden hover:shadow-[0_0_20px_rgba(63,194,251,0.4)] active:scale-[0.98] transition"
                         [disabled]="busy">
                         <span class="relative z-10 flex items-center gap-2">
                             {{ busy ? 'Validando...' : 'Entrar' }}
@@ -94,7 +106,7 @@
 
                             @if (isEmailUnverified) {
                                 <button type="button" (click)="resendEmail()" [disabled]="resendBusy"
-                                    class="w-full flex items-center justify-center gap-2 py-3 bg-surface-container-highest text-on-surface font-label font-medium rounded hover:bg-surface-bright transition-all disabled:opacity-50 mt-2">
+                                    class="w-full flex items-center justify-center gap-2 py-3 bg-surface-container-highest text-on-surface font-label font-medium rounded hover:bg-surface-bright transition disabled:opacity-50 mt-2">
                                     <span class="material-symbols-outlined text-xl">mark_email_read</span>
                                     {{ resendBusy ? 'Enviando...' : 'Reenviar e-mail de confirmação' }}
                                 </button>
@@ -121,14 +133,14 @@
 
                 <div class="grid grid-cols-2 gap-4">
                     <button type="button"
-                        class="flex items-center justify-center gap-2 py-3 px-4 bg-surface-container-highest border border-outline-variant/10 rounded text-on-surface font-medium hover:bg-surface-bright transition-all">
+                        class="flex items-center justify-center gap-2 py-3 px-4 bg-surface-container-highest border border-outline-variant/10 rounded text-on-surface font-medium hover:bg-surface-bright transition">
                         <img class="w-5 h-5 invert"
                             src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/github/github-original.svg"
                             alt="GitHub" />
                         <span class="font-label text-sm">GitHub</span>
                     </button>
                     <button type="button"
-                        class="flex items-center justify-center gap-2 py-3 px-4 bg-surface-container-highest border border-outline-variant/10 rounded text-on-surface font-medium hover:bg-surface-bright transition-all">
+                        class="flex items-center justify-center gap-2 py-3 px-4 bg-surface-container-highest border border-outline-variant/10 rounded text-on-surface font-medium hover:bg-surface-bright transition">
                         <img class="w-5 h-5"
                             src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/google/google-original.svg"
                             alt="Google" />
