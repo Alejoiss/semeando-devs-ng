@@ -16,7 +16,7 @@
 }
 
 .btn-primary {
-    @apply relative overflow-hidden transition-all duration-300 transform hover:-translate-y-1 hover:scale-[1.02];
+    @apply relative overflow-hidden transition duration-300 transform hover:-translate-y-1 hover:scale-[1.02];
     background: linear-gradient(135deg, #3fc2fb, #1aafe7);
     color: #002e40;
     box-shadow: 0 8px 24px rgba(63, 194, 251, 0.2);
@@ -29,7 +29,7 @@
 }
 
 .btn-secondary {
-    @apply relative overflow-hidden transition-all duration-300 transform hover:-translate-y-1 hover:scale-[1.02];
+    @apply relative overflow-hidden transition duration-300 transform hover:-translate-y-1 hover:scale-[1.02];
     background: rgba(15, 25, 48, 0.6);
     backdrop-filter: blur(8px);
     color: #3fc2fb;
@@ -47,7 +47,7 @@
 }
 
 .glass-card {
-    @apply bg-surface-bright/60 backdrop-blur-xl transition-all duration-500;
+    @apply bg-surface-bright/60 backdrop-blur-xl transition duration-500;
 }
 
 .section-title {
@@ -55,10 +55,18 @@
     span {
         @apply text-secondary text-sm font-label tracking-[0.3em] uppercase block mb-4;
     }
+
+    p {
+        @apply font-body text-base md:text-lg font-normal leading-relaxed tracking-normal;
+    }
+}
+
+.rank-list {
+    mask-image: linear-gradient(to bottom, #000 55%, rgba(0, 0, 0, 0.35));
 }
 
 .track-card {
-    @apply bg-surface-container-high rounded-[2rem] p-8 transition-all duration-500 hover:bg-surface-bright hover:scale-[1.02];
+    @apply bg-surface-container-high rounded-[2rem] p-8 transition duration-500 hover:bg-surface-bright hover:scale-[1.02];
 
     .card-icon {
         @apply w-16 h-16 rounded-xl flex items-center justify-center mb-6;
@@ -76,7 +84,7 @@
 .progress-track {
     @apply h-2 w-full bg-surface-container-lowest rounded-full overflow-hidden;
     .progress-fill {
-        @apply h-full transition-all duration-1000 ease-out;
+        @apply h-full transition-[width] duration-1000 ease-out;
         box-shadow: 0 0 12px currentColor;
     }
 }
@@ -99,3 +107,65 @@
     }
 }
 
+
+.hero-orb {
+    position: absolute;
+    z-index: 0;
+    border-radius: 9999px;
+    filter: blur(90px);
+    pointer-events: none;
+    will-change: transform;
+
+    &--primary {
+        top: 4rem;
+        left: -6%;
+        width: 22rem;
+        height: 22rem;
+        background: rgba(63, 194, 251, 0.22);
+    }
+
+    &--secondary {
+        top: 26rem;
+        right: -6%;
+        width: 20rem;
+        height: 20rem;
+        background: rgba(254, 105, 172, 0.16);
+    }
+}
+
+.track-card {
+    position: relative;
+
+    &::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        border-radius: inherit;
+        background: radial-gradient(360px circle at var(--mx, 50%) var(--my, 50%), rgba(63, 194, 251, 0.12), transparent 60%);
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity var(--motion-base) var(--ease-standard);
+    }
+
+    &:hover::before {
+        opacity: 1;
+    }
+}
+
+.faq-panel {
+    display: grid;
+    grid-template-rows: 0fr;
+    visibility: hidden;
+    transition: grid-template-rows var(--motion-base) var(--ease-standard), visibility 0s linear var(--motion-base);
+
+    &.is-open {
+        grid-template-rows: 1fr;
+        visibility: visible;
+        transition: grid-template-rows var(--motion-base) var(--ease-standard), visibility 0s;
+    }
+
+    > .faq-panel-inner {
+        min-height: 0;
+        overflow: hidden;
+    }
+}

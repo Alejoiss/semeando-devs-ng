@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, signal, inject } from '@angular/core';
+import { afterNextRender, ChangeDetectionStrategy, Component, DestroyRef, ElementRef, signal, inject } from '@angular/core';
 import { ActivatedRoute, RouterModule } from '@angular/router';
 
 import { MarkdownModule } from 'ngx-markdown';
@@ -7,11 +7,14 @@ import { Footer } from '../../components/footer/footer';
 import { Header } from '../../components/header/header';
 import { CommonModule } from '@angular/common';
 import { ShowcaseModule } from '../../services/public-catalog/public-catalog';
+import { BrandLoader } from '../../components/brand-loader/brand-loader';
+import { prefersReducedMotion } from '../../utils/motion';
+import type { LandingMotion } from './landing-motion';
 
 @Component({
     selector: 'app-landing-page',
     standalone: true,
-    imports: [CommonModule, RouterModule, Footer, Header, MarkdownModule],
+    imports: [CommonModule, RouterModule, Footer, Header, MarkdownModule, BrandLoader],
     templateUrl: './landing-page.html',
     styleUrls: ['./landing-page.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
@@ -19,6 +22,7 @@ import { ShowcaseModule } from '../../services/public-catalog/public-catalog';
 export class LandingPage {
     protected readonly modules = signal<ShowcaseModule[]>(inject(ActivatedRoute).snapshot.data['modules'] ?? []);
     protected readonly activeMethodology = signal<'teoria' | 'revisao' | 'desafio'>('teoria');
+    private motion?: LandingMotion;
 
     protected readonly methodologyImages = {
         'teoria': 'assets/screens/teoria_e_quiz.png',
@@ -92,8 +96,33 @@ export class LandingPage {
         },
     ]);
 
+    constructor() {
+        const root = inject<ElementRef<HTMLElement>>(ElementRef).nativeElement;
+        let destroyed = false;
+        inject(DestroyRef).onDestroy(() => {
+            destroyed = true;
+            this.motion?.destroy();
+        });
+
+        afterNextRender(async () => {
+            if (prefersReducedMotion()) return;
+            const { initLandingMotion } = await import('./landing-motion');
+            if (destroyed) return;
+            try {
+                this.motion = initLandingMotion(root, Object.values(this.methodologyImages));
+            } catch (error) {
+                console.error('[LandingPage] animações desativadas:', error);
+            }
+        });
+    }
+
     protected selectMethodology(type: 'teoria' | 'revisao' | 'desafio') {
-        this.activeMethodology.set(type);
+        if (type === this.activeMethodology()) return;
+        if (this.motion) {
+            this.motion.swapMethodology(() => this.activeMethodology.set(type));
+        } else {
+            this.activeMethodology.set(type);
+        }
     }
 
     protected toggleFaq(index: number) {

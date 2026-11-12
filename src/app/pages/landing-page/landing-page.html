@@ -1,24 +1,28 @@
 <div class="landing-page bg-background text-on-background antialiased selection:bg-primary/30">
+    <div data-scroll-progress aria-hidden="true"
+        class="fixed top-0 left-0 z-[60] h-[3px] w-full origin-left scale-x-0 bg-gradient-to-r from-primary via-secondary to-tertiary pointer-events-none"></div>
     <app-header></app-header>
 
     <main class="pt-24">
         <!-- Hero Section -->
         <section id="hero" class="relative py-24 md:py-40 px-6 text-center overflow-hidden">
             <div class="hero-backdrop absolute inset-0 -z-10 opacity-50"></div>
+            <div class="hero-orb hero-orb--primary" data-orb aria-hidden="true"></div>
+            <div class="hero-orb hero-orb--secondary" data-orb aria-hidden="true"></div>
             <div class="max-w-4xl mx-auto space-y-8 relative z-10">
-                <div
+                <div data-hero="badge"
                     class="inline-block px-4 py-1.5 rounded-full bg-primary/10 border border-primary/20 text-primary text-xs font-bold tracking-widest uppercase mb-4">
                     Plataforma de aprendizado gamificada
                 </div>
-                <h1 class="font-headline text-4xl md:text-7xl font-extrabold leading-tight tracking-tighter">
+                <h1 data-hero="title" class="font-headline text-4xl md:text-7xl font-extrabold leading-tight tracking-tighter">
                     Semeie seu futuro no <br class="hidden md:block">
                     <span class="gradient-text">Desenvolvimento Web</span>
                 </h1>
-                <p class="text-on-surface-variant text-lg md:text-xl max-w-2xl mx-auto leading-relaxed">
+                <p data-hero="text" class="text-on-surface-variant text-lg md:text-xl max-w-2xl mx-auto leading-relaxed">
                     Transforme o aprendizado de código em uma jornada épica. Domine as tecnologias mais quentes do
                     mercado com desafios práticos e feedback de IA em tempo real.
                 </p>
-                <div class="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4">
+                <div data-hero="actions" class="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4">
                     <button routerLink="/auth/login"
                         class="btn-primary w-full sm:w-auto text-lg px-8 py-4 shadow-primary/20">
                         Começar Minha Jornada
@@ -29,17 +33,17 @@
                 </div>
             </div>
 
-            <div class="mt-20 relative max-w-5xl mx-auto px-4">
-                <div class="glass-card rounded-2xl overflow-hidden border border-outline-variant/10 shadow-2xl">
-                    <img src="assets/screens/home.png" alt="Plataforma Semeando Devs"
-                        class="w-full h-auto opacity-90 hover:scale-[1.02] transition-transform duration-700" />
+            <div data-hero="shot" class="mt-20 relative max-w-5xl mx-auto px-4">
+                <div data-hero-card class="glass-card rounded-2xl overflow-hidden border border-outline-variant/10 shadow-2xl">
+                    <img data-hero-img src="assets/screens/home.png" alt="Plataforma Semeando Devs"
+                        class="w-full h-auto opacity-90" />
                 </div>
             </div>
         </section>
 
         <!-- Courses Showcase -->
         <section id="courses" class="py-24 px-6 max-w-7xl mx-auto">
-            <div class="section-title text-center mb-16">
+            <div data-reveal class="section-title text-center mb-16">
                 <span>Sua Jornada Começa Aqui</span>
                 <h2>Módulos de Aprendizado</h2>
                 <p class="text-on-surface-variant max-w-2xl mx-auto">
@@ -50,7 +54,7 @@
 
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                 @for(module of modules(); track module.id) {
-                <article class="track-card transition-all" [class.opacity-60]="module.inRevision"
+                <article data-reveal class="track-card transition"
                     [class.grayscale-[0.5]]="module.inRevision" [class.hover:grayscale-0]="module.inRevision">
 
                     @if (module.avatar) {
@@ -100,7 +104,7 @@
         <!-- Methodology Section -->
         <section id="methodology" class="py-24 px-6 bg-surface-container-low">
             <div class="max-w-7xl mx-auto">
-                <div class="section-title text-center mb-16">
+                <div data-reveal class="section-title text-center mb-16">
                     <span>Metodologia Semeando</span>
                     <h2>Aprenda, Revise e Desafie-se</h2>
                     <p class="text-on-surface-variant max-w-2xl mx-auto">
@@ -111,7 +115,7 @@
 
                 <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-20">
                     <!-- Normal Lesson -->
-                    <div (click)="selectMethodology('teoria')"
+                    <div data-reveal (click)="selectMethodology('teoria')"
                         class="p-8 rounded-[2rem] cursor-pointer transition-colors border-2"
                         [class]="activeMethodology() === 'teoria' ? 'bg-surface-container-high border-primary/20' : 'bg-surface-container hover:bg-surface-container-high border-transparent'">
                         <div
@@ -126,7 +130,7 @@
                     </div>
 
                     <!-- Review Lesson -->
-                    <div (click)="selectMethodology('revisao')"
+                    <div data-reveal (click)="selectMethodology('revisao')"
                         class="p-8 rounded-[2rem] cursor-pointer transition-colors border-2"
                         [class]="activeMethodology() === 'revisao' ? 'bg-surface-container-high border-secondary/20' : 'bg-surface-container hover:bg-surface-container-high border-transparent'">
                         <div
@@ -141,7 +145,7 @@
                     </div>
 
                     <!-- Challenge Lesson -->
-                    <div (click)="selectMethodology('desafio')"
+                    <div data-reveal (click)="selectMethodology('desafio')"
                         class="p-8 rounded-[2rem] cursor-pointer transition-colors border-2"
                         [class]="activeMethodology() === 'desafio' ? 'bg-surface-container-high border-tertiary/20' : 'bg-surface-container hover:bg-surface-container-high border-transparent'">
                         <div
@@ -157,9 +161,9 @@
                 </div>
 
                 <!-- Methodology Preview -->
-                <div class="flex justify-center mt-12 w-full max-w-4xl mx-auto">
-                    <img [src]="methodologyImages[activeMethodology()]" alt="Preview da metodologia"
-                        class="w-full h-auto rounded-2xl shadow-2xl border border-outline-variant/10 transition-all duration-300">
+                <div data-reveal class="flex justify-center mt-12 w-full max-w-4xl mx-auto">
+                    <img data-methodology-img [src]="methodologyImages[activeMethodology()]" alt="Preview da metodologia"
+                        class="w-full h-auto rounded-2xl shadow-2xl border border-outline-variant/10">
                 </div>
             </div>
         </section>
@@ -169,7 +173,7 @@
             <div class="max-w-7xl mx-auto">
                 <div class="flex flex-col lg:flex-row items-center gap-16">
                     <div class="flex-1 space-y-8">
-                        <div class="section-title">
+                        <div data-reveal class="section-title">
                             <span>Ecossistema de Progressão</span>
                             <h2>Jogue enquanto aprende</h2>
                             <p class="text-on-surface-variant">
@@ -180,48 +184,48 @@
 
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
                             <!-- XP Card -->
-                            <div class="p-6 rounded-2xl bg-surface-container-high flex gap-4 items-start">
+                            <div data-reveal class="p-6 rounded-2xl bg-surface-container-high flex gap-4 items-start">
                                 <div class="feature-badge">
                                     <span class="material-symbols-outlined">bolt</span>
                                 </div>
                                 <div>
-                                    <h4 class="font-bold mb-1">XP & Evolução</h4>
+                                    <h3 class="font-bold mb-1">XP & Evolução</h3>
                                     <p class="text-xs text-on-surface-variant">Ganhe experiência em cada atividade e
                                         suba de nível no seu próprio ritmo.</p>
                                 </div>
                             </div>
 
                             <!-- Seeds Card -->
-                            <div class="p-6 rounded-2xl bg-surface-container-high flex gap-4 items-start">
+                            <div data-reveal class="p-6 rounded-2xl bg-surface-container-high flex gap-4 items-start">
                                 <div class="feature-badge text-secondary bg-secondary/10">
                                     <span class="material-symbols-outlined">eco</span>
                                 </div>
                                 <div>
-                                    <h4 class="font-bold mb-1">Seeds (Moeda)</h4>
+                                    <h3 class="font-bold mb-1">Seeds (Moeda)</h3>
                                     <p class="text-xs text-on-surface-variant">Acumule sementes e troque por dicas
                                         valiosas nos quizes mais difíceis.</p>
                                 </div>
                             </div>
 
                             <!-- Ranking Card -->
-                            <div class="p-6 rounded-2xl bg-surface-container-high flex gap-4 items-start">
+                            <div data-reveal class="p-6 rounded-2xl bg-surface-container-high flex gap-4 items-start">
                                 <div class="feature-badge text-tertiary bg-tertiary/10">
                                     <span class="material-symbols-outlined">military_tech</span>
                                 </div>
                                 <div>
-                                    <h4 class="font-bold mb-1">Rankings</h4>
+                                    <h3 class="font-bold mb-1">Rankings</h3>
                                     <p class="text-xs text-on-surface-variant">Dispute o topo com outros desenvolvedores
                                         em rankings semanais e mensais.</p>
                                 </div>
                             </div>
 
                             <!-- Achievements Card -->
-                            <div class="p-6 rounded-2xl bg-surface-container-high flex gap-4 items-start">
+                            <div data-reveal class="p-6 rounded-2xl bg-surface-container-high flex gap-4 items-start">
                                 <div class="feature-badge text-secondary bg-secondary/10">
                                     <span class="material-symbols-outlined">workspace_premium</span>
                                 </div>
                                 <div>
-                                    <h4 class="font-bold mb-1">Conquistas</h4>
+                                    <h3 class="font-bold mb-1">Conquistas</h3>
                                     <p class="text-xs text-on-surface-variant">Desbloqueie medalhas exclusivas por
                                         consistência, perfeição e maestria.</p>
                                 </div>
@@ -231,15 +235,12 @@
 
                     <div class="flex-1 relative">
                         <!-- Visual representation of ranking/achievements -->
-                        <div class="relative z-10 space-y-4 max-w-sm mx-auto">
+                        <div data-rank-list class="rank-list relative z-10 space-y-4 max-w-sm mx-auto">
                             @for(user of mockRanking(); track user.position) {
-                            <div class="glass-card p-6 rounded-2xl transition-all duration-500"
+                            <div data-rank-item class="glass-card p-6 rounded-2xl transition duration-500"
                                 [class.shadow-xl]="user.isCurrentUser" [class.hover:-translate-x-4]="user.isCurrentUser"
-                                [class.opacity-80]="!user.isCurrentUser && user.position === 2"
                                 [class.scale-95]="!user.isCurrentUser && user.position === 2"
-                                [class.opacity-60]="!user.isCurrentUser && user.position === 3"
                                 [class.scale-90]="!user.isCurrentUser && user.position === 3"
-                                [class.opacity-40]="!user.isCurrentUser && user.position > 3"
                                 [class.scale-75]="!user.isCurrentUser && user.position > 3">
                                 <div class="flex items-center gap-4">
                                     <div class="w-10 h-10 rounded-full flex items-center justify-center font-bold"
@@ -252,7 +253,7 @@
                                     </div>
                                     <div class="flex-1">
                                         <div class="text-sm font-bold">{{ user.name }}</div>
-                                        <div class="text-[10px] text-on-surface-variant uppercase">{{ user.xp }} XP
+                                        <div data-rank-xp class="text-[10px] text-on-surface-variant uppercase">{{ user.xp }} XP
                                         </div>
                                     </div>
                                 </div>
@@ -275,27 +276,31 @@
         <!-- FAQ Section -->
         <section id="faq" class="py-24 px-6 bg-surface-container-low">
             <div class="max-w-4xl mx-auto">
-                <div class="section-title text-center mb-16">
+                <div data-reveal class="section-title text-center mb-16">
                     <span>Tire suas Dúvidas</span>
                     <h2>Perguntas Frequentes</h2>
                 </div>
                 <div class="space-y-4">
                     @for(item of faqItems(); track $index) {
-                    <div class="glass-card rounded-2xl overflow-hidden cursor-pointer" (click)="toggleFaq($index)">
-                        <div
-                            class="p-6 flex items-center justify-between bg-surface-container hover:bg-surface-container-high transition-colors">
-                            <h3 class="font-bold text-lg">{{ item.question }}</h3>
-                            <span class="material-symbols-outlined text-primary transition-transform duration-300"
-                                [class.rotate-180]="item.expanded">
-                                expand_more
-                            </span>
+                    <div data-reveal class="glass-card rounded-2xl overflow-hidden">
+                        <h3>
+                            <button type="button" (click)="toggleFaq($index)"
+                                [id]="'faq-button-' + $index" [attr.aria-expanded]="item.expanded"
+                                [attr.aria-controls]="'faq-panel-' + $index"
+                                class="w-full p-6 flex items-center justify-between gap-4 text-left bg-surface-container hover:bg-surface-container-high transition-colors">
+                                <span class="font-bold text-lg">{{ item.question }}</span>
+                                <span class="material-symbols-outlined text-primary transition-transform duration-300"
+                                    [class.rotate-180]="item.expanded" aria-hidden="true">
+                                    expand_more
+                                </span>
+                            </button>
+                        </h3>
+                        <div class="faq-panel" [class.is-open]="item.expanded" role="region"
+                            [id]="'faq-panel-' + $index" [attr.aria-labelledby]="'faq-button-' + $index">
+                            <div class="faq-panel-inner">
+                                <p class="p-6 pt-0 bg-surface-container text-on-surface-variant">{{ item.answer }}</p>
+                            </div>
                         </div>
-                        @if(item.expanded) {
-                        <div
-                            class="p-6 pt-0 bg-surface-container text-on-surface-variant border-t border-outline-variant/10">
-                            {{ item.answer }}
-                        </div>
-                        }
                     </div>
                     }
                 </div>
@@ -305,7 +310,7 @@
         <!-- Final CTA Section -->
         <section id="cta-final" class="py-24 px-6 relative overflow-hidden">
             <div class="max-w-4xl mx-auto text-center relative z-10">
-                <div
+                <div data-reveal
                     class="glass-card p-12 md:p-20 rounded-[3rem] border border-primary/10 shadow-2xl relative overflow-hidden">
                     <!-- Background Glow -->
                     <div class="absolute -top-24 -left-24 w-64 h-64 bg-primary/20 blur-[100px] rounded-full"></div>
@@ -313,6 +318,9 @@
                     </div>
 
                     <div class="relative z-10 space-y-8">
+                        <div class="flex justify-center">
+                            <app-brand-loader [loop]="false" [size]="64" label="Semeando Devs" />
+                        </div>
                         <h2 class="font-headline text-4xl md:text-6xl font-extrabold tracking-tighter leading-tight">
                             Pronto para se tornar um <br>
                             <span class="gradient-text">Desenvolvedor?</span>
@@ -322,12 +330,14 @@
                             código começa aqui.
                         </p>
                         <div class="pt-4">
+                            <div data-magnetic class="inline-block">
                             <button routerLink="/auth/register"
                                 class="btn-primary px-12 py-5 text-xl shadow-xl shadow-primary/20 group">
                                 Começar Agora — É Grátis
                                 <span
                                     class="material-symbols-outlined ml-2 group-hover:translate-x-1 transition-transform">arrow_forward</span>
                             </button>
+                            </div>
                         </div>
                         <p class="text-[10px] text-on-surface-variant uppercase tracking-[0.2em] pt-4">
                             Acesso imediato • Sem cartão de crédito • 100% Gamificado
