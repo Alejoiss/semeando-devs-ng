@@ -8,11 +8,12 @@ import { SubscriptionService } from '../../../services/subscription';
 import { UserService } from '../../../services/user';
 import { Plan } from '../../../../models/plan/plan';
 import { Coupon } from '../../../../models/coupon/coupon';
+import { BrandLoader } from '../../../components/brand-loader/brand-loader';
 
 @Component({
     selector: 'app-upgrade',
     standalone: true,
-    imports: [CommonModule, FormsModule],
+    imports: [BrandLoader, CommonModule, FormsModule],
     templateUrl: './upgrade.html',
     styleUrl: './upgrade.scss',
     changeDetection: ChangeDetectionStrategy.OnPush,

@@ -41,6 +41,7 @@
     "@ngstack/code-editor": "^9.0.0",
     "@supabase/supabase-js": "^2.103.0",
     "echarts": "^6.1.0",
+    "gsap": "^3.15.1",
     "marked": "^16.4.2",
     "material-symbols": "^0.42.3",
     "ngx-echarts": "^20.0.2",

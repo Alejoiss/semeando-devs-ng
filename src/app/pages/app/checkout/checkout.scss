@@ -1,6 +1,6 @@
 #cardNumber, #expirationDate, #securityCode {
     cursor: text;
-    transition: all 0.2s ease-in-out;
+    transition: border-color var(--motion-fast) var(--ease-standard), box-shadow var(--motion-fast) var(--ease-standard);
 
     &:hover {
         border-color: rgba(63, 194, 251, 0.4);

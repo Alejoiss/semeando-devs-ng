@@ -18,6 +18,8 @@ import { SeedService } from '../../../services/seed';
 import { AchievementsService } from '../../../services/achievements';
 import { DailyLimitService } from '../../../services/daily-limit/daily-limit';
 import { MarkdownModule } from 'ngx-markdown';
+import { MotionReveal } from '../../../directives/motion-reveal';
+import { loadGsap } from '../../../utils/motion';
 
 interface QuizResult {
     questionId: string;
@@ -28,7 +30,7 @@ interface QuizResult {
 @Component({
     selector: 'app-quiz',
     standalone: true,
-    imports: [CommonModule, RouterLink, MarkdownModule],
+    imports: [MotionReveal, CommonModule, RouterLink, MarkdownModule],
     templateUrl: './quiz.html',
     styleUrls: ['./quiz.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
@@ -111,6 +113,7 @@ export class Quiz implements OnInit {
     protected readonly xpAwarded = computed(() => this.quizCompletionResult()?.xpAwarded || 0);
 
     async ngOnInit() {
+        void loadGsap();
         const lessonId = this.route.snapshot.paramMap.get('lessonId');
         if (!lessonId) return;
 

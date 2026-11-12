@@ -40,9 +40,9 @@
         <div class="flex gap-2">
             <input type="text" id="couponCode" [ngModel]="couponCode()"
                 (ngModelChange)="couponCode.set($event.toUpperCase())" placeholder="DIGITE AQUI"
-                class="flex-1 bg-surface-container-lowest text-on-surface px-4 py-3 rounded-xl font-label focus:outline-none focus:ring-2 focus:ring-primary/30 transition-all uppercase" />
+                class="flex-1 bg-surface-container-lowest text-on-surface px-4 py-3 rounded-xl font-label focus:outline-none focus:ring-2 focus:ring-primary/30 transition uppercase" />
             <button (click)="applyCoupon()"
-                class="px-6 py-3 bg-primary text-on-primary-container font-label font-bold rounded-xl hover:bg-primary-dim transition-all active:scale-95 shadow-lg shadow-primary/20">
+                class="px-6 py-3 bg-primary text-on-primary-container font-label font-bold rounded-xl hover:bg-primary-dim transition active:scale-95 shadow-lg shadow-primary/20">
                 Aplicar
             </button>
         </div>
@@ -87,7 +87,7 @@
     <!-- Pricing Section -->
     @if (isLoading()) {
     <div class="flex flex-col items-center justify-center py-20 gap-4">
-        <div class="animate-spin rounded-full h-12 w-12 border-t-2 border-primary border-transparent"></div>
+        <app-brand-loader [size]="56" label="Carregando planos" />
         <p class="text-on-surface-variant font-label text-sm">Carregando planos...</p>
     </div>
     } @else {
@@ -145,7 +145,7 @@
                         </ul>
                     </div>
                     <button (click)="subscribe('monthly')" [disabled]="isSubscribing()"
-                        class="w-full py-4 bg-surface-container-highest text-primary font-headline font-extrabold rounded-lg hover:bg-primary hover:text-on-primary-container transition-all shadow-lg shadow-primary/10 disabled:opacity-50 disabled:cursor-not-allowed">
+                        class="w-full py-4 bg-surface-container-highest text-primary font-headline font-extrabold rounded-lg hover:bg-primary hover:text-on-primary-container transition shadow-lg shadow-primary/10 disabled:opacity-50 disabled:cursor-not-allowed">
                         @if (isSubscribing()) {
                         <span class="flex items-center justify-center gap-2">
                             <div class="animate-spin rounded-full h-4 w-4 border-t-2 border-primary border-transparent">
@@ -215,7 +215,7 @@
                         </ul>
                     </div>
                     <button (click)="subscribe('yearly')" [disabled]="isSubscribing()"
-                        class="w-full py-4 bg-gradient-to-r from-secondary to-secondary-dim text-on-secondary font-headline font-extrabold rounded-lg shadow-lg shadow-secondary/30 active:scale-95 transition-all disabled:opacity-50 disabled:cursor-not-allowed">
+                        class="w-full py-4 bg-gradient-to-r from-secondary to-secondary-dim text-on-secondary font-headline font-extrabold rounded-lg shadow-lg shadow-secondary/30 active:scale-95 transition disabled:opacity-50 disabled:cursor-not-allowed">
                         @if (isSubscribing()) {
                         <span class="flex items-center justify-center gap-2">
                             <div
@@ -255,11 +255,11 @@
             </p>
             <div class="flex flex-col gap-3">
                 <button (click)="activatePro()"
-                    class="w-full py-4 bg-secondary text-on-secondary font-headline font-extrabold rounded-xl shadow-lg shadow-secondary/20 hover:brightness-110 active:scale-[0.98] transition-all">
+                    class="w-full py-4 bg-secondary text-on-secondary font-headline font-extrabold rounded-xl shadow-lg shadow-secondary/20 hover:brightness-110 active:scale-[0.98] transition">
                     Sim, Ativar PRÓ Agora
                 </button>
                 <button (click)="showConfirmation.set(false)"
-                    class="w-full py-4 bg-surface-container-highest text-on-surface-variant font-headline font-bold rounded-xl hover:bg-surface-bright transition-all">
+                    class="w-full py-4 bg-surface-container-highest text-on-surface-variant font-headline font-bold rounded-xl hover:bg-surface-bright transition">
                     Não, Cancelar
                 </button>
             </div>

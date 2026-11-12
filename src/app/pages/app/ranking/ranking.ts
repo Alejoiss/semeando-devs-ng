@@ -5,10 +5,11 @@ import { RankingWeeklyService } from '../../../services/ranking-weekly';
 import { RankingEntry } from '../../../../models/ranking/ranking';
 import { UserService } from '../../../services/user';
 import { RouterLink } from '@angular/router';
+import { BrandLoader } from '../../../components/brand-loader/brand-loader';
 
 @Component({
     selector: 'app-ranking',
-    imports: [RouterLink],
+    imports: [BrandLoader, RouterLink],
     templateUrl: './ranking.html',
     styleUrl: './ranking.scss',
     changeDetection: ChangeDetectionStrategy.OnPush

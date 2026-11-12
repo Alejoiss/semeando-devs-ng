@@ -9,11 +9,12 @@ import { PlanService } from '../../../services/plan';
 import { CouponService } from '../../../services/coupon';
 import { Plan } from '../../../../models/plan/plan';
 import { Coupon } from '../../../../models/coupon/coupon';
+import { BrandLoader } from '../../../components/brand-loader/brand-loader';
 
 @Component({
     selector: 'app-checkout',
     standalone: true,
-    imports: [CommonModule, FormsModule, RouterModule],
+    imports: [BrandLoader, CommonModule, FormsModule, RouterModule],
     templateUrl: './checkout.html',
     styleUrl: './checkout.scss',
     changeDetection: ChangeDetectionStrategy.OnPush,

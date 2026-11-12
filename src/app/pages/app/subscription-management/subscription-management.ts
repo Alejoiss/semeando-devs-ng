@@ -4,11 +4,12 @@ import { RouterModule } from '@angular/router';
 import { SubscriptionService } from '../../../services/subscription';
 import { UserService } from '../../../services/user';
 import { Subscription } from '../../../../models/subscription/subscription';
+import { BrandLoader } from '../../../components/brand-loader/brand-loader';
 
 @Component({
     selector: 'app-subscription-management',
     standalone: true,
-    imports: [CommonModule, RouterModule],
+    imports: [BrandLoader, CommonModule, RouterModule],
     templateUrl: './subscription-management.html',
     styleUrl: './subscription-management.scss',
 })
