@@ -8,7 +8,7 @@
         </div>
     </div> -->
     <nav class="flex-1 flex flex-col px-3 gap-1">
-        <a class="flex items-center gap-4 px-4 py-3 transition-transform transition-all" routerLink="/app"
+        <a class="flex items-center gap-4 px-4 py-3 transition-transform transition" routerLink="/app"
             (click)="navigationService.closeSidebar()"
             routerLinkActive="bg-[#0f1930] text-[#3fc2fb] rounded-xl border-l-4 border-[#fe69ac] translate-x-1"
             [routerLinkActiveOptions]="{exact: true}"
@@ -17,7 +17,7 @@
             <span class="material-symbols-outlined" data-icon="account_tree">account_tree</span>
             <span class="font-label whitespace-nowrap" [ngClass]="{'font-bold': rlaApp.isActive}">Módulos</span>
         </a>
-        <a class="flex items-center gap-4 px-4 py-3 transition-transform transition-all" routerLink="/app/ranking"
+        <a class="flex items-center gap-4 px-4 py-3 transition-transform transition" routerLink="/app/ranking"
             (click)="navigationService.closeSidebar()"
             routerLinkActive="bg-[#0f1930] text-[#3fc2fb] rounded-xl border-l-4 border-[#fe69ac] translate-x-1"
             [ngClass]="{'text-[#dee5ff]/60 hover:bg-[#141f38] hover:text-[#3fc2fb]': !rlaRanking.isActive}"
@@ -25,7 +25,7 @@
             <span class="material-symbols-outlined" data-icon="leaderboard">leaderboard</span>
             <span class="font-label whitespace-nowrap" [ngClass]="{'font-bold': rlaRanking.isActive}">Rankings</span>
         </a>
-        <a class="flex items-center gap-4 px-4 py-3 transition-transform transition-all" routerLink="/app/conquistas"
+        <a class="flex items-center gap-4 px-4 py-3 transition-transform transition" routerLink="/app/conquistas"
             (click)="navigationService.closeSidebar()"
             routerLinkActive="bg-[#0f1930] text-[#3fc2fb] rounded-xl border-l-4 border-[#fe69ac] translate-x-1"
             [ngClass]="{'text-[#dee5ff]/60 hover:bg-[#141f38] hover:text-[#3fc2fb]': !rlaConquistas.isActive}"
@@ -34,7 +34,7 @@
             <span class="font-label whitespace-nowrap" [ngClass]="{'font-bold': rlaConquistas.isActive}">Minhas
                 conquistas</span>
         </a>
-        <a class="flex items-center gap-4 px-4 py-3 transition-transform transition-all"
+        <a class="flex items-center gap-4 px-4 py-3 transition-transform transition"
             routerLink="/app/gerenciar-assinatura" (click)="navigationService.closeSidebar()"
             routerLinkActive="bg-[#0f1930] text-[#3fc2fb] rounded-xl border-l-4 border-[#fe69ac] translate-x-1"
             [ngClass]="{'text-[#dee5ff]/60 hover:bg-[#141f38] hover:text-[#3fc2fb]': !rlaAssinatura.isActive}"
@@ -45,7 +45,7 @@
         </a>
 
         @if (isTeacherOrAdmin()) {
-        <a class="flex items-center gap-4 px-4 py-3 transition-transform transition-all" routerLink="/professor"
+        <a class="flex items-center gap-4 px-4 py-3 transition-transform transition" routerLink="/professor"
             (click)="navigationService.closeSidebar()"
             routerLinkActive="bg-[#0f1930] text-[#3fc2fb] rounded-xl border-l-4 border-[#fe69ac] translate-x-1"
             [ngClass]="{'text-[#dee5ff]/60 hover:bg-[#141f38] hover:text-[#3fc2fb]': !rlaProfessor.isActive}"
@@ -57,7 +57,7 @@
         }
 
         @if (isAdmin()) {
-        <a class="flex items-center gap-4 px-4 py-3 transition-transform transition-all" routerLink="/admin"
+        <a class="flex items-center gap-4 px-4 py-3 transition-transform transition" routerLink="/admin"
             (click)="navigationService.closeSidebar()"
             routerLinkActive="bg-[#0f1930] text-[#3fc2fb] rounded-xl border-l-4 border-[#fe69ac] translate-x-1"
             [ngClass]="{'text-[#dee5ff]/60 hover:bg-[#141f38] hover:text-[#3fc2fb]': !rlaAdmin.isActive}"
@@ -70,7 +70,7 @@
     <div class="px-3 flex flex-col gap-1 mt-auto">
         @if (!userService.currentUser()?.isPro) {
         <button routerLink="/app/upgrade" (click)="navigationService.closeSidebar()"
-            class="mt-1 w-full bg-surface-container-high hover:bg-surface-bright text-primary text-xs font-bold py-2 rounded-xl transition-all font-label uppercase tracking-widest">
+            class="mt-1 w-full bg-surface-container-high hover:bg-surface-bright text-primary text-xs font-bold py-2 rounded-xl transition font-label uppercase tracking-widest">
             Atualizar para pró
         </button>
         <div class="px-4 py-3 mb-1">
@@ -82,11 +82,11 @@
             </div>
             <div class="flex items-center justify-center gap-2" role="group" aria-label="Progresso diário de lições">
                 @for (completed of dailyLimitService.dailyIndicators(); track $index) {
-                <div class="w-6 h-6 rounded-full flex items-center justify-center transition-all duration-300" [class]="completed
+                <div class="w-6 h-6 rounded-full flex items-center justify-center transition duration-300" [class]="completed
                                 ? 'bg-tertiary/20 shadow-[0_0_8px_rgba(232,255,192,0.4)]'
                                 : 'bg-surface-container-highest'"
                     [attr.aria-label]="completed ? 'Lição ' + ($index + 1) + ' concluída' : 'Lição ' + ($index + 1) + ' não concluída'">
-                    <div class="w-3 h-3 rounded-full transition-all duration-300"
+                    <div class="w-3 h-3 rounded-full transition duration-300"
                         [class]="completed ? 'bg-tertiary' : 'bg-on-surface-variant/20'">
                     </div>
                 </div>
@@ -105,23 +105,26 @@
                 {{ aiCreditsService.submitCodeRemaining() }} / {{ aiCreditsService.submitCodeLimit() }}
             </div>
         </div>
-        <!-- <a class="flex items-center gap-4 text-[#dee5ff]/60 px-4 py-3 hover:bg-[#141f38] hover:text-[#3fc2fb] transition-all"
+        <!-- <a class="flex items-center gap-4 text-[#dee5ff]/60 px-4 py-3 hover:bg-[#141f38] hover:text-[#3fc2fb] transition"
             href="#">
             <span class="material-symbols-outlined" data-icon="settings">settings</span>
             <span class="font-label">Configurações</span>
         </a> -->
-        <a class="flex items-center gap-4 text-error/60 px-4 py-3 hover:bg-error/10 hover:text-error transition-all"
+        <a class="flex items-center gap-4 text-error/60 px-4 py-3 hover:bg-error/10 hover:text-error transition"
             routerLink="/" (click)="logout($event)">
             <span class="material-symbols-outlined" data-icon="logout">logout</span>
             <span class="font-label">Sair</span>
         </a>
 
         <div class="flex items-center justify-center gap-6 mt-4 pt-4 border-t border-outline-variant/15">
-            <a href="https://www.instagram.com/semeandodevs" target="_blank" rel="noopener noreferrer" class="text-on-surface-variant/60 hover:text-primary transition-transform hover:-translate-y-1" title="Instagram">
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="20" x="2" y="2" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" x2="17.51" y1="6.5" y2="6.5"/></svg>
+            <a href="https://www.instagram.com/semeandodevs" target="_blank" rel="noopener noreferrer" aria-label="Instagram da Semeando Devs (abre em nova aba)" class="text-on-surface-variant/70 hover:text-primary transition-transform hover:-translate-y-1" title="Instagram">
+                <svg aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="20" x="2" y="2" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" x2="17.51" y1="6.5" y2="6.5"/></svg>
             </a>
-            <a href="https://www.facebook.com/semeandodevs" target="_blank" rel="noopener noreferrer" class="text-on-surface-variant/60 hover:text-primary transition-transform hover:-translate-y-1" title="Facebook">
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>
+            <a href="https://www.facebook.com/semeandodevs" target="_blank" rel="noopener noreferrer" aria-label="Facebook da Semeando Devs (abre em nova aba)" class="text-on-surface-variant/70 hover:text-primary transition-transform hover:-translate-y-1" title="Facebook">
+                <svg aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>
+            </a>
+            <a href="https://www.linkedin.com/company/semeandodevs" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn da Semeando Devs (abre em nova aba)" class="text-on-surface-variant/70 hover:text-primary transition-transform hover:-translate-y-1" title="LinkedIn">
+                <svg aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect width="4" height="12" x="2" y="9"/><circle cx="4" cy="4" r="2"/></svg>
             </a>
         </div>
     </div>
