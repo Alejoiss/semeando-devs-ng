@@ -1,0 +1,19 @@
+{
+  "name": "semeandodevs-mcp",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Servidor MCP local (stdio) para operar o Semeando Devs em produção",
+  "scripts": {
+    "start": "node src/server.mjs",
+    "test": "node --test test/"
+  },
+  "engines": {
+    "node": ">=22"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.32.2",
+    "@supabase/supabase-js": "^2.119.0",
+    "zod": "^4.6.7"
+  }
+}

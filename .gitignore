@@ -51,3 +51,6 @@ Thumbs.db
 
 # Snapshot do conteúdo público gerado antes do build (scripts/fetch-public-catalog.mjs)
 /src/app/services/public-catalog/public-catalog.snapshot.json
+
+# Servidor MCP local
+/mcp/node_modules
