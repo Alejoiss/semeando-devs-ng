@@ -36,10 +36,16 @@ export async function nextOrder(db, table, filterColumn, filterValue) {
   return (rows[0]?.order ?? 0) + 1;
 }
 
-export async function resolveOwnerId(db) {
+// Alguns ambientes (ex.: produção) não têm lessons.owner_id; devolve {} nesses casos.
+export async function ownerFields(db) {
+  const { error } = await db.from('lessons').select('owner_id').limit(1);
+  if (error) {
+    if (/owner_id/.test(error.message)) return {};
+    throw new Error(`lessons: ${error.message}`);
+  }
   const rows = unwrap(await db.from('owners').select('id').order('created_at').limit(1), 'owners');
-  if (!rows[0]) throw new Error('Nenhum registro em owners; lessons.owner_id é obrigatório.');
-  return rows[0].id;
+  if (!rows[0]) throw new Error('Nenhum registro em owners; lessons.owner_id é obrigatório neste ambiente.');
+  return { owner_id: rows[0].id };
 }
 
 export async function resolveAuthorId(db, config) {
@@ -118,4 +124,29 @@ export async function applyValidation(db, lessonId) {
   const result = await checkLesson(db, lessonId);
   unwrap(await db.from('lessons').update({ is_validated: result.passed }).eq('id', lessonId), 'is_validated');
   return result;
+}
+
+export function slugify(text) {
+  return String(text)
+    .normalize('NFD')
+    .replace(/\p{Diacritic}/gu, '')
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '');
+}
+
+export async function writeLessonParts(db, lessonId, { sections = [], extra_materials = [], questions = [] }) {
+  if (sections.length) {
+    unwrap(
+      await db.from('section_content').insert(sections.map((s, i) => ({ ...s, lesson_id: lessonId, order: i }))),
+      'section_content',
+    );
+  }
+  if (extra_materials.length) {
+    unwrap(await db.from('extra_material').insert(extra_materials.map((m) => ({ ...m, lesson_id: lessonId }))), 'extra_material');
+  }
+  if (questions.length) {
+    const quizId = await ensureQuiz(db, lessonId);
+    for (const q of questions) await insertQuestion(db, quizId, q);
+  }
 }

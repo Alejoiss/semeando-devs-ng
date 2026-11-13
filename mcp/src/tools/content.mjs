@@ -9,8 +9,9 @@ import {
   nextOrder,
   questionSchema,
   resolveAuthorId,
-  resolveOwnerId,
+  ownerFields,
   sectionSchema,
+  writeLessonParts,
 } from '../lesson-model.mjs';
 
 const id = z.string().uuid();
@@ -21,7 +22,7 @@ export function registerContentTools(server, ctx) {
   const read = { annotations: { readOnlyHint: true } };
 
   defineTool(server, ctx, 'list_modules', { title: 'Listar módulos', description: 'Lista os módulos.', inputSchema: {}, ...read }, async () =>
-    unwrap(await db.from('modules').select('id, title, slug, in_revision').order('title'), 'modules'),
+    unwrap(await db.from('modules').select('id, title, slug, icon, in_revision').order('title'), 'modules'),
   );
 
   defineTool(
@@ -41,7 +42,7 @@ export function registerContentTools(server, ctx) {
       }
       if (!moduleId) throw new Error('Informe module_id ou module_slug.');
       return unwrap(
-        await db.from('submodules').select('id, title, slug, description, order').eq('module_id', moduleId).order('order'),
+        await db.from('submodules').select('id, title, slug, description, icon, order').eq('module_id', moduleId).order('order'),
         'submodules',
       );
     },
@@ -153,8 +154,8 @@ export function registerContentTools(server, ctx) {
       },
     },
     async (a) => {
-      const [owner_id, created_by, order] = await Promise.all([
-        resolveOwnerId(db),
+      const [owner, created_by, order] = await Promise.all([
+        ownerFields(db),
         resolveAuthorId(db, config),
         a.order ?? nextOrder(db, 'lessons', 'sub_module_id', a.submodule_id),
       ]);
@@ -168,7 +169,7 @@ export function registerContentTools(server, ctx) {
             type: a.type,
             xp: a.xp,
             order,
-            owner_id,
+            ...owner,
             created_by,
             ...(a.language ? { language: a.language } : {}),
             ...(a.initial_code ? { initial_code: a.initial_code } : {}),
@@ -179,22 +180,7 @@ export function registerContentTools(server, ctx) {
       );
 
       try {
-        if (a.sections.length) {
-          unwrap(
-            await db.from('section_content').insert(a.sections.map((s, i) => ({ ...s, lesson_id: lesson.id, order: i }))),
-            'section_content',
-          );
-        }
-        if (a.extra_materials.length) {
-          unwrap(
-            await db.from('extra_material').insert(a.extra_materials.map((m) => ({ ...m, lesson_id: lesson.id }))),
-            'extra_material',
-          );
-        }
-        if (a.questions.length) {
-          const quizId = await ensureQuiz(db, lesson.id);
-          for (const q of a.questions) await insertQuestion(db, quizId, q);
-        }
+        await writeLessonParts(db, lesson.id, a);
       } catch (e) {
         await db.from('lessons').delete().eq('id', lesson.id);
         throw new Error(`Criação revertida: ${e.message}`);
@@ -202,6 +188,43 @@ export function registerContentTools(server, ctx) {
 
       const validation = a.publish ? await applyValidation(db, lesson.id) : await checkLesson(db, lesson.id);
       return { lesson_id: lesson.id, order, published: a.publish && validation.passed, validation };
+    },
+    { write: true },
+  );
+
+  defineTool(
+    server,
+    ctx,
+    'set_lesson_content',
+    {
+      title: 'Preencher conteúdo de uma lição existente',
+      description:
+        'Substitui seções, materiais extras e/ou perguntas de uma lição já criada (por exemplo, o esqueleto gerado por create_roadmap). Só as partes enviadas (arrays não vazios) são substituídas. A lição fica invalidada. Em lição já publicada (is_validated = true) exige force=true, pois trocar o quiz apaga o progresso dos alunos nele.',
+      inputSchema: {
+        lesson_id: id,
+        sections: z.array(sectionSchema).default([]),
+        extra_materials: z.array(extraMaterialSchema).default([]),
+        questions: z.array(questionSchema).default([]),
+        language: z.string().optional().describe('Só para CHALLENGE'),
+        initial_code: z.string().optional().describe('Só para CHALLENGE'),
+        force: z.boolean().default(false),
+        publish: z.boolean().default(false),
+      },
+    },
+    async ({ lesson_id, force, publish, language, initial_code, ...parts }) => {
+      const lesson = unwrap(await db.from('lessons').select('id, is_validated').eq('id', lesson_id).single(), 'lesson');
+      if (lesson.is_validated === true && !force) {
+        throw new Error('A lição está publicada. Use force=true para substituir o conteúdo.');
+      }
+      if (parts.sections.length) unwrap(await db.from('section_content').delete().eq('lesson_id', lesson_id), 'limpar seções');
+      if (parts.extra_materials.length) unwrap(await db.from('extra_material').delete().eq('lesson_id', lesson_id), 'limpar materiais');
+      if (parts.questions.length) unwrap(await db.from('quizzes').delete().eq('lesson_id', lesson_id), 'limpar quiz');
+      await writeLessonParts(db, lesson_id, parts);
+
+      const patch = { is_validated: null, ...(language ? { language } : {}), ...(initial_code ? { initial_code } : {}) };
+      unwrap(await db.from('lessons').update(patch).eq('id', lesson_id), 'lesson');
+      const validation = publish ? await applyValidation(db, lesson_id) : await checkLesson(db, lesson_id);
+      return { lesson_id, published: publish && validation.passed, validation };
     },
     { write: true },
   );
