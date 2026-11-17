@@ -10,8 +10,8 @@ Create a row in `public.newsletter`:
 | Column | Use |
 | --- | --- |
 | `subject` | Email subject (falls back to "Novidades do Semeando Devs!") |
-| `body` | Plain-text version (always required) |
-| `html` | Optional fully designed email. When empty, a simple template built from `body`, `cta_url` and `cta_label` is used |
+| `body` | Required. Without `html`, it is placed (HTML allowed) inside the default Semeando Devs card, with the `cta_url` button and footer. With `html`, it is only the plain-text version |
+| `html` | Optional complete email, sent as is (no default card around it) |
 
 Inside `html` and `body`, the placeholder `{{nome_virgula}}` becomes `, Maria` (first name) or an empty string when the profile has no name, so `Oi{{nome_virgula}}!` works for everyone.
 

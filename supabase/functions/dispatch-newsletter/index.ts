@@ -39,7 +39,7 @@ const buildDefaultHtml = (newsletter: any) => {
         <div style="font-family: sans-serif; background-color: #060e20; color: #dee5ff; padding: 24px; border-radius: 8px; max-width: 600px; margin: 0 auto;">
             <h2 style="color: #3fc2fb; margin-top: 0;">Informativo Semeando Devs</h2>
             <div style="margin-bottom: 24px; line-height: 1.6;">
-                ${escapeHtml(newsletter.body).replace(/\n/g, '<br>')}
+                ${newsletter.body.replace(/\n/g, '<br>')}
             </div>
     `;
 
@@ -68,7 +68,15 @@ const renderHtml = (newsletter: any, recipient: Recipient) => {
 
 const renderText = (newsletter: any, recipient: Recipient) => {
     const name = firstName(recipient.name);
-    const body = newsletter.body.replaceAll('{{nome_virgula}}', name ? `, ${name}` : '');
+    let body = newsletter.body.replaceAll('{{nome_virgula}}', name ? `, ${name}` : '');
+    if (/<[a-z][\s\S]*>/i.test(body)) {
+        body = body
+            .replace(/<(br|\/p|\/div|\/li|\/h\d)\s*\/?>/gi, '\n')
+            .replace(/<[^>]*>/g, '')
+            .replace(/&nbsp;/g, ' ')
+            .replace(/\n{3,}/g, '\n\n')
+            .trim();
+    }
     return `${body}${newsletter.cta_url ? `\n\n${newsletter.cta_label || 'Acesse'}: ${newsletter.cta_url}` : ''}`;
 };
 
