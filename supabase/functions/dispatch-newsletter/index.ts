@@ -7,6 +7,71 @@ const corsHeaders = {
     'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
+const PAGE_SIZE = 1000;
+const DEFAULT_MAX_PER_RUN = 200;
+const RESEND_DELAY_MS = 600;
+
+interface Recipient {
+    id: string;
+    email: string;
+    name: string | null;
+}
+
+const json = (body: unknown, status = 200) =>
+    new Response(JSON.stringify(body), {
+        status,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+    });
+
+const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+
+const escapeHtml = (value: string) =>
+    value
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
+
+const firstName = (name: string | null) => (name ?? '').trim().split(/\s+/)[0] ?? '';
+
+const buildDefaultHtml = (newsletter: any) => {
+    let html = `
+        <div style="font-family: sans-serif; background-color: #060e20; color: #dee5ff; padding: 24px; border-radius: 8px; max-width: 600px; margin: 0 auto;">
+            <h2 style="color: #3fc2fb; margin-top: 0;">Informativo Semeando Devs</h2>
+            <div style="margin-bottom: 24px; line-height: 1.6;">
+                ${escapeHtml(newsletter.body).replace(/\n/g, '<br>')}
+            </div>
+    `;
+
+    if (newsletter.cta_url) {
+        html += `
+            <div style="margin-top: 24px; margin-bottom: 24px;">
+                <a href="${escapeHtml(newsletter.cta_url)}" style="background: linear-gradient(135deg, #3fc2fb, #27b4ed); color: #060e20; padding: 12px 24px; border-radius: 16px; text-decoration: none; font-weight: bold; display: inline-block;">
+                    ${escapeHtml(newsletter.cta_label || 'Acesse')}
+                </a>
+            </div>
+        `;
+    }
+
+    html += `
+            <p style="font-size: 12px; color: #fe69ac; margin-top: 24px;">Semeando Devs: Transformando o aprendizado de tecnologia em uma jornada de alto impacto.</p>
+        </div>
+    `;
+    return html;
+};
+
+const renderHtml = (newsletter: any, recipient: Recipient) => {
+    const template: string = newsletter.html || buildDefaultHtml(newsletter);
+    const name = firstName(recipient.name);
+    return template.replaceAll('{{nome_virgula}}', name ? `, ${escapeHtml(name)}` : '');
+};
+
+const renderText = (newsletter: any, recipient: Recipient) => {
+    const name = firstName(recipient.name);
+    const body = newsletter.body.replaceAll('{{nome_virgula}}', name ? `, ${name}` : '');
+    return `${body}${newsletter.cta_url ? `\n\n${newsletter.cta_label || 'Acesse'}: ${newsletter.cta_url}` : ''}`;
+};
+
 Deno.serve(async (req) => {
     if (req.method === 'OPTIONS') {
         return new Response('ok', { headers: corsHeaders });
@@ -15,18 +80,13 @@ Deno.serve(async (req) => {
     try {
         const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
         const supabaseServiceRoleKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
-
         const supabase = createClient(supabaseUrl, supabaseServiceRoleKey);
 
-        const { newsletter_id } = await req.json();
+        const { newsletter_id, test_email, max_per_run } = await req.json();
         if (!newsletter_id) {
-            return new Response(JSON.stringify({ error: 'newsletter_id is required' }), {
-                status: 400,
-                headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-            });
+            return json({ error: 'newsletter_id is required' }, 400);
         }
 
-        // Fetch newsletter
         const { data: newsletter, error: newsletterError } = await supabase
             .from('newsletter')
             .select('*')
@@ -34,36 +94,16 @@ Deno.serve(async (req) => {
             .single();
 
         if (newsletterError || !newsletter) {
-            return new Response(JSON.stringify({ error: 'Newsletter not found' }), {
-                status: 404,
-                headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-            });
+            return json({ error: 'Newsletter not found' }, 404);
         }
 
-        // Fetch profiles
-        const { data: profiles, error: profilesError } = await supabase
-            .from('profiles')
-            .select('id')
-            .eq('newsletter_active', true);
-
-        if (profilesError) throw profilesError;
-
-        // Fetch users to get emails (for demo purposes we use listUsers)
-        const { data: { users }, error: usersError } = await supabase.auth.admin.listUsers();
-        if (usersError) throw usersError;
-
-        const subscriberIds = new Set(profiles.map((p) => p.id));
-        const subscribers = users.filter((u) => subscriberIds.has(u.id));
-
-        const records = [];
-
-        // SMTP & Resend configuration
         const resendApiKey = Deno.env.get('RESEND_API_KEY');
         const smtpHost = Deno.env.get('SMTP_HOST') || 'host.docker.internal';
         const smtpPort = parseInt(Deno.env.get('SMTP_PORT') || '54325', 10);
         const smtpUser = Deno.env.get('SMTP_USER') || '';
         const smtpPass = Deno.env.get('SMTP_PASS') || '';
         const smtpSender = Deno.env.get('SMTP_SENDER') || 'Semeando Devs <noreply@semeandodevs.com.br>';
+        const subject = newsletter.subject || 'Novidades do Semeando Devs!';
 
         let transporter: any = null;
         if (!resendApiKey) {
@@ -71,105 +111,103 @@ Deno.serve(async (req) => {
                 host: smtpHost,
                 port: smtpPort,
                 secure: smtpPort === 465,
-                auth: smtpUser && smtpPass ? {
-                    user: smtpUser,
-                    pass: smtpPass,
-                } : undefined,
-                tls: {
-                    rejectUnauthorized: false
-                }
+                auth: smtpUser && smtpPass ? { user: smtpUser, pass: smtpPass } : undefined,
+                tls: { rejectUnauthorized: false },
             });
         }
 
-        for (const user of subscribers) {
+        const deliver = async (recipient: Recipient) => {
+            const html = renderHtml(newsletter, recipient);
+            const text = renderText(newsletter, recipient);
+
+            if (resendApiKey) {
+                const response = await fetch('https://api.resend.com/emails', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${resendApiKey}`,
+                    },
+                    body: JSON.stringify({ from: smtpSender, to: recipient.email, subject, html, text }),
+                });
+                if (!response.ok) {
+                    const errBody = await response.text();
+                    throw new Error(`Resend API response error (${response.status}): ${errBody}`);
+                }
+                await sleep(RESEND_DELAY_MS);
+            } else {
+                await transporter.sendMail({ from: smtpSender, to: recipient.email, subject, html, text });
+            }
+        };
+
+        // Test mode: sends one email, records nothing and ignores the subscriber list.
+        if (test_email) {
+            await deliver({ id: 'test', email: test_email, name: 'Teste' });
+            console.log(`[Email] Sent TEST newsletter '${newsletter.id}' to ${test_email}`);
+            return json({ success: true, test: true, to: test_email });
+        }
+
+        const { data: alreadySent, error: sentError } = await supabase
+            .from('user_newsletter')
+            .select('user_id')
+            .eq('newsletter_id', newsletter.id)
+            .eq('email_sent', true);
+        if (sentError) throw sentError;
+        const sentIds = new Set((alreadySent ?? []).map((row) => row.user_id));
+
+        const pending: Recipient[] = [];
+        for (let from = 0; ; from += PAGE_SIZE) {
+            const { data: page, error: pageError } = await supabase
+                .from('profiles')
+                .select('id, email, name')
+                .eq('newsletter_active', true)
+                .not('email', 'is', null)
+                .order('id')
+                .range(from, from + PAGE_SIZE - 1);
+            if (pageError) throw pageError;
+
+            for (const profile of page ?? []) {
+                if (!sentIds.has(profile.id)) pending.push(profile as Recipient);
+            }
+            if (!page || page.length < PAGE_SIZE) break;
+        }
+
+        const limit = Number.isInteger(max_per_run) && max_per_run > 0 ? max_per_run : DEFAULT_MAX_PER_RUN;
+        const batch = pending.slice(0, limit);
+        const records = [];
+        let failed = 0;
+
+        for (const recipient of batch) {
             let emailSent = false;
             try {
-                let htmlContent = `
-                    <div style="font-family: sans-serif; background-color: #060e20; color: #dee5ff; padding: 24px; border-radius: 8px; max-width: 600px; margin: 0 auto;">
-                        <h2 style="color: #3fc2fb; margin-top: 0;">Informativo Semeando Devs</h2>
-                        <div style="margin-bottom: 24px; line-height: 1.6;">
-                            ${newsletter.body.replace(/\n/g, '<br>')}
-                        </div>
-                `;
-
-                if (newsletter.cta_url) {
-                    htmlContent += `
-                        <div style="margin-top: 24px; margin-bottom: 24px;">
-                            <a href="${newsletter.cta_url}" style="background: linear-gradient(135deg, #3fc2fb, #27b4ed); color: #060e20; padding: 12px 24px; border-radius: 16px; text-decoration: none; font-weight: bold; display: inline-block;">
-                                ${newsletter.cta_label || 'Acesse'}
-                            </a>
-                        </div>
-                    `;
-                }
-
-                htmlContent += `
-                        <hr style="border: 0; border-top: 1px solid #141f38; margin: 24px 0;" />
-                        <p style="font-size: 12px; color: #fe69ac;">Semeando Devs: Transformando o aprendizado de tecnologia em uma jornada de alto impacto.</p>
-                    </div>
-                `;
-
-                if (resendApiKey) {
-                    // Send via Resend API
-                    const response = await fetch('https://api.resend.com/emails', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'Authorization': `Bearer ${resendApiKey}`
-                        },
-                        body: JSON.stringify({
-                            from: smtpSender,
-                            to: user.email,
-                            subject: newsletter.subject || 'Novidades do Semeando Devs!',
-                            html: htmlContent
-                        })
-                    });
-
-                    if (!response.ok) {
-                        const errBody = await response.text();
-                        throw new Error(`Resend API response error (${response.status}): ${errBody}`);
-                    }
-                    emailSent = true;
-                    console.log(`[Email] Sent newsletter '${newsletter.id}' to ${user.email} via Resend API`);
-                } else {
-                    // Fallback to local SMTP (Nodemailer)
-                    await transporter.sendMail({
-                        from: smtpSender,
-                        to: user.email,
-                        subject: newsletter.subject || 'Novidades do Semeando Devs!',
-                        html: htmlContent,
-                        text: `${newsletter.body}${newsletter.cta_url ? `\n\n${newsletter.cta_label || 'Acesse'}: ${newsletter.cta_url}` : ''}`
-                    });
-                    emailSent = true;
-                    console.log(`[Email] Sent newsletter '${newsletter.id}' to ${user.email} via local SMTP`);
-                }
+                await deliver(recipient);
+                emailSent = true;
+                console.log(`[Email] Sent newsletter '${newsletter.id}' to ${recipient.email}`);
             } catch (mailError) {
-                console.error(`[Email] Failed to send newsletter '${newsletter.id}' to ${user.email}:`, mailError);
+                failed++;
+                console.error(`[Email] Failed to send newsletter '${newsletter.id}' to ${recipient.email}:`, mailError);
             }
 
             records.push({
-                user_id: user.id,
+                user_id: recipient.id,
                 newsletter_id: newsletter.id,
                 email_sent: emailSent,
             });
         }
 
-        // Record user_newsletter
         if (records.length > 0) {
             const { error: insertError } = await supabase
                 .from('user_newsletter')
                 .upsert(records);
-
             if (insertError) throw insertError;
         }
 
-        return new Response(
-            JSON.stringify({ success: true, sent_count: records.length }),
-            { headers: { ...corsHeaders, "Content-Type": "application/json" } },
-        );
-    } catch (error: any) {
-        return new Response(JSON.stringify({ error: error.message }), {
-            status: 500,
-            headers: { ...corsHeaders, "Content-Type": "application/json" },
+        return json({
+            success: true,
+            sent_count: records.length - failed,
+            failed_count: failed,
+            remaining: pending.length - batch.length,
         });
+    } catch (error: any) {
+        return json({ error: error.message }, 500);
     }
 });
