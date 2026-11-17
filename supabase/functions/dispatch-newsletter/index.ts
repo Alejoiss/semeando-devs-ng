@@ -90,19 +90,53 @@ Deno.serve(async (req) => {
         const supabaseServiceRoleKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
         const supabase = createClient(supabaseUrl, supabaseServiceRoleKey);
 
-        const { newsletter_id, test_email, max_per_run } = await req.json();
-        if (!newsletter_id) {
-            return json({ error: 'newsletter_id is required' }, 400);
+        const token = req.headers.get('Authorization')?.replace(/^Bearer\s+/i, '');
+        if (!token) {
+            return json({ error: 'Unauthorized' }, 401);
         }
 
-        const { data: newsletter, error: newsletterError } = await supabase
-            .from('newsletter')
-            .select('*')
-            .eq('id', newsletter_id)
-            .single();
+        const { data: userData, error: userError } = await supabase.auth.getUser(token);
+        if (userError || !userData.user) {
+            return json({ error: 'Unauthorized' }, 401);
+        }
 
-        if (newsletterError || !newsletter) {
-            return json({ error: 'Newsletter not found' }, 404);
+        const { data: caller } = await supabase
+            .from('profiles')
+            .select('role')
+            .eq('id', userData.user.id)
+            .maybeSingle();
+        if (caller?.role !== 'admin') {
+            return json({ error: 'Forbidden' }, 403);
+        }
+
+        const { newsletter_id, test_email, max_per_run, draft } = await req.json();
+
+        // A test can carry an unsaved draft, so the admin panel can preview delivery before saving.
+        let newsletter: any;
+        if (test_email && draft && typeof draft.body === 'string') {
+            newsletter = {
+                id: 'draft',
+                subject: draft.subject ?? null,
+                body: draft.body,
+                html: draft.html ?? null,
+                cta_url: draft.cta_url ?? null,
+                cta_label: draft.cta_label ?? null,
+            };
+        } else {
+            if (!newsletter_id) {
+                return json({ error: 'newsletter_id is required' }, 400);
+            }
+
+            const { data, error: newsletterError } = await supabase
+                .from('newsletter')
+                .select('*')
+                .eq('id', newsletter_id)
+                .single();
+
+            if (newsletterError || !data) {
+                return json({ error: 'Newsletter not found' }, 404);
+            }
+            newsletter = data;
         }
 
         const resendApiKey = Deno.env.get('RESEND_API_KEY');

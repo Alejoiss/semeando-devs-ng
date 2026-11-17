@@ -2,15 +2,19 @@
 
 ## 1. Objetivo do Fluxo
 Oferecer uma ferramenta interna para a equipe administrativa redigir e disparar e-mails em massa para a base de alunos cadastrados, permitindo engajamento e venda sem depender de ferramentas externas.
-*(Nota: A **tela** está em construção. Hoje o envio é feito via API, sem interface. A opção "receber novidades" no cadastro e no perfil já registra quem aceitou receber.)*
+*(Nota: a tela cobre listagem, cadastro, duplicação, envio de teste, envio e reenvio. Só administradores podem disparar e-mails.)*
 
 ## 2. Público-Alvo
 Administradores da plataforma (Equipe de Conteúdo e Marketing).
 
 ## 3. Passo a Passo (Jornada do Usuário)
-1. O administrador acessa a página de Newsletter (`/admin/envio-de-newsletter`).
-2. Atualmente, o sistema exibe uma tela estilizada de *placeholder* informando: **"Esta seção está em construção."**
-3. *[Fluxo futuro]*: O administrador terá acesso a um editor de texto enriquecido (Rich Text), opções de segmentação de público (ex: "Enviar apenas para quem marcou *newsletter_active* no cadastro") e o botão de disparo.
+1. O administrador acessa `/admin/envio-de-newsletter` e vê a lista de newsletters (20 por página), com busca por assunto (contém) e ordenação por data de criação.
+2. Clicar em uma linha abre a visualização do e-mail.
+3. "Nova newsletter" abre o formulário, agrupado em Assunto, Conteúdo (mensagem e HTML opcional) e Botão de ação, com pré-visualização do e-mail ao lado.
+4. "Duplicar", na lista, abre o formulário já preenchido com os dados da newsletter escolhida.
+5. "Enviar teste" manda o conteúdo do formulário (mesmo sem salvar) para o e-mail de teste fixo.
+6. "Salvar" abre uma advertência com duas opções: "Salvar" (apenas guarda) e "Salvar e enviar" (guarda e dispara para os inscritos, com barra de progresso). Depois, o administrador volta para a lista.
+7. "Reenviar", na lista, envia somente para quem ainda não recebeu aquela newsletter.
 
 ## 4. Gatilhos de Marketing e Comunicação
 - *[Futuro]*: Este será o centro de comando para comunicações ativas da plataforma.

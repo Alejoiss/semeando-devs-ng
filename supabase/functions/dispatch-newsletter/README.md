@@ -1,7 +1,7 @@
 # Dispatch Newsletter
 
 Edge Function that sends a newsletter to every profile with `newsletter_active = true`.
-There is no admin screen yet, so it is triggered with `curl`.
+Triggered by the admin panel (`/admin/envio-de-newsletter`). The caller must send the access token of an admin user (`profiles.role = 'admin'`); other tokens get 401/403.
 
 ## Newsletter row
 
@@ -26,23 +26,7 @@ Designed emails live in `templates/` (e.g. `templates/curso-sql.html`).
 
 ## Usage
 
-1. Insert the newsletter row and note its UUID.
-2. Send a test to yourself (records nothing):
+Everything is done from the admin panel:
 
-```bash
-curl -X POST "<SUPABASE_URL>/functions/v1/dispatch-newsletter" \
-     -H "Authorization: Bearer <KEY>" \
-     -H "Content-Type: application/json" \
-     -d '{"newsletter_id": "<UUID>", "test_email": "you@example.com"}'
-```
-
-3. Send for real (repeat while `remaining` > 0):
-
-```bash
-curl -X POST "<SUPABASE_URL>/functions/v1/dispatch-newsletter" \
-     -H "Authorization: Bearer <KEY>" \
-     -H "Content-Type: application/json" \
-     -d '{"newsletter_id": "<UUID>"}'
-```
-
-Use `http://127.0.0.1:54321` locally. Optional `max_per_run` lowers or raises the batch size.
+- **Enviar teste**: sends the form content (saved or not) to a fixed address; records nothing. The function receives `test_email` plus an unsaved `draft` (`subject`, `body`, `html`, `cta_url`, `cta_label`) or a `newsletter_id`.
+- **Salvar e enviar** / **Reenviar**: the panel calls the function in batches (`max_per_run`) until `remaining` is 0.

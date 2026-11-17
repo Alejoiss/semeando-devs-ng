@@ -245,7 +245,17 @@ export const routes: Routes = [
             {
                 path: 'envio-de-newsletter',
                 loadComponent: () => import('./pages/admin/admin-app/newsletter/newsletter').then(m => m.AdminNewsletter),
-                title: 'Envio de Newsletter - Semeando Devs'
+                title: 'Newsletter - Semeando Devs'
+            },
+            {
+                path: 'envio-de-newsletter/novo',
+                loadComponent: () => import('./pages/admin/admin-app/newsletter/newsletter-form/newsletter-form').then(m => m.AdminNewsletterForm),
+                title: 'Nova Newsletter - Semeando Devs'
+            },
+            {
+                path: 'envio-de-newsletter/:id',
+                loadComponent: () => import('./pages/admin/admin-app/newsletter/newsletter-detail/newsletter-detail').then(m => m.AdminNewsletterDetail),
+                title: 'Newsletter - Semeando Devs'
             }
         ]
     },

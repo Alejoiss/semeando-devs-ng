@@ -1,0 +1,32 @@
+<div class="px-6 pb-12 flex flex-col gap-10 max-w-3xl">
+    <header class="flex flex-col gap-4">
+        <a routerLink="/admin/envio-de-newsletter" class="inline-flex items-center gap-1 font-label text-sm text-[#dee5ff]/80 hover:text-[#3fc2fb] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#3fc2fb] rounded-md w-fit transition-colors">
+            <span class="material-symbols-outlined text-base" aria-hidden="true">arrow_back</span>
+            Voltar para newsletters
+        </a>
+        @if (newsletter.value(); as item) {
+            <div>
+                <h2 class="text-3xl font-bold text-[#dee5ff] font-headline">{{ item.subject || 'Sem assunto' }}</h2>
+                <p class="font-label text-[#dee5ff]/70 mt-2">Criada em {{ item.created_at | date: 'dd/MM/yyyy' }}</p>
+            </div>
+        } @else {
+            <h2 class="text-3xl font-bold text-[#dee5ff] font-headline">Newsletter</h2>
+        }
+    </header>
+
+    @if (newsletter.isLoading()) {
+        <div class="bg-[#091328] rounded-3xl h-96 animate-pulse" role="status" aria-label="Carregando newsletter"></div>
+    } @else if (newsletter.error()) {
+        <div class="bg-error/10 text-error p-6 rounded-2xl flex flex-col items-center gap-4 text-center" role="alert">
+            <p class="font-body">Não foi possível carregar a newsletter.</p>
+            <button type="button" (click)="newsletter.reload()" class="bg-error/20 hover:bg-error/30 text-error px-6 py-2 rounded-xl font-label transition-colors">Tentar novamente</button>
+        </div>
+    } @else if (newsletter.value(); as item) {
+        <section class="bg-[#091328] rounded-3xl p-6 flex flex-col gap-4" aria-labelledby="newsletter-detail-preview">
+            <h3 id="newsletter-detail-preview" class="font-headline font-bold text-lg text-[#dee5ff]">E-mail enviado</h3>
+            <app-newsletter-preview [source]="{ body: item.body, html: item.html, ctaUrl: item.cta_url, ctaLabel: item.cta_label }" />
+        </section>
+    } @else {
+        <p class="bg-[#091328] rounded-3xl p-6 font-body text-[#dee5ff]/80" role="alert">Newsletter não encontrada.</p>
+    }
+</div>

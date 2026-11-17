@@ -1,0 +1,183 @@
+<div class="px-6 pb-12 flex flex-col gap-10">
+    <header class="flex flex-col gap-4">
+        <a routerLink="/admin/envio-de-newsletter" class="inline-flex items-center gap-1 font-label text-sm text-[#dee5ff]/80 hover:text-[#3fc2fb] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#3fc2fb] rounded-md w-fit transition-colors">
+            <span class="material-symbols-outlined text-base" aria-hidden="true">arrow_back</span>
+            Voltar para newsletters
+        </a>
+        <h2 class="text-3xl font-bold text-[#dee5ff] font-headline">Nova newsletter</h2>
+        @if (duplicateError()) {
+            <p class="bg-error/10 text-error p-4 rounded-xl font-body text-sm" role="alert">{{ duplicateError() }}</p>
+        }
+    </header>
+
+    <div class="grid grid-cols-1 xl:grid-cols-2 gap-8 items-start">
+        <form [formGroup]="form" (ngSubmit)="openSaveDialog()" class="flex flex-col gap-8" novalidate>
+            <fieldset class="bg-[#091328] rounded-3xl p-6 flex flex-col gap-6">
+                <legend class="sr-only">Assunto</legend>
+                <h3 class="font-headline font-bold text-lg text-[#dee5ff]" aria-hidden="true">Assunto</h3>
+                <div>
+                    <label for="newsletter-subject" class="block font-label text-sm text-[#dee5ff]/80 mb-2">Assunto do e-mail</label>
+                    <input
+                        id="newsletter-subject"
+                        type="text"
+                        formControlName="subject"
+                        autocomplete="off"
+                        placeholder="Novidades do Semeando Devs!"
+                        [attr.aria-invalid]="showError('subject')"
+                        class="w-full bg-[#060e20] text-[#dee5ff] rounded-xl px-4 py-3 font-body focus:outline-none focus:ring-2 focus:ring-[#3fc2fb]/60 transition placeholder:text-[#dee5ff]/60">
+                    @if (showError('subject')) {
+                        <p class="font-label text-sm text-error mt-2" role="alert">Informe o assunto.</p>
+                    }
+                </div>
+            </fieldset>
+
+            <fieldset class="bg-[#091328] rounded-3xl p-6 flex flex-col gap-6">
+                <legend class="sr-only">Conteúdo</legend>
+                <h3 class="font-headline font-bold text-lg text-[#dee5ff]" aria-hidden="true">Conteúdo</h3>
+                <div>
+                    <label for="newsletter-body" class="block font-label text-sm text-[#dee5ff]/80 mb-2">Mensagem</label>
+                    <textarea
+                        id="newsletter-body"
+                        rows="8"
+                        formControlName="body"
+                        aria-describedby="newsletter-body-hint"
+                        [attr.aria-invalid]="showError('body')"
+                        class="w-full bg-[#060e20] text-[#dee5ff] rounded-xl px-4 py-3 font-body focus:outline-none focus:ring-2 focus:ring-[#3fc2fb]/60 transition placeholder:text-[#dee5ff]/60"></textarea>
+                    <p id="newsletter-body-hint" class="font-label text-xs text-[#dee5ff]/70 mt-2">
+                        Aceita HTML. Use {{ '{{nome_virgula}}' }} para incluir o primeiro nome do aluno (ex.: Oi{{ '{{nome_virgula}}' }}!). Quando há HTML completo, esta mensagem vira a versão em texto simples.
+                    </p>
+                    @if (showError('body')) {
+                        <p class="font-label text-sm text-error mt-2" role="alert">Informe a mensagem.</p>
+                    }
+                </div>
+                <div>
+                    <label for="newsletter-html" class="block font-label text-sm text-[#dee5ff]/80 mb-2">HTML completo (opcional)</label>
+                    <textarea
+                        id="newsletter-html"
+                        rows="8"
+                        formControlName="html"
+                        spellcheck="false"
+                        aria-describedby="newsletter-html-hint"
+                        class="w-full bg-[#060e20] text-[#dee5ff] rounded-xl px-4 py-3 font-body focus:outline-none focus:ring-2 focus:ring-[#3fc2fb]/60 transition placeholder:text-[#dee5ff]/60 font-mono text-sm"></textarea>
+                    <p id="newsletter-html-hint" class="font-label text-xs text-[#dee5ff]/70 mt-2">
+                        Se preenchido, o e-mail é enviado exatamente assim, sem o cartão padrão do Semeando Devs.
+                    </p>
+                </div>
+            </fieldset>
+
+            <fieldset class="bg-[#091328] rounded-3xl p-6 grid grid-cols-1 md:grid-cols-2 gap-6">
+                <legend class="sr-only">Botão de ação</legend>
+                <h3 class="font-headline font-bold text-lg text-[#dee5ff] md:col-span-2" aria-hidden="true">Botão de ação</h3>
+                <div>
+                    <label for="newsletter-cta-label" class="block font-label text-sm text-[#dee5ff]/80 mb-2">Texto do botão</label>
+                    <input
+                        id="newsletter-cta-label"
+                        type="text"
+                        formControlName="ctaLabel"
+                        autocomplete="off"
+                        placeholder="Acesse"
+                        class="w-full bg-[#060e20] text-[#dee5ff] rounded-xl px-4 py-3 font-body focus:outline-none focus:ring-2 focus:ring-[#3fc2fb]/60 transition placeholder:text-[#dee5ff]/60">
+                </div>
+                <div>
+                    <label for="newsletter-cta-url" class="block font-label text-sm text-[#dee5ff]/80 mb-2">Link do botão</label>
+                    <input
+                        id="newsletter-cta-url"
+                        type="url"
+                        formControlName="ctaUrl"
+                        autocomplete="off"
+                        placeholder="https://semeandodevs.com.br"
+                        aria-describedby="newsletter-cta-url-hint"
+                        [attr.aria-invalid]="showError('ctaUrl')"
+                        class="w-full bg-[#060e20] text-[#dee5ff] rounded-xl px-4 py-3 font-body focus:outline-none focus:ring-2 focus:ring-[#3fc2fb]/60 transition placeholder:text-[#dee5ff]/60">
+                    <p id="newsletter-cta-url-hint" class="font-label text-xs text-[#dee5ff]/70 mt-2">Opcional. Sem link, o botão não aparece.</p>
+                    @if (showError('ctaUrl')) {
+                        <p class="font-label text-sm text-error mt-2" role="alert">Informe um link começando com http:// ou https://.</p>
+                    }
+                </div>
+            </fieldset>
+
+            @if (testResult(); as result) {
+                <p
+                    class="p-4 rounded-xl font-body text-sm"
+                    [class]="result.ok ? 'bg-emerald-400/15 text-emerald-300' : 'bg-error/10 text-error'"
+                    [attr.role]="result.ok ? 'status' : 'alert'">
+                    {{ result.message }}
+                </p>
+            }
+
+            <div class="flex flex-col-reverse sm:flex-row justify-end gap-3">
+                <a
+                    routerLink="/admin/envio-de-newsletter"
+                    class="px-6 py-3 rounded-xl bg-[#0f1930] text-[#dee5ff] font-label text-center hover:bg-[#141f38] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#3fc2fb] transition">
+                    Cancelar
+                </a>
+                <button
+                    type="button"
+                    (click)="sendTest()"
+                    [disabled]="isSendingTest()"
+                    class="px-6 py-3 rounded-xl bg-[#141f38] text-[#3fc2fb] font-label font-bold hover:bg-[#192540] disabled:opacity-60 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#3fc2fb] transition">
+                    {{ isSendingTest() ? 'Enviando teste...' : 'Enviar teste' }}
+                </button>
+                <button
+                    type="submit"
+                    class="px-6 py-3 rounded-xl bg-[#3fc2fb] text-[#00232f] font-label font-bold hover:brightness-110 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#dee5ff] transition">
+                    Salvar
+                </button>
+            </div>
+        </form>
+
+        <section class="bg-[#091328] rounded-3xl p-6 flex flex-col gap-4 xl:sticky xl:top-6" aria-labelledby="newsletter-preview-title">
+            <h3 id="newsletter-preview-title" class="font-headline font-bold text-lg text-[#dee5ff]">Pré-visualização</h3>
+            <p class="font-label text-xs text-[#dee5ff]/70">Atualiza conforme você digita. O nome do aluno aparece como "Maria".</p>
+            <app-newsletter-preview [source]="{ body: value().body ?? '', html: value().html, ctaUrl: value().ctaUrl, ctaLabel: value().ctaLabel }" />
+        </section>
+    </div>
+</div>
+
+<dialog
+    #saveDialog
+    (cancel)="onSaveDialogCancel($event)"
+    aria-labelledby="save-title"
+    class="m-auto w-[calc(100%-2rem)] max-w-md bg-[#091328] text-[#dee5ff] rounded-3xl p-8 shadow-2xl">
+    <div class="flex flex-col gap-6">
+        <h2 id="save-title" class="font-headline font-bold text-2xl">Salvar newsletter</h2>
+
+        @switch (saveStep()) {
+            @case ('confirm') {
+                <div class="bg-[#0f1930] rounded-2xl p-4 flex gap-3">
+                    <span class="material-symbols-outlined text-[#fe69ac]" aria-hidden="true">warning</span>
+                    <p class="font-body text-sm text-[#dee5ff]/90">
+                        <strong>Salvar e enviar</strong> dispara o e-mail para todos os alunos inscritos na newsletter e não pode ser desfeito.
+                        <strong>Salvar</strong> apenas guarda a newsletter; o envio pode ser feito depois, pela opção Reenviar da lista.
+                    </p>
+                </div>
+                @if (saveError()) {
+                    <p class="bg-error/10 text-error p-4 rounded-xl font-body text-sm" role="alert">{{ saveError() }}</p>
+                }
+                <div class="flex flex-col-reverse sm:flex-row justify-end gap-3">
+                    <button type="button" (click)="closeSaveDialog()" [disabled]="isSaving()" class="px-6 py-3 rounded-xl bg-[#0f1930] text-[#dee5ff] font-label hover:bg-[#141f38] disabled:opacity-60 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#3fc2fb] transition">Cancelar</button>
+                    <button type="button" (click)="save(false)" [disabled]="isSaving()" class="px-6 py-3 rounded-xl bg-[#141f38] text-[#3fc2fb] font-label font-bold hover:bg-[#192540] disabled:opacity-60 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#3fc2fb] transition">Salvar</button>
+                    <button type="button" (click)="save(true)" [disabled]="isSaving()" class="px-6 py-3 rounded-xl bg-[#3fc2fb] text-[#00232f] font-label font-bold hover:brightness-110 disabled:opacity-60 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#dee5ff] transition">Salvar e enviar</button>
+                </div>
+            }
+            @case ('sending') {
+                <app-newsletter-send-progress [progress]="sendProgress()" />
+                <p class="font-label text-xs text-[#dee5ff]/70">Não feche esta janela até o envio terminar.</p>
+            }
+            @case ('done') {
+                @if (saveError()) {
+                    <p class="bg-error/10 text-error p-4 rounded-xl font-body text-sm" role="alert">{{ saveError() }}</p>
+                }
+                @if (sendProgress(); as progress) {
+                    <app-newsletter-send-progress [progress]="progress" />
+                    @if (progress.remaining > 0) {
+                        <p class="font-body text-sm text-[#dee5ff]/80">Restam {{ progress.remaining }} sem receber. Use Reenviar na lista para tentar novamente.</p>
+                    }
+                }
+                <div class="flex justify-end">
+                    <button type="button" (click)="finish()" class="px-6 py-3 rounded-xl bg-[#3fc2fb] text-[#00232f] font-label font-bold hover:brightness-110 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#dee5ff] transition">Ir para a lista</button>
+                </div>
+            }
+        }
+    </div>
+</dialog>

@@ -1,0 +1,187 @@
+<div class="px-6 pb-12 flex flex-col gap-10">
+    <header class="flex flex-col md:flex-row md:items-end justify-between gap-4">
+        <div class="flex flex-col gap-4">
+            <h2 class="text-3xl font-bold text-[#dee5ff] font-headline">Newsletter</h2>
+            <p class="text-[#dee5ff]/70 font-body">Consulte as newsletters cadastradas e crie novas.</p>
+        </div>
+        <a
+            routerLink="/admin/envio-de-newsletter/novo"
+            class="inline-flex items-center justify-center gap-2 bg-[#3fc2fb] text-[#00232f] font-label font-bold px-6 py-3 rounded-xl hover:brightness-110 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#dee5ff] transition">
+            <span class="material-symbols-outlined" aria-hidden="true">add</span>
+            Nova newsletter
+        </a>
+    </header>
+
+    <section class="bg-[#091328] rounded-3xl p-6 flex flex-col gap-6">
+        <div>
+            <label for="newsletter-search-input" class="block font-label text-sm text-[#dee5ff]/80 mb-2">Buscar por assunto</label>
+            <div class="relative">
+                <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-[#dee5ff]/60" aria-hidden="true">search</span>
+                <input
+                    id="newsletter-search-input"
+                    type="text"
+                    [formControl]="searchControl"
+                    placeholder="Assunto da newsletter"
+                    autocomplete="off"
+                    class="w-full bg-[#060e20] text-[#dee5ff] rounded-xl pl-12 pr-4 py-3 font-body focus:outline-none focus:ring-2 focus:ring-[#3fc2fb]/60 transition placeholder:text-[#dee5ff]/60">
+            </div>
+        </div>
+
+        @if (error()) {
+            <div class="bg-error/10 text-error p-6 rounded-2xl flex flex-col items-center justify-center gap-4 text-center" role="alert">
+                <span class="material-symbols-outlined text-4xl" aria-hidden="true">error</span>
+                <p class="font-body">{{ error() }}</p>
+                <button type="button" (click)="loadNewsletters()" class="bg-error/20 hover:bg-error/30 text-error px-6 py-2 rounded-xl font-label transition-colors">Tentar novamente</button>
+            </div>
+        }
+
+        <div class="overflow-x-auto rounded-2xl min-h-[300px]" tabindex="0" role="region" aria-label="Tabela de newsletters" [attr.aria-busy]="isLoading()">
+            <table class="w-full text-left font-body text-[#dee5ff] border-separate border-spacing-y-2">
+                <caption class="sr-only">Lista de newsletters</caption>
+                <thead>
+                    <tr class="font-label text-sm text-[#dee5ff]/80">
+                        <th scope="col" class="px-4 py-2 font-medium">Assunto</th>
+                        <th scope="col" class="px-4 py-2 font-medium whitespace-nowrap" [attr.aria-sort]="sortDir() === 'asc' ? 'ascending' : 'descending'">
+                            <button
+                                type="button"
+                                (click)="toggleSort()"
+                                class="inline-flex items-center gap-1 hover:text-[#3fc2fb] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#3fc2fb] rounded-md transition-colors">
+                                Criada em
+                                <span class="material-symbols-outlined text-base" aria-hidden="true">
+                                    {{ sortDir() === 'asc' ? 'arrow_upward' : 'arrow_downward' }}
+                                </span>
+                            </button>
+                        </th>
+                        <th scope="col" class="px-4 py-2 font-medium">Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (isLoading() && newsletters().length === 0) {
+                        @for (i of [1, 2, 3, 4, 5]; track i) {
+                            <tr class="animate-pulse" aria-hidden="true">
+                                <td colspan="3" class="bg-[#0f1930] rounded-2xl h-14"></td>
+                            </tr>
+                        }
+                    } @else if (newsletters().length === 0 && !error()) {
+                        <tr>
+                            <td colspan="3" class="px-4 py-12 text-center text-[#dee5ff]/70 text-lg">Nenhuma newsletter encontrada.</td>
+                        </tr>
+                    }
+                    @for (newsletter of newsletters(); track newsletter.id) {
+                        <tr
+                            (click)="open(newsletter)"
+                            class="bg-[#0f1930] hover:bg-[#141f38] transition-colors cursor-pointer">
+                            <td class="px-4 py-3 rounded-l-2xl font-headline font-bold">
+                                <a
+                                    [routerLink]="['/admin/envio-de-newsletter', newsletter.id]"
+                                    (click)="$event.stopPropagation()"
+                                    class="hover:text-[#3fc2fb] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#3fc2fb] rounded-md transition-colors">
+                                    {{ newsletter.subject || 'Sem assunto' }}
+                                </a>
+                            </td>
+                            <td class="px-4 py-3 whitespace-nowrap">{{ newsletter.created_at | date: 'dd/MM/yyyy' }}</td>
+                            <td class="px-4 py-3 rounded-r-2xl">
+                                <div class="flex gap-2">
+                                    <a
+                                        routerLink="/admin/envio-de-newsletter/novo"
+                                        [queryParams]="{ duplicar: newsletter.id }"
+                                        (click)="$event.stopPropagation()"
+                                        [attr.aria-label]="'Duplicar newsletter ' + (newsletter.subject || 'sem assunto')"
+                                        class="inline-flex items-center gap-1 px-3 py-2 rounded-xl bg-[#141f38] text-[#3fc2fb] font-label text-sm hover:bg-[#192540] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#3fc2fb] transition">
+                                        <span class="material-symbols-outlined text-base" aria-hidden="true">content_copy</span>
+                                        Duplicar
+                                    </a>
+                                    <button
+                                        type="button"
+                                        (click)="openResend(newsletter, $event); $event.stopPropagation()"
+                                        [attr.aria-label]="'Reenviar newsletter ' + (newsletter.subject || 'sem assunto')"
+                                        class="inline-flex items-center gap-1 px-3 py-2 rounded-xl bg-[#141f38] text-[#3fc2fb] font-label text-sm hover:bg-[#192540] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#3fc2fb] transition">
+                                        <span class="material-symbols-outlined text-base" aria-hidden="true">forward_to_inbox</span>
+                                        Reenviar
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        <div class="flex flex-col md:flex-row justify-between items-center gap-4">
+            <p class="font-label text-sm text-[#dee5ff]/80" aria-live="polite">
+                @if (totalCount() > 0) {
+                    {{ currentPage() * pageSize + 1 }}–{{ (currentPage() + 1) * pageSize > totalCount() ? totalCount() : (currentPage() + 1) * pageSize }} de {{ totalCount() }} newsletters
+                } @else {
+                    0 newsletters
+                }
+            </p>
+
+            <div class="flex gap-2">
+                <button
+                    type="button"
+                    aria-label="Página anterior"
+                    (click)="currentPage.set(currentPage() - 1)"
+                    [disabled]="currentPage() === 0 || isLoading()"
+                    class="w-10 h-10 flex items-center justify-center rounded-xl bg-[#0f1930] text-[#dee5ff] hover:bg-[#141f38] hover:text-[#3fc2fb] disabled:opacity-50 disabled:cursor-not-allowed transition">
+                    <span class="material-symbols-outlined" aria-hidden="true">chevron_left</span>
+                </button>
+                <button
+                    type="button"
+                    aria-label="Próxima página"
+                    (click)="currentPage.set(currentPage() + 1)"
+                    [disabled]="(currentPage() + 1) * pageSize >= totalCount() || isLoading()"
+                    class="w-10 h-10 flex items-center justify-center rounded-xl bg-[#0f1930] text-[#dee5ff] hover:bg-[#141f38] hover:text-[#3fc2fb] disabled:opacity-50 disabled:cursor-not-allowed transition">
+                    <span class="material-symbols-outlined" aria-hidden="true">chevron_right</span>
+                </button>
+            </div>
+        </div>
+    </section>
+</div>
+
+<dialog
+    #resendDialog
+    (close)="onResendClosed()"
+    (cancel)="onResendCancel($event)"
+    aria-labelledby="resend-title"
+    class="m-auto w-[calc(100%-2rem)] max-w-md bg-[#091328] text-[#dee5ff] rounded-3xl p-8 shadow-2xl">
+    @if (resending(); as newsletter) {
+        <div class="flex flex-col gap-6">
+            <header>
+                <h2 id="resend-title" class="font-headline font-bold text-2xl">Reenviar newsletter</h2>
+                <p class="font-label text-[#3fc2fb] mt-1">{{ newsletter.subject || 'Sem assunto' }}</p>
+            </header>
+
+            @switch (resendStep()) {
+                @case ('confirm') {
+                    <p class="font-body text-sm text-[#dee5ff]/80">
+                        O e-mail será enviado apenas para os alunos inscritos que ainda não o receberam. Quem já recebeu não será incluído.
+                    </p>
+                    <div class="flex justify-end gap-3">
+                        <button type="button" (click)="closeResend()" class="px-6 py-3 rounded-xl bg-[#0f1930] text-[#dee5ff] font-label hover:bg-[#141f38] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#3fc2fb] transition">Cancelar</button>
+                        <button type="button" (click)="confirmResend()" class="px-6 py-3 rounded-xl bg-[#3fc2fb] text-[#00232f] font-label font-bold hover:brightness-110 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#dee5ff] transition">Reenviar</button>
+                    </div>
+                }
+                @case ('sending') {
+                    <app-newsletter-send-progress [progress]="resendProgress()" />
+                    <p class="font-label text-xs text-[#dee5ff]/70">Não feche esta janela até o envio terminar.</p>
+                }
+                @case ('done') {
+                    @if (resendError()) {
+                        <p class="bg-error/10 text-error p-4 rounded-xl font-body text-sm" role="alert">{{ resendError() }}</p>
+                    }
+                    @if (resendProgress(); as progress) {
+                        <app-newsletter-send-progress [progress]="progress" />
+                        @if (progress.remaining > 0) {
+                            <p class="font-body text-sm text-[#dee5ff]/80">Restam {{ progress.remaining }} sem receber. Reenvie para tentar novamente.</p>
+                        }
+                    } @else if (!resendError()) {
+                        <p class="font-body text-sm text-[#dee5ff]/80">Não há alunos pendentes para esta newsletter.</p>
+                    }
+                    <div class="flex justify-end">
+                        <button type="button" (click)="closeResend()" class="px-6 py-3 rounded-xl bg-[#3fc2fb] text-[#00232f] font-label font-bold hover:brightness-110 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#dee5ff] transition">Fechar</button>
+                    </div>
+                }
+            }
+        </div>
+    }
+</dialog>
