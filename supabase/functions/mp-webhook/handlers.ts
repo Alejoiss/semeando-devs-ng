@@ -1,5 +1,5 @@
 import { SupabaseClient } from "https://esm.sh/@supabase/supabase-js@2"
-import { insertBillingEvent, updateBillingEvent } from "./billing-events.ts"
+import { extractPaymentFields, insertBillingEvent, updateBillingEvent } from "./billing-events.ts"
 
 type MpEvent = { id?: string | number; topic?: string; type?: string; data?: { id?: string } }
 
@@ -73,6 +73,8 @@ export async function handleAuthorizedPayment(
             mlToken,
         ) as Record<string, unknown>
 
+        const paymentFields = extractPaymentFields(payment)
+
         const paymentMetadata = payment['metadata'] as Record<string, unknown> | undefined
         const pointOfInteraction = payment['point_of_interaction'] as Record<string, any> | undefined
 
@@ -86,7 +88,7 @@ export async function handleAuthorizedPayment(
         }
 
         if (!preapprovalId) {
-            await updateBillingEvent(client, billingEventId, { status: 'orphan', errorMessage: 'No preapproval_id in payment object' })
+            await updateBillingEvent(client, billingEventId, { status: 'orphan', errorMessage: 'No preapproval_id in payment object', payment: paymentFields })
             return
         }
 
@@ -98,11 +100,11 @@ export async function handleAuthorizedPayment(
         const subscriptionId = await syncSubscriptionAndProfile(client, preapprovalId, newStatus, isPro)
 
         if (!subscriptionId) {
-            await updateBillingEvent(client, billingEventId, { status: 'orphan', errorMessage: `No subscription found for preapproval_id ${preapprovalId}` })
+            await updateBillingEvent(client, billingEventId, { status: 'orphan', errorMessage: `No subscription found for preapproval_id ${preapprovalId}`, payment: paymentFields })
             return
         }
 
-        await updateBillingEvent(client, billingEventId, { status: 'success', subscriptionId })
+        await updateBillingEvent(client, billingEventId, { status: 'success', subscriptionId, payment: paymentFields })
     } catch (err: unknown) {
         const message = err instanceof Error ? err.message : String(err)
         await updateBillingEvent(client, billingEventId, { status: 'failed', errorMessage: message })

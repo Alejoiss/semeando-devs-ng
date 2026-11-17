@@ -253,6 +253,11 @@ export const routes: Routes = [
                 title: 'Nova Newsletter - Semeando Devs'
             },
             {
+                path: 'relatorio-de-receita',
+                loadComponent: () => import('./pages/admin/admin-app/revenue-report/revenue-report').then(m => m.AdminRevenueReport),
+                title: 'Relatório de Receita - Semeando Devs'
+            },
+            {
                 path: 'envio-de-newsletter/:id',
                 loadComponent: () => import('./pages/admin/admin-app/newsletter/newsletter-detail/newsletter-detail').then(m => m.AdminNewsletterDetail),
                 title: 'Newsletter - Semeando Devs'

@@ -1,0 +1,206 @@
+<div class="px-6 pb-12 flex flex-col gap-8">
+    <header class="flex flex-col gap-4">
+        <h2 class="text-3xl font-bold text-[#dee5ff] font-headline">Relatório de receita</h2>
+        <p class="text-[#dee5ff]/70 font-body">Distribuição mensal entre plataforma e professores, com base nas lições concluídas.</p>
+    </header>
+
+    <form class="bg-[#091328] rounded-3xl p-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6 items-start" (submit)="$event.preventDefault(); generate()" novalidate>
+        <div>
+            <label for="report-month" class="block font-label text-sm text-[#dee5ff]/80 mb-2">Mês</label>
+            <select
+                id="report-month"
+                (change)="setMonth($any($event.target).value)"
+                [value]="month()"
+                class="w-full bg-[#060e20] text-[#dee5ff] rounded-xl px-4 py-3 font-body focus:outline-none focus:ring-2 focus:ring-[#3fc2fb]/60 transition cursor-pointer">
+                @for (name of monthNames; track name; let i = $index) {
+                    <option [value]="i + 1" [selected]="month() === i + 1">{{ name }}</option>
+                }
+            </select>
+        </div>
+
+        <div>
+            <label for="report-year" class="block font-label text-sm text-[#dee5ff]/80 mb-2">Ano</label>
+            <input
+                id="report-year"
+                type="number"
+                min="2000"
+                max="2100"
+                step="1"
+                [value]="year()"
+                (input)="setYear($any($event.target).value)"
+                [attr.aria-invalid]="!isYearValid()"
+                class="w-full bg-[#060e20] text-[#dee5ff] rounded-xl px-4 py-3 font-body focus:outline-none focus:ring-2 focus:ring-[#3fc2fb]/60 transition">
+            @if (!isYearValid()) {
+                <p class="font-label text-sm text-error mt-2" role="alert">Informe um ano entre 2000 e 2100.</p>
+            }
+        </div>
+
+        <div>
+            <label for="report-income" class="block font-label text-sm text-[#dee5ff]/80 mb-2">Entrada (R$)</label>
+            <input
+                id="report-income"
+                type="number"
+                min="0"
+                step="0.01"
+                inputmode="decimal"
+                placeholder="0,00"
+                aria-describedby="report-income-hint"
+                (input)="setIncome($event)"
+                class="w-full bg-[#060e20] text-[#dee5ff] rounded-xl px-4 py-3 font-body focus:outline-none focus:ring-2 focus:ring-[#3fc2fb]/60 transition placeholder:text-[#dee5ff]/60">
+            <p id="report-income-hint" class="font-label text-xs text-[#dee5ff]/70 mt-2">Total recebido no mês, conforme o extrato do Mercado Pago.</p>
+        </div>
+
+        <div>
+            <label for="report-outgoing" class="block font-label text-sm text-[#dee5ff]/80 mb-2">Saída (R$)</label>
+            <input
+                id="report-outgoing"
+                type="number"
+                min="0"
+                step="0.01"
+                inputmode="decimal"
+                placeholder="0,00"
+                aria-describedby="report-outgoing-hint"
+                (input)="setOutgoing($event)"
+                class="w-full bg-[#060e20] text-[#dee5ff] rounded-xl px-4 py-3 font-body focus:outline-none focus:ring-2 focus:ring-[#3fc2fb]/60 transition placeholder:text-[#dee5ff]/60">
+            <p id="report-outgoing-hint" class="font-label text-xs text-[#dee5ff]/70 mt-2">Descontos, taxas, estornos e valores a excluir, como assinaturas de teste.</p>
+            @if (outgoingExceedsIncome()) {
+                <p class="font-label text-sm text-error mt-2" role="alert">A saída é maior que a entrada; a receita líquida será considerada zero.</p>
+            }
+        </div>
+
+        <div class="lg:pt-7">
+            <button
+                type="submit"
+                [disabled]="isLoading() || !isYearValid()"
+                class="w-full inline-flex items-center justify-center gap-2 bg-[#3fc2fb] text-[#00232f] font-label font-bold px-6 py-3 rounded-xl hover:brightness-110 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#dee5ff] transition disabled:opacity-60 disabled:cursor-not-allowed">
+                <span class="material-symbols-outlined" aria-hidden="true">{{ isLoading() ? 'hourglass_top' : 'assessment' }}</span>
+                {{ isLoading() ? 'Gerando...' : 'Gerar relatório' }}
+            </button>
+        </div>
+    </form>
+
+    @if (error()) {
+        <div class="bg-error/10 text-error p-6 rounded-2xl flex flex-col items-center justify-center gap-4 text-center" role="alert">
+            <span class="material-symbols-outlined text-4xl" aria-hidden="true">error</span>
+            <p class="font-body">{{ error() }}</p>
+        </div>
+    }
+
+    <div aria-live="polite">
+        @if (report(); as data) {
+            <div class="flex flex-col gap-8">
+                <h3 class="text-xl font-bold text-[#dee5ff] font-headline">{{ periodLabel() }}</h3>
+
+                <section aria-label="Resumo financeiro" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                    <app-kpi-card label="Receita líquida" [value]="formatCents(netCents())" icon="payments" />
+                    <app-kpi-card [label]="'Plataforma (' + (100 - teachersSharePercent) + '%)'" [value]="formatCents(platformCents())" icon="account_balance" />
+                    <app-kpi-card [label]="'Professores (' + teachersSharePercent + '%)'" [value]="formatCents(teachersCents())" icon="school" />
+                    <app-kpi-card label="Valor médio por lição" [value]="formatCents(averagePerLessonCents())" icon="calculate" />
+                </section>
+
+                <section aria-label="Atividade dos alunos" class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <app-kpi-card label="Lições concluídas" [value]="data.totalLessons.toString()" icon="task_alt" [trend]="lessonsTrend()" />
+                    <app-kpi-card label="Alunos ativos" [value]="data.activeStudents.toString()" icon="group" [trend]="studentsTrend()" />
+                </section>
+
+                @if (data.totalLessons === 0) {
+                    <p class="bg-[#0f1930] rounded-2xl p-6 text-center text-[#dee5ff]/70 font-body">Nenhuma lição concluída por alunos neste mês.</p>
+                } @else {
+                    <section class="bg-[#091328] rounded-3xl p-6 flex flex-col gap-4" aria-labelledby="teachers-title">
+                        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                            <h3 id="teachers-title" class="font-headline font-bold text-lg text-[#dee5ff]">Repasse por professor</h3>
+                            <button
+                                type="button"
+                                (click)="exportCsv()"
+                                class="inline-flex items-center justify-center gap-2 bg-[#0f1930] text-[#dee5ff] font-label px-4 py-2 rounded-xl hover:bg-[#141f38] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#3fc2fb] transition">
+                                <span class="material-symbols-outlined text-base" aria-hidden="true">download</span>
+                                Exportar CSV
+                            </button>
+                        </div>
+
+                        @if (hasUnassignedLessons()) {
+                            <p class="bg-[#0f1930] text-[#dee5ff]/80 rounded-xl p-4 font-body text-sm" role="status">
+                                Há lições concluídas sem professor atribuído (sem <span class="font-semibold">created_by</span>). O valor proporcional a elas não tem destinatário.
+                            </p>
+                        }
+
+                        <div class="overflow-x-auto rounded-2xl" tabindex="0" role="region" aria-label="Tabela de repasse por professor">
+                            <table class="w-full text-left font-body text-[#dee5ff] border-separate border-spacing-y-2">
+                                <caption class="sr-only">Lições concluídas e valor a repassar por professor</caption>
+                                <thead>
+                                    <tr class="font-label text-sm text-[#dee5ff]/80">
+                                        <th scope="col" class="px-4 py-2 font-medium">Professor</th>
+                                        <th scope="col" class="px-4 py-2 font-medium text-right">Lições</th>
+                                        <th scope="col" class="px-4 py-2 font-medium text-right">Participação</th>
+                                        <th scope="col" class="px-4 py-2 font-medium text-right">Valor</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @for (row of teacherRows(); track row.key) {
+                                        <tr class="bg-[#0f1930]">
+                                            <th scope="row" class="px-4 py-3 rounded-l-2xl font-semibold">{{ row.name }}</th>
+                                            <td class="px-4 py-3 text-right">{{ row.lessons }}</td>
+                                            <td class="px-4 py-3 text-right">{{ formatPercent(row.sharePercent) }}</td>
+                                            <td class="px-4 py-3 rounded-r-2xl text-right font-bold text-[#3fc2fb]">{{ formatCents(row.amountCents) }}</td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </section>
+
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                        <section class="bg-[#091328] rounded-3xl p-6 flex flex-col gap-4" aria-labelledby="modules-title">
+                            <h3 id="modules-title" class="font-headline font-bold text-lg text-[#dee5ff]">Lições por linguagem</h3>
+                            <div class="overflow-x-auto rounded-2xl" tabindex="0" role="region" aria-label="Tabela de lições por linguagem">
+                                <table class="w-full text-left font-body text-[#dee5ff] border-separate border-spacing-y-2">
+                                    <caption class="sr-only">Lições concluídas por módulo</caption>
+                                    <thead>
+                                        <tr class="font-label text-sm text-[#dee5ff]/80">
+                                            <th scope="col" class="px-4 py-2 font-medium">Linguagem</th>
+                                            <th scope="col" class="px-4 py-2 font-medium text-right">Lições</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @for (module of data.byModule; track module.moduleId) {
+                                            <tr class="bg-[#0f1930]">
+                                                <th scope="row" class="px-4 py-3 rounded-l-2xl font-semibold">{{ module.title }}</th>
+                                                <td class="px-4 py-3 rounded-r-2xl text-right">{{ module.lessons }}</td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                        </section>
+
+                        <section class="bg-[#091328] rounded-3xl p-6 flex flex-col gap-4" aria-labelledby="top-lessons-title">
+                            <h3 id="top-lessons-title" class="font-headline font-bold text-lg text-[#dee5ff]">Lições mais concluídas</h3>
+                            <div class="overflow-x-auto rounded-2xl" tabindex="0" role="region" aria-label="Tabela das lições mais concluídas">
+                                <table class="w-full text-left font-body text-[#dee5ff] border-separate border-spacing-y-2">
+                                    <caption class="sr-only">As cinco lições mais concluídas no mês</caption>
+                                    <thead>
+                                        <tr class="font-label text-sm text-[#dee5ff]/80">
+                                            <th scope="col" class="px-4 py-2 font-medium">Lição</th>
+                                            <th scope="col" class="px-4 py-2 font-medium text-right">Conclusões</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @for (lesson of data.topLessons; track lesson.lessonId) {
+                                            <tr class="bg-[#0f1930]">
+                                                <th scope="row" class="px-4 py-3 rounded-l-2xl font-semibold">
+                                                    {{ lesson.title }}
+                                                    <span class="block font-label text-xs font-normal text-[#dee5ff]/70">{{ lesson.moduleTitle }}</span>
+                                                </th>
+                                                <td class="px-4 py-3 rounded-r-2xl text-right">{{ lesson.lessons }}</td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                        </section>
+                    </div>
+                }
+            </div>
+        }
+    </div>
+</div>

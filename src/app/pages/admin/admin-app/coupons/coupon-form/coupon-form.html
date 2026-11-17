@@ -1,16 +1,20 @@
-<div class="px-6 pb-12 flex flex-col gap-10 max-w-3xl">
+<div class="px-6 pb-12 flex flex-col gap-8">
     <header class="flex flex-col gap-4">
         <a routerLink="/admin/cadastro-de-cupons" class="inline-flex items-center gap-1 font-label text-sm text-[#dee5ff]/80 hover:text-[#3fc2fb] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#3fc2fb] rounded-md w-fit transition-colors">
             <span class="material-symbols-outlined text-base" aria-hidden="true">arrow_back</span>
             Voltar para cupons
         </a>
-        <h2 class="text-3xl font-bold text-[#dee5ff] font-headline">Novo cupom</h2>
+        <div class="flex flex-col gap-2">
+            <h2 class="text-3xl font-bold text-[#dee5ff] font-headline">Novo cupom</h2>
+            <p class="text-[#dee5ff]/70 font-body">Defina o código, o desconto e as regras de validade. Para gerar vários cupons de uma vez, use “Salvar vários”.</p>
+        </div>
     </header>
 
     <form [formGroup]="form" (ngSubmit)="save()" class="flex flex-col gap-8" novalidate>
-        <fieldset class="bg-[#091328] rounded-3xl p-6 flex flex-col gap-6">
+        <div class="grid grid-cols-1 xl:grid-cols-3 gap-6 items-stretch">
+        <fieldset class="bg-[#091328] rounded-3xl p-8 flex flex-col gap-6">
             <legend class="sr-only">Identificação</legend>
-            <h3 class="font-headline font-bold text-lg text-[#dee5ff]" aria-hidden="true">Identificação</h3>
+            <h3 class="font-headline font-bold text-xl text-[#dee5ff] flex items-center gap-3" aria-hidden="true"><span class="material-symbols-outlined text-[#3fc2fb] bg-[#0f1930] rounded-xl p-2">badge</span>Identificação</h3>
             <div>
                 <label for="coupon-code" class="block font-label text-sm text-[#dee5ff]/80 mb-2">Código</label>
                 <input
@@ -23,7 +27,7 @@
                     placeholder="SEMEANDODEVS"
                     aria-describedby="coupon-code-hint"
                     [attr.aria-invalid]="showError('code')"
-                    class="w-full bg-[#060e20] text-[#dee5ff] rounded-xl px-4 py-3 font-body uppercase focus:outline-none focus:ring-2 focus:ring-[#3fc2fb]/60 transition placeholder:text-[#dee5ff]/60">
+                    class="w-full bg-[#060e20] text-[#dee5ff] rounded-xl px-4 h-12 font-body uppercase focus:outline-none focus:ring-2 focus:ring-[#3fc2fb]/60 transition placeholder:text-[#dee5ff]/60">
                 <p id="coupon-code-hint" class="font-label text-xs text-[#dee5ff]/70 mt-2">Letras maiúsculas, números, hífen e underscore.</p>
                 @if (showError('code')) {
                     <p class="font-label text-sm text-error mt-2" role="alert">Informe um código válido, sem espaços ou acentos.</p>
@@ -31,15 +35,15 @@
             </div>
         </fieldset>
 
-        <fieldset class="bg-[#091328] rounded-3xl p-6 grid grid-cols-1 md:grid-cols-2 gap-6">
+        <fieldset class="bg-[#091328] rounded-3xl p-8 flex flex-col gap-6">
             <legend class="sr-only">Desconto</legend>
-            <h3 class="font-headline font-bold text-lg text-[#dee5ff] md:col-span-2" aria-hidden="true">Desconto</h3>
+            <h3 class="font-headline font-bold text-xl text-[#dee5ff] flex items-center gap-3" aria-hidden="true"><span class="material-symbols-outlined text-[#3fc2fb] bg-[#0f1930] rounded-xl p-2">percent</span>Desconto</h3>
             <div>
                 <label for="coupon-discount-type" class="block font-label text-sm text-[#dee5ff]/80 mb-2">Tipo de desconto</label>
                 <select
                     id="coupon-discount-type"
                     formControlName="discountType"
-                    class="w-full bg-[#060e20] text-[#dee5ff] rounded-xl px-4 py-3 font-body focus:outline-none focus:ring-2 focus:ring-[#3fc2fb]/60 transition cursor-pointer">
+                    class="w-full bg-[#060e20] text-[#dee5ff] rounded-xl px-4 h-12 font-body focus:outline-none focus:ring-2 focus:ring-[#3fc2fb]/60 transition cursor-pointer">
                     @for (type of discountTypes; track type) {
                         <option [value]="type">{{ type }}</option>
                     }
@@ -54,7 +58,7 @@
                     min="0.01"
                     formControlName="discountValue"
                     [attr.aria-invalid]="showError('discountValue')"
-                    class="w-full bg-[#060e20] text-[#dee5ff] rounded-xl px-4 py-3 font-body focus:outline-none focus:ring-2 focus:ring-[#3fc2fb]/60 transition placeholder:text-[#dee5ff]/60">
+                    class="w-full bg-[#060e20] text-[#dee5ff] rounded-xl px-4 h-12 font-body focus:outline-none focus:ring-2 focus:ring-[#3fc2fb]/60 transition placeholder:text-[#dee5ff]/60">
                 @if (showError('discountValue')) {
                     <p class="font-label text-sm text-error mt-2" role="alert">
                         {{ form.controls.discountType.value === 'percentage' ? 'Informe um valor entre 0,01 e 100.' : 'Informe um valor maior que zero.' }}
@@ -72,7 +76,7 @@
                     placeholder="Opcional"
                     aria-describedby="coupon-duration-hint"
                     [attr.aria-invalid]="showError('durationMonths')"
-                    class="w-full bg-[#060e20] text-[#dee5ff] rounded-xl px-4 py-3 font-body focus:outline-none focus:ring-2 focus:ring-[#3fc2fb]/60 transition placeholder:text-[#dee5ff]/60">
+                    class="w-full bg-[#060e20] text-[#dee5ff] rounded-xl px-4 h-12 font-body focus:outline-none focus:ring-2 focus:ring-[#3fc2fb]/60 transition placeholder:text-[#dee5ff]/60">
                 <p id="coupon-duration-hint" class="font-label text-xs text-[#dee5ff]/70 mt-2">Por quantos meses o desconto vale após o uso.</p>
                 @if (showError('durationMonths')) {
                     <p class="font-label text-sm text-error mt-2" role="alert">Informe um número inteiro maior que zero.</p>
@@ -80,15 +84,15 @@
             </div>
         </fieldset>
 
-        <fieldset class="bg-[#091328] rounded-3xl p-6 grid grid-cols-1 md:grid-cols-2 gap-6">
+        <fieldset class="bg-[#091328] rounded-3xl p-8 flex flex-col gap-6">
             <legend class="sr-only">Validade e elegibilidade</legend>
-            <h3 class="font-headline font-bold text-lg text-[#dee5ff] md:col-span-2" aria-hidden="true">Validade e elegibilidade</h3>
+            <h3 class="font-headline font-bold text-xl text-[#dee5ff] flex items-center gap-3" aria-hidden="true"><span class="material-symbols-outlined text-[#3fc2fb] bg-[#0f1930] rounded-xl p-2">event_available</span>Validade e elegibilidade</h3>
             <div>
                 <label for="coupon-plan-type" class="block font-label text-sm text-[#dee5ff]/80 mb-2">Válido para o plano</label>
                 <select
                     id="coupon-plan-type"
                     formControlName="validForPlanType"
-                    class="w-full bg-[#060e20] text-[#dee5ff] rounded-xl px-4 py-3 font-body focus:outline-none focus:ring-2 focus:ring-[#3fc2fb]/60 transition cursor-pointer">
+                    class="w-full bg-[#060e20] text-[#dee5ff] rounded-xl px-4 h-12 font-body focus:outline-none focus:ring-2 focus:ring-[#3fc2fb]/60 transition cursor-pointer">
                     @for (type of planTypes; track type) {
                         <option [value]="type">{{ type }}</option>
                     }
@@ -101,10 +105,12 @@
                     type="date"
                     formControlName="expirationDate"
                     aria-describedby="coupon-expiration-hint"
-                    class="w-full bg-[#060e20] text-[#dee5ff] rounded-xl px-4 py-3 font-body focus:outline-none focus:ring-2 focus:ring-[#3fc2fb]/60 transition [color-scheme:dark]">
+                    class="w-full bg-[#060e20] text-[#dee5ff] rounded-xl px-4 h-12 font-body focus:outline-none focus:ring-2 focus:ring-[#3fc2fb]/60 transition [color-scheme:dark]">
                 <p id="coupon-expiration-hint" class="font-label text-xs text-[#dee5ff]/70 mt-2">Opcional. O cupom vale até o fim deste dia.</p>
             </div>
         </fieldset>
+
+        </div>
 
         @if (saveError()) {
             <p class="bg-error/10 text-error p-4 rounded-xl font-body text-sm" role="alert">{{ saveError() }}</p>
@@ -153,7 +159,7 @@
                 [formControl]="suffixesControl"
                 placeholder="[123, 456, 789]"
                 aria-describedby="bulk-hint"
-                class="w-full bg-[#060e20] text-[#dee5ff] rounded-xl px-4 py-3 font-body focus:outline-none focus:ring-2 focus:ring-[#3fc2fb]/60 transition placeholder:text-[#dee5ff]/60"></textarea>
+                class="w-full bg-[#060e20] text-[#dee5ff] rounded-xl px-4 h-12 font-body focus:outline-none focus:ring-2 focus:ring-[#3fc2fb]/60 transition placeholder:text-[#dee5ff]/60"></textarea>
             <p id="bulk-hint" class="font-label text-xs text-[#dee5ff]/70 mt-2" aria-live="polite">
                 Separe por vírgula ou quebra de linha (máximo {{ maxBulk }}).
                 @if (suffixes().length > 0) {
