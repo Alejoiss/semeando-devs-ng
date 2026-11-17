@@ -235,7 +235,12 @@ export const routes: Routes = [
             {
                 path: 'cadastro-de-cupons',
                 loadComponent: () => import('./pages/admin/admin-app/coupons/coupons').then(m => m.AdminCoupons),
-                title: 'Cadastro de Cupons - Semeando Devs'
+                title: 'Cupons - Semeando Devs'
+            },
+            {
+                path: 'cadastro-de-cupons/novo',
+                loadComponent: () => import('./pages/admin/admin-app/coupons/coupon-form/coupon-form').then(m => m.AdminCouponForm),
+                title: 'Novo Cupom - Semeando Devs'
             },
             {
                 path: 'envio-de-newsletter',

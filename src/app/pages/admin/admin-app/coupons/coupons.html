@@ -1,0 +1,231 @@
+<div class="px-6 pb-12 flex flex-col gap-10">
+    <header class="flex flex-col md:flex-row md:items-end justify-between gap-4">
+        <div class="flex flex-col gap-4">
+            <h2 class="text-3xl font-bold text-[#dee5ff] font-headline">Cupons</h2>
+            <p class="text-[#dee5ff]/70 font-body">Consulte, filtre e crie cupons de desconto da plataforma.</p>
+        </div>
+        <a
+            routerLink="/admin/cadastro-de-cupons/novo"
+            class="inline-flex items-center justify-center gap-2 bg-[#3fc2fb] text-[#00232f] font-label font-bold px-6 py-3 rounded-xl hover:brightness-110 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#dee5ff] transition">
+            <span class="material-symbols-outlined" aria-hidden="true">add</span>
+            Novo cupom
+        </a>
+    </header>
+
+    <section class="bg-[#091328] rounded-3xl p-6 flex flex-col gap-6">
+        <div class="flex flex-col md:flex-row gap-4 items-end">
+            <div class="flex-1 w-full">
+                <label for="coupon-search-input" class="block font-label text-sm text-[#dee5ff]/80 mb-2">Buscar por código</label>
+                <div class="relative">
+                    <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-[#dee5ff]/60" aria-hidden="true">search</span>
+                    <input
+                        id="coupon-search-input"
+                        type="text"
+                        [formControl]="searchControl"
+                        placeholder="Código do cupom"
+                        autocomplete="off"
+                        class="w-full bg-[#060e20] text-[#dee5ff] rounded-xl pl-12 pr-4 py-3 font-body focus:outline-none focus:ring-2 focus:ring-[#3fc2fb]/60 transition placeholder:text-[#dee5ff]/60">
+                </div>
+            </div>
+
+            <div class="w-full md:w-52">
+                <label for="coupon-discount-type-filter" class="block font-label text-sm text-[#dee5ff]/80 mb-2">Tipo de desconto</label>
+                <select
+                    id="coupon-discount-type-filter"
+                    (change)="setDiscountTypeFilter($any($event.target).value)"
+                    [value]="discountTypeFilter()"
+                    class="w-full bg-[#060e20] text-[#dee5ff] rounded-xl px-4 py-3 font-body focus:outline-none focus:ring-2 focus:ring-[#3fc2fb]/60 transition cursor-pointer">
+                    <option value="">Todos</option>
+                    @for (type of discountTypes; track type) {
+                        <option [value]="type">{{ type }}</option>
+                    }
+                </select>
+            </div>
+
+            <div class="w-full md:w-52">
+                <label for="coupon-plan-type-filter" class="block font-label text-sm text-[#dee5ff]/80 mb-2">Tipo de plano</label>
+                <select
+                    id="coupon-plan-type-filter"
+                    (change)="setPlanTypeFilter($any($event.target).value)"
+                    [value]="planTypeFilter()"
+                    class="w-full bg-[#060e20] text-[#dee5ff] rounded-xl px-4 py-3 font-body focus:outline-none focus:ring-2 focus:ring-[#3fc2fb]/60 transition cursor-pointer">
+                    <option value="">Todos</option>
+                    @for (type of planTypes; track type) {
+                        <option [value]="type">{{ type }}</option>
+                    }
+                </select>
+            </div>
+        </div>
+
+        @if (error()) {
+            <div class="bg-error/10 text-error p-6 rounded-2xl flex flex-col items-center justify-center gap-4 text-center" role="alert">
+                <span class="material-symbols-outlined text-4xl" aria-hidden="true">error</span>
+                <p class="font-body">{{ error() }}</p>
+                <button type="button" (click)="loadCoupons()" class="bg-error/20 hover:bg-error/30 text-error px-6 py-2 rounded-xl font-label transition-colors">Tentar novamente</button>
+            </div>
+        }
+
+        <div class="overflow-x-auto rounded-2xl min-h-[300px]" tabindex="0" role="region" aria-label="Tabela de cupons" [attr.aria-busy]="isLoading()">
+            <table class="w-full text-left font-body text-[#dee5ff] border-separate border-spacing-y-2">
+                <caption class="sr-only">Lista de cupons de desconto</caption>
+                <thead>
+                    <tr class="font-label text-sm text-[#dee5ff]/80">
+                        <th scope="col" class="px-4 py-2 font-medium">Código</th>
+                        @for (column of [sortableColumns['discountValue'], sortableColumns['usageLimit'], sortableColumns['usedCount'], sortableColumns['expirationDate'], sortableColumns['createdAt']]; track column.field) {
+                            <th scope="col" class="px-4 py-2 font-medium whitespace-nowrap" [attr.aria-sort]="ariaSort(column.field)">
+                                <button
+                                    type="button"
+                                    (click)="toggleSort(column.field)"
+                                    class="inline-flex items-center gap-1 hover:text-[#3fc2fb] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#3fc2fb] rounded-md transition-colors">
+                                    {{ column.label }}
+                                    <span class="material-symbols-outlined text-base" aria-hidden="true">
+                                        @if (sortField() !== column.field) {
+                                            unfold_more
+                                        } @else if (sortDir() === 'asc') {
+                                            arrow_upward
+                                        } @else {
+                                            arrow_downward
+                                        }
+                                    </span>
+                                </button>
+                            </th>
+                        }
+                        <th scope="col" class="px-4 py-2 font-medium whitespace-nowrap">Meses</th>
+                        <th scope="col" class="px-4 py-2 font-medium">Tags</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (isLoading() && coupons().length === 0) {
+                        @for (i of [1, 2, 3, 4, 5]; track i) {
+                            <tr class="animate-pulse" aria-hidden="true">
+                                <td colspan="8" class="bg-[#0f1930] rounded-2xl h-14"></td>
+                            </tr>
+                        }
+                    } @else if (coupons().length === 0 && !error()) {
+                        <tr>
+                            <td colspan="8" class="px-4 py-12 text-center text-[#dee5ff]/70 text-lg">Nenhum cupom encontrado.</td>
+                        </tr>
+                    }
+                    @for (coupon of coupons(); track coupon.id) {
+                        <tr
+                            (click)="openEdit(coupon, $event)"
+                            class="bg-[#0f1930] hover:bg-[#141f38] transition-colors cursor-pointer">
+                            <td class="px-4 py-3 rounded-l-2xl font-headline font-bold whitespace-nowrap">
+                                <button
+                                    type="button"
+                                    (click)="openEdit(coupon, $event); $event.stopPropagation()"
+                                    [attr.aria-label]="'Editar cupom ' + coupon.code"
+                                    class="font-bold hover:text-[#3fc2fb] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#3fc2fb] rounded-md transition-colors">
+                                    {{ coupon.code }}
+                                </button>
+                            </td>
+                            <td class="px-4 py-3 whitespace-nowrap">{{ formatDiscount(coupon) }}</td>
+                            <td class="px-4 py-3">{{ coupon.usageLimit ?? 'Ilimitado' }}</td>
+                            <td class="px-4 py-3">{{ coupon.usedCount }}</td>
+                            <td class="px-4 py-3 whitespace-nowrap">{{ coupon.expirationDate ? (coupon.expirationDate | date: 'dd/MM/yyyy') : 'Sem expiração' }}</td>
+                            <td class="px-4 py-3 whitespace-nowrap">{{ coupon.createdAt | date: 'dd/MM/yyyy' }}</td>
+                            <td class="px-4 py-3">{{ coupon.durationMonths ?? '—' }}</td>
+                            <td class="px-4 py-3 rounded-r-2xl">
+                                <div class="flex flex-wrap gap-2">
+                                    <span class="font-label text-xs font-bold px-3 py-1 rounded-full bg-emerald-400/15 text-emerald-300">{{ coupon.discountType }}</span>
+                                    <span class="font-label text-xs font-bold px-3 py-1 rounded-full bg-sky-400/15 text-sky-300">{{ coupon.validForPlanType }}</span>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        <div class="flex flex-col md:flex-row justify-between items-center gap-4">
+            <p class="font-label text-sm text-[#dee5ff]/80" aria-live="polite">
+                @if (totalCount() > 0) {
+                    {{ currentPage() * pageSize + 1 }}–{{ (currentPage() + 1) * pageSize > totalCount() ? totalCount() : (currentPage() + 1) * pageSize }} de {{ totalCount() }} cupons
+                } @else {
+                    0 cupons
+                }
+            </p>
+
+            <div class="flex gap-2">
+                <button
+                    type="button"
+                    aria-label="Página anterior"
+                    (click)="currentPage.set(currentPage() - 1)"
+                    [disabled]="currentPage() === 0 || isLoading()"
+                    class="w-10 h-10 flex items-center justify-center rounded-xl bg-[#0f1930] text-[#dee5ff] hover:bg-[#141f38] hover:text-[#3fc2fb] disabled:opacity-50 disabled:cursor-not-allowed transition">
+                    <span class="material-symbols-outlined" aria-hidden="true">chevron_left</span>
+                </button>
+                <button
+                    type="button"
+                    aria-label="Próxima página"
+                    (click)="currentPage.set(currentPage() + 1)"
+                    [disabled]="(currentPage() + 1) * pageSize >= totalCount() || isLoading()"
+                    class="w-10 h-10 flex items-center justify-center rounded-xl bg-[#0f1930] text-[#dee5ff] hover:bg-[#141f38] hover:text-[#3fc2fb] disabled:opacity-50 disabled:cursor-not-allowed transition">
+                    <span class="material-symbols-outlined" aria-hidden="true">chevron_right</span>
+                </button>
+            </div>
+        </div>
+    </section>
+</div>
+
+<dialog
+    #editDialog
+    (close)="onEditClosed()"
+    aria-labelledby="coupon-edit-title"
+    class="m-auto w-[calc(100%-2rem)] max-w-md bg-[#091328] text-[#dee5ff] rounded-3xl p-8 shadow-2xl">
+    @if (editing(); as coupon) {
+        <form [formGroup]="editForm" (ngSubmit)="saveEdit()" class="flex flex-col gap-6" novalidate>
+            <header>
+                <h2 id="coupon-edit-title" class="font-headline font-bold text-2xl">Editar cupom</h2>
+                <p class="font-label text-[#3fc2fb] mt-1">{{ coupon.code }}</p>
+            </header>
+
+            <div>
+                <label for="edit-usage-limit" class="block font-label text-sm text-[#dee5ff]/80 mb-2">Limite de usos</label>
+                <input
+                    id="edit-usage-limit"
+                    type="number"
+                    min="1"
+                    step="1"
+                    formControlName="usageLimit"
+                    placeholder="Vazio = ilimitado"
+                    aria-describedby="edit-usage-limit-hint"
+                    class="w-full bg-[#060e20] text-[#dee5ff] rounded-xl px-4 py-3 font-body focus:outline-none focus:ring-2 focus:ring-[#3fc2fb]/60 transition placeholder:text-[#dee5ff]/60">
+                <p id="edit-usage-limit-hint" class="font-label text-xs text-[#dee5ff]/70 mt-2">
+                    {{ coupon.usedCount }} uso(s) até agora.
+                </p>
+                @if (editForm.controls.usageLimit.touched && editForm.controls.usageLimit.invalid) {
+                    <p class="font-label text-sm text-error mt-2" role="alert">Informe um número inteiro maior que zero ou deixe vazio.</p>
+                }
+            </div>
+
+            <div>
+                <label for="edit-expiration-date" class="block font-label text-sm text-[#dee5ff]/80 mb-2">Data de expiração</label>
+                <input
+                    id="edit-expiration-date"
+                    type="date"
+                    formControlName="expirationDate"
+                    class="w-full bg-[#060e20] text-[#dee5ff] rounded-xl px-4 py-3 font-body focus:outline-none focus:ring-2 focus:ring-[#3fc2fb]/60 transition [color-scheme:dark]">
+            </div>
+
+            @if (editError()) {
+                <p class="bg-error/10 text-error p-4 rounded-xl font-body text-sm" role="alert">{{ editError() }}</p>
+            }
+
+            <div class="flex justify-end gap-3">
+                <button
+                    type="button"
+                    (click)="closeEdit()"
+                    class="px-6 py-3 rounded-xl bg-[#0f1930] text-[#dee5ff] font-label hover:bg-[#141f38] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#3fc2fb] transition">
+                    Cancelar
+                </button>
+                <button
+                    type="submit"
+                    [disabled]="isSaving()"
+                    class="px-6 py-3 rounded-xl bg-[#3fc2fb] text-[#00232f] font-label font-bold hover:brightness-110 disabled:opacity-60 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#dee5ff] transition">
+                    {{ isSaving() ? 'Salvando...' : 'Salvar' }}
+                </button>
+            </div>
+        </form>
+    }
+</dialog>

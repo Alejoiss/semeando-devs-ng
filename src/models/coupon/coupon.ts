@@ -23,3 +23,37 @@ export class Coupon {
         this.createdAt = data.created_at ? new Date(data.created_at) : new Date();
     }
 }
+
+export type CouponDiscountType = Coupon['discountType'];
+export type CouponPlanType = Coupon['validForPlanType'];
+
+export type CouponSortField = 'created_at' | 'discount_value' | 'expiration_date' | 'usage_limit' | 'used_count';
+
+export interface CouponQueryParams {
+    search: string;
+    discountType: CouponDiscountType | '';
+    planType: CouponPlanType | '';
+    sortField: CouponSortField;
+    sortDir: 'asc' | 'desc';
+    page: number;
+    pageSize: number;
+}
+
+export interface CouponListResult {
+    coupons: Coupon[];
+    total: number;
+}
+
+export interface NewCouponInput {
+    code: string;
+    discountType: CouponDiscountType;
+    discountValue: number;
+    validForPlanType: CouponPlanType;
+    durationMonths: number | null;
+    expirationDate: Date | null;
+}
+
+export interface CouponUpdateInput {
+    usageLimit: number | null;
+    expirationDate: Date | null;
+}
