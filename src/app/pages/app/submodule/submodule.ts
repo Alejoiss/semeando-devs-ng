@@ -117,8 +117,6 @@ export class Submodule implements OnInit {
             this.achievement.set(achievement);
             this.presentationContents.set(presentation);
 
-            const isPro = this.userService.currentUser()?.isPro || false;
-
             const completedLessonIds = new Set<string>(
                 userLessons.filter((ul: any) => ul.completed).map((ul: any) => ul.lesson?.id || ul.lesson_id)
             );
@@ -145,10 +143,6 @@ export class Submodule implements OnInit {
                     state = usm.completed ? 'completed' : 'in-progress';
                 } else if (!previousCompleted) {
                     state = 'blocked';
-                }
-
-                if ((sm.order ?? 0) > 1 && !isPro) {
-                    // Bloqueio por plano removido: acesso agora é controlado pelo limite diário de lições.
                 }
 
                 previousCompleted = state === 'completed';
