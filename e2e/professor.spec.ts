@@ -1,4 +1,5 @@
 import { test, expect } from './support/test';
+import { expectNoAxeViolations } from './support/axe';
 import { sql } from './support/backend';
 import { E2E_USERS, storageStateFor } from './support/users';
 
@@ -149,5 +150,11 @@ test.describe('professor content creation', () => {
 
         await expect(page.getByText(/owner_id/)).toHaveCount(0);
         await expect.poll(() => sql(`select count(*) from lessons where sub_module_id = '${submoduleId}'`)).toBe('1');
+    });
+
+    test.fixme('finding a11y-sidebar-logout-contrast + a11y-readonly-input-without-label: /professor/criar-modulo has no AXE violations', async ({ page }) => {
+        await page.goto('/professor/criar-modulo');
+        await expect(page.getByRole('heading', { level: 1, name: 'Criar Módulo' })).toBeVisible();
+        await expectNoAxeViolations(page, { exclude: ['iframe'] });
     });
 });
