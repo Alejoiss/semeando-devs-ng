@@ -49,7 +49,7 @@ async function createUsers() {
 }
 
 function seed() {
-    psql('-f', 'supabase/dev-seed/local-grants.sql');
+    psql('-f', 'e2e/backend/grants.sql');
     psql('-f', 'supabase/dev-seed/seed-test-content.sql');
 }
 
