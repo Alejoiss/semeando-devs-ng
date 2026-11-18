@@ -35,7 +35,7 @@ test.describe('billing (Mercado Pago never reached)', () => {
 
     test.beforeEach(() => {
         sql(`delete from subscriptions where user_id = '${userId}'`);
-        sql(`delete from coupons where code like 'E2E%'`);
+        sql(`delete from coupons where code in ('E2E10', 'E2E100')`);
         sql(`update profiles set is_pro = false, pro_until = null where id = '${userId}'`);
         sql(`insert into coupons (code, discount_type, discount_value, duration_months) values ('E2E10', 'percentage', 10, null), ('E2E100', 'percentage', 100, 3)`);
     });

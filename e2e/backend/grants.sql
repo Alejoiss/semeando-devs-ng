@@ -116,3 +116,7 @@ GRANT ALL ON TABLE public.xp_month TO service_role;
 GRANT SELECT,REFERENCES,TRIGGER,TRUNCATE,MAINTAIN ON TABLE public.xp_week TO anon;
 GRANT SELECT,REFERENCES,TRIGGER,TRUNCATE,MAINTAIN ON TABLE public.xp_week TO authenticated;
 GRANT ALL ON TABLE public.xp_week TO service_role;
+-- A plataforma hospedada concede ALL nas tabelas novas e só o RLS restringe; o dump acima vem do stack local da CLI, que não concede.
+-- Só entram aqui os privilégios que as migrations não revogam de propósito e que o painel admin usa.
+GRANT INSERT ON TABLE public.coupons TO authenticated;
+GRANT INSERT ON TABLE public.newsletter TO authenticated;

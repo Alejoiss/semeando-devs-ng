@@ -15,6 +15,8 @@ begin
   end loop;
   delete from public.coupons where code like 'E2E%';
   delete from public.modules where title like 'E2E %';
+  delete from public.newsletter where subject like 'E2E %';
+  delete from auth.users where email like 'e2e-novo-%@e2e.test';
   update public.profiles set teacher_terms_accepted = false, teacher_terms_accepted_at = null where id = any(e2e_users);
   update public.profiles set is_pro = false, pro_until = null, newsletter_active = false where id = any(e2e_users);
 end $$;
