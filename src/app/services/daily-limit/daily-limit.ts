@@ -24,21 +24,14 @@ export class DailyLimitService {
     );
 
     private getTodayRangeUtcMinus3(): { start: string; end: string } {
-        const now = new Date();
         const offsetMs = -3 * 60 * 60 * 1000;
-        const localNow = new Date(now.getTime() + offsetMs);
+        const localNow = new Date(Date.now() + offsetMs);
 
-        const year = localNow.getUTCFullYear();
-        const month = String(localNow.getUTCMonth() + 1).padStart(2, '0');
-        const day = String(localNow.getUTCDate()).padStart(2, '0');
+        const startMs =
+            Date.UTC(localNow.getUTCFullYear(), localNow.getUTCMonth(), localNow.getUTCDate()) - offsetMs;
+        const endMs = startMs + 24 * 60 * 60 * 1000 - 1;
 
-        const dayStart = `${year}-${month}-${day}T00:00:00.000`;
-        const dayEnd = `${year}-${month}-${day}T23:59:59.999`;
-
-        const startUtc = new Date(new Date(dayStart).getTime() - offsetMs).toISOString();
-        const endUtc = new Date(new Date(dayEnd).getTime() - offsetMs).toISOString();
-
-        return { start: startUtc, end: endUtc };
+        return { start: new Date(startMs).toISOString(), end: new Date(endMs).toISOString() };
     }
 
     async loadDailyCount(userId: string): Promise<void> {
