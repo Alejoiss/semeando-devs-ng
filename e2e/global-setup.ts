@@ -1,6 +1,6 @@
 import { mkdirSync, writeFileSync } from 'node:fs';
 import { resolve } from 'node:path';
-import type { FullConfig } from '@playwright/test';
+import { chromium, type FullConfig } from '@playwright/test';
 import { SUPABASE_KEY, SUPABASE_URL, resetUserState } from './support/backend';
 import { E2E_PASSWORD, E2E_USERS } from './support/users';
 
@@ -18,6 +18,23 @@ async function signIn(email: string) {
     return response.json();
 }
 
+const WARMUP_ROUTES = ['/', '/auth/login', '/app', '/professor', '/admin'];
+
+// O primeiro acesso ao servidor de desenvolvimento faz o Vite reotimizar dependências e recarregar páginas no meio dos testes
+async function warmUpDevServer(origin: string, storageState: string) {
+    const browser = await chromium.launch();
+    try {
+        const context = await browser.newContext({ storageState });
+        const page = await context.newPage();
+        for (const route of WARMUP_ROUTES) {
+            await page.goto(`${origin}${route}`).catch(() => undefined);
+            await page.waitForLoadState('networkidle').catch(() => undefined);
+        }
+    } finally {
+        await browser.close();
+    }
+}
+
 export default async function globalSetup(config: FullConfig) {
     resetUserState();
     mkdirSync(AUTH_DIR, { recursive: true });
@@ -29,4 +46,6 @@ export default async function globalSetup(config: FullConfig) {
         const state = { cookies: [], origins: [{ origin, localStorage: [{ name: storageKey, value: JSON.stringify(session) }] }] };
         writeFileSync(resolve(AUTH_DIR, `${role}.json`), JSON.stringify(state));
     }
+
+    await warmUpDevServer(origin, resolve(AUTH_DIR, 'admin.json'));
 }
