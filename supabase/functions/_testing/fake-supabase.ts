@@ -3,7 +3,7 @@ export type Result = { data?: unknown; error?: unknown; count?: number | null }
 export interface Call {
     table: string
     op: 'select' | 'insert' | 'update' | 'upsert' | 'delete'
-    payload?: unknown
+    payload?: any
     filters: [string, ...unknown[]][]
 }
 
