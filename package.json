@@ -17,7 +17,10 @@
     "e2e:ui": "playwright test --ui",
     "e2e:backend:start": "node e2e/backend/stack.mjs start",
     "e2e:backend:stop": "node e2e/backend/stack.mjs stop",
-    "e2e:backend:reset": "node e2e/backend/stack.mjs reset"
+    "e2e:backend:reset": "node e2e/backend/stack.mjs reset",
+    "test:coverage": "npm run test:coverage:karma && npm run test:coverage:edge",
+    "test:coverage:karma": "ng test --watch=false --browsers=ChromeHeadlessNoSandbox --code-coverage --reporters=dots",
+    "test:coverage:edge": "deno test --allow-env --allow-net=esm.sh,jsr.io,deno.land --coverage=coverage/edge supabase/functions && deno coverage coverage/edge --include=supabase/functions --exclude=_testing,\\.test\\.ts"
   },
   "prettier": {
     "printWidth": 100,

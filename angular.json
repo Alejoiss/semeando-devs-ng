@@ -132,6 +132,14 @@
             ],
             "styles": [
               "src/styles.scss"
+            ],
+            "codeCoverageExclude": [
+              "src/testing/**",
+              "src/environments/**",
+              "src/main.ts",
+              "src/app/app.config*.ts",
+              "src/app/models/**",
+              "**/*.spec.ts"
             ]
           }
         },

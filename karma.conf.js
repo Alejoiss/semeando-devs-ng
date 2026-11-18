@@ -13,7 +13,10 @@ module.exports = function (config) {
     coverageReporter: {
       dir: require('path').join(__dirname, './coverage/semeandodevsapp'),
       subdir: '.',
-      reporters: [{ type: 'html' }, { type: 'text-summary' }],
+      reporters: [{ type: 'html' }, { type: 'text-summary' }, { type: 'json-summary', file: 'summary.json' }],
+      check: {
+        global: { statements: 70, lines: 70, functions: 70, branches: 60 },
+      },
     },
     reporters: ['progress', 'kjhtml'],
     browsers: ['Chrome'],
