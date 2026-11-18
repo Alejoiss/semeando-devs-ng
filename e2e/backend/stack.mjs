@@ -14,6 +14,9 @@ const USERS = [
     ['00000000-0000-4000-8000-0000000000a1', 'e2e-aluno@e2e.test', 'student'],
     ['634f7ea6-e0b3-4ffd-95eb-efc6b73a42ba', 'e2e-professor@e2e.test', 'teacher'],
     ['00000000-0000-4000-8000-0000000000a3', 'e2e-admin@e2e.test', 'admin'],
+    ['00000000-0000-4000-8000-0000000000a4', 'e2e-aluno-desafio@e2e.test', 'student'],
+    ['00000000-0000-4000-8000-0000000000a5', 'e2e-aluno-limite@e2e.test', 'student'],
+    ['00000000-0000-4000-8000-0000000000a6', 'e2e-aluno-assinatura@e2e.test', 'student'],
 ];
 
 const run = (cmd, args, options = {}) => execFileSync(cmd, args, { cwd: root, stdio: 'inherit', ...options });

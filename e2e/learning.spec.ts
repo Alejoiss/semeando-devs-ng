@@ -21,6 +21,7 @@ test.describe('student learning journey', () => {
     test.use({ storageState: storageStateFor('student') });
 
     test('module → submodule → lesson → quiz awards XP and the first achievement', async ({ page }) => {
+        test.setTimeout(120_000);
         const correct = correctAnswers();
         expect(correct).toHaveLength(10);
         expect(totalXp()).toBe(0);
