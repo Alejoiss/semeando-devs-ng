@@ -8,12 +8,16 @@ const OUTPUT = 'src/app/services/public-catalog/public-catalog.snapshot.json';
 const SHOWCASE_SELECT = 'id,slug,title,description,icon,avatar,in_revision';
 const CURRICULUM_SELECT = 'id,slug,title,description,icon,avatar,submodules(id,slug,title,description,icon,order,lessons(id,title,description,type,order))';
 
-const env = await readFile('src/environments/environment.prod.ts', 'utf8');
+const envFile = process.env.CATALOG_ENV_FILE ?? 'src/environments/environment.prod.ts';
+const env = await readFile(envFile, 'utf8');
 const read = key => env.match(new RegExp(`${key}:\\s*['"]([^'"]+)['"]`))?.[1];
 const baseUrl = read('supabaseUrl');
 const apiKey = read('supabaseKey');
 if (!baseUrl || !apiKey) {
-    throw new Error('supabaseUrl/supabaseKey não encontrados em environment.prod.ts');
+    throw new Error(`supabaseUrl/supabaseKey não encontrados em ${envFile}`);
+}
+if (process.env.CATALOG_ENV_FILE && !['localhost', '127.0.0.1'].includes(new URL(baseUrl).hostname)) {
+    throw new Error(`CATALOG_ENV_FILE aponta para ${baseUrl}: o override só aceita um Supabase local.`);
 }
 
 async function query(path, body) {

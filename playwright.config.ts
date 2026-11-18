@@ -36,8 +36,9 @@ export default defineConfig({
         },
     ],
     webServer: {
-        command: `npx ng serve --configuration e2e --port ${PORT}`,
+        command: `node scripts/fetch-public-catalog.mjs && npx ng serve --configuration e2e --port ${PORT}`,
         url: baseURL,
+        env: { CATALOG_ENV_FILE: 'src/environments/environment.e2e.ts' },
         reuseExistingServer: !process.env['CI'],
         timeout: 240_000,
         stdout: 'ignore',
