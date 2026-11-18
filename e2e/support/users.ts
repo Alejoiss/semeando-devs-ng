@@ -18,6 +18,7 @@ export const E2E_USERS = {
     challenger: { id: '00000000-0000-4000-8000-0000000000a4', email: 'e2e-aluno-desafio@e2e.test', role: 'student' },
     limited: { id: '00000000-0000-4000-8000-0000000000a5', email: 'e2e-aluno-limite@e2e.test', role: 'student' },
     subscriber: { id: '00000000-0000-4000-8000-0000000000a6', email: 'e2e-aluno-assinatura@e2e.test', role: 'student' },
+    reader: { id: '00000000-0000-4000-8000-0000000000a7', email: 'e2e-aluno-newsletter@e2e.test', role: 'student' },
 } as const satisfies Record<string, Omit<E2eUser, 'password' | 'storageState'>>;
 
 export const E2E_USER_IDS = Object.values(E2E_USERS).map(user => user.id);

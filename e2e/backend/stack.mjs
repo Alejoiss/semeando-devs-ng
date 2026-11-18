@@ -17,6 +17,7 @@ const USERS = [
     ['00000000-0000-4000-8000-0000000000a4', 'e2e-aluno-desafio@e2e.test', 'student'],
     ['00000000-0000-4000-8000-0000000000a5', 'e2e-aluno-limite@e2e.test', 'student'],
     ['00000000-0000-4000-8000-0000000000a6', 'e2e-aluno-assinatura@e2e.test', 'student'],
+    ['00000000-0000-4000-8000-0000000000a7', 'e2e-aluno-newsletter@e2e.test', 'student'],
 ];
 
 const run = (cmd, args, options = {}) => execFileSync(cmd, args, { cwd: root, stdio: 'inherit', ...options });
