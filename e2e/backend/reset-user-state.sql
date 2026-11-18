@@ -14,5 +14,7 @@ begin
     execute format('delete from public.%I where user_id = any($1)', t) using e2e_users;
   end loop;
   delete from public.coupons where code like 'E2E%';
+  delete from public.modules where title like 'E2E %';
+  update public.profiles set teacher_terms_accepted = false, teacher_terms_accepted_at = null where id = any(e2e_users);
   update public.profiles set is_pro = false, pro_until = null, newsletter_active = false where id = any(e2e_users);
 end $$;
