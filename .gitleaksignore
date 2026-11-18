@@ -1,0 +1,2 @@
+# Chave publishable padrão do Supabase local (pública, igual à de src/environments/environment.ts)
+src/environments/environment.e2e.ts:generic-api-key:4

@@ -14,7 +14,10 @@
     "lint": "ng lint",
     "test:edge": "deno test --allow-env --allow-net=esm.sh,jsr.io,deno.land supabase/functions",
     "e2e": "playwright test",
-    "e2e:ui": "playwright test --ui"
+    "e2e:ui": "playwright test --ui",
+    "e2e:backend:start": "node e2e/backend/stack.mjs start",
+    "e2e:backend:stop": "node e2e/backend/stack.mjs stop",
+    "e2e:backend:reset": "node e2e/backend/stack.mjs reset"
   },
   "prettier": {
     "printWidth": 100,
