@@ -24,6 +24,7 @@ describe('CreateLesson', () => {
 
     const mockActivatedRoute = {
         snapshot: {
+            queryParamMap: { get: (_key: string) => null },
             paramMap: {
                 get: (key: string) => {
                     if (key === 'id') return routeParamId;

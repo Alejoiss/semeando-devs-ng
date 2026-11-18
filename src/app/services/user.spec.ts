@@ -186,7 +186,8 @@ describe('UserService', () => {
 
     describe('accept teacher terms (REQ-4)', () => {
         it('should update profile and update userSignal on success', async () => {
-            // Set user signal in memory
+            await service.loadUserProfile();
+
             const initialUser: any = {
                 id: 'user_123',
                 email: 'test@test.com',

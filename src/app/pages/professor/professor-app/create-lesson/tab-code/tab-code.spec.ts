@@ -22,7 +22,8 @@ describe('TabCode', () => {
                 language: 'TypeScript',
                 initialCode: 'console.log("hello");'
             })),
-            updateLesson: jasmine.createSpy('updateLesson').and.returnValue(Promise.resolve({}))
+            updateLesson: jasmine.createSpy('updateLesson').and.returnValue(Promise.resolve({})),
+            invalidateLesson: jasmine.createSpy('invalidateLesson').and.returnValue(Promise.resolve())
         };
 
         await TestBed.configureTestingModule({

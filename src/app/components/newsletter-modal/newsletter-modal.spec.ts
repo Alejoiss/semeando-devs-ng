@@ -75,6 +75,8 @@ describe('NewsletterModal', () => {
     tick();
     fixture.detectChanges();
 
+    mockNewsletterService.fetchUnviewedNewsletter.and.returnValue(Promise.resolve(null));
+
     // Call closeAndAcknowledge (usually triggered by button)
     component.closeAndAcknowledge();
     tick();

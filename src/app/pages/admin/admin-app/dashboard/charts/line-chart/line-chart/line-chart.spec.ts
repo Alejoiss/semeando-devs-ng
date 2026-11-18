@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { LineChart } from './line-chart';
-import { NgxEchartsDirective } from 'ngx-echarts';
+import { provideEchartsCore } from 'ngx-echarts';
 
 describe('LineChart', () => {
     let fixture: ComponentFixture<LineChart>;
@@ -8,6 +8,7 @@ describe('LineChart', () => {
     beforeEach(() => {
         TestBed.configureTestingModule({
             imports: [LineChart],
+            providers: [provideEchartsCore({ echarts: () => import('echarts') })],
         });
         fixture = TestBed.createComponent(LineChart);
         fixture.componentRef.setInput('options', {});

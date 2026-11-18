@@ -155,6 +155,7 @@ describe('TabContent', () => {
         await component.evaluateContent();
 
         expect(mockSectionContentService.evaluateLessonContent).toHaveBeenCalledWith(
+            'lesson-1',
             'Test Lesson Title',
             'Test Lesson Description details here.',
             ['Markdown Content Block 1', 'Markdown Content Block 2']

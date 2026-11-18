@@ -5,6 +5,7 @@ import { RouterModule, ActivatedRoute, Router } from '@angular/router';
 import { UserService } from '../../../../services/user';
 import { LessonService } from '../../../../services/lesson';
 import { SubModuleService } from '../../../../services/sub-module';
+import { QuizService } from '../../../../services/quiz';
 import { signal } from '@angular/core';
 import { LessonType } from '../../../../../models/lesson/lesson';
 
@@ -14,6 +15,7 @@ describe('CreateSubmodule', () => {
     let mockUserService: any;
     let mockLessonService: any;
     let mockSubModuleService: any;
+    let mockQuizService: any;
     let router: Router;
 
     const mockActivatedRoute = {
@@ -44,6 +46,10 @@ describe('CreateSubmodule', () => {
             updateLessonOrder: jasmine.createSpy().and.returnValue(Promise.resolve())
         };
 
+        mockQuizService = {
+            getOrCreateQuiz: jasmine.createSpy().and.returnValue(Promise.resolve({ id: 'q1' }))
+        };
+
         mockSubModuleService = {
             getSubModuleById: jasmine.createSpy().and.returnValue(Promise.resolve({
                 id: 'submodule-1',
@@ -62,7 +68,8 @@ describe('CreateSubmodule', () => {
                 { provide: ActivatedRoute, useValue: mockActivatedRoute },
                 { provide: UserService, useValue: mockUserService },
                 { provide: LessonService, useValue: mockLessonService },
-                { provide: SubModuleService, useValue: mockSubModuleService }
+                { provide: SubModuleService, useValue: mockSubModuleService },
+                { provide: QuizService, useValue: mockQuizService }
             ]
         }).compileComponents();
 
@@ -93,8 +100,10 @@ describe('CreateSubmodule', () => {
             order: 3,
             subModuleId: 'submodule-1',
             xp: 50,
-            createdBy: 'user-1'
+            createdBy: 'user-1',
+            isValidated: false
         });
+        expect(mockQuizService.getOrCreateQuiz).toHaveBeenCalledWith('l3');
         expect(mockLessonService.getLessonsBySubModuleId).toHaveBeenCalledTimes(2); // Initial + after creation
     });
 

@@ -1,9 +1,10 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { ModuleFinished } from './module-finished';
 import { ModuleService } from '../../../../services/module';
 import { AchievementsService } from '../../../../services/achievements';
+import { UserModuleService } from '../../../../services/user-module';
 import { Module } from '../../../../../models/module/module';
 import { Achievements } from '../../../../../models/achievements/achievements';
 
@@ -33,10 +34,13 @@ describe('ModuleFinished', () => {
     let fixture: ComponentFixture<ModuleFinished>;
     let moduleServiceSpy: jasmine.SpyObj<ModuleService>;
     let achievementsServiceSpy: jasmine.SpyObj<AchievementsService>;
+    let userModuleServiceSpy: jasmine.SpyObj<UserModuleService>;
 
     beforeEach(async () => {
         moduleServiceSpy = jasmine.createSpyObj('ModuleService', ['getModuleBySlug']);
         achievementsServiceSpy = jasmine.createSpyObj('AchievementsService', ['getAchievements']);
+        userModuleServiceSpy = jasmine.createSpyObj('UserModuleService', ['isModuleCompleted']);
+        userModuleServiceSpy.isModuleCompleted.and.resolveTo(true);
 
         await TestBed.configureTestingModule({
             imports: [ModuleFinished, RouterTestingModule],
@@ -47,6 +51,7 @@ describe('ModuleFinished', () => {
                 },
                 { provide: ModuleService, useValue: moduleServiceSpy },
                 { provide: AchievementsService, useValue: achievementsServiceSpy },
+                { provide: UserModuleService, useValue: userModuleServiceSpy },
             ],
         }).compileComponents();
 
@@ -63,6 +68,21 @@ describe('ModuleFinished', () => {
         const el: HTMLElement = fixture.nativeElement;
         expect(el.querySelector('[class*="animate-pulse"]')).toBeTruthy();
         expect(el.querySelector('h1')).toBeNull();
+    });
+
+    it('redirects to /app when the module is not completed', async () => {
+        moduleServiceSpy.getModuleBySlug.and.resolveTo(mockModule);
+        achievementsServiceSpy.getAchievements.and.resolveTo([mockAchievement]);
+        userModuleServiceSpy.isModuleCompleted.and.resolveTo(false);
+        const navigateSpy = spyOn(TestBed.inject(Router), 'navigate').and.resolveTo(true);
+
+        fixture.detectChanges();
+        await fixture.whenStable();
+        fixture.detectChanges();
+
+        expect(userModuleServiceSpy.isModuleCompleted).toHaveBeenCalledWith('mod-1');
+        expect(navigateSpy).toHaveBeenCalledWith(['/app']);
+        expect(fixture.nativeElement.textContent).not.toContain('Parabéns');
     });
 
     it('shows the error state when module is not found', async () => {
