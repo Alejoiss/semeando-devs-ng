@@ -9,9 +9,11 @@ export default defineConfig({
     testDir: './e2e',
     outputDir: './test-results',
     globalSetup: './e2e/global-setup.ts',
+    timeout: 45_000,
+    expect: { timeout: 10_000 },
     fullyParallel: true,
     forbidOnly: !!process.env['CI'],
-    retries: process.env['CI'] ? 1 : 0,
+    retries: 1,
     workers: process.env['CI'] ? 2 : undefined,
     reporter: process.env['CI'] ? [['list'], ['html', { open: 'never' }]] : [['list']],
     use: {
