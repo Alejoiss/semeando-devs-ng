@@ -39,7 +39,7 @@ Current tooling uses Karma and Jasmine.
 | Edge Functions (Supabase) | Deno test | `npm run test:edge` | `supabase/functions/**/*.test.ts` |
 | E2E | Playwright | `npm run e2e` (UI: `npm run e2e:ui`) | `e2e/*.spec.ts` |
 
-Rode `npm run test:ci` da raiz. Specs que mexem em datas devem passar com `TZ=UTC` e `TZ=Asia/Tokyo`. Cobertura (meta 70%, branches 60%) só é medida ao fim, com script próprio.
+Rode `npm run test:ci` da raiz. Specs que mexem em datas devem passar com `TZ=UTC` e `TZ=Asia/Tokyo`. Cobertura (meta 70%, branches 60%) tem script próprio, `npm run test:coverage` (Karma com limites em `karma.conf.js` + `deno coverage` das Edge Functions); não entra no `test:ci`. O `deploy.sh` roda Karma, Deno e E2E antes de publicar (`SKIP_TESTS=1` pula). Helper `src/testing/client-stub.ts` (`createClientStub`) entrega um resultado por chamada de `from`/`rpc`.
 
 ## Karma
 
