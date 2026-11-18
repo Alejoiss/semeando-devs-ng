@@ -13,5 +13,6 @@ begin
   loop
     execute format('delete from public.%I where user_id = any($1)', t) using e2e_users;
   end loop;
+  delete from public.coupons where code like 'E2E%';
   update public.profiles set is_pro = false, pro_until = null, newsletter_active = false where id = any(e2e_users);
 end $$;
