@@ -59,12 +59,13 @@
                     </div>
 
                     <div class="space-y-2">
-                        <label class="text-xs font-bold uppercase tracking-widest text-on-surface-variant font-label">E-mail (Não alterável)</label>
+                        <label for="profile-email" class="text-xs font-bold uppercase tracking-widest text-on-surface-variant font-label">E-mail (Não alterável)</label>
                         <input
+                            id="profile-email"
                             type="email"
                             [value]="currentUser()?.email"
                             disabled
-                            class="w-full bg-surface-container-lowest/50 border-none rounded-xl px-4 py-3 text-on-surface-variant/60 cursor-not-allowed font-body"
+                            class="w-full bg-surface-container-lowest/50 border-none rounded-xl px-4 py-3 text-on-surface-variant/80 cursor-not-allowed font-body"
                         />
                     </div>
 

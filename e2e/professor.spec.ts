@@ -152,7 +152,7 @@ test.describe('professor content creation', () => {
         await expect.poll(() => sql(`select count(*) from lessons where sub_module_id = '${submoduleId}'`)).toBe('1');
     });
 
-    test.fixme('finding a11y-readonly-input-without-label: /professor/criar-modulo has no AXE violations', async ({ page }) => {
+    test('/professor/criar-modulo has no AXE violations', async ({ page }) => {
         await page.goto('/professor/criar-modulo');
         await expect(page.getByRole('heading', { level: 1, name: 'Criar Módulo' })).toBeVisible();
         await expectNoAxeViolations(page, { exclude: ['iframe'] });

@@ -29,7 +29,7 @@ const SCANS: Record<'anonymous' | 'student' | 'admin', Scan[]> = {
         { path: LESSON },
         { path: '/app/ranking' },
         { path: '/app/conquistas' },
-        { path: '/app/perfil', findings: ['a11y-readonly-input-without-label'] },
+        { path: '/app/perfil' },
         { path: '/app/upgrade' },
         { path: '/app/gerenciar-assinatura' },
     ],
