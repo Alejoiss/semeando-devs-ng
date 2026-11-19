@@ -42,7 +42,7 @@ async function call(o: Opts = {}) {
         return Promise.resolve(new Response(JSON.stringify(r.body), { status: r.status ?? 200 }))
     }) as typeof fetch
 
-    const env = { MERCADO_PAGO_ACCESS_TOKEN: 'mp-token', ML_ACCESS_TOKEN: undefined, ...o.env }
+    const env = { ML_ACCESS_TOKEN: 'mp-token', ...o.env }
     const before = Object.fromEntries(Object.keys(env).map((k) => [k, Deno.env.get(k)]))
     for (const [k, v] of Object.entries(env)) v === undefined ? Deno.env.delete(k) : Deno.env.set(k, v)
     const err = console.error
@@ -159,11 +159,15 @@ Deno.test('a failing coupon update is reported and the subscription is not count
     assertEquals(json.errors, [{ id: 'sub-1', error: 'rls denied' }])
 })
 
-Deno.test({
-    ignore: true,
-    name: 'the Mercado Pago call must use the same ML_ACCESS_TOKEN secret as the other billing functions (finding cron-mp-token-env-name)',
-    fn: async () => {
-        const { mpCalls } = await call({ env: { MERCADO_PAGO_ACCESS_TOKEN: undefined, ML_ACCESS_TOKEN: 'ml-token' } })
-        assertEquals(mpCalls[0].headers.get('Authorization'), 'Bearer ml-token')
-    },
+Deno.test('uses the ML_ACCESS_TOKEN secret shared with the other billing functions', async () => {
+    const { mpCalls } = await call({ env: { ML_ACCESS_TOKEN: 'ml-token' } })
+    assertEquals(mpCalls[0].headers.get('Authorization'), 'Bearer ml-token')
+})
+
+Deno.test('fails early with 500 and never calls Mercado Pago or the database when ML_ACCESS_TOKEN is missing', async () => {
+    const { res, json, fake, mpCalls } = await call({ env: { ML_ACCESS_TOKEN: undefined } })
+    assertEquals(res.status, 500)
+    assertEquals(json.error, 'ML_ACCESS_TOKEN is not configured')
+    assertEquals(mpCalls.length, 0)
+    assertEquals(fake.callsFor('subscriptions', 'select').length, 0)
 })

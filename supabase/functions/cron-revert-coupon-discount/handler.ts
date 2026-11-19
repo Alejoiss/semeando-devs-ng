@@ -3,7 +3,15 @@ type CreateClient = (url: string, key: string, options?: any) => any
 export function createHandler(createClient: CreateClient) {
     return async (_req: Request): Promise<Response> => {
         const supabase = createClient(Deno.env.get('SUPABASE_URL') || '', Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') || '')
-        const mpAccessToken = Deno.env.get('MERCADO_PAGO_ACCESS_TOKEN') || ''
+        const mpAccessToken = Deno.env.get('ML_ACCESS_TOKEN')
+
+        if (!mpAccessToken) {
+            console.error('ML_ACCESS_TOKEN is not configured')
+            return new Response(
+                JSON.stringify({ error: 'ML_ACCESS_TOKEN is not configured' }),
+                { headers: { "Content-Type": "application/json" }, status: 500 },
+            )
+        }
 
         try {
           const { data: subscriptions, error } = await supabase
