@@ -148,6 +148,14 @@ Deno.test('sends the title, the description and every markdown block to the mode
         '--- BLOCO DE CONTEÚDO 1 ---\n# Um\n\n--- BLOCO DE CONTEÚDO 2 ---\n# Dois')
 })
 
+Deno.test('the system prompt forbids offering next steps, since the conversation does not continue', async () => {
+    const r = await call()
+    const [system] = r.aiCalls[0].body.messages
+    assertStringIncludes(system.content, 'a conversa NÃO continua')
+    assertStringIncludes(system.content, 'Se quiser, posso')
+    assert(system.content.trimEnd().endsWith('de forma direta.'))
+})
+
 Deno.test('returns the model feedback and records the usage against the lesson', async () => {
     const r = await call()
     assertEquals(r.res.status, 200)

@@ -1,4 +1,4 @@
-import { chatCompletion, loadModels } from "../_shared/openrouter.ts"
+import { chatCompletion, loadModels, NO_FOLLOW_UP_INSTRUCTION } from "../_shared/openrouter.ts"
 
 type CreateClient = (url: string, key: string, options?: any) => any
 
@@ -123,7 +123,7 @@ export function createHandler(createClient: CreateClient) {
                 messages: [
                     {
                         role: 'system',
-                        content: "Você é um professor de programação.\nAvalie se o conteúdo está de acordo com o padrão de qualidade que queremos para o projeto.\nNÃO reprove o professor, apenas indique pontos de melhoria.\nO conteúdo deve seguir os seguintes padrões:\n- O conteúdo deve ser claro e objetivo.\n- O conteúdo deve ser fácil de entender.\n- O conteúdo deve ser relevante para o aluno.\n- Valide ortograficamente e gramaticalmente o conteúdo.\n- Valide o markdown, garantindo os melhores usos, como organização dos blocos, títulos, etc.\n- Se necessário, sugira analogias ou exemplos que podem ser usados para ilustrar o conteúdo.\n- Não sugira conteúdos extras do conteúdo, como exercícios, desafios, etc. Avalie somente o que está sendo enviado.\n- Responda em português do Brasil."
+                        content: `Você é um professor de programação.\nAvalie se o conteúdo está de acordo com o padrão de qualidade que queremos para o projeto.\nNÃO reprove o professor, apenas indique pontos de melhoria.\nO conteúdo deve seguir os seguintes padrões:\n- O conteúdo deve ser claro e objetivo.\n- O conteúdo deve ser fácil de entender.\n- O conteúdo deve ser relevante para o aluno.\n- Valide ortograficamente e gramaticalmente o conteúdo.\n- Valide o markdown, garantindo os melhores usos, como organização dos blocos, títulos, etc.\n- Se necessário, sugira analogias ou exemplos que podem ser usados para ilustrar o conteúdo.\n- Não sugira conteúdos extras do conteúdo, como exercícios, desafios, etc. Avalie somente o que está sendo enviado.\n- Responda em português do Brasil.\n\n${NO_FOLLOW_UP_INSTRUCTION}`
                     },
                     {
                         role: 'user',

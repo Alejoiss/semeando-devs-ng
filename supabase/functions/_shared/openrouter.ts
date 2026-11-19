@@ -9,6 +9,13 @@ export const DEFAULT_MODELS: Record<AiFeature, string[]> = {
     evaluate_lesson_content: ['inclusionai/ring-2.6-1t'],
 }
 
+/** Appended last to the system prompts: the answer is shown once, so the model must not offer a next turn. */
+export const NO_FOLLOW_UP_INSTRUCTION =
+    "IMPORTANTE: esta resposta será exibida uma única vez e a conversa NÃO continua. Termine o feedback após as sugestões de melhoria. " +
+    "NUNCA ofereça ajuda adicional nem proponha próximos passos que dependam de uma nova mensagem, " +
+    "como \"Se quiser, posso...\", \"Posso sugerir...\", \"Quer que eu...\" ou \"Me avise se...\". " +
+    "Não faça perguntas ao final. Qualquer sugestão deve ser dada agora, de forma direta."
+
 const REQUEST_TIMEOUT_MS = 60_000
 
 export type ChatMessage = { role: 'system' | 'user' | 'assistant'; content: string }

@@ -1,6 +1,6 @@
 import { evaluateAchievements } from "./achievements.ts"
 import { isoWeek } from "../_shared/iso-week.ts"
-import { chatCompletion, loadModels } from "../_shared/openrouter.ts"
+import { chatCompletion, loadModels, NO_FOLLOW_UP_INSTRUCTION } from "../_shared/openrouter.ts"
 
 type CreateClient = (url: string, key: string, options?: any) => any
 
@@ -124,7 +124,7 @@ export function createHandler(createClient: CreateClient) {
                     messages: [
                         {
                             role: 'system',
-                            content: "Você é um professor de programação avaliando o código de um aluno. Analise se a resposta resolve o problema proposto e gere um feedback textual indicando o que está bom e o que pode ser melhorado (organização, legibilidade, boas práticas). Não sugira outros assuntos que não estejam no desafio. Você está conversando diretamente com o aluno. Analise o código inicial (que é dado no próprio exercício) e o código que o aluno mandou, compare os dois e analise se o aluno conseguiu resolver o problema proposto. O aluno não pode ser reprovado. Seja claro e encorajador. Não retorne a solução do problema ao aluno, apenas o feedback e sugestões de melhoria para atender o que foi pedido. Retorne a resposta em markdown e em Português do Brasil. Não retorne uma resposta com continuidade, ela deve ser única e conclusiva, sem dar continuidade na conversa."
+                            content: `Você é um professor de programação avaliando o código de um aluno. Analise se a resposta resolve o problema proposto e gere um feedback textual indicando o que está bom e o que pode ser melhorado (organização, legibilidade, boas práticas). Não sugira outros assuntos que não estejam no desafio. Você está conversando diretamente com o aluno. Analise o código inicial (que é dado no próprio exercício) e o código que o aluno mandou, compare os dois e analise se o aluno conseguiu resolver o problema proposto. O aluno não pode ser reprovado. Seja claro e encorajador. Não retorne a solução do problema ao aluno, apenas o feedback e sugestões de melhoria para atender o que foi pedido. Retorne a resposta em markdown e em Português do Brasil. Não retorne uma resposta com continuidade, ela deve ser única e conclusiva, sem dar continuidade na conversa.\n\n${NO_FOLLOW_UP_INSTRUCTION}`
                         },
                         {
                             role: 'user',

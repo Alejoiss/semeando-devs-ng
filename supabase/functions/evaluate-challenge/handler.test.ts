@@ -200,6 +200,14 @@ Deno.test('asks the model with the problem, the starting code and the student co
     assertStringIncludes(user.content, 'const r = 1 + 1')
 })
 
+Deno.test('the system prompt forbids offering next steps, since the conversation does not continue', async () => {
+    const r = await call()
+    const [system] = r.aiCalls[0].body.messages
+    assertStringIncludes(system.content, 'a conversa NÃO continua')
+    assertStringIncludes(system.content, 'Se quiser, posso')
+    assert(system.content.trimEnd().endsWith('de forma direta.'))
+})
+
 Deno.test('returns the model feedback and records the usage against the lesson', async () => {
     const r = await call()
     assertEquals(r.json.aiFeedback, 'Bom trabalho!')
