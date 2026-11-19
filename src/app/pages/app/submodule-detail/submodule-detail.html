@@ -102,7 +102,7 @@
                                 : isInProgress
                                     ? 'border-primary/50 bg-surface-container-low'
                                     : isBlocked
-                                        ? 'bg-surface-container-lowest/30 opacity-40 grayscale border-transparent hover:bg-surface-container-lowest/30 select-none'
+                                        ? 'bg-surface-container-lowest/30 grayscale border-transparent hover:bg-surface-container-lowest/30 select-none'
                                         : 'bg-surface-container-lowest/50 hover:bg-surface-container-low border-surface-container-highest') +
                             (isEven ? '' : ' md:text-right')
                         ">
@@ -129,7 +129,7 @@
                                         }
                                     </div>
                                 } @else if (isBlocked) {
-                                    <span class="px-3 py-1 bg-surface-container-highest text-on-surface-variant/50 font-label text-xs rounded-full">Bloqueado</span>
+                                    <span class="px-3 py-1 bg-surface-container-highest text-on-surface-variant/80 font-label text-xs rounded-full">Bloqueado</span>
                                 } @else {
                                     <span class="px-3 py-1 bg-surface-container-highest text-on-surface-variant font-label text-xs rounded-full">Disponível</span>
                                 }
@@ -168,7 +168,7 @@
                                         </a>
                                     </div>
                                 } @else {
-                                    <div [class]="'flex items-center gap-2 font-label text-sm font-bold text-on-surface-variant/50 ' + (isEven ? '' : 'ml-auto justify-end')">
+                                    <div [class]="'flex items-center gap-2 font-label text-sm font-bold text-on-surface-variant/80 ' + (isEven ? '' : 'ml-auto justify-end')">
                                         <span class="material-symbols-outlined text-sm">lock</span>
                                         Conclua a lição anterior
                                     </div>

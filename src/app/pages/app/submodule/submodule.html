@@ -112,7 +112,7 @@
         } @else {
         @for (item of submodulesWithState(); track item.submodule.id) {
         <div class="group relative bg-surface-container rounded-lg p-8 transition"
-            [class]="item.progressState === 'in-progress' ? 'border-t-2 border-primary/20 cursor-pointer hover:bg-surface-container-high' : item.progressState === 'blocked' ? 'opacity-50 grayscale select-none' : 'cursor-pointer hover:bg-surface-container-high'">
+            [class]="item.progressState === 'in-progress' ? 'border-t-2 border-primary/20 cursor-pointer hover:bg-surface-container-high' : item.progressState === 'blocked' ? 'grayscale select-none' : 'cursor-pointer hover:bg-surface-container-high'">
             <div class="absolute top-0 right-0 p-4">
                 @if (item.progressState === 'completed') {
                 <div
@@ -177,7 +177,7 @@
                     } @else if (item.progressState === 'in-progress') {
                     <span class="text-lg font-bold text-primary">{{ item.progressPercentage }}%</span>
                     } @else {
-                    <span class="text-lg font-bold text-on-surface-variant/50">{{ item.progressPercentage }}%</span>
+                    <span class="text-lg font-bold text-on-surface-variant/80">{{ item.progressPercentage }}%</span>
                     }
                 </div>
                 <div class="h-2 w-full bg-surface-container-highest rounded-full overflow-hidden">
@@ -215,7 +215,7 @@
             } @else if (item.progressState === 'blocked') {
             <div class="mt-6 flex justify-end">
                 <button disabled
-                    class="flex items-center gap-2 px-8 py-3 bg-surface-container-highest text-on-surface-variant/50 font-headline font-bold rounded-xl cursor-not-allowed">
+                    class="flex items-center gap-2 px-8 py-3 bg-surface-container-highest text-on-surface-variant/80 font-headline font-bold rounded-xl cursor-not-allowed">
                     <span class="material-symbols-outlined text-sm" data-icon="lock">lock</span>
                     Bloqueado
                 </button>

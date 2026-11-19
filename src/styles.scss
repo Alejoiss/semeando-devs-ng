@@ -40,6 +40,11 @@ pre[class*=language-] {
     background: none !important;
 }
 
+:not(pre)>code[class*=language-] .token.tag,
+pre[class*=language-] .token.tag {
+    color: #ff5c93;
+}
+
 // Utilitários visuais compartilhados. Vários componentes usavam estas classes sem defini-las
 // (o CSS de componente é encapsulado), então o efeito sumia em parte das telas.
 @layer components {
