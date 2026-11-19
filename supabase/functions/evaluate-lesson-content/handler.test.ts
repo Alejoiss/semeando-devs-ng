@@ -11,6 +11,7 @@ type Opts = {
     method?: string
     user?: typeof USER | null
     role?: string
+    lessonExists?: boolean
     count?: number | null
     countError?: unknown
     logError?: unknown
@@ -26,6 +27,7 @@ async function call(o: Opts = {}) {
         'ai_usage_logs.insert': o.logError ? { error: o.logError } : {},
         'ai_model_settings.select': o.models ? { data: { models: o.models } } : {},
         'profiles.select': { data: { role: o.role ?? 'teacher' } },
+        'lessons.select': { data: o.lessonExists === false ? null : { id: 'l-1' } },
     })
     const user = o.user === undefined ? USER : o.user
     const client = {
@@ -190,7 +192,7 @@ Deno.test('a failure to log usage does not fail the request', async () => {
 
 Deno.test('500 with the message when the body is not valid JSON', async () => {
     const handler = createHandler(() => ({
-        ...createFakeSupabase().client,
+        ...createFakeSupabase({ 'profiles.select': { data: { role: 'teacher' } } }).client,
         auth: { getUser: () => Promise.resolve({ data: { user: USER }, error: null }) },
     }))
     const before = Deno.env.get('OPENROUTER_API_KEY')
@@ -206,22 +208,18 @@ Deno.test('500 with the message when the body is not valid JSON', async () => {
     }
 })
 
-Deno.test({
-    ignore: true,
-    name: 'only teachers and admins may use the AI content review, which is a paid model call (finding evaluate-content-no-role-check)',
-    fn: async () => {
-        const r = await call({ role: 'student' })
+Deno.test('only teachers and admins may use the AI content review', async () => {
+    for (const role of ['student', undefined]) {
+        const r = await call({ role: role ?? 'x' })
         assertEquals(r.res.status, 403)
         assertEquals(r.aiCalls.length, 0)
-    },
+    }
+    assertEquals((await call({ role: 'admin' })).res.status, 200)
 })
 
-Deno.test({
-    ignore: true,
-    name: 'the per-lesson limit cannot be sidestepped by sending arbitrary lesson ids (finding evaluate-content-no-role-check)',
-    fn: async () => {
-        const r = await call({ body: { ...BODY, lesson_id: 'not-a-real-lesson' } })
-        assert(r.res.status >= 400)
-        assertEquals(r.aiCalls.length, 0)
-    },
+Deno.test('the per-lesson limit cannot be sidestepped by sending arbitrary lesson ids', async () => {
+    const r = await call({ lessonExists: false, body: { ...BODY, lesson_id: 'not-a-real-lesson' } })
+    assertEquals(r.res.status, 404)
+    assertEquals(r.aiCalls.length, 0)
+    assertEquals(r.fake.callsFor('ai_usage_logs').length, 0)
 })

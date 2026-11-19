@@ -47,12 +47,39 @@ export function createHandler(createClient: CreateClient) {
                 })
             }
 
+            const { data: caller, error: callerError } = await userClient
+                .from('profiles')
+                .select('role')
+                .eq('id', user.id)
+                .maybeSingle()
+            if (callerError) throw callerError
+            if (caller?.role !== 'teacher' && caller?.role !== 'admin') {
+                return new Response(JSON.stringify({ error: 'Forbidden' }), {
+                    status: 403,
+                    headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+                })
+            }
+
             const body = await req.json()
             const { lesson_id, title, description, markdowns } = body
 
             if (!lesson_id || !title || !description || !markdowns || !Array.isArray(markdowns) || markdowns.length === 0) {
                 return new Response(JSON.stringify({ error: 'Missing or invalid parameters' }), {
                     status: 400,
+                    headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+                })
+            }
+
+            const serviceRoleClient = createClient(supabaseUrl, supabaseServiceRoleKey)
+            const { data: lesson, error: lessonError } = await serviceRoleClient
+                .from('lessons')
+                .select('id')
+                .eq('id', lesson_id)
+                .maybeSingle()
+            if (lessonError) throw lessonError
+            if (!lesson) {
+                return new Response(JSON.stringify({ error: 'Lição não encontrada' }), {
+                    status: 404,
                     headers: { ...corsHeaders, 'Content-Type': 'application/json' }
                 })
             }
