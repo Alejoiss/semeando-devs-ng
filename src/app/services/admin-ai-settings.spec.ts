@@ -1,6 +1,7 @@
 import { TestBed } from '@angular/core/testing';
 import { AdminAiSettingsService } from './admin-ai-settings';
 import { SupabaseService } from './supabase';
+import { AiModelResult } from '../../models/ai-settings/ai-settings';
 import { createQueryStub, StubResult } from '../../testing/query-stub';
 
 describe('AdminAiSettingsService', () => {
@@ -94,6 +95,24 @@ describe('AdminAiSettingsService', () => {
         it('throws when the alert e-mails cannot be saved', async () => {
             respondWith({ ai_alert_settings: { error: { message: 'alert denied' } } });
             await expectAsync(service.saveSettings(settings)).toBeRejectedWithError('alert denied');
+        });
+    });
+
+    describe('testModel', () => {
+        it('asks the function to test only that model and returns its result', async () => {
+            const check = { model: 'a/one', status: 'ok', expiresAt: null, detail: null };
+            invoke.and.resolveTo({ data: { check, catalogAvailable: true }, error: null });
+
+            expect(await service.testModel('a/one')).toEqual(check as AiModelResult);
+            expect(invoke).toHaveBeenCalledWith('check-ai-models', { body: { model: 'a/one' } });
+        });
+
+        it('surfaces the function error message', async () => {
+            invoke.and.resolveTo({
+                data: null,
+                error: { message: 'non-2xx', context: { json: () => Promise.resolve({ error: 'Invalid model id' }) } },
+            });
+            await expectAsync(service.testModel('x')).toBeRejectedWithError('Invalid model id');
         });
     });
 

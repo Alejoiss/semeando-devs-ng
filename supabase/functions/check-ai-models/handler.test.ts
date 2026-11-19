@@ -158,6 +158,28 @@ Deno.test('when the catalog is unreachable models are judged only by the test ca
     assertEquals(r.json.checks.find((c: any) => c.model === 'gone/model').status, 'ok')
 })
 
+Deno.test('single-model mode tests one model, saved or not, without reading settings or emailing', async () => {
+    const r = await call({ body: { model: 'good/model' }, brokenModels: [] })
+    assertEquals(r.json.check.status, 'ok')
+    assertEquals(r.chatModels, ['good/model'])
+    assertEquals(r.fake.callsFor('ai_model_settings').length, 0)
+    assertEquals(r.sent.length, 0)
+
+    const gone = await call({ body: { model: 'unsaved/missing' } })
+    assertEquals(gone.json.check.status, 'removed')
+    assertEquals(gone.chatModels.length, 0)
+
+    const broken = await call({ body: { model: 'broken/model' }, brokenModels: ['broken/model'] })
+    assertEquals(broken.json.check.status, 'failing')
+})
+
+Deno.test('single-model mode rejects an invalid id before calling anything', async () => {
+    const r = await call({ body: { model: 'not a model' } })
+    assertEquals(r.res.status, 400)
+    assertEquals(r.chatModels.length, 0)
+    assertEquals((await call({ body: { model: 42 } })).res.status, 400)
+})
+
 Deno.test('the alert email escapes model names', () => {
     const { html, subject } = buildAlertEmail([
         { feature: 'evaluate_challenge', model: '<b>x</b>', status: 'removed', expiresAt: null, detail: null },

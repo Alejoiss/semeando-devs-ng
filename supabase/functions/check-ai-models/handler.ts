@@ -10,13 +10,18 @@ const corsHeaders = {
 
 export type ModelStatus = 'ok' | 'expiring' | 'removed' | 'failing'
 
-export interface ModelCheck {
-    feature: AiFeature
+export interface ModelResult {
     model: string
     status: ModelStatus
     expiresAt: string | null
     detail: string | null
 }
+
+export interface ModelCheck extends ModelResult {
+    feature: AiFeature
+}
+
+const MODEL_ID_PATTERN = /^[a-z0-9][a-z0-9._-]*\/[a-z0-9][a-z0-9._:-]*$/i
 
 const FEATURE_LABELS: Record<AiFeature, string> = {
     evaluate_challenge: 'Avaliação de desafios de código',
@@ -104,9 +109,6 @@ export function createHandler(createClient: CreateClient, nodemailer: Mailer) {
             const payload = await req.json().catch(() => ({}))
             const notify = payload?.notify !== false
 
-            const { data: settings, error: settingsError } = await supabase.from('ai_model_settings').select('feature, models')
-            if (settingsError) throw settingsError
-
             const catalog = await loadCatalog()
 
             const smokeTests = new Map<string, Promise<{ ok: true } | { ok: false; error: string }>>()
@@ -122,20 +124,33 @@ export function createHandler(createClient: CreateClient, nodemailer: Mailer) {
                 return smokeTests.get(model)!
             }
 
+            const checkModel = async (model: string): Promise<ModelResult> => {
+                const expiresAt = catalog?.get(model) ?? null
+                if (catalog && !catalog.has(model)) {
+                    return { model, expiresAt, status: 'removed', detail: 'O modelo não está mais no catálogo do OpenRouter.' }
+                }
+                const result = await smokeTest(model)
+                if (!result.ok) return { model, expiresAt, status: 'failing', detail: result.error }
+                if (expiresAt) return { model, expiresAt, status: 'expiring', detail: null }
+                return { model, expiresAt, status: 'ok', detail: null }
+            }
+
+            // Single-model mode: the admin panel tests one model, saved or not. Never emails.
+            if (payload?.model !== undefined) {
+                const model = typeof payload.model === 'string' ? payload.model.trim() : ''
+                if (!MODEL_ID_PATTERN.test(model)) return json({ error: 'Invalid model id' }, 400)
+                return json({ check: await checkModel(model), catalogAvailable: catalog !== null })
+            }
+
+            const { data: settings, error: settingsError } = await supabase.from('ai_model_settings').select('feature, models')
+            if (settingsError) throw settingsError
+
             const checks: ModelCheck[] = await Promise.all(
                 (settings ?? []).flatMap((row: { feature: AiFeature; models: string[] }) =>
-                    cleanModels(row.models).map(async (model): Promise<ModelCheck> => {
-                        const expiresAt = catalog?.get(model) ?? null
-                        const base = { feature: row.feature, model, expiresAt }
-
-                        if (catalog && !catalog.has(model)) {
-                            return { ...base, status: 'removed', detail: 'O modelo não está mais no catálogo do OpenRouter.' }
-                        }
-                        const result = await smokeTest(model)
-                        if (!result.ok) return { ...base, status: 'failing', detail: result.error }
-                        if (expiresAt) return { ...base, status: 'expiring', detail: null }
-                        return { ...base, status: 'ok', detail: null }
-                    }),
+                    cleanModels(row.models).map(async (model): Promise<ModelCheck> => ({
+                        feature: row.feature,
+                        ...(await checkModel(model)),
+                    })),
                 ),
             )
 

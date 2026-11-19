@@ -22,12 +22,15 @@ export interface AiSettings {
 
 export type AiModelStatus = 'ok' | 'expiring' | 'removed' | 'failing';
 
-export interface AiModelCheck {
-    feature: AiFeature;
+export interface AiModelResult {
     model: string;
     status: AiModelStatus;
     expiresAt: string | null;
     detail: string | null;
+}
+
+export interface AiModelCheck extends AiModelResult {
+    feature: AiFeature;
 }
 
 export interface AiModelCheckResult {

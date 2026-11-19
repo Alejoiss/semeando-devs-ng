@@ -1,7 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { AdminAiSettings } from './ai-settings';
 import { AdminAiSettingsService } from '../../../../services/admin-ai-settings';
-import { AiSettings } from '../../../../../models/ai-settings/ai-settings';
+import { AiModelResult, AiSettings } from '../../../../../models/ai-settings/ai-settings';
 
 describe('AdminAiSettings', () => {
     let fixture: ComponentFixture<AdminAiSettings>;
@@ -37,7 +37,7 @@ describe('AdminAiSettings', () => {
     }
 
     beforeEach(() => {
-        service = jasmine.createSpyObj('AdminAiSettingsService', ['getSettings', 'saveSettings', 'checkModels']);
+        service = jasmine.createSpyObj('AdminAiSettingsService', ['getSettings', 'saveSettings', 'checkModels', 'testModel']);
         service.saveSettings.and.resolveTo();
         TestBed.configureTestingModule({ providers: [{ provide: AdminAiSettingsService, useValue: service }] });
     });
@@ -197,6 +197,55 @@ describe('AdminAiSettings', () => {
             expect(text()).toContain('Retirada agendada: 31/12/2026');
             expect(text()).toContain('Removido do OpenRouter');
             expect(text()).toContain('Funcionando');
+        });
+
+        it('tests a single model from its row and shows the result with the failure detail', async () => {
+            service.testModel.and.resolveTo({ model: 'a/one', status: 'failing', expiresAt: null, detail: 'HTTP 500: provider error' });
+
+            button('Testar a/one')!.click();
+            await fixture.whenStable();
+            fixture.detectChanges();
+
+            expect(service.testModel).toHaveBeenCalledOnceWith('a/one');
+            expect(text()).toContain('Falhando');
+            expect(text()).toContain('HTTP 500: provider error');
+            expect(component.testing().has('a/one')).toBeFalse();
+        });
+
+        it('disables the row button while its test runs and ignores a second click', async () => {
+            let finish!: (r: AiModelResult) => void;
+            service.testModel.and.returnValue(new Promise(resolve => (finish = resolve)));
+
+            const first = component.testModel('a/one');
+            component.testModel('a/one');
+            fixture.detectChanges();
+
+            expect(service.testModel).toHaveBeenCalledTimes(1);
+            expect(button('Testar a/one')!.disabled).toBeTrue();
+            expect(text()).toContain('Testando...');
+
+            finish({ model: 'a/one', status: 'ok', expiresAt: null, detail: null });
+            await first;
+            fixture.detectChanges();
+            expect(button('Testar a/one')!.disabled).toBeFalse();
+        });
+
+        it('shows a failure when the test request itself fails', async () => {
+            service.testModel.and.rejectWith(new Error('Forbidden'));
+            await component.testModel('a/one');
+            fixture.detectChanges();
+            expect(text()).toContain('Forbidden');
+        });
+
+        it('tests a model that was just added and not saved yet', async () => {
+            service.testModel.and.resolveTo({ model: 'new/model', status: 'ok', expiresAt: null, detail: null });
+            addModel('evaluate_challenge', 'new/model');
+
+            button('Testar new/model')!.click();
+            await fixture.whenStable();
+            fixture.detectChanges();
+
+            expect(service.testModel).toHaveBeenCalledOnceWith('new/model');
         });
 
         it('warns when the catalog was unavailable', async () => {

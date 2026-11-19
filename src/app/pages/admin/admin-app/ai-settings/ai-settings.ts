@@ -3,7 +3,7 @@ import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import {
     AI_FEATURES,
     AiFeature,
-    AiModelCheck,
+    AiModelResult,
     AiModels,
 } from '../../../../../models/ai-settings/ai-settings';
 import { AdminAiSettingsService } from '../../../../services/admin-ai-settings';
@@ -14,7 +14,7 @@ const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 const errorMessage = (err: unknown, fallback: string) => (err instanceof Error && err.message ? err.message : fallback);
 
-const STATUS_LABELS: Record<AiModelCheck['status'], string> = {
+const STATUS_LABELS: Record<AiModelResult['status'], string> = {
     ok: 'Funcionando',
     expiring: 'Retirada agendada',
     removed: 'Removido do OpenRouter',
@@ -46,7 +46,9 @@ export class AdminAiSettings implements OnInit {
     readonly saveResult = signal<{ ok: boolean; message: string } | null>(null);
 
     readonly isChecking = signal(false);
-    readonly checks = signal<AiModelCheck[] | null>(null);
+    readonly results = signal<Record<string, AiModelResult>>({});
+    readonly testing = signal<ReadonlySet<string>>(new Set());
+    readonly checked = signal(false);
     readonly checkError = signal<string | null>(null);
     readonly catalogAvailable = signal(true);
 
@@ -137,30 +139,53 @@ export class AdminAiSettings implements OnInit {
         this.checkError.set(null);
         try {
             const result = await this.service.checkModels();
-            this.checks.set(result.checks);
+            this.results.set(Object.fromEntries(result.checks.map(check => [check.model, check])));
             this.catalogAvailable.set(result.catalogAvailable);
+            this.checked.set(true);
         } catch (err) {
-            this.checks.set(null);
+            this.checked.set(false);
             this.checkError.set(errorMessage(err, 'Não foi possível verificar os modelos.'));
         } finally {
             this.isChecking.set(false);
         }
     }
 
-    protected checkFor(feature: AiFeature, model: string): AiModelCheck | undefined {
-        return this.checks()?.find(check => check.feature === feature && check.model === model);
+    protected async testModel(model: string) {
+        if (this.testing().has(model)) {
+            return;
+        }
+        this.testing.update(set => new Set(set).add(model));
+        try {
+            const result = await this.service.testModel(model);
+            this.results.update(results => ({ ...results, [model]: result }));
+        } catch (err) {
+            this.results.update(results => ({
+                ...results,
+                [model]: { model, status: 'failing', expiresAt: null, detail: errorMessage(err, 'Não foi possível testar o modelo.') },
+            }));
+        } finally {
+            this.testing.update(set => {
+                const next = new Set(set);
+                next.delete(model);
+                return next;
+            });
+        }
     }
 
-    protected statusLabel(check: AiModelCheck): string {
+    protected resultFor(model: string): AiModelResult | undefined {
+        return this.results()[model];
+    }
+
+    protected statusLabel(check: AiModelResult): string {
         const label = STATUS_LABELS[check.status];
         return check.status === 'expiring' && check.expiresAt ? `${label}: ${this.formatDate(check.expiresAt)}` : label;
     }
 
-    protected statusIcon(status: AiModelCheck['status']): string {
+    protected statusIcon(status: AiModelResult['status']): string {
         return status === 'ok' ? 'check_circle' : status === 'expiring' ? 'schedule' : 'error';
     }
 
-    protected statusClass(status: AiModelCheck['status']): string {
+    protected statusClass(status: AiModelResult['status']): string {
         return status === 'ok'
             ? 'bg-emerald-400/15 text-emerald-300'
             : status === 'expiring'

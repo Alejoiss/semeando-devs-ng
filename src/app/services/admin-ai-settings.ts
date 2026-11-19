@@ -4,6 +4,7 @@ import {
     AI_FEATURES,
     AiFeature,
     AiModelCheckResult,
+    AiModelResult,
     AiModels,
     AiSettings,
 } from '../../models/ai-settings/ai-settings';
@@ -58,7 +59,17 @@ export class AdminAiSettingsService {
 
     /** Runs the same health check as the daily job, without sending the alert email. */
     async checkModels(): Promise<AiModelCheckResult> {
-        const { data, error } = await this.supabase.functions.invoke('check-ai-models', { body: { notify: false } });
+        return this.invokeCheck<AiModelCheckResult>({ notify: false });
+    }
+
+    /** Tests one model (saved or not) against the OpenRouter catalog and with a minimal call. */
+    async testModel(model: string): Promise<AiModelResult> {
+        const { check } = await this.invokeCheck<{ check: AiModelResult }>({ model });
+        return check;
+    }
+
+    private async invokeCheck<T>(body: Record<string, unknown>): Promise<T> {
+        const { data, error } = await this.supabase.functions.invoke('check-ai-models', { body });
         if (error) {
             let message = error.message;
             try {
@@ -69,6 +80,6 @@ export class AdminAiSettingsService {
             }
             throw new Error(message);
         }
-        return data as AiModelCheckResult;
+        return data as T;
     }
 }
