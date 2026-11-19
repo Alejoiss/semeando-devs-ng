@@ -4,7 +4,7 @@
             <span class="material-symbols-outlined text-base" aria-hidden="true">arrow_back</span>
             Voltar para newsletters
         </a>
-        @if (newsletter.value(); as item) {
+        @if (newsletter.hasValue() && newsletter.value(); as item) {
             <div>
                 <h2 class="text-3xl font-bold text-[#dee5ff] font-headline">{{ item.subject || 'Sem assunto' }}</h2>
                 <p class="font-label text-[#dee5ff]/70 mt-2">Criada em {{ item.created_at | date: 'dd/MM/yyyy' }}</p>

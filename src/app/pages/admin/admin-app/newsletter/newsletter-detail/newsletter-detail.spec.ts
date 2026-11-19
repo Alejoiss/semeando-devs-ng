@@ -92,9 +92,7 @@ describe('AdminNewsletterDetail', () => {
         expect(fixture.nativeElement.querySelector('app-newsletter-preview')).toBeNull();
     });
 
-    // BUG conhecido: o cabeçalho lê `newsletter.value()` e o resource lança no estado de erro,
-    // então o alerta com "Tentar novamente" nunca chega a ser renderizado.
-    xit('shows an alert and retries when loading fails', async () => {
+    it('shows an alert and retries when loading fails', async () => {
         service.getNewsletter.and.rejectWith(new Error('down'));
         await setup();
 
@@ -102,6 +100,7 @@ describe('AdminNewsletterDetail', () => {
 
         service.getNewsletter.and.resolveTo(newsletter as any);
         (fixture.nativeElement.querySelector('[role="alert"] button') as HTMLButtonElement).click();
+        fixture.detectChanges();
         await fixture.whenStable();
         fixture.detectChanges();
 
