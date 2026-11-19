@@ -97,6 +97,22 @@ export function createHandler(createClient: CreateClient) {
                 });
             }
 
+            // Fetch lesson info
+            const { data: lessonData, error: lessonDataError } = await serviceRoleClient
+                .from('lessons')
+                .select('sub_module_id, xp, type')
+                .eq('id', lessonId)
+                .single()
+
+            if (lessonDataError) throw lessonDataError
+
+            if (lessonData?.type !== 'CHALLENGE') {
+                return new Response(JSON.stringify({ error: 'A lição informada não é um desafio' }), {
+                    status: 400,
+                    headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+                })
+            }
+
             let aiFeedback = '';
             let usedModel: string | null = null;
             if (openRouterApiKey) {
@@ -144,15 +160,6 @@ export function createHandler(createClient: CreateClient) {
 
             // --- Completion Logic ---
             const now = new Date().toISOString()
-
-            // Fetch lesson info
-            const { data: lessonData, error: lessonDataError } = await serviceRoleClient
-                .from('lessons')
-                .select('sub_module_id, xp, type')
-                .eq('id', lessonId)
-                .single()
-
-            if (lessonDataError) throw lessonDataError
 
             // Fetch current status
             const { data: currentLessonProgress, error: fetchLPError } = await serviceRoleClient

@@ -384,14 +384,13 @@ Deno.test('a missing or invalid token is answered with 401, not 500', async () =
     assertEquals((await call({ user: null })).res.status, 401)
 })
 
-Deno.test({
-    ignore: true,
-    name: 'only challenge lessons can be completed through the challenge evaluator (finding challenge-accepts-any-lesson)',
-    fn: async () => {
-        const r = await call({ lesson: { sub_module_id: 'sm-1', xp: 50, type: 'QUIZ' } })
-        assert(r.res.status >= 400)
+Deno.test('only challenge lessons can be completed through the challenge evaluator', async () => {
+    for (const type of ['QUIZ', 'REVISION', 'LESSON']) {
+        const r = await call({ lesson: { sub_module_id: 'sm-1', xp: 50, type } })
+        assertEquals(r.res.status, 400)
+        assertEquals(r.aiCalls.length, 0)
         assertEquals(writes(r), [])
-    },
+    }
 })
 
 Deno.test({
