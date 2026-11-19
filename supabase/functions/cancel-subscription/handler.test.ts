@@ -242,11 +242,7 @@ Deno.test({
     },
 })
 
-Deno.test({
-    ignore: true,
-    name: 'a failing pro_until update must not be reported as a successful cancellation (finding cancel-profile-update-ignored)',
-    fn: async () => {
-        const { res } = await call({ extra: { 'profiles.update': { error: { message: 'rls denied' } } } })
-        assertEquals(res.status, 500)
-    },
+Deno.test('a failing pro_until update is not reported as a successful cancellation', async () => {
+    const { res } = await call({ extra: { 'profiles.update': { error: { message: 'rls denied' } } } })
+    assertEquals(res.status, 500)
 })

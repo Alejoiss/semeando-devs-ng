@@ -142,10 +142,14 @@ export function createHandler(createClient: CreateClient) {
             }
 
             // Keep is_pro = true but set pro_until so the cron job can expire it automatically
-            await serviceRoleClient
+            const { error: profileError } = await serviceRoleClient
                 .from('profiles')
                 .update({ pro_until: accessUntil.toISOString() })
                 .eq('id', user.id)
+
+            if (profileError) {
+                throw profileError
+            }
 
             return new Response(
                 JSON.stringify({
