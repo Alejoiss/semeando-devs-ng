@@ -34,6 +34,14 @@ test.describe('professor content creation', () => {
         sql(`update profiles set teacher_terms_accepted = true, teacher_terms_accepted_at = now() where id = '${teacherId}'`);
     });
 
+    test('the partner terms dialog has no AXE violations', async ({ page }) => {
+        sql(`update profiles set teacher_terms_accepted = false, teacher_terms_accepted_at = null where id = '${teacherId}'`);
+
+        await page.goto('/professor/criar-modulo');
+        await expect(page.getByRole('heading', { level: 1, name: 'Termos do Professor Parceiro' })).toBeVisible();
+        await expectNoAxeViolations(page, { exclude: ['iframe'] });
+    });
+
     test('a teacher who has not accepted the partner terms must accept them', async ({ page }) => {
         sql(`update profiles set teacher_terms_accepted = false, teacher_terms_accepted_at = null where id = '${teacherId}'`);
 
