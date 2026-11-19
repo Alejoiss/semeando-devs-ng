@@ -50,7 +50,16 @@ export function createFakeSupabase(resolvers: Record<string, Resolver> = {}) {
     }
 
     return {
-        client: { from } as any,
+        client: {
+            from,
+            rpc: (name: string, args?: unknown) => {
+                const call: Call = { table: `rpc:${name}`, op: 'select', payload: args, filters: [] }
+                calls.push(call)
+                const r = resolvers[`rpc:${name}`] ?? {}
+                const value = typeof r === 'function' ? r(call) : r
+                return Promise.resolve({ data: null, error: null, count: null, ...value })
+            },
+        } as any,
         calls,
         callsFor: (table: string, op?: Call['op']) =>
             calls.filter((c) => c.table === table && (!op || c.op === op)),

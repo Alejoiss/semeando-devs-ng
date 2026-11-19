@@ -82,7 +82,6 @@ export function createHandler(createClient: CreateClient) {
                 : Number(planData.yearly_price)
 
             let couponId: string | null = null
-            let couponUsedCount = 0
 
             // 2. Handle Coupon
             if (couponCode) {
@@ -140,12 +139,29 @@ export function createHandler(createClient: CreateClient) {
                 transactionAmount = Math.max(0, Math.round(transactionAmount * 100) / 100)
 
                 couponId = couponData.id
-                couponUsedCount = couponData.used_count || 0
             }
 
             const frequency = billingCycle === 'monthly' ? 1 : 12
             let mpPreapprovalId = ''
             let responseData: any = {}
+
+            if (couponId) {
+                const { data: consumed, error: consumeError } = await serviceRoleClient
+                    .rpc('consume_coupon', { p_coupon_id: couponId })
+                if (consumeError) throw consumeError
+                if (!consumed) {
+                    return new Response(
+                        JSON.stringify({ error: 'Cupom atingiu o limite de uso' }),
+                        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+                    )
+                }
+            }
+
+            const releaseCoupon = async () => {
+                if (!couponId) return
+                const { error } = await serviceRoleClient.rpc('release_coupon', { p_coupon_id: couponId })
+                if (error) console.error('Failed to release coupon', couponId, error)
+            }
 
             // 3. Process Payment with Mercado Pago
             if (paymentMethod === 'card') {
@@ -187,6 +203,7 @@ export function createHandler(createClient: CreateClient) {
                         payerEmail: user.email,
                         mpResponse: mpData,
                     }))
+                    await releaseCoupon()
                     return new Response(
                         JSON.stringify({
                             error: 'Erro ao processar pagamento.',
@@ -226,6 +243,7 @@ export function createHandler(createClient: CreateClient) {
                         transactionAmount,
                         mpResponse: mpData,
                     }))
+                    await releaseCoupon()
                     return new Response(
                         JSON.stringify({
                             error: 'Erro ao gerar PIX no Mercado Pago',
@@ -242,13 +260,6 @@ export function createHandler(createClient: CreateClient) {
                     qr_code: mpData.point_of_interaction?.transaction_data?.qr_code,
                     qr_code_base64: mpData.point_of_interaction?.transaction_data?.qr_code_base64,
                 }
-            }
-
-            if (couponId) {
-                await serviceRoleClient
-                    .from('coupons')
-                    .update({ used_count: couponUsedCount + 1 })
-                    .eq('id', couponId)
             }
 
             // 4. Save Subscription (using serviceRoleClient)
@@ -268,7 +279,10 @@ export function createHandler(createClient: CreateClient) {
                 .select('id')
                 .single()
 
-            if (insertError) throw insertError
+            if (insertError) {
+                console.error('Subscription insert failed after charge', JSON.stringify({ userId: user.id, mpPreapprovalId }))
+                throw insertError
+            }
 
             return new Response(
                 JSON.stringify({ ...responseData, subscription_id: insertedSub.id }),

@@ -36,6 +36,7 @@ async function call(o: Opts = {}) {
         'plans.select': { data: o.plan === undefined ? PLAN : o.plan },
         'coupons.select': o.coupon === null ? { error: { message: 'none' } } : { data: o.coupon ?? coupon() },
         'subscriptions.insert': { data: { id: 'sub-1' } },
+        'rpc:consume_coupon': { data: true },
         ...o.extra,
     })
     const user = o.user === undefined ? USER : o.user
@@ -157,7 +158,7 @@ Deno.test('card: a Mercado Pago error returns 500 and stores nothing', async () 
     assertEquals(r.res.status, 500)
     assertEquals(r.json, { error: 'Erro ao processar pagamento.', details: 'card rejected' })
     assertEquals(r.fake.callsFor('subscriptions', 'insert'), [])
-    assertEquals(r.fake.callsFor('coupons', 'update'), [])
+    assertEquals(r.fake.callsFor('rpc:release_coupon').map((c) => c.payload), [{ p_coupon_id: 'c-1' }])
 })
 
 Deno.test('pix: creates the payment and returns the QR code', async () => {
@@ -192,11 +193,11 @@ Deno.test('a failing subscription insert becomes a 500', async () => {
     assertEquals(r.json.error, 'insert failed')
 })
 
-const withCoupon = (c: Coupon | null, billingCycle = 'monthly', code = 'PROMO') =>
-    call({ coupon: c, body: { planId: 'plan-1', billingCycle, paymentMethod: 'card', couponCode: code } })
+const withCoupon = (c: Coupon | null, billingCycle = 'monthly', extra?: Opts['extra'], code = 'PROMO') =>
+    call({ coupon: c, extra, body: { planId: 'plan-1', billingCycle, paymentMethod: 'card', couponCode: code } })
 
 Deno.test('coupon: normalizes the code before looking it up', async () => {
-    const r = await withCoupon(coupon(), 'monthly', '  promo20 ')
+    const r = await withCoupon(coupon(), 'monthly', undefined, '  promo20 ')
     assertEquals(r.fake.callsFor('coupons', 'select')[0].filters, [['eq', 'code', 'PROMO20']])
 })
 
@@ -229,8 +230,8 @@ Deno.test('coupon: the amount is rounded to cents', async () => {
 
 Deno.test('coupon: a valid coupon is linked to the subscription and its usage is incremented', async () => {
     const r = await withCoupon(coupon({ used_count: 4, usage_limit: 5 }))
-    assertEquals(r.fake.callsFor('coupons', 'update')[0].payload, { used_count: 5 })
-    assertEquals(r.fake.callsFor('coupons', 'update')[0].filters, [['eq', 'id', 'c-1']])
+    assertEquals(r.fake.callsFor('rpc:consume_coupon').map((c) => c.payload), [{ p_coupon_id: 'c-1' }])
+    assertEquals(r.fake.callsFor('coupons', 'update'), [])
     assertEquals(r.fake.callsFor('subscriptions', 'insert')[0].payload.coupon_id, 'c-1')
 })
 
@@ -265,4 +266,18 @@ Deno.test('an unsupported payment method is rejected instead of saving an unpaid
 Deno.test('an unknown billing cycle is rejected instead of charging the yearly price', async () => {
     const r = await call({ body: { planId: 'plan-1', billingCycle: 'weekly', paymentMethod: 'card' } })
     assertEquals(r.res.status, 400)
+})
+
+Deno.test('coupon: a coupon exhausted by a concurrent purchase is rejected before charging', async () => {
+    const r = await withCoupon(coupon({ usage_limit: 5, used_count: 4 }), 'monthly', { 'rpc:consume_coupon': { data: false } })
+    assertEquals(r.res.status, 400)
+    assertEquals(r.json.error, 'Cupom atingiu o limite de uso')
+    assertEquals(r.mpCalls, [])
+    assertEquals(r.fake.callsFor('subscriptions', 'insert'), [])
+})
+
+Deno.test('coupon: a failing atomic consume answers 500 without charging', async () => {
+    const r = await withCoupon(coupon(), 'monthly', { 'rpc:consume_coupon': { error: { message: 'db down' } } })
+    assertEquals(r.res.status, 500)
+    assertEquals(r.mpCalls, [])
 })
