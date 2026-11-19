@@ -95,6 +95,26 @@ Deno.test('authorized payment: a rejected payment marks payment_failed and remov
     assertEquals(fake.callsFor('profiles', 'update')[0].payload, { is_pro: false })
 })
 
+for (const status of ['pending', 'in_process', 'authorized']) {
+    Deno.test(`authorized payment: a ${status} payment leaves the subscription and PRO access unchanged`, async () => {
+        const fake = setup()
+        await withMp({ [PAYMENT_URL]: { body: payment({ status }) } }, () =>
+            handleAuthorizedPayment(fake.client, { id: 1, data: { id: 'pay-1' } }, TOKEN))
+        assertEquals(fake.callsFor('subscriptions', 'update'), [])
+        assertEquals(fake.callsFor('profiles', 'update'), [])
+        assertEquals(billingUpdate(fake).status, 'success')
+    })
+}
+
+for (const status of ['cancelled', 'refunded', 'charged_back']) {
+    Deno.test(`authorized payment: a ${status} payment removes PRO access`, async () => {
+        const fake = setup()
+        await withMp({ [PAYMENT_URL]: { body: payment({ status }) } }, () =>
+            handleAuthorizedPayment(fake.client, { id: 1, data: { id: 'pay-1' } }, TOKEN))
+        assertEquals(fake.callsFor('profiles', 'update')[0].payload, { is_pro: false })
+    })
+}
+
 Deno.test('authorized payment: reads the preapproval from point_of_interaction', async () => {
     const fake = setup()
     await withMp({

@@ -15,6 +15,9 @@ export function isTransientError(err: unknown): boolean {
     return true
 }
 
+// Not final yet: PIX waiting for payment, card under review, funds held. The final status arrives in a later notification.
+const UNSETTLED_PAYMENT_STATUSES = new Set(['pending', 'in_process', 'authorized'])
+
 async function fetchFromMercadoPago(url: string, mlToken: string): Promise<unknown> {
     const response = await fetch(url, {
         headers: { Authorization: `Bearer ${mlToken}` },
@@ -90,6 +93,12 @@ export async function handleAuthorizedPayment(
         ) as Record<string, unknown>
 
         const paymentFields = extractPaymentFields(payment)
+
+        if (UNSETTLED_PAYMENT_STATUSES.has(payment['status'] as string)) {
+            await updateBillingEvent(client, billingEventId, { status: 'success', payment: paymentFields })
+            console.log(`[mp-webhook] Payment ${paymentId} is ${payment['status']}; waiting for the final status, access unchanged.`)
+            return
+        }
 
         const paymentMetadata = payment['metadata'] as Record<string, unknown> | undefined
         const pointOfInteraction = payment['point_of_interaction'] as Record<string, any> | undefined
