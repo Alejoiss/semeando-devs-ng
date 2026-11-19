@@ -46,6 +46,11 @@ describe('UserService', () => {
         expect(service).toBeTruthy();
     });
 
+    it('waitForProfile resolves after the first profile load, even when it fails', async () => {
+        await expectAsync(service.waitForProfile()).toBeResolved();
+        expect(service.isProfileResolved()).toBeTrue();
+    });
+
     describe('sign in (DES-1)', () => {
         it('verify user sign in', async () => {
             supabaseAuthSpy.signInWithPassword.and.returnValue(Promise.resolve({ data: {}, error: null }));

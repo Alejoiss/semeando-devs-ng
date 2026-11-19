@@ -81,7 +81,7 @@ test.describe('daily lesson limit (free plan)', () => {
         ['quiz', `${lessonPath(NEW_LESSON)}/quiz`],
         ['challenge', `${lessonPath(NEW_CHALLENGE)}/challenge`],
     ]) {
-        test.fixme(`finding bug-daily-limit-guard-fails-open: opening the ${label} URL directly is blocked at the limit`, async ({ page }) => {
+        test(`opening the ${label} URL directly is blocked at the limit`, async ({ page }) => {
             await page.goto(path);
 
             await expect(page).toHaveURL(/\?bloqueado=1$/);

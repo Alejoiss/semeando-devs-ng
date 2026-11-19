@@ -9,19 +9,21 @@ describe('dailyLimitGuard', () => {
     let currentUser: ReturnType<typeof signal<{ id: string; isPro: boolean } | null>>;
     let limitSpy: jasmine.SpyObj<DailyLimitService>;
     let router: Router;
+    let profileReady: Promise<void>;
 
     const lessonUrl = '/app/s/html/ss/tags/lesson/l1';
 
-    const run = (url = lessonUrl, params: Record<string, string> = { lessonId: 'l1' }) =>
+    const run = (url = lessonUrl, params: Record<string, string> = { lessonId: 'l1' }, query: Record<string, string> = {}) =>
         TestBed.runInInjectionContext(() =>
             dailyLimitGuard(
-                { paramMap: convertToParamMap(params) } as ActivatedRouteSnapshot,
+                { paramMap: convertToParamMap(params), queryParamMap: convertToParamMap(query) } as ActivatedRouteSnapshot,
                 { url } as RouterStateSnapshot,
             ),
         ) as Promise<boolean | UrlTree>;
 
     beforeEach(() => {
         currentUser = signal<{ id: string; isPro: boolean } | null>({ id: 'u1', isPro: false });
+        profileReady = Promise.resolve();
         limitSpy = jasmine.createSpyObj('DailyLimitService', ['loadDailyCount', 'isLessonAccessible']);
         limitSpy.loadDailyCount.and.resolveTo();
         limitSpy.isLessonAccessible.and.resolveTo(true);
@@ -29,11 +31,34 @@ describe('dailyLimitGuard', () => {
         TestBed.configureTestingModule({
             providers: [
                 provideRouter([]),
-                { provide: UserService, useValue: { currentUser } },
+                { provide: UserService, useValue: { currentUser, waitForProfile: () => profileReady } },
                 { provide: DailyLimitService, useValue: limitSpy },
             ],
         });
         router = TestBed.inject(Router);
+    });
+
+    it('waits for the profile to load before deciding, so a direct URL cannot bypass the limit', async () => {
+        let resolveProfile!: () => void;
+        profileReady = new Promise<void>((resolve) => (resolveProfile = resolve));
+        currentUser.set(null);
+        limitSpy.isLessonAccessible.and.resolveTo(false);
+
+        const pending = run();
+        await Promise.resolve();
+        currentUser.set({ id: 'u1', isPro: false });
+        resolveProfile();
+
+        const result = await pending;
+        expect(result instanceof UrlTree).toBeTrue();
+        expect(router.serializeUrl(result as UrlTree)).toBe(`${lessonUrl}?bloqueado=1`);
+    });
+
+    it('lets the blocked screen itself render instead of redirecting to the same URL forever', async () => {
+        limitSpy.isLessonAccessible.and.resolveTo(false);
+
+        expect(await run(`${lessonUrl}?bloqueado=1`, { lessonId: 'l1' }, { bloqueado: '1' })).toBeTrue();
+        expect(limitSpy.isLessonAccessible).not.toHaveBeenCalled();
     });
 
     it('lets pro users through without checking the limit', async () => {

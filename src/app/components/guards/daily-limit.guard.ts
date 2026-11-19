@@ -9,9 +9,14 @@ export const dailyLimitGuard: CanActivateFn = async (route, state) => {
     const router = inject(Router);
 
     try {
+        await userService.waitForProfile();
         const user = userService.currentUser();
 
         if (user?.isPro) {
+            return true;
+        }
+
+        if (route.queryParamMap?.get('bloqueado') === '1') {
             return true;
         }
 

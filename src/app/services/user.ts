@@ -15,6 +15,8 @@ export class UserService {
     private userSignal = signal<User | null>(null);
 
     private profileResolved = signal<boolean>(false);
+    private resolveProfileReady!: () => void;
+    private readonly profileReady = new Promise<void>((resolve) => (this.resolveProfileReady = resolve));
 
     readonly currentUser = computed(() => this.userSignal());
     /** Indica se já se sabe se há (ou não) um usuário logado. */
@@ -23,7 +25,14 @@ export class UserService {
     constructor() {
         if (isPlatformBrowser(inject(PLATFORM_ID))) {
             this.loadUserProfile();
+        } else {
+            this.resolveProfileReady();
         }
+    }
+
+    /** Resolves once the first profile load has finished, whether or not a user is logged in. */
+    waitForProfile(): Promise<void> {
+        return this.profileReady;
     }
 
     public async loadUserProfile() {
@@ -34,6 +43,7 @@ export class UserService {
             this.userSignal.set(null);
         } finally {
             this.profileResolved.set(true);
+            this.resolveProfileReady();
         }
     }
 
