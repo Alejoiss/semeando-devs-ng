@@ -1,0 +1,62 @@
+<svg #svg viewBox="0 0 240 220" class="w-full h-full" preserveAspectRatio="xMidYMax meet" aria-hidden="true" focusable="false">
+    <ellipse cx="120" cy="196" rx="70" ry="14" fill="#1f2b4d" />
+    <ellipse cx="120" cy="191" rx="48" ry="8" fill="#2b3a63" />
+    <ellipse class="seed" cx="120" cy="186" rx="9" ry="6" fill="#ffcf00" />
+
+    @if (passed()) {
+        <g class="plant">
+            <path class="stem" d="M120 188 C 118 162 122 130 120 90" fill="none" stroke="#a0704a" stroke-width="11"
+                stroke-linecap="round" />
+            <path class="branch" d="M120 142 C 108 134 98 124 90 110" fill="none" stroke="#a0704a" stroke-width="6"
+                stroke-linecap="round" pathLength="1" stroke-dasharray="1" />
+            <path class="branch" d="M120 126 C 132 118 142 108 150 96" fill="none" stroke="#a0704a" stroke-width="6"
+                stroke-linecap="round" pathLength="1" stroke-dasharray="1" />
+            <g class="canopy-l">
+                <polygon points="76.0,62.0 100.2,76.0 100.2,104.0 76.0,118.0 51.8,104.0 51.8,76.0" fill="#2e9b78" />
+                <polygon points="76,90 76.0,62.0 100.2,76.0" fill="#4fc99f" />
+            </g>
+            <g class="canopy-r">
+                <polygon points="164.0,62.0 188.2,76.0 188.2,104.0 164.0,118.0 139.8,104.0 139.8,76.0" fill="#2e9b78" />
+                <polygon points="164,90 164.0,62.0 188.2,76.0" fill="#4fc99f" />
+            </g>
+            <g class="canopy-core">
+                <polygon class="facet" points="120,62 120.0,22.0 154.6,42.0" fill="#4fc99f" />
+                <polygon class="facet" points="120,62 154.6,42.0 154.6,82.0" fill="#3cb68c" />
+                <polygon class="facet" points="120,62 154.6,82.0 120.0,102.0" fill="#2e9b78" />
+                <polygon class="facet" points="120,62 120.0,102.0 85.4,82.0" fill="#3cb68c" />
+                <polygon class="facet" points="120,62 85.4,82.0 85.4,42.0" fill="#2e9b78" />
+                <polygon class="facet" points="120,62 85.4,42.0 120.0,22.0" fill="#4fc99f" />
+            </g>
+        <g transform="translate(104 54)"><path class="fruit" d="M0 -6 L6 0 L0 6 L-6 0Z" fill="#ffcf00" /></g>
+        <g transform="translate(140 76)"><path class="fruit" d="M0 -6 L6 0 L0 6 L-6 0Z" fill="#42bdff" /></g>
+        <g transform="translate(114 90)"><path class="fruit" d="M0 -6 L6 0 L0 6 L-6 0Z" fill="#e85d96" /></g>
+        <g transform="translate(168 98)"><path class="fruit" d="M0 -6 L6 0 L0 6 L-6 0Z" fill="#985de8" /></g>
+        </g>
+        <g transform="translate(44 60)"><rect class="bit" x="-4" y="-4" width="8" height="8" rx="1.5" fill="#42bdff" /></g>
+        <g transform="translate(198 52)"><rect class="bit" x="-4" y="-4" width="8" height="8" rx="1.5" fill="#ffcf00" /></g>
+        <g transform="translate(208 122)"><rect class="bit" x="-4" y="-4" width="8" height="8" rx="1.5" fill="#e85d96" /></g>
+        <g transform="translate(36 124)"><rect class="bit" x="-4" y="-4" width="8" height="8" rx="1.5" fill="#bbe85d" /></g>
+    } @else {
+        <g class="plant">
+            <path class="stem" d="M120 188 C 118 162 122 130 120 90" fill="none" stroke="#a0704a" stroke-width="11"
+                stroke-linecap="round" />
+            <path class="branch" d="M120 142 C 108 134 98 124 90 110" fill="none" stroke="#a0704a" stroke-width="6"
+                stroke-linecap="round" pathLength="1" stroke-dasharray="1" />
+            <path class="branch" d="M120 126 C 132 118 142 108 150 96" fill="none" stroke="#a0704a" stroke-width="6"
+                stroke-linecap="round" pathLength="1" stroke-dasharray="1" />
+            <g class="canopy-l">
+                <polygon points="76.0,62.0 100.2,76.0 100.2,104.0 76.0,118.0 51.8,104.0 51.8,76.0" fill="#2e9b78" />
+                <polygon points="76,90 76.0,62.0 100.2,76.0" fill="#4fc99f" />
+            </g>
+            <polygon class="ghost" points="164.0,62.0 188.2,76.0 188.2,104.0 164.0,118.0 139.8,104.0 139.8,76.0" fill="#4fc99f" fill-opacity="0.22" />
+            <g class="canopy-core">
+                <polygon class="facet" points="120,62 120.0,22.0 154.6,42.0" fill="#4fc99f" />
+                <polygon class="ghost" points="120,62 154.6,42.0 154.6,82.0" fill="#4fc99f" fill-opacity="0.22" />
+                <polygon class="ghost" points="120,62 154.6,82.0 120.0,102.0" fill="#4fc99f" fill-opacity="0.22" />
+                <polygon class="facet" points="120,62 120.0,102.0 85.4,82.0" fill="#3cb68c" />
+                <polygon class="facet" points="120,62 85.4,82.0 85.4,42.0" fill="#2e9b78" />
+                <polygon class="facet" points="120,62 85.4,42.0 120.0,22.0" fill="#4fc99f" />
+            </g>
+        </g>
+    }
+</svg>

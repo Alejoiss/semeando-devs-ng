@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy, Component, computed, inject, OnInit, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, DestroyRef, inject, OnInit, signal } from '@angular/core';
 import { ActivatedRoute, RouterLink, Router } from '@angular/router';
 import { Answer } from '../../../../models/answer/answer';
 import { Question } from '../../../../models/question/question';
@@ -19,18 +19,29 @@ import { AchievementsService } from '../../../services/achievements';
 import { DailyLimitService } from '../../../services/daily-limit/daily-limit';
 import { MarkdownModule } from 'ngx-markdown';
 import { MotionReveal } from '../../../directives/motion-reveal';
-import { loadGsap } from '../../../utils/motion';
+import { BrandLoader } from '../../../components/brand-loader/brand-loader';
+import { ResultIllustration } from '../../../components/result-illustration/result-illustration';
+import { CountUp } from '../../../directives/count-up';
+import { loadGsap, prefersReducedMotion } from '../../../utils/motion';
+import { QuizReview, QuizReviewItem } from './quiz-review/quiz-review';
+import { summarizeQuestion } from './quiz-review/quiz-summary';
+
+type LoadState = 'loading' | 'ready' | 'error';
+
+// Tempo para a contagem de XP/Seeds terminar antes do modal de conquista aparecer por cima.
+const ACHIEVEMENT_MODAL_DELAY_MS = 1800;
 
 interface QuizResult {
     questionId: string;
     correct: boolean;
     answerId: string;
+    reason?: string;
 }
 
 @Component({
     selector: 'app-quiz',
     standalone: true,
-    imports: [MotionReveal, CommonModule, RouterLink, MarkdownModule],
+    imports: [MotionReveal, CommonModule, RouterLink, MarkdownModule, BrandLoader, ResultIllustration, CountUp, QuizReview],
     templateUrl: './quiz.html',
     styleUrls: ['./quiz.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
@@ -66,6 +77,9 @@ export class Quiz implements OnInit {
     protected readonly isRevisionMode = signal<boolean>(false);
     protected readonly noQuestionsAvailable = signal<boolean>(false);
     protected readonly isProcessingCompleteQuiz = signal<boolean>(false);
+    protected readonly completionError = signal<boolean>(false);
+    protected readonly loadState = signal<LoadState>('loading');
+    protected readonly loadErrorMessage = signal<string>('');
     protected readonly quizCompletionResult = signal<any>(null);
 
     protected readonly isConfirming = signal<boolean>(false);
@@ -80,6 +94,14 @@ export class Quiz implements OnInit {
     private timerInterval: any;
     private userId: string | null = null;
     private currentAttempt: UserQuiz | null = null;
+    private achievementTimeout: ReturnType<typeof setTimeout> | undefined;
+
+    constructor() {
+        inject(DestroyRef).onDestroy(() => {
+            this.stopTimer();
+            clearTimeout(this.achievementTimeout);
+        });
+    }
 
     protected readonly currentQuestion = computed(() => this.questions()[this.currentIndex()]);
     protected readonly selectedAnswer = computed(() => this.currentAnswers().find(a => a.id === this.selectedOptionId()));
@@ -117,58 +139,112 @@ export class Quiz implements OnInit {
 
     protected readonly xpAwarded = computed(() => this.quizCompletionResult()?.xpAwarded || 0);
 
-    async ngOnInit() {
+    protected readonly title = computed(() => this.isRevisionMode() ? 'Quiz de Revisão' : (this.lesson()?.title ?? 'Quiz'));
+
+    // Aprovado só avança com o resultado salvo; reprovado volta para a lição e não depende dele.
+    protected readonly continueBlocked = computed(() =>
+        this.isProcessingCompleteQuiz() || (this.passed() && !this.quizCompletionResult())
+    );
+
+    protected readonly reviewItems = computed<QuizReviewItem[]>(() => {
+        const questionsById = new Map(this.questions().map(q => [q.id, q]));
+        return this.results().map((result, i) => ({
+            questionId: result.questionId,
+            index: i + 1,
+            correct: result.correct,
+            title: summarizeQuestion(questionsById.get(result.questionId)),
+            reason: result.correct ? undefined : result.reason,
+        }));
+    });
+
+    ngOnInit() {
         void loadGsap();
+        void this.load();
+    }
+
+    protected retryLoad() {
+        void this.load();
+    }
+
+    private failLoad(message: string) {
+        this.loadErrorMessage.set(message);
+        this.loadState.set('error');
+    }
+
+    private async load() {
         const lessonId = this.route.snapshot.paramMap.get('lessonId');
-        if (!lessonId) return;
+        if (!lessonId) {
+            this.failLoad('Não encontramos esta lição.');
+            return;
+        }
+
+        this.loadState.set('loading');
 
         try {
-            const user = await this.userService.getUserProfile();
+            const [user, lesson] = await Promise.all([
+                this.userService.getUserProfile(),
+                this.lessonService.getLessonById(lessonId),
+            ]);
             this.userId = user.id;
 
-            const lesson = await this.lessonService.getLessonById(lessonId);
-            if (!lesson) return;
+            if (!lesson) {
+                this.failLoad('Não encontramos esta lição.');
+                return;
+            }
             this.lesson.set(lesson);
 
-            if (lesson.type === LessonType.REVISION) {
-                const quizData = await this.quizService.getOrCreateQuiz(lessonId);
-                this.isRevisionMode.set(true);
+            let quizId: string;
 
-                const revisionQuestions = await this.quizService.getRevisionQuestions(lessonId, lesson.subModuleId);
+            if (lesson.type === LessonType.REVISION) {
+                const [quizData, revisionQuestions] = await Promise.all([
+                    this.quizService.getOrCreateQuiz(lessonId),
+                    this.quizService.getRevisionQuestions(lessonId, lesson.subModuleId),
+                ]);
+                this.isRevisionMode.set(true);
 
                 if (revisionQuestions.length === 0) {
                     this.noQuestionsAvailable.set(true);
+                    this.loadState.set('ready');
                     return;
                 }
 
                 this.questions.set(revisionQuestions);
-                await this.loadAnswersForCurrentQuestion();
-                this.startTimer();
-
-                this.currentAttempt = await this.userQuizService.createAttempt(this.userId, quizData.id);
+                quizId = quizData.id;
             } else {
                 const quizData = await this.quizService.getQuizByLessonId(lessonId);
-                if (!quizData) return;
-                this.quiz.set(quizData);
-
-                let questionsData = await this.questionService.getQuestionsByQuizId(quizData.id);
-                questionsData = this.shuffle(questionsData);
-                this.questions.set(questionsData);
-
-                if (questionsData.length > 0) {
-                    await this.loadAnswersForCurrentQuestion();
-                    this.startTimer();
-
-                    // Opcional: criar tentativa inicial no banco
-                    this.currentAttempt = await this.userQuizService.createAttempt(this.userId, quizData.id);
+                if (!quizData) {
+                    this.failLoad('Esta lição ainda não tem um quiz.');
+                    return;
                 }
+
+                const questionsData = await this.questionService.getQuestionsByQuizId(quizData.id);
+                if (questionsData.length === 0) {
+                    this.failLoad('Este quiz ainda não tem questões.');
+                    return;
+                }
+
+                this.quiz.set(quizData);
+                this.questions.set(this.shuffle(questionsData));
+                quizId = quizData.id;
             }
+
+            await Promise.all([
+                this.loadAnswersForCurrentQuestion(),
+                this.currentAttempt
+                    ? Promise.resolve()
+                    : this.userQuizService.createAttempt(user.id, quizId).then(attempt => { this.currentAttempt = attempt; }),
+            ]);
+
+            this.loadState.set('ready');
+            this.startTimer();
         } catch (error) {
             console.error('Error loading quiz:', error);
+            this.failLoad('Verifique sua conexão e tente novamente.');
         }
     }
 
     private startTimer() {
+        this.stopTimer();
         this.timerInterval = setInterval(() => {
             this.spentTimeSeconds.update(s => s + 1);
         }, 1000);
@@ -227,7 +303,8 @@ export class Quiz implements OnInit {
             this.results.update(r => [...r, {
                 questionId: question.id,
                 correct: isCorrect,
-                answerId: selectedId
+                answerId: selectedId,
+                reason: verification.reason
             }]);
 
             // Persist question result
@@ -277,40 +354,62 @@ export class Quiz implements OnInit {
     private async finishQuiz() {
         this.stopTimer();
         this.finished.set(true);
+        await this.submitResult();
+    }
 
+    protected async submitResult() {
         const lessonId = this.route.snapshot.paramMap.get('lessonId');
+        if (!this.currentAttempt || !lessonId || this.isProcessingCompleteQuiz()) return;
 
-        if (this.currentAttempt && lessonId) {
-            this.isProcessingCompleteQuiz.set(true);
-            try {
-                const result = await this.quizService.completeQuiz(
-                    this.currentAttempt.id,
-                    lessonId,
-                    this.correctCount(),
-                    this.totalQuestions(),
-                    this.spentTimeSeconds()
-                );
-                this.quizCompletionResult.set(result);
+        this.completionError.set(false);
+        this.isProcessingCompleteQuiz.set(true);
 
-                if (this.passed() && result.xpAwarded > 15) {
-                    const amount = Math.ceil((result.xpAwarded ?? 0) * 0.1);
-                    await this.seedService.creditSeeds(amount);
-                    this.earnedSeeds.set(amount);
-                }
-
-                await this.xpService.refreshXp();
-                await this.achievementsService.checkUnseenAchievements();
-
-                const userId = this.userId;
-                if (userId) {
-                    this.dailyLimitService.loadDailyCount(userId).catch(console.error);
-                }
-            } catch (error) {
-                console.error('Error completing quiz via Edge Function:', error);
-            } finally {
-                this.isProcessingCompleteQuiz.set(false);
-            }
+        try {
+            const result = await this.quizService.completeQuiz(
+                this.currentAttempt.id,
+                lessonId,
+                this.correctCount(),
+                this.totalQuestions(),
+                this.spentTimeSeconds()
+            );
+            this.quizCompletionResult.set(result);
+            await this.creditEarnedSeeds(result);
+        } catch (error) {
+            console.error('Error completing quiz via Edge Function:', error);
+            this.completionError.set(true);
+            return;
+        } finally {
+            this.isProcessingCompleteQuiz.set(false);
         }
+
+        this.refreshAfterCompletion();
+    }
+
+    private async creditEarnedSeeds(result: { xpAwarded?: number }) {
+        if (!this.passed() || (result.xpAwarded ?? 0) <= 15) return;
+
+        try {
+            const amount = Math.ceil((result.xpAwarded ?? 0) * 0.1);
+            await this.seedService.creditSeeds(amount);
+            this.earnedSeeds.set(amount);
+        } catch (error) {
+            console.error('Error crediting seeds:', error);
+        }
+    }
+
+    // Nada aqui bloqueia a tela: o resultado já está visível quando isso roda.
+    private refreshAfterCompletion() {
+        this.xpService.refreshXp().catch(console.error);
+
+        if (this.userId) {
+            this.dailyLimitService.loadDailyCount(this.userId).catch(console.error);
+        }
+
+        clearTimeout(this.achievementTimeout);
+        this.achievementTimeout = setTimeout(
+            () => void this.achievementsService.checkUnseenAchievements(),
+            prefersReducedMotion() ? 0 : ACHIEVEMENT_MODAL_DELAY_MS
+        );
     }
 
     protected requestHint() {
@@ -339,6 +438,10 @@ export class Quiz implements OnInit {
     }
 
     protected restart() {
+        if (this.isProcessingCompleteQuiz()) return;
+
+        this.quizCompletionResult.set(null);
+        this.completionError.set(false);
         this.currentIndex.set(0);
         this.selectedOptionId.set(null);
         this.confirmed.set(false);
@@ -370,7 +473,7 @@ export class Quiz implements OnInit {
     }
 
     protected handleKeyboardEvent(event: KeyboardEvent) {
-        if (this.finished() || this.noQuestionsAvailable()) return;
+        if (this.loadState() !== 'ready' || this.finished() || this.noQuestionsAvailable()) return;
 
         const key = event.key.toLowerCase();
 
@@ -383,7 +486,8 @@ export class Quiz implements OnInit {
                 index = index - 4;
             }
 
-            this.answer(this.currentAnswers()[index].id);
+            const option = this.currentAnswers()[index];
+            if (option) this.answer(option.id);
             return;
         }
 

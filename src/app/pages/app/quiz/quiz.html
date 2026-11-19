@@ -19,11 +19,34 @@
 } @else {
 <div class="min-h-screen bg-background text-on-surface p-6 lg:p-12">
 
-    <section class="max-w-5xl mx-auto bg-surface-container rounded-2xl border border-outline-variant/20 p-8 shadow-lg">
-        @if (!finished()) {
+    <section class="max-w-5xl mx-auto bg-surface-container rounded-2xl p-8 shadow-lg">
+        @if (loadState() === 'loading') {
+            <div class="py-24 flex flex-col items-center gap-4 text-center">
+                <app-brand-loader [size]="64" label="Carregando quiz" />
+                <p class="text-on-surface-variant text-sm" aria-hidden="true">Preparando suas questões...</p>
+            </div>
+        } @else if (loadState() === 'error') {
+            <div class="py-16 flex flex-col items-center gap-4 text-center" role="alert">
+                <span class="material-symbols-outlined text-5xl text-error" aria-hidden="true">error</span>
+                <h2 class="text-2xl font-headline font-bold text-on-surface">Não foi possível carregar o quiz</h2>
+                <p class="text-on-surface-variant text-sm max-w-md">{{ loadErrorMessage() }}</p>
+                <div class="flex flex-col sm:flex-row gap-3 mt-2">
+                    <button (click)="retryLoad()"
+                        class="px-6 py-3 bg-gradient-to-r from-primary to-primary-dim text-on-primary-container font-headline font-bold rounded-lg inline-flex items-center justify-center gap-2">
+                        <span class="material-symbols-outlined text-sm" aria-hidden="true">refresh</span>
+                        Tentar novamente
+                    </button>
+                    <a [routerLink]="['/app/s', route.snapshot.params['slug'], 'ss', route.snapshot.params['slugSubmodule']]"
+                        class="px-6 py-3 bg-surface-container-high hover:bg-surface-container-highest text-on-surface-variant font-headline font-bold rounded-lg inline-flex items-center justify-center gap-2 transition-colors">
+                        <span class="material-symbols-outlined text-sm" aria-hidden="true">arrow_back</span>
+                        Voltar
+                    </a>
+                </div>
+            </div>
+        } @else if (!finished()) {
             <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-6">
                 <div>
-                    <h2 class="text-2xl md:text-3xl font-headline font-black text-on-surface">Quiz de Revisão</h2>
+                    <h2 class="text-2xl md:text-3xl font-headline font-black text-on-surface">{{ title() }}</h2>
                     <p class="text-on-surface-variant text-sm mt-1">Verifique seu conhecimento.</p>
                 </div>
                 <div class="flex gap-3 text-xs font-label uppercase tracking-widest">
@@ -39,7 +62,7 @@
                     [style.width.%]="progressPercent()"></div>
             </div>
 
-            <div class="glass-card border border-outline-variant/20 rounded-xl p-6">
+            <div class="bg-surface-container-low rounded-xl p-6">
                 @for (question of [currentQuestion()]; track question?.id) {
                 <div animate.enter="quiz-question-enter">
                 <p class="text-primary font-label uppercase tracking-widest text-xs mb-2">Pergunta {{ progress() }}</p>
@@ -61,14 +84,12 @@
                 <div class="grid grid-cols-1 gap-3">
                     @for (option of currentAnswers(); track option.id; let i = $index) {
                         <button
-                            class="quiz-option flex items-center text-left p-4 rounded-lg border border-outline-variant/20 bg-surface-container-high transition duration-200 active:scale-[0.99]"
+                            class="quiz-option flex items-center text-left p-4 rounded-lg bg-surface-container-high hover:bg-surface-container-highest transition duration-200 active:scale-[0.99] focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary"
                             [style.--i]="i"
+                            [attr.aria-pressed]="selectedOptionId() === option.id"
                             [class.quiz-option--correct]="confirmed() && option.isCorrect && selectedOptionId() === option.id"
                             [class.quiz-option--wrong]="confirmed() && selectedOptionId() === option.id && !option.isCorrect"
-                            [class.!border-primary]="selectedOptionId() === option.id && !confirmed()"
-                            [class.!border-tertiary]="confirmed() && option.isCorrect && selectedOptionId() === option.id"
-                            [class.!border-error]="confirmed() && selectedOptionId() === option.id && !option.isCorrect"
-                            [class.!bg-primary/10]="selectedOptionId() === option.id && !confirmed()"
+                            [class.!bg-primary/20]="selectedOptionId() === option.id && !confirmed()"
                             [class.!bg-tertiary/20]="confirmed() && option.isCorrect && selectedOptionId() === option.id"
                             [class.!bg-error/20]="confirmed() && selectedOptionId() === option.id && !option.isCorrect"
                             (click)="answer(option.id)">
@@ -87,13 +108,13 @@
                 }
 
                 @if (showHintConfirm()) {
-                    <div class="quiz-collapse" animate.enter="quiz-collapse-enter"><div class="min-h-0 overflow-hidden"><div class="pt-4"><div class="p-4 rounded-lg bg-surface-container-highest border border-secondary/30 flex flex-col items-center gap-4">
+                    <div class="quiz-collapse" animate.enter="quiz-collapse-enter"><div class="min-h-0 overflow-hidden"><div class="pt-4"><div class="p-4 rounded-lg bg-surface-container-highest flex flex-col items-center gap-4">
                         <p class="text-sm text-on-surface text-center">Gastar <span class="text-tertiary font-bold">50 seeds</span> para ver uma dica?</p>
                         <div class="flex gap-4">
                             <button (click)="confirmHint()" class="px-4 py-2 bg-secondary text-on-secondary rounded-lg font-bold text-sm hover:scale-105 transition-transform">
                                 Sim, ver dica
                             </button>
-                            <button (click)="cancelHint()" class="px-4 py-2 border border-outline-variant text-on-surface-variant rounded-lg font-bold text-sm hover:bg-surface-container transition-colors">
+                            <button (click)="cancelHint()" class="px-4 py-2 bg-surface-container-high text-on-surface-variant rounded-lg font-bold text-sm hover:bg-surface-container transition-colors">
                                 Cancelar
                             </button>
                         </div>
@@ -101,7 +122,7 @@
                 }
 
                 @if (hintVisible()) {
-                    <div class="quiz-collapse" animate.enter="quiz-collapse-enter"><div class="min-h-0 overflow-hidden"><div class="pt-4"><div class="p-4 rounded-lg bg-surface-container-highest border-l-4 border-secondary">
+                    <div class="quiz-collapse" animate.enter="quiz-collapse-enter"><div class="min-h-0 overflow-hidden"><div class="pt-4"><div class="p-4 rounded-lg bg-secondary/10">
                         <div class="flex items-center gap-2 mb-2 text-secondary">
                             <span class="material-symbols-outlined text-sm">lightbulb</span>
                             <span class="text-xs font-label uppercase font-bold tracking-widest">Dica</span>
@@ -112,9 +133,9 @@
 
                 @if (confirmed() && selectedAnswer()?.reason) {
                     @if ((hintVisible() && !selectedAnswer()?.isCorrect) || !hintVisible()) {
-                            <div class="quiz-collapse" animate.enter="quiz-collapse-enter"><div class="min-h-0 overflow-hidden"><div class="pt-6"><div class="p-4 rounded-lg bg-surface-container-highest border-l-4"
-                            [class.border-tertiary]="selectedAnswer()?.isCorrect"
-                            [class.border-error]="!selectedAnswer()?.isCorrect">
+                            <div class="quiz-collapse" animate.enter="quiz-collapse-enter"><div class="min-h-0 overflow-hidden"><div class="pt-6"><div class="p-4 rounded-lg"
+                            [class.bg-tertiary/10]="selectedAnswer()?.isCorrect"
+                            [class.bg-error/10]="!selectedAnswer()?.isCorrect">
                             <p class="text-sm font-bold mb-1" [class.text-tertiary]="selectedAnswer()?.isCorrect" [class.text-error]="!selectedAnswer()?.isCorrect">
                                 {{ selectedAnswer()?.isCorrect ? 'Correto!' : 'Incorreto' }}
                             </p>
@@ -160,13 +181,27 @@
             </div>
         }
         @else {
+            <p class="sr-only" role="status">
+                @if (isProcessingCompleteQuiz()) {Calculando XP e seeds.} @else if (quizCompletionResult()) {Resultado salvo. Você ganhou {{ xpAwarded() }} XP.}
+            </p>
+            @if (completionError()) {
+                <div role="alert" class="mb-6 flex flex-col sm:flex-row items-center justify-between gap-3 rounded-lg bg-error/15 px-5 py-4">
+                    <span class="flex items-center gap-2 text-sm text-on-surface">
+                        <span class="material-symbols-outlined text-error" aria-hidden="true">error</span>
+                        Não conseguimos salvar seu resultado. Seu progresso e seu XP ainda não foram registrados.
+                    </span>
+                    <button (click)="submitResult()"
+                        class="px-5 py-2 bg-error text-on-error rounded-lg font-bold text-sm inline-flex items-center gap-2 shrink-0">
+                        <span class="material-symbols-outlined text-sm" aria-hidden="true">refresh</span>
+                        Tentar novamente
+                    </button>
+                </div>
+            }
             @if (passed()) {
                 <section class="relative w-full py-12 flex flex-col items-center text-center">
                     <div class="relative w-full h-64 mb-6 text-center">
                         <div class="absolute inset-0 bg-primary/20 blur-3xl rounded-full"></div>
-                        <img class="relative z-10 w-full h-full object-contain"
-                            data-alt="A stylized 3D neon blue rocket taking off amidst vibrant pink and green smoke trails, high contrast digital art style"
-                            src="assets/passed.png" />
+                        <app-result-illustration class="relative z-10 w-full h-full" [passed]="true" />
                     </div>
                     <h1 class="text-4xl md:text-6xl font-extrabold font-headline text-on-surface tracking-tight leading-tight">
                         Parabéns,
@@ -222,7 +257,15 @@
                             <div class="bg-surface-container-low p-4 rounded flex items-center justify-between" data-motion="item">
                                 <div class="flex flex-col">
                                     <span class="text-xs font-label uppercase text-on-surface-variant">XP Obtido</span>
-                                    <span class="text-xl font-bold font-headline text-primary" data-motion="count">+{{ xpAwarded() }} XP</span>
+                                    <span class="text-xl font-bold font-headline text-primary">
+                                        @if (isProcessingCompleteQuiz()) {
+                                            <span class="block h-7 w-24 rounded bg-surface-container-highest animate-pulse" aria-hidden="true"></span>
+                                        } @else if (completionError()) {
+                                            <span aria-label="Indisponível">—</span>
+                                        } @else {
+                                            <span [appCountUp]="xpAwarded()" prefix="+" suffix=" XP"></span>
+                                        }
+                                    </span>
                                 </div>
                                 <span class="material-symbols-outlined text-primary"
                                     style="font-variation-settings: 'FILL' 1;">bolt</span>
@@ -230,17 +273,26 @@
                             <div class="bg-surface-container-low p-4 rounded flex items-center justify-between" data-motion="item">
                                 <div class="flex flex-col">
                                     <span class="text-xs font-label uppercase text-on-surface-variant">Seeds Ganhas</span>
-                                    <span class="text-xl font-bold font-headline text-tertiary" data-motion="count">+{{ earnedSeeds() }} Seeds</span>
+                                    <span class="text-xl font-bold font-headline text-tertiary">
+                                        @if (isProcessingCompleteQuiz()) {
+                                            <span class="block h-7 w-24 rounded bg-surface-container-highest animate-pulse" aria-hidden="true"></span>
+                                        } @else if (completionError()) {
+                                            <span aria-label="Indisponível">—</span>
+                                        } @else {
+                                            <span [appCountUp]="earnedSeeds()" prefix="+" suffix=" Seeds"></span>
+                                        }
+                                    </span>
                                 </div>
                                 <img src="assets/seed/seed.png" alt="Seeds" class="w-6 h-6 object-contain" />
                             </div>
                         </div>
                     </div>
+                    <app-quiz-review class="block mt-6" data-motion="item" [items]="reviewItems()" />
                 </div>
                 <!-- Action Buttons -->
                 <div class="flex flex-col sm:flex-row gap-4 w-full mt-12 justify-center items-center">
                     <button (click)="continueQuiz()"
-                        [disabled]="isProcessingCompleteQuiz()"
+                        [disabled]="continueBlocked()"
                         class="w-full sm:w-auto px-10 py-4 bg-gradient-to-r from-primary to-primary-container text-on-primary-container font-headline font-extrabold rounded shadow-[0_0_20px_rgba(63,194,251,0.3)] hover:scale-105 active:scale-95 transition flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed disabled:hover:scale-100 disabled:active:scale-100">
                         @if (isProcessingCompleteQuiz()) {
                             <span class="material-symbols-outlined animate-spin">progress_activity</span>
@@ -251,7 +303,8 @@
                         }
                     </button>
                     <button (click)="restart()"
-                        class="w-full sm:w-auto px-10 py-4 border border-secondary/30 bg-secondary/5 text-secondary font-headline font-bold rounded hover:bg-secondary/10 transition flex items-center justify-center gap-2">
+                        [disabled]="isProcessingCompleteQuiz()"
+                        class="w-full sm:w-auto px-10 py-4 bg-secondary/15 text-secondary font-headline font-bold rounded hover:bg-secondary/25 transition flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed">
                         <span class="material-symbols-outlined">refresh</span>
                         Refazer Quiz
                     </button>
@@ -261,9 +314,7 @@
                 <!-- Hero Illustration -->
                 <div class="relative w-full h-64 mb-8 text-center">
                     <div class="absolute inset-0 bg-error/20 blur-3xl rounded-full"></div>
-                    <img alt="Debug Character" class="relative z-10 w-full h-full object-contain"
-                        data-alt="A cute stylized 3D character of a wilting digital plant with glowing red glitch effects and drooping leaves, cinematic lighting"
-                        src="assets/failed.png" />
+                    <app-result-illustration class="relative z-10 w-full h-full" [passed]="false" />
                 </div>
                 <!-- Heading Section -->
                 <div class="text-center mb-12">
@@ -322,9 +373,12 @@
                         <p class="text-on-surface-variant mb-8 leading-relaxed">
                             Para avançar para o próximo nível do <span class="text-primary font-bold">Semeando Devs</span>, você
                             precisa de pelo menos <span class="text-on-surface font-bold">70% de acertos</span>.
+                            @if (wrongCount() > 0) {
+                                Você errou {{ wrongCount() }} de {{ totalQuestions() }} questões. Veja abaixo o motivo de cada uma.
+                            }
                         </p>
                         <!-- Study Suggestion Sub-card -->
-                        <div class="bg-surface-container-high rounded-lg p-5 border-l-4 border-primary">
+                        <div class="bg-primary/10 rounded-lg p-5">
                             <div class="flex justify-between items-start mb-2">
                                 <span class="font-label text-[10px] uppercase tracking-widest text-primary">Sugestão de Estudo</span>
                                 <span class="material-symbols-outlined text-primary-dim text-sm"
@@ -334,16 +388,18 @@
                             <p class="text-sm text-on-surface-variant">Revisite o conteúdo desta lição antes de tentar o quiz novamente para fixar os conceitos.</p>
                         </div>
                     </div>
+                    <app-quiz-review class="block md:col-span-12" data-motion="item" [items]="reviewItems()" />
                 </div>
                 <!-- Footer Actions -->
                 <div class="mt-12 flex flex-col sm:flex-row gap-4 w-full justify-center">
                     <button (click)="restart()"
-                        class="px-10 py-4 bg-gradient-to-r from-primary to-primary-container text-on-primary-container font-headline font-bold rounded-lg shadow-[0_0_20px_rgba(63,194,251,0.3)] hover:scale-105 active:scale-95 transition flex items-center justify-center gap-2">
+                        [disabled]="isProcessingCompleteQuiz()"
+                        class="px-10 py-4 bg-gradient-to-r from-primary to-primary-container text-on-primary-container font-headline font-bold rounded-lg shadow-[0_0_20px_rgba(63,194,251,0.3)] hover:scale-105 active:scale-95 transition flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed disabled:hover:scale-100">
                         <span class="material-symbols-outlined">refresh</span>
                         Refazer Quiz
                     </button>
                     <button (click)="continueQuiz()"
-                        class="px-10 py-4 border-2 border-outline-variant hover:border-secondary hover:text-secondary text-on-surface-variant font-headline font-bold rounded-lg transition flex items-center justify-center gap-2 group">
+                        class="px-10 py-4 bg-surface-container-high hover:bg-surface-container-highest hover:text-secondary text-on-surface-variant font-headline font-bold rounded-lg transition flex items-center justify-center gap-2 group">
                         <span
                             class="material-symbols-outlined group-hover:-translate-x-1 transition-transform">arrow_back</span>
                         Continuar

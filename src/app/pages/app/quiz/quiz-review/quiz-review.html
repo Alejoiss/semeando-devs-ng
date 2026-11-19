@@ -1,0 +1,42 @@
+<section aria-labelledby="quiz-review-title" class="bg-surface-container-low rounded-lg p-6 md:p-8 text-left">
+    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-4">
+        <h3 id="quiz-review-title" class="font-headline text-xl font-bold text-on-surface">Revisão das respostas</h3>
+        <p class="text-xs font-label uppercase tracking-widest text-on-surface-variant">
+            {{ correctCount() }} {{ correctCount() === 1 ? 'certa' : 'certas' }} · {{ wrongCount() }} {{ wrongCount() === 1 ? 'errada' : 'erradas' }}
+        </p>
+    </div>
+
+    <ul class="flex flex-col gap-2">
+        @for (item of items(); track item.questionId) {
+            <li>
+                @if (item.correct || !item.reason) {
+                    <div class="flex items-center gap-3 rounded-lg px-4 py-3"
+                        [class.bg-tertiary/10]="item.correct" [class.bg-error/10]="!item.correct">
+                        <span class="material-symbols-outlined shrink-0" aria-hidden="true"
+                            [class.text-tertiary]="item.correct" [class.text-error]="!item.correct"
+                            style="font-variation-settings: 'FILL' 1;">{{ item.correct ? 'check_circle' : 'cancel' }}</span>
+                        <span class="font-label text-xs font-bold text-on-surface-variant shrink-0">Q{{ item.index }}</span>
+                        <span class="text-sm text-on-surface min-w-0 break-words">{{ item.title }}</span>
+                        <span class="sr-only">{{ item.correct ? 'Resposta correta' : 'Resposta errada' }}</span>
+                    </div>
+                } @else {
+                    <details class="group rounded-lg bg-error/10">
+                        <summary class="flex items-center gap-3 px-4 py-3 cursor-pointer list-none rounded-lg [&::-webkit-details-marker]:hidden focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary">
+                            <span class="material-symbols-outlined shrink-0 text-error" aria-hidden="true"
+                                style="font-variation-settings: 'FILL' 1;">cancel</span>
+                            <span class="font-label text-xs font-bold text-on-surface-variant shrink-0">Q{{ item.index }}</span>
+                            <span class="text-sm text-on-surface min-w-0 break-words">{{ item.title }}</span>
+                            <span class="sr-only">Resposta errada. Expandir para ver o motivo.</span>
+                            <span class="material-symbols-outlined ml-auto shrink-0 text-on-surface-variant transition-transform group-open:rotate-180"
+                                aria-hidden="true">expand_more</span>
+                        </summary>
+                        <div class="px-4 pb-4 pl-[3.75rem]">
+                            <p class="text-xs font-label font-bold uppercase tracking-widest text-error mb-1">Por que sua resposta estava errada</p>
+                            <p class="text-sm text-on-surface-variant leading-relaxed">{{ item.reason }}</p>
+                        </div>
+                    </details>
+                }
+            </li>
+        }
+    </ul>
+</section>
