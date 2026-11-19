@@ -86,7 +86,7 @@ test.describe.serial('account lifecycle', () => {
     });
 });
 
-test.fixme('finding a11y-login-forgot-password-link-not-focusable: forgot-password link is reachable by keyboard', async ({ page }) => {
+test('forgot-password link is reachable by keyboard', async ({ page }) => {
     await page.goto('/auth/login');
     await page.locator('#password').focus();
     const link = page.getByRole('link', { name: 'Esqueci minha senha' });
