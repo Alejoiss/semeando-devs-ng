@@ -4,7 +4,7 @@ import { sql } from './support/backend';
 import { E2E_USERS, storageStateFor } from './support/users';
 
 const userId = E2E_USERS.subscriber.id;
-const PLAN_ID = 'c5efafcb-3467-4e73-9792-9ed70585971e';
+const PLAN_ID = sql("select id from plans where name = 'Plano PRÓ'");
 const CORS = { 'access-control-allow-origin': '*', 'access-control-allow-headers': '*', 'access-control-allow-methods': 'POST, OPTIONS' };
 const FAKE_SDK = `window.MercadoPago = function () {
     this.fields = { create: () => ({ mount: () => ({ on() {} }) }), createCardToken: async () => ({ id: 'tok_e2e' }) };

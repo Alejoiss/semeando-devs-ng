@@ -27,7 +27,7 @@ Conteúdo em preparação.', 0) on conflict (id) do nothing;
 insert into public.submodules (id, module_id, title, slug, description, icon, "order") values ('e86aa906-95c5-5332-bb5b-f9456a72a87a', '11ba5020-4323-5483-9824-1410497398fa', 'Primeiros passos', 'primeiros-passos', 'O que é HTML e como montar a estrutura básica de uma página.', 'rocket_launch', 1) on conflict (id) do nothing;
 insert into public.submodules (id, module_id, title, slug, description, icon, "order") values ('d7a1d95a-9ff5-58b7-972e-851e353145bc', '11ba5020-4323-5483-9824-1410497398fa', 'Formulários', 'formularios', 'Campos, rótulos e validação nativa para coletar dados com acessibilidade.', 'edit_note', 2) on conflict (id) do nothing;
 insert into public.submodules (id, module_id, title, slug, description, icon, "order") values ('9f3f4b09-a9c6-505e-b525-43fdd016cfed', '381a7121-0664-5437-a734-631e004ae378', 'Seletores e cores', 'seletores-e-cores', 'Como escolher elementos e aplicar cores com CSS.', 'palette', 1) on conflict (id) do nothing;
-insert into public.lessons (id, sub_module_id, title, description, type, "order", xp, language, initial_code, owner_id, created_by, is_validated) values ('0fb4e367-514b-5e00-889c-e2c1b08d6efd', 'e86aa906-95c5-5332-bb5b-f9456a72a87a', 'O que é HTML?', 'Entenda o que é HTML, o que são tags e como criar títulos, parágrafos, links e imagens.', 'LESSON', 1, 20, 'javascript', null, (select id from public.owners order by created_at limit 1), '634f7ea6-e0b3-4ffd-95eb-efc6b73a42ba', true) on conflict (id) do nothing;
+insert into public.lessons (id, sub_module_id, title, description, type, "order", xp, language, initial_code, created_by, is_validated) values ('0fb4e367-514b-5e00-889c-e2c1b08d6efd', 'e86aa906-95c5-5332-bb5b-f9456a72a87a', 'O que é HTML?', 'Entenda o que é HTML, o que são tags e como criar títulos, parágrafos, links e imagens.', 'LESSON', 1, 20, 'javascript', null, '634f7ea6-e0b3-4ffd-95eb-efc6b73a42ba', true) on conflict (id) do nothing;
 insert into public.section_content (id, lesson_id, type, content, "order") values ('7dbaa76d-6d7d-536e-8694-e87cbb8e3aa8', '0fb4e367-514b-5e00-889c-e2c1b08d6efd', 'MARKDOWN', '# O que é HTML?
 
 **HTML** (HyperText Markup Language) é a linguagem que descreve a *estrutura* de uma página web.
@@ -108,7 +108,7 @@ insert into public.answers (id, question_id, text, is_correct, reason) values ('
 insert into public.answers (id, question_id, text, is_correct, reason) values ('eef655c1-212e-5db3-967a-3369f6be10a8', '8cf279da-f650-5184-ac05-288375854319', '.html', true, 'Arquivos de página web usam .html (ou .htm).') on conflict (id) do nothing;
 insert into public.answers (id, question_id, text, is_correct, reason) values ('eee72c26-6af4-50e2-acb7-1047fab464aa', '8cf279da-f650-5184-ac05-288375854319', '.web', false, 'Não é a opção correta. Arquivos de página web usam .html (ou .htm).') on conflict (id) do nothing;
 insert into public.answers (id, question_id, text, is_correct, reason) values ('961fe362-cbbc-518d-a53e-c47e1263f801', '8cf279da-f650-5184-ac05-288375854319', '.hyper', false, 'Não é a opção correta. Arquivos de página web usam .html (ou .htm).') on conflict (id) do nothing;
-insert into public.lessons (id, sub_module_id, title, description, type, "order", xp, language, initial_code, owner_id, created_by, is_validated) values ('8274a0fa-6560-5d31-b1e5-77a3ed3769a9', 'e86aa906-95c5-5332-bb5b-f9456a72a87a', 'Estrutura de uma página', 'Doctype, head, body e as principais tags semânticas.', 'LESSON', 2, 20, 'javascript', null, (select id from public.owners order by created_at limit 1), '634f7ea6-e0b3-4ffd-95eb-efc6b73a42ba', true) on conflict (id) do nothing;
+insert into public.lessons (id, sub_module_id, title, description, type, "order", xp, language, initial_code, created_by, is_validated) values ('8274a0fa-6560-5d31-b1e5-77a3ed3769a9', 'e86aa906-95c5-5332-bb5b-f9456a72a87a', 'Estrutura de uma página', 'Doctype, head, body e as principais tags semânticas.', 'LESSON', 2, 20, 'javascript', null, '634f7ea6-e0b3-4ffd-95eb-efc6b73a42ba', true) on conflict (id) do nothing;
 insert into public.section_content (id, lesson_id, type, content, "order") values ('c56e37ce-60a8-5535-b9a9-3b9e24f310e3', '8274a0fa-6560-5d31-b1e5-77a3ed3769a9', 'MARKDOWN', '# Estrutura de uma página
 
 ```html
@@ -190,11 +190,11 @@ insert into public.answers (id, question_id, text, is_correct, reason) values ('
 insert into public.answers (id, question_id, text, is_correct, reason) values ('6f7bed16-9735-5c61-b752-dd20c4e6c4a9', 'b10745a4-d520-5d62-814e-85dd36328826', 'Deixam a página mais colorida', false, 'Não é a opção correta. Semântica ajuda tecnologias assistivas e mecanismos de busca a entender a página.') on conflict (id) do nothing;
 insert into public.answers (id, question_id, text, is_correct, reason) values ('f4cff0dd-24cc-54f9-8238-446fc6802dba', 'b10745a4-d520-5d62-814e-85dd36328826', 'Porque a tag <div> é proibida', false, 'Não é a opção correta. Semântica ajuda tecnologias assistivas e mecanismos de busca a entender a página.') on conflict (id) do nothing;
 insert into public.answers (id, question_id, text, is_correct, reason) values ('f6e266a2-c25c-5ba8-8859-2d8892a95af3', 'b10745a4-d520-5d62-814e-85dd36328826', 'Dão significado ao conteúdo, ajudando acessibilidade e SEO', true, 'Semântica ajuda tecnologias assistivas e mecanismos de busca a entender a página.') on conflict (id) do nothing;
-insert into public.lessons (id, sub_module_id, title, description, type, "order", xp, language, initial_code, owner_id, created_by, is_validated) values ('e50f4c5f-303e-5377-9768-8fbd7de5e9b4', 'e86aa906-95c5-5332-bb5b-f9456a72a87a', 'Revisão: fundamentos de HTML', 'Dez perguntas sorteadas das lições anteriores deste submódulo.', 'REVISION', 3, 15, 'javascript', null, (select id from public.owners order by created_at limit 1), '634f7ea6-e0b3-4ffd-95eb-efc6b73a42ba', true) on conflict (id) do nothing;
+insert into public.lessons (id, sub_module_id, title, description, type, "order", xp, language, initial_code, created_by, is_validated) values ('e50f4c5f-303e-5377-9768-8fbd7de5e9b4', 'e86aa906-95c5-5332-bb5b-f9456a72a87a', 'Revisão: fundamentos de HTML', 'Dez perguntas sorteadas das lições anteriores deste submódulo.', 'REVISION', 3, 15, 'javascript', null, '634f7ea6-e0b3-4ffd-95eb-efc6b73a42ba', true) on conflict (id) do nothing;
 insert into public.section_content (id, lesson_id, type, content, "order") values ('2fdc931a-14ef-5619-8a20-5285ac764419', 'e50f4c5f-303e-5377-9768-8fbd7de5e9b4', 'MARKDOWN', '# Revisão
 
 Responda às perguntas sorteadas das lições anteriores para fixar o conteúdo.', 0) on conflict (id) do nothing;
-insert into public.lessons (id, sub_module_id, title, description, type, "order", xp, language, initial_code, owner_id, created_by, is_validated) values ('0ba1e272-a3c2-536f-93e2-9ef72798eed1', 'e86aa906-95c5-5332-bb5b-f9456a72a87a', 'Desafio: sua primeira página', 'Monte uma página HTML completa com título, parágrafo, link e imagem.', 'CHALLENGE', 4, 30, 'html', '<!DOCTYPE html>
+insert into public.lessons (id, sub_module_id, title, description, type, "order", xp, language, initial_code, created_by, is_validated) values ('0ba1e272-a3c2-536f-93e2-9ef72798eed1', 'e86aa906-95c5-5332-bb5b-f9456a72a87a', 'Desafio: sua primeira página', 'Monte uma página HTML completa com título, parágrafo, link e imagem.', 'CHALLENGE', 4, 30, 'html', '<!DOCTYPE html>
 <html lang="pt-BR">
   <head>
     <meta charset="UTF-8">
@@ -204,7 +204,7 @@ insert into public.lessons (id, sub_module_id, title, description, type, "order"
     <!-- Escreva seu código aqui -->
   </body>
 </html>
-', (select id from public.owners order by created_at limit 1), '634f7ea6-e0b3-4ffd-95eb-efc6b73a42ba', true) on conflict (id) do nothing;
+', '634f7ea6-e0b3-4ffd-95eb-efc6b73a42ba', true) on conflict (id) do nothing;
 insert into public.section_content (id, lesson_id, type, content, "order") values ('917108b1-d62a-5e13-a31e-fb9970f4df86', '0ba1e272-a3c2-536f-93e2-9ef72798eed1', 'MARKDOWN', '# Desafio: sua primeira página
 
 Crie uma página HTML que contenha:
@@ -214,7 +214,7 @@ Crie uma página HTML que contenha:
 3. Um parágrafo apresentando você
 4. Um link para o seu perfil no GitHub
 5. Uma imagem com texto alternativo', 0) on conflict (id) do nothing;
-insert into public.lessons (id, sub_module_id, title, description, type, "order", xp, language, initial_code, owner_id, created_by, is_validated) values ('da235cfc-d669-56c7-b33d-445607b61bf2', 'd7a1d95a-9ff5-58b7-972e-851e353145bc', 'Campos de formulário', 'Inputs, rótulos, seleção e validação nativa com HTML.', 'LESSON', 1, 20, 'javascript', null, (select id from public.owners order by created_at limit 1), '634f7ea6-e0b3-4ffd-95eb-efc6b73a42ba', true) on conflict (id) do nothing;
+insert into public.lessons (id, sub_module_id, title, description, type, "order", xp, language, initial_code, created_by, is_validated) values ('da235cfc-d669-56c7-b33d-445607b61bf2', 'd7a1d95a-9ff5-58b7-972e-851e353145bc', 'Campos de formulário', 'Inputs, rótulos, seleção e validação nativa com HTML.', 'LESSON', 1, 20, 'javascript', null, '634f7ea6-e0b3-4ffd-95eb-efc6b73a42ba', true) on conflict (id) do nothing;
 insert into public.section_content (id, lesson_id, type, content, "order") values ('62df2c31-03c5-531b-b26c-3edce1bd2c8c', 'da235cfc-d669-56c7-b33d-445607b61bf2', 'MARKDOWN', '# Campos de formulário
 
 ```html
@@ -295,10 +295,10 @@ insert into public.answers (id, question_id, text, is_correct, reason) values ('
 insert into public.answers (id, question_id, text, is_correct, reason) values ('4f3f152a-6fba-5d23-a8cd-10a908b04736', 'b02c43ec-aa69-581b-bf45-b64a03e0f4a7', 'Mostrar uma dica enquanto o campo está vazio', true, 'Placeholder é só uma dica visual e não substitui o <label>.') on conflict (id) do nothing;
 insert into public.answers (id, question_id, text, is_correct, reason) values ('38df68b4-cd38-53df-b940-0a746972787a', 'b02c43ec-aa69-581b-bf45-b64a03e0f4a7', 'Substituir o rótulo (label) do campo', false, 'Não é a opção correta. Placeholder é só uma dica visual e não substitui o <label>.') on conflict (id) do nothing;
 insert into public.answers (id, question_id, text, is_correct, reason) values ('eaf24b6f-ffb6-5cf7-b8fd-1f930f1a9a23', 'b02c43ec-aa69-581b-bf45-b64a03e0f4a7', 'Limitar o tamanho máximo do texto', false, 'Não é a opção correta. Placeholder é só uma dica visual e não substitui o <label>.') on conflict (id) do nothing;
-insert into public.lessons (id, sub_module_id, title, description, type, "order", xp, language, initial_code, owner_id, created_by, is_validated) values ('4ee4d6ef-b95e-5180-ab62-183e4263cb6c', 'd7a1d95a-9ff5-58b7-972e-851e353145bc', 'Desafio: formulário de contato', 'Crie um formulário de contato acessível com validação nativa.', 'CHALLENGE', 2, 30, 'html', '<form>
+insert into public.lessons (id, sub_module_id, title, description, type, "order", xp, language, initial_code, created_by, is_validated) values ('4ee4d6ef-b95e-5180-ab62-183e4263cb6c', 'd7a1d95a-9ff5-58b7-972e-851e353145bc', 'Desafio: formulário de contato', 'Crie um formulário de contato acessível com validação nativa.', 'CHALLENGE', 2, 30, 'html', '<form>
   <!-- Escreva seu código aqui -->
 </form>
-', (select id from public.owners order by created_at limit 1), '634f7ea6-e0b3-4ffd-95eb-efc6b73a42ba', true) on conflict (id) do nothing;
+', '634f7ea6-e0b3-4ffd-95eb-efc6b73a42ba', true) on conflict (id) do nothing;
 insert into public.section_content (id, lesson_id, type, content, "order") values ('1703cba3-c912-56d4-9019-3c018c2242b0', '4ee4d6ef-b95e-5180-ab62-183e4263cb6c', 'MARKDOWN', '# Desafio: formulário de contato
 
 Crie um formulário com:
@@ -306,7 +306,7 @@ Crie um formulário com:
 1. Campos **nome**, **e-mail** e **mensagem** (com `<label>` associado)
 2. Todos obrigatórios
 3. Um botão de envio', 0) on conflict (id) do nothing;
-insert into public.lessons (id, sub_module_id, title, description, type, "order", xp, language, initial_code, owner_id, created_by, is_validated) values ('1af4cdbd-8102-5868-b950-4f2b30c8d7b5', '9f3f4b09-a9c6-505e-b525-43fdd016cfed', 'Seletores básicos', 'Seletores de tag, classe e id, cores e a regra da cascata.', 'LESSON', 1, 20, 'javascript', null, (select id from public.owners order by created_at limit 1), '634f7ea6-e0b3-4ffd-95eb-efc6b73a42ba', true) on conflict (id) do nothing;
+insert into public.lessons (id, sub_module_id, title, description, type, "order", xp, language, initial_code, created_by, is_validated) values ('1af4cdbd-8102-5868-b950-4f2b30c8d7b5', '9f3f4b09-a9c6-505e-b525-43fdd016cfed', 'Seletores básicos', 'Seletores de tag, classe e id, cores e a regra da cascata.', 'LESSON', 1, 20, 'javascript', null, '634f7ea6-e0b3-4ffd-95eb-efc6b73a42ba', true) on conflict (id) do nothing;
 insert into public.section_content (id, lesson_id, type, content, "order") values ('31a6a71b-27df-5ff4-bdaf-375b83150091', '1af4cdbd-8102-5868-b950-4f2b30c8d7b5', 'MARKDOWN', '# Seletores básicos
 
 ```css
@@ -384,10 +384,10 @@ insert into public.answers (id, question_id, text, is_correct, reason) values ('
 insert into public.answers (id, question_id, text, is_correct, reason) values ('8068e4b8-d4eb-506b-8aae-bc5509d0ceee', '82dbca7f-940d-51d7-8fd0-e779350d03bd', '<style href="estilo.css">', false, 'Não é a opção correta. A tag <link> no <head> carrega a folha de estilo.') on conflict (id) do nothing;
 insert into public.answers (id, question_id, text, is_correct, reason) values ('add51883-bee3-50ce-b017-bbd7c0a744ff', '82dbca7f-940d-51d7-8fd0-e779350d03bd', '<css src="estilo.css">', false, 'Não é a opção correta. A tag <link> no <head> carrega a folha de estilo.') on conflict (id) do nothing;
 insert into public.answers (id, question_id, text, is_correct, reason) values ('e8fdfb31-4be5-56bb-aaf7-ab4505785241', '82dbca7f-940d-51d7-8fd0-e779350d03bd', '<link rel="stylesheet" href="estilo.css">', true, 'A tag <link> no <head> carrega a folha de estilo.') on conflict (id) do nothing;
-insert into public.lessons (id, sub_module_id, title, description, type, "order", xp, language, initial_code, owner_id, created_by, is_validated) values ('1f0fc8a3-f171-51f5-87b1-99a63bcaa078', '9f3f4b09-a9c6-505e-b525-43fdd016cfed', 'Desafio: estilize um card', 'Aplique cores, fundo e efeito de hover em um card.', 'CHALLENGE', 2, 30, 'css', '.card {
+insert into public.lessons (id, sub_module_id, title, description, type, "order", xp, language, initial_code, created_by, is_validated) values ('1f0fc8a3-f171-51f5-87b1-99a63bcaa078', '9f3f4b09-a9c6-505e-b525-43fdd016cfed', 'Desafio: estilize um card', 'Aplique cores, fundo e efeito de hover em um card.', 'CHALLENGE', 2, 30, 'css', '.card {
   /* Escreva seu CSS aqui */
 }
-', (select id from public.owners order by created_at limit 1), '634f7ea6-e0b3-4ffd-95eb-efc6b73a42ba', true) on conflict (id) do nothing;
+', '634f7ea6-e0b3-4ffd-95eb-efc6b73a42ba', true) on conflict (id) do nothing;
 insert into public.section_content (id, lesson_id, type, content, "order") values ('f8b66340-22e6-5556-8388-efc9f27a0988', '1f0fc8a3-f171-51f5-87b1-99a63bcaa078', 'MARKDOWN', '# Desafio: estilize um card
 
 Estilize a classe `.card`:

@@ -21,8 +21,8 @@ function createSubmodule(moduleId: string, title: string, slug: string): string 
 
 function createLesson(submoduleId: string, title: string): string {
     return sql(
-        `insert into lessons (sub_module_id, title, description, type, "order", xp, owner_id, created_by)
-         values ('${submoduleId}', '${title}', 'Descrição da lição de teste', 'LESSON', 1, 20, (select id from owners order by created_at limit 1), '${teacherId}') returning id`,
+        `insert into lessons (sub_module_id, title, description, type, "order", xp, created_by)
+         values ('${submoduleId}', '${title}', 'Descrição da lição de teste', 'LESSON', 1, 20, '${teacherId}') returning id`,
     ).split('\n')[0];
 }
 
@@ -139,7 +139,7 @@ test.describe('professor content creation', () => {
         ).toBe('<p>');
     });
 
-    test.fixme('finding bug-professor-create-lesson-owner-id: saving a new lesson creates it', async ({ page }) => {
+    test('saving a new lesson creates it', async ({ page }) => {
         const moduleId = createModule('E2E Módulo Lição', 'e2e-modulo-licao');
         const submoduleId = createSubmodule(moduleId, 'E2E Submódulo Lição', 'e2e-submodulo-licao');
 
@@ -148,7 +148,7 @@ test.describe('professor content creation', () => {
         await page.getByRole('textbox', { name: 'Descrição *' }).fill('Lição criada pelo teste E2E.');
         await page.getByRole('button', { name: 'Salvar Lição' }).click();
 
-        await expect(page.getByText(/owner_id/)).toHaveCount(0);
+        await expect(page.getByText(/violates|null value/)).toHaveCount(0);
         await expect.poll(() => sql(`select count(*) from lessons where sub_module_id = '${submoduleId}'`)).toBe('1');
     });
 
