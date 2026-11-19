@@ -2,6 +2,7 @@ import { Routes } from '@angular/router';
 import { authGuard } from './components/guards/auth.guard';
 import { teacherGuard } from './components/guards/teacher.guard';
 import { dailyLimitGuard } from './components/guards/daily-limit.guard';
+import { monacoGuard } from './components/guards/monaco.guard';
 import { adminGuard } from './components/guards/admin.guard';
 import { SHOW_ADS_ROUTE_DATA } from './services/adsense/adsense';
 import {
@@ -111,7 +112,7 @@ export const routes: Routes = [
             },
             {
                 path: 's/:slug/ss/:slugSubmodule/lesson/:lessonId/challenge',
-                canActivate: [dailyLimitGuard],
+                canActivate: [dailyLimitGuard, monacoGuard],
                 loadComponent: () => import('./pages/app/lesson/challenge/challenge').then((m) => m.Challenge),
                 title: 'Semeando Devs - Desafio'
             },
@@ -195,11 +196,13 @@ export const routes: Routes = [
             },
             {
                 path: 'criar-licao/:idSubModule',
+                canActivate: [monacoGuard],
                 loadComponent: () => import('./pages/professor/professor-app/create-lesson/create-lesson').then(m => m.CreateLesson),
                 title: 'Criar Lição - Semeando Devs'
             },
             {
                 path: 'editar-licao/:id',
+                canActivate: [monacoGuard],
                 loadComponent: () => import('./pages/professor/professor-app/create-lesson/create-lesson').then(m => m.CreateLesson),
                 title: 'Editar Lição - Semeando Devs'
             }

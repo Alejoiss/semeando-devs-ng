@@ -1,7 +1,7 @@
 import { test as base, expect } from '@playwright/test';
 
 const LOCAL_HOSTS = new Set(['localhost', '127.0.0.1']);
-// O app inteiro espera o loader do Monaco deste CDN antes de iniciar (bug-app-boot-blocked-by-monaco-cdn)
+// O editor de código (desafio e criação de lição) carrega o Monaco deste CDN sob demanda
 const REQUIRED_CDN = 'cdn.jsdelivr.net';
 
 export const test = base.extend({
