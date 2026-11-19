@@ -46,6 +46,12 @@ describe('Submodule', () => {
         fixture.detectChanges();
     });
 
+    it('breadcrumb "Módulos" links to the module list at /app', () => {
+        const link = fixture.nativeElement.querySelector('nav a') as HTMLAnchorElement;
+        expect(link.textContent?.trim()).toBe('Módulos');
+        expect(link.getAttribute('href')).toBe('/app');
+    });
+
     it('dynamic progress calculation for in-progress submodules', () => {
         // Verified manually due to complex DOM rendering
         expect(true).toBe(true);

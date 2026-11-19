@@ -64,7 +64,7 @@ test.describe('student learning journey', () => {
 
     });
 
-    test.fixme('finding bug-breadcrumb-modules-404: the "Módulos" breadcrumb leads to the module list', async ({ page }) => {
+    test('the "Módulos" breadcrumb leads to the module list', async ({ page }) => {
         await page.goto('/app/s/html-essencial');
         await page.getByRole('link', { name: 'Módulos' }).last().click();
         await expect(page).toHaveURL(/\/app$/);
