@@ -85,7 +85,7 @@
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <!-- Assinatura -->
                     <div class="bg-[#0f1930] p-5 rounded-2xl flex flex-col gap-2">
-                        <span class="font-label text-sm text-[#dee5ff]/40 uppercase tracking-wider">Assinatura
+                        <span class="font-label text-sm text-[#dee5ff]/70 uppercase tracking-wider">Assinatura
                             PRO</span>
                         <div class="flex items-center gap-2">
                             <span class="material-symbols-outlined text-[18px]"
@@ -95,14 +95,14 @@
                             <span class="font-body text-[#dee5ff]">{{ student()!.isPro ? 'Ativa' : 'Inativa' }}</span>
                         </div>
                         @if (student()!.isPro && student()!.proUntil) {
-                        <span class="font-label text-xs text-[#dee5ff]/40 mt-1">Válida até {{ student()!.proUntil |
+                        <span class="font-label text-xs text-[#dee5ff]/70 mt-1">Válida até {{ student()!.proUntil |
                             date:'dd/MM/yyyy' }}</span>
                         }
                     </div>
 
                     <!-- Termos -->
                     <div class="bg-[#0f1930] p-5 rounded-2xl flex flex-col gap-2">
-                        <span class="font-label text-sm text-[#dee5ff]/40 uppercase tracking-wider">Termos de Uso</span>
+                        <span class="font-label text-sm text-[#dee5ff]/70 uppercase tracking-wider">Termos de Uso</span>
                         <div class="flex items-center gap-2">
                             <span class="material-symbols-outlined text-[18px]"
                                 [class.text-[#3fc2fb]]="student()!.termsAccepted"
@@ -116,7 +116,7 @@
 
                     <!-- Newsletter -->
                     <div class="bg-[#0f1930] p-5 rounded-2xl flex flex-col gap-2">
-                        <span class="font-label text-sm text-[#dee5ff]/40 uppercase tracking-wider">Newsletter</span>
+                        <span class="font-label text-sm text-[#dee5ff]/70 uppercase tracking-wider">Newsletter</span>
                         <div class="flex items-center gap-2">
                             <span class="material-symbols-outlined text-[18px]"
                                 [class.text-[#3fc2fb]]="student()!.newsletterActive"
@@ -169,7 +169,7 @@
                                         <span class="font-label text-xs"
                                             [class.text-[#fe69ac]]="mod.isStarted && !mod.isCompleted"
                                             [class.text-[#3fc2fb]]="mod.isCompleted"
-                                            [class.text-[#dee5ff]/40]="!mod.isStarted">
+                                            [class.text-[#dee5ff]/70]="!mod.isStarted">
                                             {{ mod.isCompleted ? 'Concluído' : (mod.isStarted ? 'Em andamento' : 'Não
                                             iniciado') }}
                                         </span>
@@ -192,7 +192,7 @@
                                 }
 
                                 <span
-                                    class="material-symbols-outlined text-[#dee5ff]/40 transition-transform duration-300"
+                                    class="material-symbols-outlined text-[#dee5ff]/70 transition-transform duration-300"
                                     [class.rotate-180]="mod.expanded">expand_more</span>
                             </div>
                         </button>
@@ -201,7 +201,7 @@
                         @if (mod.expanded) {
                         <div class="border-t border-[#dee5ff]/5 p-5 flex flex-col gap-4 bg-[#060e20]/50">
                             @if (mod.submodules.length === 0) {
-                            <p class="font-body text-sm text-[#dee5ff]/40 text-center py-4">Nenhum submódulo cadastrado.
+                            <p class="font-body text-sm text-[#dee5ff]/70 text-center py-4">Nenhum submódulo cadastrado.
                             </p>
                             } @else {
                             @for (sub of mod.submodules; track sub.id) {
@@ -216,7 +216,7 @@
                                         </div>
                                         <div class="flex flex-col">
                                             <h6 class="font-headline font-bold text-[#dee5ff]">{{ sub.title }}</h6>
-                                            <span class="font-label text-xs text-[#dee5ff]/40">{{ sub.progressPercentage
+                                            <span class="font-label text-xs text-[#dee5ff]/70">{{ sub.progressPercentage
                                                 }}% concluído</span>
                                         </div>
                                     </div>
@@ -228,7 +228,7 @@
                                             </div>
                                         </div>
                                         <span
-                                            class="material-symbols-outlined text-[#dee5ff]/40 transition-transform duration-300"
+                                            class="material-symbols-outlined text-[#dee5ff]/70 transition-transform duration-300"
                                             [class.rotate-180]="sub.expanded">expand_more</span>
                                     </div>
                                 </button>
@@ -237,7 +237,7 @@
                                 @if (sub.expanded) {
                                 <div class="border-t border-[#dee5ff]/5 p-4 flex flex-col gap-2 bg-[#060e20]/50">
                                     @if (sub.lessons.length === 0) {
-                                    <p class="font-body text-sm text-[#dee5ff]/40 text-center py-2">Nenhuma lição ou
+                                    <p class="font-body text-sm text-[#dee5ff]/70 text-center py-2">Nenhuma lição ou
                                         quiz cadastrado.</p>
                                     } @else {
                                     @for (lesson of sub.lessons; track lesson.id) {
@@ -250,7 +250,7 @@
                                             </span>
                                             <div class="flex flex-col">
                                                 <span class="font-body text-sm text-[#dee5ff]">{{ lesson.title }}</span>
-                                                <span class="font-label text-[10px] text-[#dee5ff]/40 uppercase">{{
+                                                <span class="font-label text-[10px] text-[#dee5ff]/70 uppercase">{{
                                                     lesson.type === 'QUIZ' ? 'Quiz' : (lesson.type === 'CHALLENGE' ?
                                                     'Desafio' : 'Lição') }}</span>
                                             </div>

@@ -3,7 +3,6 @@ import { expectNoAxeViolations } from './support/axe';
 import { storageStateFor } from './support/users';
 
 const LESSON = '/app/s/html-essencial/ss/primeiros-passos/lesson/0fb4e367-514b-5e00-889c-e2c1b08d6efd';
-const LOGOUT = 'a11y-sidebar-logout-contrast';
 
 interface Scan {
     path: string;
@@ -24,25 +23,25 @@ const SCANS: Record<'anonymous' | 'student' | 'admin', Scan[]> = {
         { path: '/termos-de-uso', findings: ['a11y-terms-badges-contrast'] },
     ],
     student: [
-        { path: '/app', findings: [LOGOUT] },
-        { path: '/app/s/html-essencial', findings: [LOGOUT] },
-        { path: '/app/s/html-essencial/ss/primeiros-passos', findings: [LOGOUT] },
-        { path: LESSON, findings: [LOGOUT] },
-        { path: '/app/ranking', findings: [LOGOUT] },
-        { path: '/app/conquistas', findings: [LOGOUT] },
-        { path: '/app/perfil', findings: [LOGOUT, 'a11y-readonly-input-without-label'] },
-        { path: '/app/upgrade', findings: [LOGOUT] },
-        { path: '/app/gerenciar-assinatura', findings: [LOGOUT] },
+        { path: '/app' },
+        { path: '/app/s/html-essencial' },
+        { path: '/app/s/html-essencial/ss/primeiros-passos' },
+        { path: LESSON },
+        { path: '/app/ranking' },
+        { path: '/app/conquistas' },
+        { path: '/app/perfil', findings: ['a11y-readonly-input-without-label'] },
+        { path: '/app/upgrade' },
+        { path: '/app/gerenciar-assinatura' },
     ],
     admin: [
-        { path: '/admin/dashboard', findings: [LOGOUT] },
-        { path: '/admin/lista-de-alunos', findings: [LOGOUT] },
-        { path: '/admin/cadastro-de-cupons', findings: [LOGOUT] },
-        { path: '/admin/cadastro-de-cupons/novo', findings: [LOGOUT] },
-        { path: '/admin/envio-de-newsletter', findings: [LOGOUT] },
-        { path: '/admin/envio-de-newsletter/novo', findings: [LOGOUT] },
-        { path: '/admin/relatorio-de-receita', findings: [LOGOUT] },
-        { path: '/admin/configuracoes-ia', findings: [LOGOUT] },
+        { path: '/admin/dashboard' },
+        { path: '/admin/lista-de-alunos' },
+        { path: '/admin/cadastro-de-cupons' },
+        { path: '/admin/cadastro-de-cupons/novo' },
+        { path: '/admin/envio-de-newsletter' },
+        { path: '/admin/envio-de-newsletter/novo' },
+        { path: '/admin/relatorio-de-receita' },
+        { path: '/admin/configuracoes-ia' },
     ],
 };
 
