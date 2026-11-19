@@ -379,13 +379,9 @@ Deno.test('the achievements are evaluated as a completed challenge', async () =>
     assertEquals(r.json.earnedAchievements, [mod])
 })
 
-Deno.test({
-    ignore: true,
-    name: 'a missing or invalid token must be answered with 401, not 500 (finding auth-failures-answer-500)',
-    fn: async () => {
-        assertEquals((await call({ headers: {} })).res.status, 401)
-        assertEquals((await call({ user: null })).res.status, 401)
-    },
+Deno.test('a missing or invalid token is answered with 401, not 500', async () => {
+    assertEquals((await call({ headers: {} })).res.status, 401)
+    assertEquals((await call({ user: null })).res.status, 401)
 })
 
 Deno.test({

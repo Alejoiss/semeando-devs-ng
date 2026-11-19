@@ -8,6 +8,12 @@ const corsHeaders = {
     'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 }
 
+const unauthorized = (error: string) =>
+    new Response(JSON.stringify({ error }), {
+        status: 401,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+    })
+
 export function createHandler(createClient: CreateClient) {
     return async (req: Request): Promise<Response> => {
         // Handle CORS preflight
@@ -17,7 +23,7 @@ export function createHandler(createClient: CreateClient) {
 
         try {
             const authHeader = req.headers.get('Authorization')
-            if (!authHeader) throw new Error('No authorization header found')
+            if (!authHeader) return unauthorized('Token de autenticação não encontrado')
 
             const supabaseUrl = Deno.env.get('SUPABASE_URL') ?? ''
             const supabaseServiceRoleKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
@@ -32,7 +38,7 @@ export function createHandler(createClient: CreateClient) {
             const serviceRoleClient = createClient(supabaseUrl, supabaseServiceRoleKey)
 
             const { data: { user }, error: userError } = await userClient.auth.getUser()
-            if (userError || !user) throw new Error('Invalid user or token')
+            if (userError || !user) return unauthorized('Usuário inválido ou token expirado')
 
             const body = await req.json()
             const { lessonId, description, code, initial_code } = body
