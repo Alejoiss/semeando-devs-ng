@@ -148,6 +148,12 @@ describe('InternalHeader', () => {
         expect(fixture.nativeElement.querySelector('a.brand').getAttribute('href')).toBe('/app');
     });
 
+    it('names the menu button for assistive technology', () => {
+        setup();
+        const button = fixture.nativeElement.querySelector('header button') as HTMLButtonElement;
+        expect(button.getAttribute('aria-label')).toBe('Abrir menu lateral');
+    });
+
     it('toggles the sidebar from the menu button', () => {
         setup();
         const navigation = TestBed.inject(NavigationService);
