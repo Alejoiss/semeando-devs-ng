@@ -56,6 +56,13 @@ export function createHandler(createClient: CreateClient) {
                 )
             }
 
+            if (!['monthly', 'yearly'].includes(billingCycle) || !['card', 'pix'].includes(paymentMethod)) {
+                return new Response(
+                    JSON.stringify({ error: 'billingCycle ou paymentMethod inválido' }),
+                    { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+                )
+            }
+
             // 1. Fetch Plan
             const { data: planData, error: planError } = await serviceRoleClient
                 .from('plans')

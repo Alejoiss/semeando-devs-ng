@@ -256,21 +256,13 @@ Deno.test('coupon: a future expiration date and an unlimited usage are accepted'
     assertEquals(r.res.status, 200)
 })
 
-Deno.test({
-    name: 'an unsupported payment method must be rejected instead of saving an unpaid subscription (finding create-sub-payment-method)',
-    ignore: true,
-    fn: async () => {
-        const r = await call({ body: { planId: 'plan-1', billingCycle: 'monthly', paymentMethod: 'boleto' } })
-        assertEquals(r.res.status, 400)
-        assertEquals(r.fake.callsFor('subscriptions', 'insert'), [])
-    },
+Deno.test('an unsupported payment method is rejected instead of saving an unpaid subscription', async () => {
+    const r = await call({ body: { planId: 'plan-1', billingCycle: 'monthly', paymentMethod: 'boleto' } })
+    assertEquals(r.res.status, 400)
+    assertEquals(r.fake.callsFor('subscriptions', 'insert'), [])
 })
 
-Deno.test({
-    name: 'an unknown billing cycle must be rejected instead of charging the yearly price (finding create-sub-payment-method)',
-    ignore: true,
-    fn: async () => {
-        const r = await call({ body: { planId: 'plan-1', billingCycle: 'weekly', paymentMethod: 'card' } })
-        assertEquals(r.res.status, 400)
-    },
+Deno.test('an unknown billing cycle is rejected instead of charging the yearly price', async () => {
+    const r = await call({ body: { planId: 'plan-1', billingCycle: 'weekly', paymentMethod: 'card' } })
+    assertEquals(r.res.status, 400)
 })
