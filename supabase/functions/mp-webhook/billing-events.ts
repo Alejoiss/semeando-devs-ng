@@ -59,6 +59,27 @@ export function extractPaymentFields(payment: Record<string, unknown>): BillingP
 
 const PG_UNIQUE_VIOLATION = '23505'
 
+async function reopenUnfinishedEvent(client: SupabaseClient, mpEventId: string): Promise<BillingEventResult> {
+    const { data: existing, error: lookupError } = await client
+        .from('subscription_billing_events')
+        .select('id, status')
+        .eq('mp_event_id', mpEventId)
+        .maybeSingle()
+
+    if (lookupError) throw lookupError
+    if (!existing || (existing.status !== 'failed' && existing.status !== 'processing')) {
+        return { duplicate: true }
+    }
+
+    const { error: reopenError } = await client
+        .from('subscription_billing_events')
+        .update({ status: 'processing', error_message: null })
+        .eq('id', existing.id)
+
+    if (reopenError) throw reopenError
+    return { id: existing.id, duplicate: false }
+}
+
 export async function insertBillingEvent(
     client: SupabaseClient,
     params: InsertBillingEventParams,
@@ -76,7 +97,7 @@ export async function insertBillingEvent(
 
     if (error) {
         if (error.code === PG_UNIQUE_VIOLATION) {
-            return { duplicate: true }
+            return await reopenUnfinishedEvent(client, params.mpEventId)
         }
         throw error
     }

@@ -177,8 +177,15 @@ Deno.test('unhandled topics are acknowledged without calling Mercado Pago', asyn
     assertEquals(logStatuses(r.fake), ['success'])
 })
 
-Deno.test('a Mercado Pago failure is recorded on the billing event, and the webhook still answers 200', async () => {
+Deno.test('a transient Mercado Pago failure is recorded on the billing event and answers 500 so Mercado Pago retries', async () => {
     const r = await call({ mp: { 'https://api.mercadopago.com/v1/payments/pay-1': { status: 500, body: {} } } })
+    assertEquals(r.res.status, 500)
+    assertEquals(r.fake.callsFor('subscription_billing_events', 'update').at(-1)!.payload.status, 'failed')
+    assertEquals(logStatuses(r.fake), ['error'])
+})
+
+Deno.test('a permanent Mercado Pago failure is recorded on the billing event and answers 200 so Mercado Pago stops retrying', async () => {
+    const r = await call({ mp: { 'https://api.mercadopago.com/v1/payments/pay-1': { status: 404, body: {} } } })
     assertEquals(r.res.status, 200)
     assertEquals(r.fake.callsFor('subscription_billing_events', 'update').at(-1)!.payload.status, 'failed')
     assertEquals(logStatuses(r.fake), ['success'])
@@ -186,9 +193,9 @@ Deno.test('a Mercado Pago failure is recorded on the billing event, and the webh
 
 const crash = { 'subscription_billing_events.insert': { error: { code: '42501', message: 'denied' } } }
 
-Deno.test('an unexpected handler error marks the log as error, alerts by Resend and still answers 200', async () => {
+Deno.test('an unexpected handler error marks the log as error, alerts by Resend and answers 500', async () => {
     const r = await call({ extra: crash, env: { RESEND_API_KEY: 'rk' } })
-    assertEquals(r.res.status, 200)
+    assertEquals(r.res.status, 500)
     assertEquals(logStatuses(r.fake), ['error'])
     const mail = r.fetched.find((f) => f.url === 'https://api.resend.com/emails')!
     assertEquals((mail.init!.headers as Record<string, string>).Authorization, 'Bearer rk')
@@ -200,15 +207,15 @@ Deno.test('an unexpected handler error marks the log as error, alerts by Resend 
 
 Deno.test('without a Resend key the alert goes through SMTP with the configured host and port', async () => {
     const r = await call({ extra: crash, env: { SMTP_HOST: 'smtp.local', SMTP_PORT: '465', SMTP_USER: 'u', SMTP_PASS: 'p' } })
-    assertEquals(r.res.status, 200)
+    assertEquals(r.res.status, 500)
     assertEquals(r.transports.length, 1)
     assertEquals(r.transports[0].options, { host: 'smtp.local', port: 465, secure: true, auth: { user: 'u', pass: 'p' }, tls: { rejectUnauthorized: false } })
     assertEquals(r.transports[0].sent[0].subject, 'ERRO WEBHOOK MERCADO PAGO')
     assertEquals(r.fetched.some((f) => f.url.includes('resend')), false)
 })
 
-Deno.test('a failing alert never breaks the webhook response', async () => {
+Deno.test('a failing alert does not change the 500 answer', async () => {
     const r = await call({ extra: crash, env: { RESEND_API_KEY: 'rk' }, resendOk: false })
-    assertEquals(r.res.status, 200)
-    assertEquals(r.json, { received: true })
+    assertEquals(r.res.status, 500)
+    assertEquals(r.json, { error: 'Webhook processing failed' })
 })

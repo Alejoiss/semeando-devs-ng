@@ -1,4 +1,4 @@
-import { assertEquals } from "jsr:@std/assert@1"
+import { assertEquals, assertRejects } from "jsr:@std/assert@1"
 import { createFakeSupabase } from "../_testing/fake-supabase.ts"
 import { handleAuthorizedPayment, handleClaim, handlePreapproval } from "./handlers.ts"
 
@@ -126,31 +126,63 @@ Deno.test('authorized payment: unknown subscription makes the event an orphan', 
     assertEquals(fake.callsFor('profiles', 'update'), [])
 })
 
-Deno.test('authorized payment: a Mercado Pago API error marks the event failed without throwing', async () => {
+Deno.test('authorized payment: a Mercado Pago 5xx marks the event failed and throws so the webhook can be retried', async () => {
     const fake = setup()
     await withMp({ [PAYMENT_URL]: { status: 500, body: { message: 'oops' } } }, () =>
-        handleAuthorizedPayment(fake.client, { id: 1, data: { id: 'pay-1' } }, TOKEN))
+        assertRejects(() => handleAuthorizedPayment(fake.client, { id: 1, data: { id: 'pay-1' } }, TOKEN), Error, 'MP API error 500'))
     const update = billingUpdate(fake)
     assertEquals(update.status, 'failed')
     assertEquals(String(update.error_message).startsWith('MP API error 500'), true)
 })
 
-Deno.test('authorized payment: a subscription lookup error marks the event failed', async () => {
+Deno.test('authorized payment: a Mercado Pago 404 is permanent, so it is marked failed without throwing', async () => {
+    const fake = setup()
+    await withMp({ [PAYMENT_URL]: { status: 404, body: { message: 'not found' } } }, () =>
+        handleAuthorizedPayment(fake.client, { id: 1, data: { id: 'pay-1' } }, TOKEN))
+    assertEquals(billingUpdate(fake).status, 'failed')
+})
+
+Deno.test('authorized payment: a Mercado Pago 429 is transient and throws', async () => {
+    const fake = setup()
+    await withMp({ [PAYMENT_URL]: { status: 429, body: {} } }, () =>
+        assertRejects(() => handleAuthorizedPayment(fake.client, { id: 1, data: { id: 'pay-1' } }, TOKEN), Error, 'MP API error 429'))
+    assertEquals(billingUpdate(fake).status, 'failed')
+})
+
+Deno.test('authorized payment: a subscription lookup error marks the event failed and throws', async () => {
     const fake = setup({ 'subscriptions.select': { error: new Error('db down') } })
     await withMp({ [PAYMENT_URL]: { body: payment() } }, () =>
-        handleAuthorizedPayment(fake.client, { id: 1, data: { id: 'pay-1' } }, TOKEN))
+        assertRejects(() => handleAuthorizedPayment(fake.client, { id: 1, data: { id: 'pay-1' } }, TOKEN), Error, 'db down'))
     assertEquals(billingUpdate(fake), { status: 'failed', error_message: 'db down' })
 })
 
-Deno.test({
-    name: 'authorized payment: failing subscription/profile updates must not be reported as success (finding mp-sync-ignores-errors)',
-    ignore: true,
-    fn: async () => {
-        const fake = setup({ 'profiles.update': { error: new Error('rls') } })
-        await withMp({ [PAYMENT_URL]: { body: payment() } }, () =>
-            handleAuthorizedPayment(fake.client, { id: 1, data: { id: 'pay-1' } }, TOKEN))
-        assertEquals(billingUpdate(fake).status, 'failed')
-    },
+Deno.test('authorized payment: a failing profile update is not reported as success', async () => {
+    const fake = setup({ 'profiles.update': { error: new Error('rls') } })
+    await withMp({ [PAYMENT_URL]: { body: payment() } }, () =>
+        assertRejects(() => handleAuthorizedPayment(fake.client, { id: 1, data: { id: 'pay-1' } }, TOKEN), Error, 'rls'))
+    assertEquals(billingUpdate(fake), { status: 'failed', error_message: 'rls' })
+})
+
+Deno.test('authorized payment: a failing subscription update is not reported as success and skips the profile', async () => {
+    const fake = setup({ 'subscriptions.update': { error: new Error('rls') } })
+    await withMp({ [PAYMENT_URL]: { body: payment() } }, () =>
+        assertRejects(() => handleAuthorizedPayment(fake.client, { id: 1, data: { id: 'pay-1' } }, TOKEN), Error, 'rls'))
+    assertEquals(billingUpdate(fake).status, 'failed')
+    assertEquals(fake.callsFor('profiles', 'update'), [])
+})
+
+Deno.test('preapproval: a database failure marks the event failed and throws', async () => {
+    const fake = setup({ 'profiles.update': { error: new Error('rls') } })
+    await withMp({ [PREAPPROVAL_URL]: { body: { id: 'pre-1', status: 'cancelled' } } }, () =>
+        assertRejects(() => handlePreapproval(fake.client, { id: 2, data: { id: 'pre-1' } }, TOKEN), Error, 'rls'))
+    assertEquals(billingUpdate(fake).status, 'failed')
+})
+
+Deno.test('claim: a Mercado Pago 5xx marks the event failed and throws', async () => {
+    const fake = setup()
+    await withMp({ [CLAIM_URL]: { status: 503, body: {} } }, () =>
+        assertRejects(() => handleClaim(fake.client, { id: 3, data: { id: 'claim-1' } }, TOKEN), Error, 'MP API error 503'))
+    assertEquals(billingUpdate(fake).status, 'failed')
 })
 
 Deno.test('preapproval: ignores events without data.id', async () => {

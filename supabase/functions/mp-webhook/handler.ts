@@ -211,6 +211,11 @@ export function createHandler(createClient: CreateClient, createSmtpTransport: C
                     console.error('[Email] Failed to send webhook error alert:', mailErr);
                 }
             }
+
+            return new Response(
+                JSON.stringify({ error: 'Webhook processing failed' }),
+                { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } },
+            )
         }
 
         return new Response(

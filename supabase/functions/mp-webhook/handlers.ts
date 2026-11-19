@@ -3,13 +3,25 @@ import { extractPaymentFields, insertBillingEvent, updateBillingEvent } from "./
 
 type MpEvent = { id?: string | number; topic?: string; type?: string; data?: { id?: string } }
 
+export class MpApiError extends Error {
+    constructor(readonly status: number, body: string) {
+        super(`MP API error ${status}: ${body}`)
+    }
+}
+
+// Mercado Pago 4xx (except 408/429) will not change on a retry; anything else (5xx, network, database) may.
+export function isTransientError(err: unknown): boolean {
+    if (err instanceof MpApiError) return err.status >= 500 || err.status === 429 || err.status === 408
+    return true
+}
+
 async function fetchFromMercadoPago(url: string, mlToken: string): Promise<unknown> {
     const response = await fetch(url, {
         headers: { Authorization: `Bearer ${mlToken}` },
     })
     if (!response.ok) {
         const body = await response.text()
-        throw new Error(`MP API error ${response.status}: ${body}`)
+        throw new MpApiError(response.status, body)
     }
     return response.json()
 }
@@ -29,15 +41,19 @@ async function syncSubscriptionAndProfile(
     if (subError) throw subError
     if (!subscription) return null
 
-    await client
+    const { error: updateSubError } = await client
         .from('subscriptions')
         .update({ status: newStatus })
         .eq('id', subscription.id)
 
-    await client
+    if (updateSubError) throw updateSubError
+
+    const { error: updateProfileError } = await client
         .from('profiles')
         .update({ is_pro: isPro })
         .eq('id', subscription.user_id)
+
+    if (updateProfileError) throw updateProfileError
 
     return subscription.id
 }
@@ -109,6 +125,7 @@ export async function handleAuthorizedPayment(
         const message = err instanceof Error ? err.message : String(err)
         await updateBillingEvent(client, billingEventId, { status: 'failed', errorMessage: message })
         console.error('[mp-webhook] handleAuthorizedPayment error:', message)
+        if (isTransientError(err)) throw err
     }
 }
 
@@ -172,6 +189,7 @@ export async function handlePreapproval(
         const message = err instanceof Error ? err.message : String(err)
         await updateBillingEvent(client, billingEventId, { status: 'failed', errorMessage: message })
         console.error('[mp-webhook] handlePreapproval error:', message)
+        if (isTransientError(err)) throw err
     }
 }
 
@@ -252,5 +270,6 @@ export async function handleClaim(
         const message = err instanceof Error ? err.message : String(err)
         await updateBillingEvent(client, billingEventId, { status: 'failed', errorMessage: message })
         console.error('[mp-webhook] handleClaim error:', message)
+        if (isTransientError(err)) throw err
     }
 }

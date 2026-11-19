@@ -56,6 +56,36 @@ Deno.test('insertBillingEvent reports a duplicate on a unique violation', async 
     assertEquals(await insertBillingEvent(fake.client, { mpEventId: 'mp-1', topic: 't', payload: {} }), { duplicate: true })
 })
 
+Deno.test('insertBillingEvent reopens a duplicate whose previous attempt failed so the retry is processed', async () => {
+    const fake = createFakeSupabase({
+        'subscription_billing_events.insert': { error: { code: '23505' } },
+        'subscription_billing_events.select': { data: { id: 'evt-9', status: 'failed' } },
+    })
+    assertEquals(await insertBillingEvent(fake.client, { mpEventId: 'mp-1', topic: 't', payload: {} }), { id: 'evt-9', duplicate: false })
+    const update = fake.callsFor('subscription_billing_events', 'update')[0]
+    assertEquals(update.payload, { status: 'processing', error_message: null })
+    assertEquals(update.filters, [['eq', 'id', 'evt-9']])
+})
+
+Deno.test('insertBillingEvent reopens a duplicate stuck in processing', async () => {
+    const fake = createFakeSupabase({
+        'subscription_billing_events.insert': { error: { code: '23505' } },
+        'subscription_billing_events.select': { data: { id: 'evt-9', status: 'processing' } },
+    })
+    assertEquals(await insertBillingEvent(fake.client, { mpEventId: 'mp-1', topic: 't', payload: {} }), { id: 'evt-9', duplicate: false })
+})
+
+for (const status of ['success', 'orphan']) {
+    Deno.test(`insertBillingEvent keeps skipping a duplicate already ${status}`, async () => {
+        const fake = createFakeSupabase({
+            'subscription_billing_events.insert': { error: { code: '23505' } },
+            'subscription_billing_events.select': { data: { id: 'evt-9', status } },
+        })
+        assertEquals(await insertBillingEvent(fake.client, { mpEventId: 'mp-1', topic: 't', payload: {} }), { duplicate: true })
+        assertEquals(fake.callsFor('subscription_billing_events', 'update'), [])
+    })
+}
+
 Deno.test('insertBillingEvent rethrows any other database error', async () => {
     const error = { code: '42501', message: 'denied' }
     const fake = createFakeSupabase({ 'subscription_billing_events.insert': { error } })
