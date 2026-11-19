@@ -29,7 +29,7 @@ test.describe('newsletter modal', () => {
         await page.goto('/app');
         await expect(page.getByText('Olá, novidade do teste E2E!')).toBeVisible();
 
-        await page.getByRole('button', { name: 'Fechar' }).click();
+        await page.getByRole('button', { name: 'Fechar', exact: true }).click();
         await expect(page.getByText('Olá, novidade do teste E2E!')).toHaveCount(0);
         await expect.poll(() => sql(`select viewed from user_newsletter where newsletter_id = '${id}' and user_id = '${userId}'`)).toBe('t');
 
@@ -56,7 +56,7 @@ test.describe('newsletter modal', () => {
         await expect(page.getByText('Novidade', { exact: true })).toHaveCount(0);
     });
 
-    test.fixme('finding a11y-newsletter-modal-semantics: the open modal has no AXE violations', async ({ page }) => {
+    test('the open modal has no AXE violations', async ({ page }) => {
         publishNewsletter(true);
 
         await page.goto('/app');

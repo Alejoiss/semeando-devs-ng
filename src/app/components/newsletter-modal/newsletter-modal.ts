@@ -1,4 +1,5 @@
-import { ChangeDetectionStrategy, Component, inject, OnInit, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, ElementRef, effect, inject, OnInit, signal, viewChild } from '@angular/core';
+import { DOCUMENT } from '@angular/common';
 import { NewsletterService, UnviewedNewsletterResult } from '../../services/newsletter';
 import { CommonModule } from '@angular/common';
 
@@ -12,10 +13,23 @@ import { CommonModule } from '@angular/common';
 })
 export class NewsletterModal implements OnInit {
   private readonly newsletterService = inject(NewsletterService);
+  private readonly document = inject(DOCUMENT);
+  private readonly dialog = viewChild<ElementRef<HTMLElement>>('dialog');
+  private previouslyFocused: HTMLElement | null = null;
   
   protected newsletterData = signal<UnviewedNewsletterResult | null>(null);
   protected isVisible = signal(false);
   protected isLoading = signal(false);
+
+  constructor() {
+    effect(() => {
+      const dialog = this.dialog();
+      if (dialog) {
+        this.previouslyFocused ??= this.document.activeElement as HTMLElement | null;
+        dialog.nativeElement.focus();
+      }
+    });
+  }
 
   async ngOnInit() {
     await this.checkNextNewsletter();
@@ -32,10 +46,45 @@ export class NewsletterModal implements OnInit {
       // Wait for exit animation
       setTimeout(async () => {
         this.newsletterData.set(null);
+        this.restoreFocus();
         await this.checkNextNewsletter();
       }, 300);
     } else {
       this.isLoading.set(false);
+    }
+  }
+
+  protected trapFocus(event: Event) {
+    const dialog = this.dialog()?.nativeElement;
+    if (!dialog) return;
+
+    const focusable = Array.from(
+      dialog.querySelectorAll<HTMLElement>('a[href], button:not([disabled]), [tabindex]:not([tabindex="-1"])'),
+    );
+    if (focusable.length === 0) {
+      event.preventDefault();
+      return;
+    }
+
+    const first = focusable[0];
+    const last = focusable[focusable.length - 1];
+    const active = this.document.activeElement;
+    const backwards = (event as KeyboardEvent).shiftKey;
+
+    if (backwards && (active === first || active === dialog)) {
+      event.preventDefault();
+      last.focus();
+    } else if (!backwards && active === last) {
+      event.preventDefault();
+      first.focus();
+    }
+  }
+
+  private restoreFocus() {
+    const target = this.previouslyFocused;
+    this.previouslyFocused = null;
+    if (target && this.document.contains(target)) {
+      target.focus();
     }
   }
 
