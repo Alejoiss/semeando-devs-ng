@@ -65,6 +65,23 @@ describe('TermsOfUse', () => {
             expect(scrollTo).not.toHaveBeenCalled();
         });
 
+        it('exposes every index entry as a keyboard-focusable link to an existing section', () => {
+            const links = Array.from(fixture.nativeElement.querySelectorAll('[class*="glass-panel"] a[href^="#"]')) as HTMLAnchorElement[];
+            expect(links.length).toBe(10);
+            for (const link of links) {
+                const id = link.getAttribute('href')!.slice(1);
+                expect(fixture.nativeElement.querySelector(`#${id}`)).withContext(id).toBeTruthy();
+            }
+        });
+
+        it('scrolls without changing the URL when an index link is activated', () => {
+            const link = fixture.nativeElement.querySelector('a[href="#pagamentos"]') as HTMLAnchorElement;
+            const event = new MouseEvent('click', { bubbles: true, cancelable: true });
+            link.dispatchEvent(event);
+            expect(event.defaultPrevented).toBeTrue();
+            expect(scrollTo).toHaveBeenCalled();
+        });
+
         it('has an entry for every section it links to', () => {
             const calls = Array.from(fixture.nativeElement.querySelectorAll('[class*="glass-panel"] a')).length;
             expect(calls).toBeGreaterThanOrEqual(10);

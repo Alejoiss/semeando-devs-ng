@@ -20,35 +20,35 @@
         <div #indexSection class="mb-10 p-6 glass-panel rounded-lg border border-outline-variant/15">
             <p class="text-sm font-bold text-on-surface mb-3 uppercase tracking-widest font-label">Neste documento</p>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-2 text-sm text-primary font-body">
-                <a (click)="scrollToSection('termos')"
-                    class="hover:underline cursor-pointer transition hover:translate-x-1 inline-flex items-center gap-1">→
+                <a href="#termos" (click)="$event.preventDefault(); scrollToSection('termos')"
+                    class="hover:underline focus-visible:underline cursor-pointer transition hover:translate-x-1 inline-flex items-center gap-1">→
                     Termos de Uso</a>
-                <a (click)="scrollToSection('uso-plataforma')"
-                    class="hover:underline cursor-pointer transition hover:translate-x-1 inline-flex items-center gap-1">→
+                <a href="#uso-plataforma" (click)="$event.preventDefault(); scrollToSection('uso-plataforma')"
+                    class="hover:underline focus-visible:underline cursor-pointer transition hover:translate-x-1 inline-flex items-center gap-1">→
                     02. Uso da Plataforma</a>
-                <a (click)="scrollToSection('gamificacao')"
-                    class="hover:underline cursor-pointer transition hover:translate-x-1 inline-flex items-center gap-1">→
+                <a href="#gamificacao" (click)="$event.preventDefault(); scrollToSection('gamificacao')"
+                    class="hover:underline focus-visible:underline cursor-pointer transition hover:translate-x-1 inline-flex items-center gap-1">→
                     03. Sistema de Gamificação</a>
-                <a (click)="scrollToSection('pagamentos')"
-                    class="hover:underline cursor-pointer transition hover:translate-x-1 inline-flex items-center gap-1">→
+                <a href="#pagamentos" (click)="$event.preventDefault(); scrollToSection('pagamentos')"
+                    class="hover:underline focus-visible:underline cursor-pointer transition hover:translate-x-1 inline-flex items-center gap-1">→
                     04. Pagamentos e Assinaturas</a>
-                <a (click)="scrollToSection('rescisao')"
-                    class="hover:underline cursor-pointer transition hover:translate-x-1 inline-flex items-center gap-1">→
+                <a href="#rescisao" (click)="$event.preventDefault(); scrollToSection('rescisao')"
+                    class="hover:underline focus-visible:underline cursor-pointer transition hover:translate-x-1 inline-flex items-center gap-1">→
                     05. Rescisão e Suspensão</a>
-                <a (click)="scrollToSection('privacidade')"
-                    class="hover:underline cursor-pointer transition hover:translate-x-1 inline-flex items-center gap-1">→
+                <a href="#privacidade" (click)="$event.preventDefault(); scrollToSection('privacidade')"
+                    class="hover:underline focus-visible:underline cursor-pointer transition hover:translate-x-1 inline-flex items-center gap-1">→
                     Política de Privacidade</a>
-                <a (click)="scrollToSection('dados-coletados')"
-                    class="hover:underline cursor-pointer transition hover:translate-x-1 inline-flex items-center gap-1">→
+                <a href="#dados-coletados" (click)="$event.preventDefault(); scrollToSection('dados-coletados')"
+                    class="hover:underline focus-visible:underline cursor-pointer transition hover:translate-x-1 inline-flex items-center gap-1">→
                     07. Dados Coletados</a>
-                <a (click)="scrollToSection('uso-ia')"
-                    class="hover:underline cursor-pointer transition hover:translate-x-1 inline-flex items-center gap-1">→
+                <a href="#uso-ia" (click)="$event.preventDefault(); scrollToSection('uso-ia')"
+                    class="hover:underline focus-visible:underline cursor-pointer transition hover:translate-x-1 inline-flex items-center gap-1">→
                     08. Uso de Inteligência Artificial</a>
-                <a (click)="scrollToSection('compartilhamento')"
-                    class="hover:underline cursor-pointer transition hover:translate-x-1 inline-flex items-center gap-1">→
+                <a href="#compartilhamento" (click)="$event.preventDefault(); scrollToSection('compartilhamento')"
+                    class="hover:underline focus-visible:underline cursor-pointer transition hover:translate-x-1 inline-flex items-center gap-1">→
                     09. Compartilhamento de Dados</a>
-                <a (click)="scrollToSection('direitos')"
-                    class="hover:underline cursor-pointer transition hover:translate-x-1 inline-flex items-center gap-1">→
+                <a href="#direitos" (click)="$event.preventDefault(); scrollToSection('direitos')"
+                    class="hover:underline focus-visible:underline cursor-pointer transition hover:translate-x-1 inline-flex items-center gap-1">→
                     10. Seus Direitos (LGPD)</a>
             </div>
         </div>
