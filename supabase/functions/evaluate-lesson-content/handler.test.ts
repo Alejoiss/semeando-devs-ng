@@ -16,12 +16,15 @@ type Opts = {
     logError?: unknown
     openRouter?: { status?: number; body?: unknown; text?: string }
     noKey?: boolean
+    models?: string[]
+    failModels?: string[]
 }
 
 async function call(o: Opts = {}) {
     const fake = createFakeSupabase({
         'ai_usage_logs.select': o.countError ? { error: o.countError } : { count: o.count === undefined ? 0 : o.count },
         'ai_usage_logs.insert': o.logError ? { error: o.logError } : {},
+        'ai_model_settings.select': o.models ? { data: { models: o.models } } : {},
         'profiles.select': { data: { role: o.role ?? 'teacher' } },
     })
     const user = o.user === undefined ? USER : o.user
@@ -34,7 +37,9 @@ async function call(o: Opts = {}) {
     const aiCalls: { url: string; headers: Headers; body: any }[] = []
     const original = globalThis.fetch
     globalThis.fetch = ((url: string | URL | Request, init?: RequestInit) => {
-        aiCalls.push({ url: String(url), headers: new Headers(init?.headers), body: JSON.parse(String(init?.body)) })
+        const sent = JSON.parse(String(init?.body))
+        aiCalls.push({ url: String(url), headers: new Headers(init?.headers), body: sent })
+        if (o.failModels?.includes(sent.model)) return Promise.resolve(new Response('model gone', { status: 404 }))
         const r = o.openRouter ?? { body: { choices: [{ message: { content: 'Ótimo conteúdo.' } }] } }
         return Promise.resolve(new Response(r.text ?? JSON.stringify(r.body), { status: r.status ?? 200 }))
     }) as typeof fetch
@@ -146,8 +151,23 @@ Deno.test('returns the model feedback and records the usage against the lesson',
     assertEquals(r.res.status, 200)
     assertEquals(r.json, { aiFeedback: 'Ótimo conteúdo.' })
     assertEquals(r.fake.callsFor('ai_usage_logs', 'insert')[0].payload, {
-        user_id: 'teacher-1', action_type: 'evaluate_content', lesson_id: 'l-1',
+        user_id: 'teacher-1', action_type: 'evaluate_content', lesson_id: 'l-1', model: 'inclusionai/ring-2.6-1t',
     })
+})
+
+Deno.test('uses the configured models and falls back to the next one when a model is gone', async () => {
+    const r = await call({ models: ['old/removed', 'new/working'], failModels: ['old/removed'] })
+    assertEquals(r.aiCalls.map((c) => c.body.model), ['old/removed', 'new/working'])
+    assertEquals(r.json, { aiFeedback: 'Ótimo conteúdo.' })
+    assertEquals(r.fake.callsFor('ai_usage_logs', 'insert')[0].payload.model, 'new/working')
+})
+
+Deno.test('500 with the last error when every configured model fails', async () => {
+    const r = await call({ models: ['a/one', 'b/two'], failModels: ['a/one', 'b/two'] })
+    assertEquals(r.aiCalls.length, 2)
+    assertEquals(r.res.status, 500)
+    assertStringIncludes(r.json.error, 'model gone')
+    assertEquals(r.fake.callsFor('ai_usage_logs', 'insert').length, 0)
 })
 
 Deno.test('an empty model answer becomes a placeholder', async () => {

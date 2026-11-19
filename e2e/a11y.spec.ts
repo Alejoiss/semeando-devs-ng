@@ -44,6 +44,7 @@ const SCANS: Record<'anonymous' | 'student' | 'admin', Scan[]> = {
         { path: '/admin/envio-de-newsletter', findings: [LOGOUT] },
         { path: '/admin/envio-de-newsletter/novo', findings: [LOGOUT] },
         { path: '/admin/relatorio-de-receita', findings: [LOGOUT] },
+        { path: '/admin/configuracoes-ia', findings: [LOGOUT] },
     ],
 };
 

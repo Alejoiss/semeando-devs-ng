@@ -258,6 +258,11 @@ export const routes: Routes = [
                 title: 'Relatório de Receita - Semeando Devs'
             },
             {
+                path: 'configuracoes-ia',
+                loadComponent: () => import('./pages/admin/admin-app/ai-settings/ai-settings').then(m => m.AdminAiSettings),
+                title: 'Configurações IA - Semeando Devs'
+            },
+            {
                 path: 'envio-de-newsletter/:id',
                 loadComponent: () => import('./pages/admin/admin-app/newsletter/newsletter-detail/newsletter-detail').then(m => m.AdminNewsletterDetail),
                 title: 'Newsletter - Semeando Devs'

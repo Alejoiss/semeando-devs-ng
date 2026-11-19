@@ -1,3 +1,5 @@
+import { chatCompletion, loadModels } from "../_shared/openrouter.ts"
+
 type CreateClient = (url: string, key: string, options?: any) => any
 
 const corsHeaders = {
@@ -87,39 +89,30 @@ export function createHandler(createClient: CreateClient) {
 
             console.log(formattedMarkdownBlocks);
 
-            // Call OpenRouter
-            const openRouterRes = await fetch("https://openrouter.ai/api/v1/chat/completions", {
-                method: "POST",
-                headers: {
-                    "Authorization": `Bearer ${openRouterApiKey}`,
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({
-                    "model": "inclusionai/ring-2.6-1t",
-                    "messages": [
-                        {
-                            "role": "system",
-                            "content": "Você é um professor de programação.\nAvalie se o conteúdo está de acordo com o padrão de qualidade que queremos para o projeto.\nNÃO reprove o professor, apenas indique pontos de melhoria.\nO conteúdo deve seguir os seguintes padrões:\n- O conteúdo deve ser claro e objetivo.\n- O conteúdo deve ser fácil de entender.\n- O conteúdo deve ser relevante para o aluno.\n- Valide ortograficamente e gramaticalmente o conteúdo.\n- Valide o markdown, garantindo os melhores usos, como organização dos blocos, títulos, etc.\n- Se necessário, sugira analogias ou exemplos que podem ser usados para ilustrar o conteúdo.\n- Não sugira conteúdos extras do conteúdo, como exercícios, desafios, etc. Avalie somente o que está sendo enviado.\n- Responda em português do Brasil."
-                        },
-                        {
-                            "role": "user",
-                            "content": userMessageContent
-                        }
-                    ]
-                })
+            const models = await loadModels(userClient, 'evaluate_lesson_content')
+            const result = await chatCompletion({
+                apiKey: openRouterApiKey,
+                models,
+                messages: [
+                    {
+                        role: 'system',
+                        content: "Você é um professor de programação.\nAvalie se o conteúdo está de acordo com o padrão de qualidade que queremos para o projeto.\nNÃO reprove o professor, apenas indique pontos de melhoria.\nO conteúdo deve seguir os seguintes padrões:\n- O conteúdo deve ser claro e objetivo.\n- O conteúdo deve ser fácil de entender.\n- O conteúdo deve ser relevante para o aluno.\n- Valide ortograficamente e gramaticalmente o conteúdo.\n- Valide o markdown, garantindo os melhores usos, como organização dos blocos, títulos, etc.\n- Se necessário, sugira analogias ou exemplos que podem ser usados para ilustrar o conteúdo.\n- Não sugira conteúdos extras do conteúdo, como exercícios, desafios, etc. Avalie somente o que está sendo enviado.\n- Responda em português do Brasil."
+                    },
+                    {
+                        role: 'user',
+                        content: userMessageContent
+                    }
+                ]
             })
 
-            if (!openRouterRes.ok) {
-                const errorText = await openRouterRes.text()
-                console.error('OpenRouter error response:', errorText)
-                return new Response(JSON.stringify({ error: `OpenRouter call failed: ${errorText}` }), {
+            if (!result.ok) {
+                return new Response(JSON.stringify({ error: `OpenRouter call failed: ${result.error}` }), {
                     status: 500,
                     headers: { ...corsHeaders, 'Content-Type': 'application/json' }
                 })
             }
 
-            const openRouterData = await openRouterRes.json()
-            const aiFeedback = openRouterData.choices?.[0]?.message?.content || 'Não foi possível extrair o feedback.'
+            const aiFeedback = result.content || 'Não foi possível extrair o feedback.'
 
             // Log successful usage
             const { error: logError } = await userClient
@@ -127,7 +120,8 @@ export function createHandler(createClient: CreateClient) {
                 .insert({
                     user_id: user.id,
                     action_type: 'evaluate_content',
-                    lesson_id: lesson_id
+                    lesson_id: lesson_id,
+                    model: result.model
                 });
 
             if (logError) {

@@ -3,5 +3,6 @@ export interface AiUsageLog {
     user_id: string;
     action_type: 'evaluate_content' | 'submit_code';
     lesson_id?: string;
+    model?: string | null;
     created_at: string;
 }

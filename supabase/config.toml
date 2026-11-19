@@ -421,6 +421,12 @@ entrypoint = "./functions/evaluate-challenge/index.ts"
 # For example, if you want to serve static HTML pages in your function:
 # static_files = [ "./functions/evaluate-challenge/*.html" ]
 
+[functions.check-ai-models]
+enabled = true
+verify_jwt = true
+import_map = "./functions/check-ai-models/deno.json"
+entrypoint = "./functions/check-ai-models/index.ts"
+
 [functions.cancel-subscription]
 enabled = true
 verify_jwt = true

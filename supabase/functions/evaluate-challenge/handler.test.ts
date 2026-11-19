@@ -28,6 +28,8 @@ type Opts = {
     moduleSubModules?: { id: string }[]
     completedSubModules?: { sub_module_id: string }[]
     openRouter?: { status?: number; body?: unknown } | 'missing'
+    models?: string[] | null
+    failModels?: string[]
     now?: string
     userExtra?: Resolvers
     extra?: Resolvers
@@ -41,6 +43,7 @@ async function call(o: Opts = {}) {
         'profiles.select': o.profileError ? { error: o.profileError } : { data: { is_pro: o.isPro ?? false } },
         'ai_usage_logs.select': o.usageError ? { error: o.usageError } : { count: o.usageCount === undefined ? 0 : o.usageCount },
         'ai_usage_logs.insert': o.logError ? { error: o.logError } : {},
+        'ai_model_settings.select': o.models === null ? { error: { message: 'boom' } } : o.models ? { data: { models: o.models } } : {},
         ...o.userExtra,
     })
     const user = o.user === undefined ? USER : o.user
@@ -75,7 +78,9 @@ async function call(o: Opts = {}) {
     const aiCalls: { headers: Headers; body: any }[] = []
     const original = globalThis.fetch
     globalThis.fetch = ((_url: string | URL | Request, init?: RequestInit) => {
-        aiCalls.push({ headers: new Headers(init?.headers), body: JSON.parse(String(init?.body)) })
+        const sent = JSON.parse(String(init?.body))
+        aiCalls.push({ headers: new Headers(init?.headers), body: sent })
+        if (o.failModels?.includes(sent.model)) return Promise.resolve(new Response('model gone', { status: 404 }))
         const r = o.openRouter === 'missing' || !o.openRouter
             ? { body: { choices: [{ message: { content: 'Bom trabalho!' } }] } }
             : o.openRouter
@@ -198,7 +203,7 @@ Deno.test('asks the model with the problem, the starting code and the student co
 Deno.test('returns the model feedback and records the usage against the lesson', async () => {
     const r = await call()
     assertEquals(r.json.aiFeedback, 'Bom trabalho!')
-    assertEquals(r.userFake.callsFor('ai_usage_logs', 'insert')[0].payload, { user_id: 'user-1', action_type: 'submit_code', lesson_id: 'l-1' })
+    assertEquals(r.userFake.callsFor('ai_usage_logs', 'insert')[0].payload, { user_id: 'user-1', action_type: 'submit_code', lesson_id: 'l-1', model: 'openai/gpt-5-nano' })
 })
 
 Deno.test('an empty model answer becomes a placeholder and still counts as usage', async () => {
@@ -213,6 +218,25 @@ Deno.test('a model failure does not use up the daily allowance, but the challeng
     assertEquals(r.json.aiFeedback, 'Não foi possível gerar o feedback no momento.')
     assertEquals(r.userFake.callsFor('ai_usage_logs', 'insert').length, 0)
     assertEquals(r.svc.callsFor('user_lessons', 'upsert')[0].payload.completed, true)
+})
+
+Deno.test('uses the configured models and falls back to the next one when a model is gone', async () => {
+    const r = await call({ models: ['old/removed', 'new/working'], failModels: ['old/removed'] })
+    assertEquals(r.aiCalls.map((c) => c.body.model), ['old/removed', 'new/working'])
+    assertEquals(r.json.aiFeedback, 'Bom trabalho!')
+    assertEquals(r.userFake.callsFor('ai_usage_logs', 'insert')[0].payload.model, 'new/working')
+})
+
+Deno.test('when every configured model fails the challenge is still completed and nothing is logged as usage', async () => {
+    const r = await call({ models: ['a/one', 'b/two'], failModels: ['a/one', 'b/two'] })
+    assertEquals(r.aiCalls.length, 2)
+    assertEquals(r.json.aiFeedback, 'Não foi possível gerar o feedback no momento.')
+    assertEquals(r.userFake.callsFor('ai_usage_logs', 'insert').length, 0)
+})
+
+Deno.test('uses the default model when the settings cannot be read', async () => {
+    const r = await call({ models: null })
+    assertEquals(r.aiCalls.map((c) => c.body.model), ['openai/gpt-5-nano'])
 })
 
 Deno.test('without the OpenRouter key no model call is made and nothing is logged as usage', async () => {

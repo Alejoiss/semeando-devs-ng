@@ -42,6 +42,7 @@ describe('Admin shell', () => {
                 '/admin/cadastro-de-cupons',
                 '/admin/envio-de-newsletter',
                 '/admin/relatorio-de-receita',
+                '/admin/configuracoes-ia',
                 '/app',
             ]);
         });

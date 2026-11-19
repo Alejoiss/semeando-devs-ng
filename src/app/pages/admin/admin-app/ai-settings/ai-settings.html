@@ -1,0 +1,172 @@
+<div class="px-6 pb-12 flex flex-col gap-10">
+    <header class="flex flex-col gap-4">
+        <h2 class="text-3xl font-bold text-[#dee5ff] font-headline">Configurações IA</h2>
+        <p class="text-[#dee5ff]/70 font-body max-w-3xl">
+            Defina os modelos do OpenRouter usados em cada funcionalidade. O primeiro da lista é o principal; se ele falhar ou for retirado, a plataforma tenta o seguinte.
+        </p>
+    </header>
+
+    @if (isLoading()) {
+        <div class="flex flex-col gap-4" role="status" aria-label="Carregando configurações">
+            @for (i of [1, 2]; track i) {
+                <div class="bg-[#091328] rounded-3xl h-48 animate-pulse"></div>
+            }
+        </div>
+    } @else if (loadError()) {
+        <p class="bg-error/10 text-error p-4 rounded-xl font-body text-sm" role="alert">{{ loadError() }}</p>
+    } @else {
+        @for (item of features; track item.feature) {
+            <section class="bg-[#091328] rounded-3xl p-6 flex flex-col gap-6" [attr.aria-labelledby]="'ai-' + item.feature + '-title'">
+                <div class="flex flex-col gap-1">
+                    <h3 [id]="'ai-' + item.feature + '-title'" class="font-headline font-bold text-lg text-[#dee5ff]">{{ item.label }}</h3>
+                    <p class="font-label text-sm text-[#dee5ff]/70">{{ item.description }}</p>
+                </div>
+
+                <ol class="flex flex-col gap-2" [attr.aria-label]="'Modelos de ' + item.label">
+                    @for (model of models()[item.feature]; track model; let i = $index; let first = $first; let last = $last) {
+                        <li class="bg-[#0f1930] rounded-2xl px-4 py-3 flex flex-wrap items-center gap-3">
+                            <span class="font-label text-xs font-bold px-2 py-1 rounded-lg" [class]="first ? 'bg-[#3fc2fb]/15 text-[#3fc2fb]' : 'bg-[#141f38] text-[#dee5ff]/80'">
+                                {{ first ? 'Principal' : 'Fallback ' + i }}
+                            </span>
+                            <code class="font-mono text-sm text-[#dee5ff] break-all flex-1 min-w-40">{{ model }}</code>
+                            @if (checkFor(item.feature, model); as check) {
+                                <span class="inline-flex items-center gap-1 font-label text-xs px-2 py-1 rounded-lg" [class]="statusClass(check.status)">
+                                    <span class="material-symbols-outlined text-sm" aria-hidden="true">{{ statusIcon(check.status) }}</span>
+                                    {{ statusLabel(check) }}
+                                </span>
+                            }
+                            <div class="flex items-center gap-1">
+                                <button type="button" (click)="moveModel(item.feature, i, -1)" [disabled]="first" [attr.aria-label]="'Mover ' + model + ' para cima'"
+                                    class="p-2 rounded-lg text-[#dee5ff]/80 hover:bg-[#141f38] hover:text-[#3fc2fb] disabled:opacity-40 disabled:hover:bg-transparent focus:outline-none focus-visible:ring-2 focus-visible:ring-[#3fc2fb] transition">
+                                    <span class="material-symbols-outlined text-base" aria-hidden="true">arrow_upward</span>
+                                </button>
+                                <button type="button" (click)="moveModel(item.feature, i, 1)" [disabled]="last" [attr.aria-label]="'Mover ' + model + ' para baixo'"
+                                    class="p-2 rounded-lg text-[#dee5ff]/80 hover:bg-[#141f38] hover:text-[#3fc2fb] disabled:opacity-40 disabled:hover:bg-transparent focus:outline-none focus-visible:ring-2 focus-visible:ring-[#3fc2fb] transition">
+                                    <span class="material-symbols-outlined text-base" aria-hidden="true">arrow_downward</span>
+                                </button>
+                                <button type="button" (click)="removeModel(item.feature, i)" [attr.aria-label]="'Remover ' + model"
+                                    class="p-2 rounded-lg text-error/80 hover:bg-error/10 hover:text-error focus:outline-none focus-visible:ring-2 focus-visible:ring-[#3fc2fb] transition">
+                                    <span class="material-symbols-outlined text-base" aria-hidden="true">delete</span>
+                                </button>
+                            </div>
+                        </li>
+                    }
+                </ol>
+                @if (models()[item.feature].length === 0) {
+                    <p class="font-label text-sm text-error" role="alert">Mantenha ao menos um modelo.</p>
+                } @else if (models()[item.feature].length === 1) {
+                    <p class="font-label text-sm text-amber-300">Sem fallback: se este modelo for retirado, a funcionalidade para de funcionar. Adicione um segundo modelo.</p>
+                }
+
+                <form (submit)="$event.preventDefault(); addModel(item.feature)" class="flex flex-col gap-2" novalidate>
+                    <label [for]="'ai-' + item.feature + '-input'" class="block font-label text-sm text-[#dee5ff]/80">Adicionar modelo</label>
+                    <div class="flex flex-col sm:flex-row gap-3">
+                        <input
+                            [id]="'ai-' + item.feature + '-input'"
+                            type="text"
+                            [formControl]="modelControls[item.feature]"
+                            autocomplete="off"
+                            spellcheck="false"
+                            placeholder="openai/gpt-5-nano"
+                            [attr.aria-invalid]="modelErrors()[item.feature] ? true : null"
+                            [attr.aria-describedby]="modelErrors()[item.feature] ? 'ai-' + item.feature + '-error' : null"
+                            class="flex-1 bg-[#060e20] text-[#dee5ff] rounded-xl px-4 py-3 font-mono text-sm focus:outline-none focus:ring-2 focus:ring-[#3fc2fb]/60 transition placeholder:text-[#dee5ff]/60">
+                        <button type="submit"
+                            class="px-6 py-3 rounded-xl bg-[#141f38] text-[#3fc2fb] font-label font-bold hover:bg-[#192540] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#3fc2fb] transition">
+                            Adicionar
+                        </button>
+                    </div>
+                    @if (modelErrors()[item.feature]; as modelError) {
+                        <p [id]="'ai-' + item.feature + '-error'" class="font-label text-sm text-error" role="alert">{{ modelError }}</p>
+                    }
+                </form>
+            </section>
+        }
+
+        <section class="bg-[#091328] rounded-3xl p-6 flex flex-col gap-6" aria-labelledby="ai-emails-title">
+            <div class="flex flex-col gap-1">
+                <h3 id="ai-emails-title" class="font-headline font-bold text-lg text-[#dee5ff]">Alertas por e-mail</h3>
+                <p class="font-label text-sm text-[#dee5ff]/70">
+                    Uma verificação diária avisa estes endereços quando um modelo for removido, tiver retirada agendada ou falhar. Sem endereços, o aviso vai para os administradores.
+                </p>
+            </div>
+
+            @if (emails().length > 0) {
+                <ul class="flex flex-col gap-2" aria-label="E-mails de alerta">
+                    @for (email of emails(); track email; let i = $index) {
+                        <li class="bg-[#0f1930] rounded-2xl px-4 py-3 flex items-center justify-between gap-3">
+                            <span class="font-body text-[#dee5ff] break-all">{{ email }}</span>
+                            <button type="button" (click)="removeEmail(i)" [attr.aria-label]="'Remover ' + email"
+                                class="p-2 rounded-lg text-error/80 hover:bg-error/10 hover:text-error focus:outline-none focus-visible:ring-2 focus-visible:ring-[#3fc2fb] transition">
+                                <span class="material-symbols-outlined text-base" aria-hidden="true">delete</span>
+                            </button>
+                        </li>
+                    }
+                </ul>
+            }
+
+            <form (submit)="$event.preventDefault(); addEmail()" class="flex flex-col gap-2" novalidate>
+                <label for="ai-email-input" class="block font-label text-sm text-[#dee5ff]/80">Adicionar e-mail</label>
+                <div class="flex flex-col sm:flex-row gap-3">
+                    <input
+                        id="ai-email-input"
+                        type="email"
+                        [formControl]="emailControl"
+                        autocomplete="off"
+                        placeholder="nome@exemplo.com"
+                        [attr.aria-invalid]="emailError() ? true : null"
+                        [attr.aria-describedby]="emailError() ? 'ai-email-error' : null"
+                        class="flex-1 bg-[#060e20] text-[#dee5ff] rounded-xl px-4 py-3 font-body focus:outline-none focus:ring-2 focus:ring-[#3fc2fb]/60 transition placeholder:text-[#dee5ff]/60">
+                    <button type="submit"
+                        class="px-6 py-3 rounded-xl bg-[#141f38] text-[#3fc2fb] font-label font-bold hover:bg-[#192540] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#3fc2fb] transition">
+                        Adicionar
+                    </button>
+                </div>
+                @if (emailError(); as error) {
+                    <p id="ai-email-error" class="font-label text-sm text-error" role="alert">{{ error }}</p>
+                }
+            </form>
+        </section>
+
+        <section class="bg-[#091328] rounded-3xl p-6 flex flex-col gap-4" aria-labelledby="ai-check-title">
+            <div class="flex flex-col gap-1">
+                <h3 id="ai-check-title" class="font-headline font-bold text-lg text-[#dee5ff]">Verificar modelos</h3>
+                <p class="font-label text-sm text-[#dee5ff]/70">
+                    Consulta o catálogo do OpenRouter e faz uma chamada mínima em cada modelo salvo. Não envia e-mail. Salve antes para verificar as mudanças.
+                </p>
+            </div>
+            <div>
+                <button type="button" (click)="runCheck()" [disabled]="isChecking()"
+                    class="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-[#141f38] text-[#3fc2fb] font-label font-bold hover:bg-[#192540] disabled:opacity-60 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#3fc2fb] transition">
+                    <span class="material-symbols-outlined" aria-hidden="true">health_and_safety</span>
+                    {{ isChecking() ? 'Verificando...' : 'Verificar agora' }}
+                </button>
+            </div>
+            <div aria-live="polite">
+                @if (checkError()) {
+                    <p class="bg-error/10 text-error p-4 rounded-xl font-body text-sm" role="alert">{{ checkError() }}</p>
+                } @else if (checks(); as results) {
+                    @if (!catalogAvailable()) {
+                        <p class="bg-amber-400/15 text-amber-300 p-4 rounded-xl font-body text-sm mb-3">O catálogo do OpenRouter não respondeu; a verificação usou apenas a chamada de teste.</p>
+                    }
+                    <p class="font-body text-sm text-[#dee5ff]/90">
+                        Verificação concluída. Veja o estado de cada modelo nas listas acima.
+                        @if (results.length === 0) { Nenhum modelo salvo para verificar. }
+                    </p>
+                }
+            </div>
+        </section>
+
+        <div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-end gap-4">
+            <div aria-live="polite">
+                @if (saveResult(); as result) {
+                    <p class="font-body text-sm" [class]="result.ok ? 'text-emerald-300' : 'text-error'" [attr.role]="result.ok ? 'status' : 'alert'">{{ result.message }}</p>
+                }
+            </div>
+            <button type="button" (click)="save()" [disabled]="isSaving() || !canSave()"
+                class="px-8 py-3 rounded-xl bg-[#3fc2fb] text-[#00232f] font-label font-bold hover:brightness-110 disabled:opacity-60 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#dee5ff] transition">
+                {{ isSaving() ? 'Salvando...' : 'Salvar configurações' }}
+            </button>
+        </div>
+    }
+</div>
