@@ -1,4 +1,5 @@
 import { SupabaseClient } from "https://esm.sh/@supabase/supabase-js@2"
+import { isoWeek } from "../_shared/iso-week.ts"
 
 export async function evaluateAchievements(
     supabase: SupabaseClient,
@@ -235,8 +236,7 @@ async function awardAchievementXp(supabase: SupabaseClient, userId: string, amou
     }
 
     // 3. xp_week
-    const week = getWeekNumber(now);
-    const year = now.getFullYear();
+    const { week, year } = isoWeek(now);
 
     const { data: existingWeekXp } = await supabase
         .from('xp_week')
@@ -275,15 +275,6 @@ async function awardAchievementXp(supabase: SupabaseClient, userId: string, amou
         await supabase.from('xp_month').insert({ user_id: userId, month, year, xp_amount: amount });
     }
 }
-
-function getWeekNumber(d: Date) {
-    d = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
-    d.setUTCDate(d.getUTCDate() + 4 - (d.getUTCDay() || 7));
-    const yearStart = new Date(Date.UTC(d.getUTCFullYear(), 0, 1));
-    const weekNo = Math.ceil((((d.getTime() - yearStart.getTime()) / 86400000) + 1) / 7);
-    return weekNo;
-}
-
 function getUniqueDates(quizzes: any[]) {
     const dates = quizzes.map(q => q.completed_at.split('T')[0]);
     return [...new Set(dates)].sort();

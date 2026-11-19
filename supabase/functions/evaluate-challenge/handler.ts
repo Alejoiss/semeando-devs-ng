@@ -1,4 +1,5 @@
 import { evaluateAchievements } from "./achievements.ts"
+import { isoWeek } from "../_shared/iso-week.ts"
 import { chatCompletion, loadModels } from "../_shared/openrouter.ts"
 
 type CreateClient = (url: string, key: string, options?: any) => any
@@ -294,8 +295,7 @@ export function createHandler(createClient: CreateClient) {
                 }
 
                 const date = new Date()
-                const week = getWeekNumber(date)
-                const year = date.getFullYear()
+                const { week, year } = isoWeek(date)
 
                 const { data: existingWeekXp, error: weekXpFetchError } = await serviceRoleClient
                     .from('xp_week')
@@ -390,11 +390,4 @@ export function createHandler(createClient: CreateClient) {
             )
         }
     }
-}
-
-function getWeekNumber(d: Date) {
-    d = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
-    d.setUTCDate(d.getUTCDate() + 4 - (d.getUTCDay() || 7));
-    const yearStart = new Date(Date.UTC(d.getUTCFullYear(), 0, 1));
-    return Math.ceil((((d.getTime() - yearStart.getTime()) / 86400000) + 1) / 7);
 }

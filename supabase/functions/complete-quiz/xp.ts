@@ -1,4 +1,5 @@
 import { SupabaseClient } from "https://esm.sh/@supabase/supabase-js@2"
+import { isoWeek } from "../_shared/iso-week.ts"
 
 export interface XpEntry {
     amount: number
@@ -13,8 +14,7 @@ export async function applyXp(supabase: SupabaseClient, userId: string, entries:
 
     const now = new Date()
     const nowIso = now.toISOString()
-    const week = getWeekNumber(now)
-    const year = now.getFullYear()
+    const { week, year } = isoWeek(now)
     const month = now.getMonth() + 1
 
     const [logRes, xpRes, weekRes, monthRes] = await Promise.all([
@@ -53,9 +53,3 @@ export async function applyXp(supabase: SupabaseClient, userId: string, entries:
 }
 
 // ISO-8601 week number
-function getWeekNumber(d: Date) {
-    d = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()))
-    d.setUTCDate(d.getUTCDate() + 4 - (d.getUTCDay() || 7))
-    const yearStart = new Date(Date.UTC(d.getUTCFullYear(), 0, 1))
-    return Math.ceil((((d.getTime() - yearStart.getTime()) / 86400000) + 1) / 7)
-}

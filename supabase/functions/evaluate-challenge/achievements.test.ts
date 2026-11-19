@@ -268,11 +268,7 @@ Deno.test('achievement XP adds to existing totals', async () => {
     assertEquals(fake.callsFor('xp_month', 'update')[0].payload.xp_amount, 100)
 })
 
-Deno.test({
-    ignore: true,
-    name: 'achievement XP of the days that open a year is filed under the ISO year of their week (finding xp-iso-year)',
-    fn: async () => {
-        const { fake } = await run({ achievements: [ach('MEU_PRIMEIRO_DESAFIO', 30)], now: '2021-01-03T12:00:00Z' })
-        assertEquals(fake.callsFor('xp_week', 'insert')[0].payload, { user_id: USER, week: 53, year: 2020, xp_amount: 30 })
-    },
+Deno.test('achievement XP of the days that open a year is filed under the ISO year of their week', async () => {
+    const { fake } = await run({ achievements: [ach('MEU_PRIMEIRO_DESAFIO', 30)], now: '2021-01-03T12:00:00Z' })
+    assertEquals(fake.callsFor('xp_week', 'insert')[0].payload, { user_id: USER, week: 53, year: 2020, xp_amount: 30 })
 })

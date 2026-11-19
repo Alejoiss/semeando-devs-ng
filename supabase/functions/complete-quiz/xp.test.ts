@@ -73,16 +73,12 @@ Deno.test('applyXp looks the week and month rows up by the ISO week of the curre
     )
 })
 
-Deno.test({
-    name: 'applyXp files the days that open a year under the ISO year of their week (finding xp-iso-year)',
-    ignore: true,
-    fn: async () => {
-        const fake = await run('2021-01-03T12:00:00Z', [{ amount: 10, reason: 'LESSON' }])
-        assertEquals(
-            fake.callsFor('xp_week', 'select')[0].filters,
-            [['eq', 'user_id', USER], ['eq', 'week', 53], ['eq', 'year', 2020]],
-        )
-    },
+Deno.test('applyXp files the days that open a year under the ISO year of their week', async () => {
+    const fake = await run('2021-01-03T12:00:00Z', [{ amount: 10, reason: 'LESSON' }])
+    assertEquals(
+        fake.callsFor('xp_week', 'select')[0].filters,
+        [['eq', 'user_id', USER], ['eq', 'week', 53], ['eq', 'year', 2020]],
+    )
 })
 
 for (const [label, key] of [

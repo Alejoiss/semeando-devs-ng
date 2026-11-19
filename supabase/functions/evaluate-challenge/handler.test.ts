@@ -393,11 +393,7 @@ Deno.test('only challenge lessons can be completed through the challenge evaluat
     }
 })
 
-Deno.test({
-    ignore: true,
-    name: 'the weekly XP of the days that open a year belongs to the ISO year of their week (finding xp-iso-year)',
-    fn: async () => {
-        const r = await call({ now: '2021-01-03T12:00:00Z' })
-        assertEquals(r.svc.callsFor('xp_week', 'insert')[0].payload, { user_id: 'user-1', week: 53, year: 2020, xp_amount: 50 })
-    },
+Deno.test('the weekly XP of the days that open a year belongs to the ISO year of their week', async () => {
+    const r = await call({ now: '2021-01-03T12:00:00Z' })
+    assertEquals(r.svc.callsFor('xp_week', 'insert')[0].payload, { user_id: 'user-1', week: 53, year: 2020, xp_amount: 50 })
 })
