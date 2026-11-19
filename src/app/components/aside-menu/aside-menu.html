@@ -85,6 +85,7 @@
                 <div class="w-6 h-6 rounded-full flex items-center justify-center transition duration-300" [class]="completed
                                 ? 'bg-tertiary/20 shadow-[0_0_8px_rgba(232,255,192,0.4)]'
                                 : 'bg-surface-container-highest'"
+                    role="img"
                     [attr.aria-label]="completed ? 'Lição ' + ($index + 1) + ' concluída' : 'Lição ' + ($index + 1) + ' não concluída'">
                     <div class="w-3 h-3 rounded-full transition duration-300"
                         [class]="completed ? 'bg-tertiary' : 'bg-on-surface-variant/20'">

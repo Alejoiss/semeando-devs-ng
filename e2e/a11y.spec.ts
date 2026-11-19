@@ -3,7 +3,6 @@ import { expectNoAxeViolations } from './support/axe';
 import { storageStateFor } from './support/users';
 
 const LESSON = '/app/s/html-essencial/ss/primeiros-passos/lesson/0fb4e367-514b-5e00-889c-e2c1b08d6efd';
-const DOTS = 'a11y-daily-progress-dots-aria-label';
 const MUTED = 'a11y-muted-text-contrast';
 const LOGOUT = 'a11y-sidebar-logout-contrast';
 
@@ -26,15 +25,15 @@ const SCANS: Record<'anonymous' | 'student' | 'admin', Scan[]> = {
         { path: '/termos-de-uso', findings: ['a11y-terms-badges-contrast'] },
     ],
     student: [
-        { path: '/app', findings: [DOTS, MUTED] },
-        { path: '/app/s/html-essencial', findings: [DOTS, MUTED] },
-        { path: '/app/s/html-essencial/ss/primeiros-passos', findings: [DOTS, MUTED] },
-        { path: LESSON, findings: [DOTS, MUTED] },
-        { path: '/app/ranking', findings: [DOTS, MUTED] },
-        { path: '/app/conquistas', findings: [DOTS, MUTED] },
-        { path: '/app/perfil', findings: [DOTS, MUTED, 'a11y-readonly-input-without-label'] },
-        { path: '/app/upgrade', findings: [DOTS, MUTED] },
-        { path: '/app/gerenciar-assinatura', findings: [DOTS, MUTED] },
+        { path: '/app', findings: [MUTED] },
+        { path: '/app/s/html-essencial', findings: [MUTED] },
+        { path: '/app/s/html-essencial/ss/primeiros-passos', findings: [MUTED] },
+        { path: LESSON, findings: [MUTED] },
+        { path: '/app/ranking', findings: [MUTED] },
+        { path: '/app/conquistas', findings: [MUTED] },
+        { path: '/app/perfil', findings: [MUTED, 'a11y-readonly-input-without-label'] },
+        { path: '/app/upgrade', findings: [MUTED] },
+        { path: '/app/gerenciar-assinatura', findings: [MUTED] },
     ],
     admin: [
         { path: '/admin/dashboard', findings: [LOGOUT] },
