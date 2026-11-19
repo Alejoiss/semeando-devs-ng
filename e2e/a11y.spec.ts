@@ -20,7 +20,7 @@ const SCANS: Record<'anonymous' | 'student' | 'admin', Scan[]> = {
         { path: '/recuperar-senha' },
         { path: '/support/contact' },
         { path: '/rota-inexistente' },
-        { path: '/termos-de-uso', findings: ['a11y-terms-badges-contrast'] },
+        { path: '/termos-de-uso' },
     ],
     student: [
         { path: '/app' },
