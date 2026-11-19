@@ -5,32 +5,35 @@ const corsHeaders = {
     'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 }
 
+function addMonthsClamped(date: Date, months: number): Date {
+    const target = new Date(Date.UTC(date.getUTCFullYear(), date.getUTCMonth() + months, 1))
+    const lastDay = new Date(Date.UTC(target.getUTCFullYear(), target.getUTCMonth() + 1, 0)).getUTCDate()
+    target.setUTCDate(Math.min(date.getUTCDate(), lastDay))
+    target.setUTCHours(date.getUTCHours(), date.getUTCMinutes(), date.getUTCSeconds(), date.getUTCMilliseconds())
+    return target
+}
+
 export function calculateNextBillingDate(createdAt: string, billingCycle: string): Date {
     const created = new Date(createdAt)
     const now = new Date()
-    const nextDate = new Date(created)
 
     if (billingCycle === 'monthly') {
-        // Find the next monthly billing date from today
-        let monthsDiff = (now.getFullYear() - created.getFullYear()) * 12 + now.getMonth() - created.getMonth()
-        if (now.getDate() >= created.getDate()) {
+        let monthsDiff = (now.getUTCFullYear() - created.getUTCFullYear()) * 12 + now.getUTCMonth() - created.getUTCMonth()
+        if (now.getUTCDate() >= created.getUTCDate()) {
             monthsDiff++
         } else {
             monthsDiff = Math.max(1, monthsDiff)
         }
-        nextDate.setMonth(created.getMonth() + monthsDiff)
-    } else {
-        // yearly
-        let yearsDiff = now.getFullYear() - created.getFullYear()
-        const pastAnniversary =
-            now.getMonth() > created.getMonth() ||
-            (now.getMonth() === created.getMonth() && now.getDate() >= created.getDate())
-
-        yearsDiff = pastAnniversary ? yearsDiff + 1 : Math.max(1, yearsDiff)
-        nextDate.setFullYear(created.getFullYear() + yearsDiff)
+        return addMonthsClamped(created, monthsDiff)
     }
 
-    return nextDate
+    let yearsDiff = now.getUTCFullYear() - created.getUTCFullYear()
+    const pastAnniversary =
+        now.getUTCMonth() > created.getUTCMonth() ||
+        (now.getUTCMonth() === created.getUTCMonth() && now.getUTCDate() >= created.getUTCDate())
+
+    yearsDiff = pastAnniversary ? yearsDiff + 1 : Math.max(1, yearsDiff)
+    return addMonthsClamped(created, yearsDiff * 12)
 }
 
 export function createHandler(createClient: CreateClient) {

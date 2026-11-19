@@ -229,17 +229,22 @@ Deno.test('calculateNextBillingDate: first year of a brand-new yearly subscripti
     }
 })
 
-Deno.test({
-    ignore: true,
-    name: 'a subscription started on day 31 must keep access until the real next charge, not spill into the following month (finding cancel-month-overflow)',
-    fn: () => {
-        const time = new FakeTime(new Date('2026-01-31T15:00:00Z'))
-        try {
-            assertEquals(calculateNextBillingDate('2026-01-31T12:00:00Z', 'monthly').toISOString(), '2026-02-28T12:00:00.000Z')
-        } finally {
-            time.restore()
-        }
-    },
+Deno.test('a subscription started on day 31 keeps access until the end of the shorter month, not the following one', () => {
+    const time = new FakeTime(new Date('2026-01-31T15:00:00Z'))
+    try {
+        assertEquals(calculateNextBillingDate('2026-01-31T12:00:00Z', 'monthly').toISOString(), '2026-02-28T12:00:00.000Z')
+    } finally {
+        time.restore()
+    }
+})
+
+Deno.test('a yearly subscription started on Feb 29 renews on Feb 28 in a non-leap year', () => {
+    const time = new FakeTime(new Date('2026-03-01T12:00:00Z'))
+    try {
+        assertEquals(calculateNextBillingDate('2024-02-29T12:00:00Z', 'yearly').toISOString(), '2027-02-28T12:00:00.000Z')
+    } finally {
+        time.restore()
+    }
 })
 
 Deno.test('a failing pro_until update is not reported as a successful cancellation', async () => {
