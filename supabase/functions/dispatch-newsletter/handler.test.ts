@@ -24,7 +24,7 @@ type Opts = {
     role?: string | null
     newsletter?: unknown
     profiles?: unknown[] | ((from: number) => unknown[])
-    alreadySent?: { user_id: string }[]
+    alreadySent?: { user_id: string; email_sent: boolean }[]
     sendFails?: (to: string) => boolean
     resendStatus?: (to: string) => number
     env?: Record<string, string | undefined>
@@ -160,19 +160,19 @@ Deno.test('only active profiles with an email are queried', async () => {
 })
 
 Deno.test('skips profiles that already received this newsletter', async () => {
-    const r = await call({ profiles: [person(1), person(2), person(3)], alreadySent: [{ user_id: 'u1' }, { user_id: 'u3' }] })
+    const r = await call({ profiles: [person(1), person(2), person(3)], alreadySent: [{ user_id: 'u1', email_sent: true }, { user_id: 'u3', email_sent: true }] })
     assertEquals(r.sent.map((m) => m.to), ['u2@example.com'])
     assertEquals(r.json.remaining, 0)
 })
 
-Deno.test('only already-sent rows of this newsletter count as delivered', async () => {
-    const { fake } = await call({ profiles: [person(1)] })
-    const c = fake.callsFor('user_newsletter', 'select')[0]
-    assertEquals(c.filters, [['eq', 'newsletter_id', 'nl-1'], ['eq', 'email_sent', true]])
+Deno.test('only rows of this newsletter are read, and failed attempts do not count as delivered', async () => {
+    const r = await call({ profiles: [person(1), person(2)], alreadySent: [{ user_id: 'u1', email_sent: false }] })
+    assertEquals(r.fake.callsFor('user_newsletter', 'select')[0].filters, [['eq', 'newsletter_id', 'nl-1']])
+    assertEquals(r.sent.map((m) => m.to), ['u2@example.com', 'u1@example.com'])
 })
 
 Deno.test('does nothing and writes nothing when everyone already received it', async () => {
-    const r = await call({ profiles: [person(1)], alreadySent: [{ user_id: 'u1' }] })
+    const r = await call({ profiles: [person(1)], alreadySent: [{ user_id: 'u1', email_sent: true }] })
     assertEquals(r.json, { success: true, sent_count: 0, failed_count: 0, remaining: 0 })
     assertEquals(r.fake.callsFor('user_newsletter', 'upsert').length, 0)
 })
@@ -340,23 +340,24 @@ Deno.test('renderText turns an HTML body into readable plain text', () => {
     assertEquals(text, 'Primeiro\nSegundo item\nfim\num')
 })
 
-Deno.test({
-    ignore: true,
-    name: 'recipients whose delivery keeps failing must not block the queue behind them (finding newsletter-failed-recipients-block-queue)',
-    fn: async () => {
-        const people = [person(1), person(2), person(3)]
-        const records: { user_id: string; email_sent: boolean }[] = []
-        const state = {
-            'user_newsletter.select': () => ({ data: records.filter((r) => r.email_sent).map((r) => ({ user_id: r.user_id }) ) }),
-            'user_newsletter.upsert': (c: { payload?: typeof records }) => {
-                records.push(...(c.payload ?? []))
-                return {}
-            },
-        }
-        const body = { newsletter_id: 'nl-1', max_per_run: 1 }
-        const opts = { profiles: people, body, sendFails: (to: string) => to === 'u1@example.com', extra: state }
-        await call(opts)
-        const second = await call(opts)
-        assertEquals(second.sent.map((m) => m.to), ['u2@example.com'])
-    },
+Deno.test('recipients whose delivery keeps failing do not block the queue behind them', async () => {
+    const people = [person(1), person(2), person(3)]
+    const records: { user_id: string; email_sent: boolean }[] = []
+    const state = {
+        'user_newsletter.select': () => ({ data: [...records] }),
+        'user_newsletter.upsert': (c: { payload?: typeof records }) => {
+            for (const row of c.payload ?? []) {
+                const i = records.findIndex((r) => r.user_id === row.user_id)
+                i >= 0 ? (records[i] = row) : records.push(row)
+            }
+            return {}
+        },
+    }
+    const opts = { profiles: people, body: { newsletter_id: 'nl-1', max_per_run: 1 }, sendFails: (to: string) => to === 'u1@example.com', extra: state }
+    const first = await call(opts)
+    const second = await call(opts)
+    const third = await call(opts)
+    assertEquals(first.sent.map((m) => m.to), [])
+    assertEquals(second.sent.map((m) => m.to), ['u2@example.com'])
+    assertEquals(third.sent.map((m) => m.to), ['u3@example.com'])
 })

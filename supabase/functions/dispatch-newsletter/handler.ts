@@ -188,15 +188,19 @@ export function createHandler(createClient: CreateClient, nodemailer: Mailer) {
                 return json({ success: true, test: true, to: test_email });
             }
 
-            const { data: alreadySent, error: sentError } = await supabase
+            const { data: attempts, error: sentError } = await supabase
                 .from('user_newsletter')
-                .select('user_id')
-                .eq('newsletter_id', newsletter.id)
-                .eq('email_sent', true);
+                .select('user_id, email_sent')
+                .eq('newsletter_id', newsletter.id);
             if (sentError) throw sentError;
-            const sentIds = new Set((alreadySent ?? []).map((row: { user_id: string }) => row.user_id));
+            const sentIds = new Set<string>();
+            const failedIds = new Set<string>();
+            for (const row of (attempts ?? []) as { user_id: string; email_sent: boolean }[]) {
+                (row.email_sent ? sentIds : failedIds).add(row.user_id);
+            }
 
-            const pending: Recipient[] = [];
+            const fresh: Recipient[] = [];
+            const retries: Recipient[] = [];
             for (let from = 0; ; from += PAGE_SIZE) {
                 const { data: page, error: pageError } = await supabase
                     .from('profiles')
@@ -208,10 +212,12 @@ export function createHandler(createClient: CreateClient, nodemailer: Mailer) {
                 if (pageError) throw pageError;
 
                 for (const profile of page ?? []) {
-                    if (!sentIds.has(profile.id)) pending.push(profile as Recipient);
+                    if (sentIds.has(profile.id)) continue;
+                    (failedIds.has(profile.id) ? retries : fresh).push(profile as Recipient);
                 }
                 if (!page || page.length < PAGE_SIZE) break;
             }
+            const pending = [...fresh, ...retries];
 
             const limit = Number.isInteger(max_per_run) && max_per_run > 0 ? max_per_run : DEFAULT_MAX_PER_RUN;
             const batch = pending.slice(0, limit);
