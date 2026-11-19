@@ -1,5 +1,5 @@
 import { test, expect } from './support/test';
-import { sql } from './support/backend';
+import { clearUserProgress, sql } from './support/backend';
 import { E2E_USERS, storageStateFor } from './support/users';
 
 const LESSON_ID = '0fb4e367-514b-5e00-889c-e2c1b08d6efd';
@@ -19,6 +19,8 @@ const totalXp = () => Number(sql(`select coalesce(sum(total_xp), 0) from xp wher
 
 test.describe('student learning journey', () => {
     test.use({ storageState: storageStateFor('student') });
+
+    test.beforeEach(() => clearUserProgress(studentId));
 
     test('module → submodule → lesson → quiz awards XP and the first achievement', async ({ page }) => {
         test.setTimeout(120_000);
@@ -40,9 +42,12 @@ test.describe('student learning journey', () => {
         for (let question = 0; question < 10; question++) {
             const options = page.getByRole('button', { name: /^[A-D]\. / });
             await expect(options).toHaveCount(4);
-            const labels = await options.allInnerTexts();
-            const index = labels.findIndex(label => correct.some(text => new RegExp(`^[A-D]\\.\\s*${escapeRegExp(text)}$`).test(label.trim())));
-            expect(index, `question ${question + 1} has a correct option`).toBeGreaterThanOrEqual(0);
+            const correctIndex = async () => {
+                const labels = await options.allInnerTexts();
+                return labels.findIndex(label => correct.some(text => new RegExp(`^[A-D]\\.\\s*${escapeRegExp(text)}$`).test(label.trim())));
+            };
+            await expect.poll(correctIndex, { message: `question ${question + 1} has a correct option` }).toBeGreaterThanOrEqual(0);
+            const index = await correctIndex();
 
             await options.nth(index).click();
             await page.getByRole('button', { name: 'Confirmar resposta' }).click();
@@ -51,7 +56,7 @@ test.describe('student learning journey', () => {
 
         await expect(page.getByRole('heading', { name: /Parabéns/ })).toBeVisible();
 
-        await expect.poll(totalXp, { message: 'XP is awarded by complete-quiz' }).toBeGreaterThan(0);
+        await expect.poll(totalXp, { message: 'XP is awarded by complete-quiz', timeout: 30_000 }).toBeGreaterThan(0);
         expect(
             sql(`select count(*) from user_lessons where user_id = '${studentId}' and lesson_id = '${LESSON_ID}' and completed`),
         ).toBe('1');

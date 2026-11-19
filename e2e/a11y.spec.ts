@@ -56,7 +56,10 @@ for (const [audience, scans] of Object.entries(SCANS)) {
             const run = async ({ page }: { page: import('@playwright/test').Page }) => {
                 await page.goto(path);
                 await expect(page.getByRole('heading').first()).toBeVisible();
-                await page.waitForTimeout(1500);
+                await page.waitForFunction(() =>
+                    document.getAnimations().every(a => a.effect?.getComputedTiming().iterations === Infinity || a.playState === 'finished'),
+                );
+                await page.waitForTimeout(300);
                 await expectNoAxeViolations(page, { exclude: ['iframe'] });
             };
             if (findings) {

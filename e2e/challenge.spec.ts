@@ -90,7 +90,7 @@ test.describe('code challenge (AI evaluation stubbed)', () => {
         await page.getByRole('button', { name: 'Salvar Rascunho' }).click();
 
         await expect
-            .poll(() => sql(`select coalesce(saved_code, '') from user_lessons where user_id = '${studentId}' and lesson_id = '${CHALLENGE_ID}'`))
+            .poll(() => sql(`select coalesce(saved_code, '') from user_lessons where user_id = '${studentId}' and lesson_id = '${CHALLENGE_ID}'`), { timeout: 30_000 })
             .toContain('DRAFT_E2E');
 
         await page.reload();

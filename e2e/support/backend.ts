@@ -19,6 +19,20 @@ export function sql(statement: string): string {
     return execFileSync('psql', [DB_URL, '-v', 'ON_ERROR_STOP=1', '-At', '-q', '-c', statement], { encoding: 'utf8' }).trim();
 }
 
+export function clearUserProgress(userId: string): void {
+    sql(`do $$
+declare t text;
+begin
+  for t in
+    select table_name from information_schema.columns
+    where table_schema = 'public' and column_name = 'user_id' and table_name not in ('seed', 'seed_log')
+      and table_name in (select table_name from information_schema.tables where table_schema = 'public' and table_type = 'BASE TABLE')
+  loop
+    execute format('delete from public.%I where user_id = %L', t, '${userId}');
+  end loop;
+end $$;`);
+}
+
 export function resetUserState(): void {
     execFileSync('psql', [DB_URL, '-v', 'ON_ERROR_STOP=1', '-q', '-f', resolve(__dirname, '../backend/reset-user-state.sql')], {
         stdio: 'inherit',

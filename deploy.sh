@@ -1,6 +1,10 @@
 #!/bin/bash
 set -euo pipefail
 
+# O CLI do Supabase pode sair com código 1 só porque a telemetria (PostHog) estourou o tempo ao encerrar,
+# mesmo com o comando concluído; isso abortaria o deploy com `set -e`
+export DO_NOT_TRACK=1
+
 STEP="início"
 step() {
   STEP="$1"
@@ -17,18 +21,18 @@ if [ "${SKIP_TESTS:-0}" != "1" ]; then
 
   step "🧪 Running E2E tests (Playwright, isolated local backend)..."
   npm run e2e:backend:start
-  # E2E_WORKERS=2 reduz a carga em máquinas ocupadas (a jornada de aprendizado oscila com load alto)
-  if [ -n "${E2E_WORKERS:-}" ]; then
-    npm run e2e -- --workers="$E2E_WORKERS"
-  else
-    npm run e2e
-  fi
+  # 2 workers por padrão: com mais, a máquina fica carregada e jornadas longas estouram o tempo (E2E_WORKERS=N altera)
+  npm run e2e -- --workers="${E2E_WORKERS:-2}"
   npm run e2e:backend:stop
 fi
 
 # O cron de cupons e as funções de pagamento falham cedo sem este segredo
 step "🔑 Checking the ML_ACCESS_TOKEN secret..."
-if ! supabase secrets list | grep -q "ML_ACCESS_TOKEN"; then
+if ! SECRETS_OUTPUT="$(supabase secrets list 2>&1)"; then
+  echo "Não foi possível consultar os segredos do Supabase (projeto linkado? autenticado?). Rode 'supabase secrets list' para ver o erro." >&2
+  exit 1
+fi
+if ! grep -q "ML_ACCESS_TOKEN" <<<"$SECRETS_OUTPUT"; then
   echo "O segredo ML_ACCESS_TOKEN não existe no projeto Supabase. Defina com: supabase secrets set ML_ACCESS_TOKEN=..." >&2
   exit 1
 fi
