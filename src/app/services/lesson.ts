@@ -27,7 +27,7 @@ export class LessonService {
         const { data, error } = await this.supabase
             .from('lessons')
             .select('id, order, sub_module_id, module:submodules!inner(id, course:modules!inner(slug))')
-            .eq('modules.modules.slug', slug)
+            .eq('submodules.modules.slug', slug)
             .order('order', { ascending: true });
 
         if (error) {

@@ -30,7 +30,7 @@ test.describe('student learning journey', () => {
 
         await page.goto('/app');
         await page.getByRole('button', { name: 'Iniciar' }).first().click();
-        await expect(page).toHaveURL(/\/app\/s\/html-essencial$/);
+        await expect(page).toHaveURL(/\/app\/c\/html-essencial$/);
 
         await page.getByRole('button', { name: 'Iniciar' }).first().click();
         await expect(page).toHaveURL(/\/m\/primeiros-passos$/);
