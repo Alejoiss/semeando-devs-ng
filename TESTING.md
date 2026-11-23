@@ -68,7 +68,7 @@ node e2e/backend/stack.mjs seed   # cria contas novas e reaplica grants.sql num 
 - A fixture `e2e/support/test.ts` bloqueia hosts externos (exceto `cdn.jsdelivr.net`, de onde o Monaco é carregado).
 - Helpers: `support/backend.ts` (`sql()`), `support/users.ts` (contas e `storageStateFor`), `support/axe.ts` (`expectNoAxeViolations`), `support/mailbox.ts` (Mailpit).
 
-**Independência.** O `globalSetup` zera o estado de todas as contas `@e2e.test` (progresso, XP, assinaturas, cupons e newsletters `E2E…`, módulos `E2E …`) a cada execução. Cada jornada que muda estado usa a sua conta, para os arquivos rodarem em paralelo: `student` (aprendizado), `challenger`, `limited`, `subscriber`, `reader`, `teacher`, `admin`. Dentro de um arquivo que compartilha a conta use `test.describe.configure({ mode: 'serial' })`. Dados novos precisam de limpeza em `e2e/backend/reset-user-state.sql`.
+**Independência.** O `globalSetup` zera o estado de todas as contas `@e2e.test` (progresso, XP, assinaturas, cupons e newsletters `E2E…`, cursos `E2E …`) a cada execução. Cada jornada que muda estado usa a sua conta, para os arquivos rodarem em paralelo: `student` (aprendizado), `challenger`, `limited`, `subscriber`, `reader`, `teacher`, `admin`. Dentro de um arquivo que compartilha a conta use `test.describe.configure({ mode: 'serial' })`. Dados novos precisam de limpeza em `e2e/backend/reset-user-state.sql`.
 
 **Regras.**
 - Nunca enviar pagamento com cartão: o SDK do Mercado Pago é stubado, `create-subscription` nunca é chamado e o webhook é simulado por `UPDATE` no banco.

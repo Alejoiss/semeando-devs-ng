@@ -198,7 +198,7 @@ export class Quiz implements OnInit {
             if (lesson.type === LessonType.REVISION) {
                 const [quizData, revisionQuestions] = await Promise.all([
                     this.quizService.getOrCreateQuiz(lessonId),
-                    this.quizService.getRevisionQuestions(lessonId, lesson.subModuleId),
+                    this.quizService.getRevisionQuestions(lessonId, lesson.moduleId),
                 ]);
                 this.isRevisionMode.set(true);
 
@@ -507,11 +507,11 @@ export class Quiz implements OnInit {
         if (this.isProcessingCompleteQuiz()) return;
 
         const slug = this.route.snapshot.params['slug'];
-        const slugSubmodule = this.route.snapshot.params['slugSubmodule'];
+        const slugModule = this.route.snapshot.params['slugModule'];
         const lessonId = this.route.snapshot.paramMap.get('lessonId');
 
         if (!this.passed()) {
-            this.router.navigate(['/app/s', slug, 'ss', slugSubmodule, 'lesson', lessonId]);
+            this.router.navigate(['/app/c', slug, 'm', slugModule, 'lesson', lessonId]);
             return;
         }
 
@@ -520,12 +520,12 @@ export class Quiz implements OnInit {
 
         this.achievementsService.checkUnseenAchievements();
 
-        if (result.moduleCompleted) {
-            this.router.navigate(['/app/s', slug, 'finished']);
-        } else if (result.subModuleCompleted) {
-            this.router.navigate(['/app/s', slug]);
+        if (result.courseCompleted) {
+            this.router.navigate(['/app/c', slug, 'finished']);
+        } else if (result.moduleCompleted) {
+            this.router.navigate(['/app/c', slug]);
         } else {
-            this.router.navigate(['/app/s', slug, 'ss', slugSubmodule]);
+            this.router.navigate(['/app/c', slug, 'm', slugModule]);
         }
     }
 }

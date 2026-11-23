@@ -1,7 +1,7 @@
 import { test, expect } from './support/test';
 
 test.describe('public catalog', () => {
-    test('landing → courses → module → free lesson → sign-up call to action', async ({ page }) => {
+    test('landing → courses → course → free lesson → sign-up call to action', async ({ page }) => {
         const angularErrors: string[] = [];
         page.on('console', message => {
             if (message.type() === 'error' && /NG0\d+/.test(message.text())) angularErrors.push(message.text());
@@ -49,7 +49,7 @@ test.describe('public catalog', () => {
         await expect(page).toHaveURL(/\/primeiros-passos\/o-que-e-html$/);
     });
 
-    for (const path of ['/cursos/modulo-que-nao-existe', '/cursos/html-essencial/primeiros-passos/aula-que-nao-existe']) {
+    for (const path of ['/cursos/curso-que-nao-existe', '/cursos/html-essencial/primeiros-passos/aula-que-nao-existe']) {
         test(`${path} shows the not-found page with a way back to the courses`, async ({ page }) => {
             await page.goto(path);
             await expect(page.getByRole('heading', { level: 1, name: 'Página não encontrada' })).toBeVisible();
@@ -58,7 +58,7 @@ test.describe('public catalog', () => {
         });
     }
 
-    test('a module still in revision is not listed and has no public page', async ({ page }) => {
+    test('a course still in revision is not listed and has no public page', async ({ page }) => {
         await page.goto('/cursos/javascript-moderno');
         await expect(page.getByRole('heading', { level: 1, name: 'Página não encontrada' })).toBeVisible();
     });

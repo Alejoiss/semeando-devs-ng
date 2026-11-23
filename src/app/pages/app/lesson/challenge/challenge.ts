@@ -40,7 +40,7 @@ export class Challenge implements OnInit, OnDestroy {
     private userService = inject(UserService);
 
     lessonId = signal<string>('');
-    slugSubmodule = signal<string>('');
+    slugModule = signal<string>('');
     slug = signal<string>('');
 
     lesson = signal<LessonModel | null>(null);
@@ -99,9 +99,9 @@ export class Challenge implements OnInit, OnDestroy {
 
     goBack() {
         const slug = this.slug();
-        const slugSubmodule = this.slugSubmodule();
-        if (slug && slugSubmodule) {
-            this.router.navigate(['/app/s', slug, 'ss', slugSubmodule]);
+        const slugModule = this.slugModule();
+        if (slug && slugModule) {
+            this.router.navigate(['/app/c', slug, 'm', slugModule]);
         } else {
             this.router.navigate(['/app']);
         }
@@ -117,16 +117,16 @@ export class Challenge implements OnInit, OnDestroy {
         try {
             this.isLoading.set(true);
             const params = this.route.snapshot.paramMap;
-            const slugSubmodule = params.get('slugSubmodule');
+            const slugModule = params.get('slugModule');
             const lessonId = params.get('lessonId');
             const slug = params.get('slug');
 
-            if (!slugSubmodule || !lessonId) {
+            if (!slugModule || !lessonId) {
                 this.error.set('Desafio não encontrado.');
                 return;
             }
 
-            this.slugSubmodule.set(slugSubmodule);
+            this.slugModule.set(slugModule);
             this.lessonId.set(lessonId);
             this.slug.set(slug ?? '');
 
@@ -247,14 +247,14 @@ export class Challenge implements OnInit, OnDestroy {
 
         const result = this.evaluationResult();
         const slug = this.slug();
-        const slugSubmodule = this.slugSubmodule();
+        const slugModule = this.slugModule();
 
-        if (result?.moduleCompleted) {
-            this.router.navigate(['/app/s', slug, 'finished']);
-        } else if (result?.subModuleCompleted) {
-            this.router.navigate(['/app/s', slug]);
+        if (result?.courseCompleted) {
+            this.router.navigate(['/app/c', slug, 'finished']);
+        } else if (result?.moduleCompleted) {
+            this.router.navigate(['/app/c', slug]);
         } else {
-            this.router.navigate(['/app/s', slug, 'ss', slugSubmodule]);
+            this.router.navigate(['/app/c', slug, 'm', slugModule]);
         }
     }
 }

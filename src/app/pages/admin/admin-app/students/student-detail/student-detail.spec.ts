@@ -3,8 +3,8 @@ import { ActivatedRoute, convertToParamMap, provideRouter } from '@angular/route
 import { BehaviorSubject } from 'rxjs';
 import { AdminStudentDetail } from './student-detail';
 import { AdminStudentService } from '../../../../../services/admin-student';
-import { ModuleService } from '../../../../../services/module';
-import { UserModuleService } from '../../../../../services/user-module';
+import { CourseService } from '../../../../../services/course';
+import { UserCourseService } from '../../../../../services/user-course';
 import { UserLessonService } from '../../../../../services/user-lesson';
 import { UserQuizService } from '../../../../../services/user-quiz';
 import { AchievementsService } from '../../../../../services/achievements';
@@ -16,8 +16,8 @@ describe('AdminStudentDetail', () => {
     let component: any;
     let params$: BehaviorSubject<ReturnType<typeof convertToParamMap>>;
     let students: jasmine.SpyObj<AdminStudentService>;
-    let modules: jasmine.SpyObj<ModuleService>;
-    let userModules: jasmine.SpyObj<UserModuleService>;
+    let courses: jasmine.SpyObj<CourseService>;
+    let userCourses: jasmine.SpyObj<UserCourseService>;
     let userLessons: jasmine.SpyObj<UserLessonService>;
     let userQuizzes: jasmine.SpyObj<UserQuizService>;
     let achievements: jasmine.SpyObj<AchievementsService>;
@@ -31,7 +31,7 @@ describe('AdminStudentDetail', () => {
 
     const curriculum = () => [{
         id: 'm1', title: 'HTML', avatar: '', icon: 'code',
-        submodules: [{
+        modules: [{
             id: 'sub1', title: 'Tags',
             lessons: [
                 { id: 'l1', title: 'Aula 1', type: 'LESSON' },
@@ -40,7 +40,7 @@ describe('AdminStudentDetail', () => {
                 { id: 'l4', title: 'Revisão', type: 'REVISION' },
             ],
         }, { id: 'sub2', title: 'Vazio', lessons: [] }],
-    }, { id: 'm2', title: 'CSS', avatar: '', icon: 'brush', submodules: [] }];
+    }, { id: 'm2', title: 'CSS', avatar: '', icon: 'brush', modules: [] }];
 
     const text = () => (fixture.nativeElement.textContent as string).replace(/\s+/g, ' ');
     const tab = (label: string) =>
@@ -59,8 +59,8 @@ describe('AdminStudentDetail', () => {
                 provideRouter([]),
                 { provide: ActivatedRoute, useValue: { paramMap: params$ } },
                 { provide: AdminStudentService, useValue: students },
-                { provide: ModuleService, useValue: modules },
-                { provide: UserModuleService, useValue: userModules },
+                { provide: CourseService, useValue: courses },
+                { provide: UserCourseService, useValue: userCourses },
                 { provide: UserLessonService, useValue: userLessons },
                 { provide: UserQuizService, useValue: userQuizzes },
                 { provide: AchievementsService, useValue: achievements },
@@ -76,8 +76,8 @@ describe('AdminStudentDetail', () => {
 
     beforeEach(() => {
         students = jasmine.createSpyObj('AdminStudentService', ['getStudentById']);
-        modules = jasmine.createSpyObj('ModuleService', ['getCurriculum']);
-        userModules = jasmine.createSpyObj('UserModuleService', ['getUserModulesForUser']);
+        courses = jasmine.createSpyObj('CourseService', ['getCurriculum']);
+        userCourses = jasmine.createSpyObj('UserCourseService', ['getUserCoursesForUser']);
         userLessons = jasmine.createSpyObj('UserLessonService', ['getUserLessonsForUser']);
         userQuizzes = jasmine.createSpyObj('UserQuizService', ['getUserQuizzesForUser']);
         achievements = jasmine.createSpyObj('AchievementsService', ['getAchievements', 'getUserAchievementsForUser']);
@@ -85,8 +85,8 @@ describe('AdminStudentDetail', () => {
         seeds = jasmine.createSpyObj('SeedService', ['getSeedsForUser']);
 
         students.getStudentById.and.resolveTo(student() as any);
-        modules.getCurriculum.and.resolveTo(curriculum() as any);
-        userModules.getUserModulesForUser.and.resolveTo([{ module_id: 'm1', completed: false }] as any);
+        courses.getCurriculum.and.resolveTo(curriculum() as any);
+        userCourses.getUserCoursesForUser.and.resolveTo([{ module_id: 'm1', completed: false }] as any);
         userLessons.getUserLessonsForUser.and.resolveTo([
             { lesson_id: 'l1', completed: true, score: 80 },
             { lesson: { id: 'l2' }, completed: false },
@@ -180,37 +180,37 @@ describe('AdminStudentDetail', () => {
         beforeEach(() => setup());
 
         it('loads curriculum and the student progress', () => {
-            expect(modules.getCurriculum).toHaveBeenCalled();
-            expect(userModules.getUserModulesForUser).toHaveBeenCalledWith('s1');
+            expect(courses.getCurriculum).toHaveBeenCalled();
+            expect(userCourses.getUserCoursesForUser).toHaveBeenCalledWith('s1');
             expect(userLessons.getUserLessonsForUser).toHaveBeenCalledWith('s1');
             expect(userQuizzes.getUserQuizzesForUser).toHaveBeenCalledWith('s1');
         });
 
-        it('computes module and submodule percentages counting only lessons, quizzes and challenges', () => {
+        it('computes course and module percentages counting only lessons, quizzes and challenges', () => {
             const [html, css] = component.curriculum();
 
-            expect(html.submodules[0].lessons.map((l: any) => l.id)).toEqual(['l1', 'l2', 'l3']);
-            expect(html.submodules[0].progressPercentage).toBe(33);
+            expect(html.modules[0].lessons.map((l: any) => l.id)).toEqual(['l1', 'l2', 'l3']);
+            expect(html.modules[0].progressPercentage).toBe(33);
             expect(html.progressPercentage).toBe(33);
-            expect(html.submodules[1].progressPercentage).toBe(0);
+            expect(html.modules[1].progressPercentage).toBe(0);
             expect(css.progressPercentage).toBe(0);
         });
 
-        it('marks started and completed modules', () => {
+        it('marks started and completed courses', () => {
             const [html, css] = component.curriculum();
             expect([html.isStarted, html.isCompleted]).toEqual([true, false]);
             expect([css.isStarted, css.isCompleted]).toEqual([false, false]);
         });
 
         it('attaches completion, score and quiz result to each lesson, reading both user lesson shapes', () => {
-            const lessons = component.curriculum()[0].submodules[0].lessons;
+            const lessons = component.curriculum()[0].modules[0].lessons;
 
             expect(lessons[0]).toEqual(jasmine.objectContaining({ isCompleted: true, score: 80, quiz: null }));
             expect(lessons[1]).toEqual(jasmine.objectContaining({ isCompleted: false, score: null }));
             expect(lessons[2].quiz).toEqual({ lessonId: 'l3', score: 90 } as any);
         });
 
-        it('starts collapsed and expands modules and submodules on demand', async () => {
+        it('starts collapsed and expands courses and modules on demand', async () => {
             const [html] = component.curriculum();
             expect(html.expanded).toBeFalse();
 
@@ -221,22 +221,22 @@ describe('AdminStudentDetail', () => {
             expect(text()).toContain('HTML');
             expect(text()).not.toContain('Aula 1');
 
-            component.toggleModule(html);
+            component.toggleCourse(html);
             await settle();
             expect(html.expanded).toBeTrue();
             expect(text()).toContain('Tags');
 
-            component.toggleSubmodule(html.submodules[0]);
+            component.toggleModule(html.modules[0]);
             await settle();
             expect(text()).toContain('Aula 1');
 
-            component.toggleModule(html);
+            component.toggleCourse(html);
             expect(html.expanded).toBeFalse();
         });
 
         it('keeps the page working when progress fails to load', async () => {
             spyOn(console, 'error');
-            modules.getCurriculum.and.rejectWith(new Error('x'));
+            courses.getCurriculum.and.rejectWith(new Error('x'));
             students.getStudentById.and.resolveTo(student() as any);
 
             await component.loadProgress('s1');

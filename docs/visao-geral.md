@@ -11,7 +11,7 @@ A plataforma foi desenhada com uma interface "Luminescent" (neon e dark mode), l
 A plataforma atende a três perfis distintos, cada um com sua própria jornada e permissões:
 
 - **Aluno:** Consome o conteúdo, ganha XP, acumula sementes (*Seeds*), concorre no ranking e faz gestão da sua assinatura (Gratuita ou PRÓ).
-- **Professor:** Cria e estrutura o conteúdo didático (Módulos, Submódulos, Lições, Material Extra e Desafios de Código).
+- **Professor:** Cria e estrutura o conteúdo didático (Cursos, Módulos, Lições, Material Extra e Desafios de Código).
 - **Administrador:** Gerencia a saúde da plataforma, visualiza relatórios, gerencia usuários, acompanha alunos e assinaturas. As telas de cupons e newsletter ainda são placeholders: cupons são criados no banco e a newsletter é enviada via API.
 
 ## 3. Principais Features (Funcionalidades)
@@ -19,16 +19,16 @@ A plataforma atende a três perfis distintos, cada um com sua própria jornada e
 ### 3.1. Motor de Gamificação
 - **Sistema de Pontuação (XP e Seeds):** Alunos ganham experiência (XP) ao completarem lições, o que dita suas posições no ranking. Sempre que ganham XP, ganham também *Seeds* (moeda virtual) equivalentes a 10% desse XP. Os Seeds podem ser gastos (50 por vez) para obter dicas (*Hints*) nos quizzes.
 - **Rankings (Geral, Mensal e Semanal):** Uma tabela de classificação global e temporal para promover a competição amigável.
-- **Conquistas (Medalhas/Badges):** Um sistema de recompensas visuais entregues quando o aluno atinge marcos específicos (ex: completar um módulo ou manter dias seguidos de estudo). O streak (dias seguidos) não é exibido ao aluno, serve apenas para duas conquistas..
+- **Conquistas (Medalhas/Badges):** Um sistema de recompensas visuais entregues quando o aluno atinge marcos específicos (ex: completar um curso ou manter dias seguidos de estudo). O streak (dias seguidos) não é exibido ao aluno, serve apenas para duas conquistas..
 
 ### 3.2. Aprendizagem Ativa e Desafios
-- **Módulos independentes, submódulos sequenciais:** O aluno pode iniciar qualquer módulo sem ter feito outro. Dentro de um módulo, um submódulo só é liberado quando o anterior é finalizado, simulando fases de um jogo.
+- **Cursos independentes, módulos sequenciais:** O aluno pode iniciar qualquer curso sem ter feito outro. Dentro de um curso, um módulo só é liberado quando o anterior é finalizado, simulando fases de um jogo.
 - **Quizzes Dinâmicos:** Testes de múltipla escolha para validar a absorção imediata do conhecimento teórico, com embaralhamento automático e feedback explicativo.
 - **Editor de Código no Navegador:** Uma IDE embutida (*Monaco/VS Code web*) onde o aluno tenta resolver problemas. A submissão recebe feedback de uma Inteligência Artificial, que considera a descrição do problema e o código inicial. A IA não executa testes unitários. Cada envio gasta 1 crédito de IA.
 
 ### 3.3. Painel do Criador (Professor)
-- **Gestão Hierárquica de Conteúdo:** Estruturação em `Módulo > Submódulo > Lição`.
-- **Drag & Drop (Reordenação):** A interface permite arrastar e soltar submódulos e lições para reordená-los facilmente, recalculando automaticamente os vínculos.
+- **Gestão Hierárquica de Conteúdo:** Estruturação em `Curso > Módulo > Lição`.
+- **Drag & Drop (Reordenação):** A interface permite arrastar e soltar módulos e lições para reordená-los facilmente, recalculando automaticamente os vínculos.
 - **Rich Text & Markdown:** Professores podem escrever aulas teóricas ricas e cadastrar materiais de apoio associados a cada aula.
 
 ### 3.4. Monetização e Gestão (Admin / Aluno)

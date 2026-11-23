@@ -9,10 +9,10 @@ import { SupabaseService } from './supabase';
 export class LessonService {
     private supabase: SupabaseClient = inject(SupabaseService).client;
 
-    async getLessonsBySubModuleSlug(slug: string): Promise<Lesson[]> {
+    async getLessonsByModuleSlug(slug: string): Promise<Lesson[]> {
         const { data, error } = await this.supabase
             .from('lessons')
-            .select('*, subModule:submodules!inner(*)')
+            .select('*, module:submodules!inner(*)')
             .eq('submodules.slug', slug)
             .order('order', { ascending: true });
 
@@ -23,11 +23,11 @@ export class LessonService {
         return (data ?? []) as unknown as Lesson[];
     }
 
-    async getLessonsByModuleSlug(slug: string): Promise<any[]> {
+    async getLessonsByCourseSlug(slug: string): Promise<any[]> {
         const { data, error } = await this.supabase
             .from('lessons')
-            .select('id, order, sub_module_id, subModule:submodules!inner(id, module:modules!inner(slug))')
-            .eq('submodules.modules.slug', slug)
+            .select('id, order, sub_module_id, module:submodules!inner(id, course:modules!inner(slug))')
+            .eq('modules.modules.slug', slug)
             .order('order', { ascending: true });
 
         if (error) {
@@ -37,17 +37,17 @@ export class LessonService {
         return (data ?? []).map((d: any) => ({
             id: d.id,
             order: d.order,
-            subModuleId: d.sub_module_id,
-            subModule: d.subModule ? {
-                id: d.subModule.id
+            moduleId: d.sub_module_id,
+            module: d.module ? {
+                id: d.module.id
             } : undefined
         }));
     }
 
-    async getLessonsLightweight(): Promise<{ id: string; subModuleId: string; moduleId: string }[]> {
+    async getLessonsLightweight(): Promise<{ id: string; moduleId: string; courseId: string }[]> {
         const { data, error } = await this.supabase
             .from('lessons')
-            .select('id, sub_module_id, subModule:submodules!inner(module_id)');
+            .select('id, sub_module_id, module:submodules!inner(module_id)');
 
         if (error) {
             throw new Error(error.message);
@@ -55,16 +55,16 @@ export class LessonService {
 
         return (data ?? []).map((item: any) => ({
             id: item.id,
-            subModuleId: item.sub_module_id,
-            moduleId: item.subModule?.module_id
+            moduleId: item.sub_module_id,
+            courseId: item.module?.module_id
         }));
     }
 
-    async getLessonsBySubModuleId(subModuleId: string): Promise<Lesson[]> {
+    async getLessonsByModuleId(moduleId: string): Promise<Lesson[]> {
         const { data, error } = await this.supabase
             .from('lessons')
             .select('*')
-            .eq('sub_module_id', subModuleId)
+            .eq('sub_module_id', moduleId)
             .order('order', { ascending: true });
 
         if (error) {
@@ -77,7 +77,7 @@ export class LessonService {
             description: d.description,
             type: d.type,
             order: d.order,
-            subModuleId: d.sub_module_id,
+            moduleId: d.sub_module_id,
             xp: d.xp,
             language: d.language,
             initialCode: d.initial_code,
@@ -116,7 +116,7 @@ export class LessonService {
     async getAllLessons(): Promise<Lesson[]> {
         const { data, error } = await this.supabase
             .from('lessons')
-            .select('*, subModule:submodules(*, module:modules(*))');
+            .select('*, module:submodules(*, course:modules(*))');
 
         if (error) {
             throw new Error(error.message);
@@ -144,7 +144,7 @@ export class LessonService {
             description: data.description,
             type: data.type,
             order: data.order,
-            subModuleId: data.sub_module_id,
+            moduleId: data.sub_module_id,
             xp: data.xp,
             language: data.language,
             initialCode: data.initial_code,
@@ -160,7 +160,7 @@ export class LessonService {
                 description: lesson.description,
                 type: lesson.type,
                 order: lesson.order,
-                sub_module_id: lesson.subModuleId,
+                sub_module_id: lesson.moduleId,
                 xp: lesson.xp,
                 created_by: lesson.createdBy,
                 ...(lesson.isValidated !== undefined ? { is_validated: lesson.isValidated } : {})
@@ -178,7 +178,7 @@ export class LessonService {
             description: data.description,
             type: data.type,
             order: data.order,
-            subModuleId: data.sub_module_id,
+            moduleId: data.sub_module_id,
             xp: data.xp,
             language: data.language,
             initialCode: data.initial_code,
@@ -192,7 +192,7 @@ export class LessonService {
         if (lesson.description !== undefined) payload.description = lesson.description;
         if (lesson.type !== undefined) payload.type = lesson.type;
         if (lesson.order !== undefined) payload.order = lesson.order;
-        if (lesson.subModuleId !== undefined) payload.sub_module_id = lesson.subModuleId;
+        if (lesson.moduleId !== undefined) payload.sub_module_id = lesson.moduleId;
         if (lesson.xp !== undefined) payload.xp = lesson.xp;
         if (lesson.language !== undefined) payload.language = lesson.language;
         if (lesson.initialCode !== undefined) payload.initial_code = lesson.initialCode;
@@ -214,7 +214,7 @@ export class LessonService {
             description: data.description,
             type: data.type,
             order: data.order,
-            subModuleId: data.sub_module_id,
+            moduleId: data.sub_module_id,
             xp: data.xp,
             language: data.language,
             initialCode: data.initial_code,
@@ -222,11 +222,11 @@ export class LessonService {
         } as Lesson;
     }
 
-    async getLessonCountBySubModuleId(subModuleId: string): Promise<number> {
+    async getLessonCountByModuleId(moduleId: string): Promise<number> {
         const { count, error } = await this.supabase
             .from('lessons')
             .select('*', { count: 'exact', head: true })
-            .eq('sub_module_id', subModuleId);
+            .eq('sub_module_id', moduleId);
 
         if (error) {
             throw new Error(error.message);

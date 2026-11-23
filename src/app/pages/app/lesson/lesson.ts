@@ -41,7 +41,7 @@ export class Lesson implements OnInit {
     }
 
     lessonId = signal<string>('');
-    slugSubmodule = signal<string>('');
+    slugModule = signal<string>('');
     slug = signal<string>('');
     lessons = signal<LessonModel[]>([]);
     userLessons = signal<UserLesson[]>([]);
@@ -82,16 +82,16 @@ export class Lesson implements OnInit {
         try {
             this.isLoading.set(true);
             const params = this.route.snapshot.paramMap;
-            const slugSubmodule = params.get('slugSubmodule');
+            const slugModule = params.get('slugModule');
             const lessonId = params.get('lessonId');
             const slug = params.get('slug');
 
-            if (!slugSubmodule || !lessonId) {
+            if (!slugModule || !lessonId) {
                 this.error.set('Aula não encontrada.');
                 return;
             }
 
-            this.slugSubmodule.set(slugSubmodule);
+            this.slugModule.set(slugModule);
             this.lessonId.set(lessonId);
             this.slug.set(slug ?? '');
 
@@ -100,7 +100,7 @@ export class Lesson implements OnInit {
                 return;
             }
             const [lessons, userLessons, sectionContents, extraMaterials] = await Promise.all([
-                this.lessonService.getLessonsBySubModuleSlug(slugSubmodule),
+                this.lessonService.getLessonsByModuleSlug(slugModule),
                 this.userLessonService.getUserLessons(),
                 this.sectionContentService.getSectionContentsByLessonId(lessonId),
                 this.extraMaterialService.getExtraMaterialsByLessonId(lessonId),

@@ -17,7 +17,7 @@ describe('TabCode', () => {
                 description: 'Challenge description text...',
                 type: LessonType.CHALLENGE,
                 order: 1,
-                subModuleId: 'sm1',
+                moduleId: 'sm1',
                 xp: 100,
                 language: 'TypeScript',
                 initialCode: 'console.log("hello");'

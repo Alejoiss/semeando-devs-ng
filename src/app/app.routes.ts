@@ -9,8 +9,8 @@ import {
     publicCurriculumResolver,
     publicLessonAdsResolver,
     publicLessonResolver,
-    publicModuleResolver,
-    showcaseModulesResolver,
+    publicCourseResolver,
+    showcaseCoursesResolver,
 } from './services/public-catalog/public-catalog.resolvers';
 
 export const routes: Routes = [
@@ -19,7 +19,7 @@ export const routes: Routes = [
         pathMatch: 'full',
         loadComponent: () => import('./pages/landing-page/landing-page').then((m) => m.LandingPage),
         title: 'Semeando Devs - Home',
-        resolve: { modules: showcaseModulesResolver }
+        resolve: { courses: showcaseCoursesResolver }
     },
     {
         path: 'home',
@@ -63,12 +63,12 @@ export const routes: Routes = [
         resolve: { curriculum: publicCurriculumResolver }
     },
     {
-        path: 'cursos/:moduleSlug',
-        loadComponent: () => import('./pages/public-content/public-module/public-module').then((m) => m.PublicModule),
-        resolve: { module: publicModuleResolver }
+        path: 'cursos/:courseSlug',
+        loadComponent: () => import('./pages/public-content/public-course/public-course').then((m) => m.PublicCourse),
+        resolve: { course: publicCourseResolver }
     },
     {
-        path: 'cursos/:moduleSlug/:submoduleSlug/:lessonSlug',
+        path: 'cursos/:courseSlug/:moduleSlug/:lessonSlug',
         loadComponent: () => import('./pages/public-content/public-lesson/public-lesson').then((m) => m.PublicLesson),
         // showAds resolvido por aula: a AdsenseService exibe anúncios só quando ele é true (aulas gratuitas)
         resolve: { lesson: publicLessonResolver, showAds: publicLessonAdsResolver }
@@ -81,45 +81,69 @@ export const routes: Routes = [
         children: [
             {
                 path: '',
-                loadComponent: () => import('./pages/app/modules/modules').then((m) => m.Modules),
-                title: 'Semeando Devs - Módulos',
+                loadComponent: () => import('./pages/app/courses/courses').then((m) => m.Courses),
+                title: 'Semeando Devs - Cursos',
                 data: SHOW_ADS_ROUTE_DATA
             },
             {
-                path: 's/:slug',
-                loadComponent: () => import('./pages/app/submodule/submodule').then((m) => m.Submodule),
-                title: 'Semeando Devs - Submódulo',
+                path: 'c/:slug',
+                loadComponent: () => import('./pages/app/module/module').then((m) => m.ModulePage),
+                title: 'Semeando Devs - Módulo',
                 data: SHOW_ADS_ROUTE_DATA
             },
             {
-                path: 's/:slug/ss/:slugSubmodule',
-                loadComponent: () => import('./pages/app/submodule-detail/submodule-detail').then((m) => m.SubmoduleDetail),
-                title: 'Semeando Devs - Submódulo Detalhe',
+                path: 'c/:slug/m/:slugModule',
+                loadComponent: () => import('./pages/app/module-detail/module-detail').then((m) => m.ModuleDetail),
+                title: 'Semeando Devs - Módulo Detalhe',
                 data: SHOW_ADS_ROUTE_DATA
             },
             {
-                path: 's/:slug/ss/:slugSubmodule/lesson/:lessonId',
+                path: 'c/:slug/m/:slugModule/lesson/:lessonId',
                 canActivate: [dailyLimitGuard],
                 loadComponent: () => import('./pages/app/lesson/lesson').then((m) => m.Lesson),
                 title: 'Semeando Devs - Aula',
                 data: SHOW_ADS_ROUTE_DATA
             },
             {
-                path: 's/:slug/ss/:slugSubmodule/lesson/:lessonId/quiz',
+                path: 'c/:slug/m/:slugModule/lesson/:lessonId/quiz',
                 canActivate: [dailyLimitGuard],
                 loadComponent: () => import('./pages/app/quiz/quiz').then((m) => m.Quiz),
                 title: 'Semeando Devs - Quiz'
             },
             {
-                path: 's/:slug/ss/:slugSubmodule/lesson/:lessonId/challenge',
+                path: 'c/:slug/m/:slugModule/lesson/:lessonId/challenge',
                 canActivate: [dailyLimitGuard, monacoGuard],
                 loadComponent: () => import('./pages/app/lesson/challenge/challenge').then((m) => m.Challenge),
                 title: 'Semeando Devs - Desafio'
             },
             {
+                path: 'c/:slug/finished',
+                loadComponent: () => import('./pages/app/course-finished/course-finished/course-finished').then((m) => m.CourseFinished),
+                title: 'Semeando Devs - Conclusão de Curso'
+            },
+            {
+                path: 's/:slug/ss/:slugModule/lesson/:lessonId/quiz',
+                redirectTo: 'c/:slug/m/:slugModule/lesson/:lessonId/quiz'
+            },
+            {
+                path: 's/:slug/ss/:slugModule/lesson/:lessonId/challenge',
+                redirectTo: 'c/:slug/m/:slugModule/lesson/:lessonId/challenge'
+            },
+            {
+                path: 's/:slug/ss/:slugModule/lesson/:lessonId',
+                redirectTo: 'c/:slug/m/:slugModule/lesson/:lessonId'
+            },
+            {
+                path: 's/:slug/ss/:slugModule',
+                redirectTo: 'c/:slug/m/:slugModule'
+            },
+            {
                 path: 's/:slug/finished',
-                loadComponent: () => import('./pages/app/module-finished/module-finished/module-finished').then((m) => m.ModuleFinished),
-                title: 'Semeando Devs - Conclusão de Módulo'
+                redirectTo: 'c/:slug/finished'
+            },
+            {
+                path: 's/:slug',
+                redirectTo: 'c/:slug'
             },
             {
                 path: 'ranking',
@@ -167,15 +191,25 @@ export const routes: Routes = [
             {
                 path: '',
                 pathMatch: 'full',
-                redirectTo: 'meus-modulos'
+                redirectTo: 'meus-cursos'
             },
             {
-                path: 'meus-modulos',
-                loadComponent: () => import('./pages/professor/professor-app/my-modules/my-modules').then(m => m.MyModules),
-                title: 'Meus Módulos - Semeando Devs'
+                path: 'meus-cursos',
+                loadComponent: () => import('./pages/professor/professor-app/my-courses/my-courses').then(m => m.MyCourses),
+                title: 'Meus Cursos - Semeando Devs'
             },
             {
-                path: 'criar-modulo',
+                path: 'criar-curso',
+                loadComponent: () => import('./pages/professor/professor-app/create-course/create-course').then(m => m.CreateCourse),
+                title: 'Criar Curso - Semeando Devs'
+            },
+            {
+                path: 'editar-curso/:id',
+                loadComponent: () => import('./pages/professor/professor-app/create-course/create-course').then(m => m.CreateCourse),
+                title: 'Editar Curso - Semeando Devs'
+            },
+            {
+                path: 'criar-modulo/:courseId',
                 loadComponent: () => import('./pages/professor/professor-app/create-module/create-module').then(m => m.CreateModule),
                 title: 'Criar Módulo - Semeando Devs'
             },
@@ -185,17 +219,24 @@ export const routes: Routes = [
                 title: 'Editar Módulo - Semeando Devs'
             },
             {
-                path: 'criar-submodulo/:moduleId',
-                loadComponent: () => import('./pages/professor/professor-app/create-submodule/create-submodule').then(m => m.CreateSubmodule),
-                title: 'Criar Submódulo - Semeando Devs'
+                path: 'meus-modulos',
+                redirectTo: 'meus-cursos'
+            },
+            {
+                path: 'criar-modulo',
+                pathMatch: 'full',
+                redirectTo: 'criar-curso'
+            },
+            {
+                path: 'criar-submodulo/:courseId',
+                redirectTo: 'criar-modulo/:courseId'
             },
             {
                 path: 'editar-submodulo/:id',
-                loadComponent: () => import('./pages/professor/professor-app/create-submodule/create-submodule').then(m => m.CreateSubmodule),
-                title: 'Editar Submódulo - Semeando Devs'
+                redirectTo: 'editar-modulo/:id'
             },
             {
-                path: 'criar-licao/:idSubModule',
+                path: 'criar-licao/:idModule',
                 canActivate: [monacoGuard],
                 loadComponent: () => import('./pages/professor/professor-app/create-lesson/create-lesson').then(m => m.CreateLesson),
                 title: 'Criar Lição - Semeando Devs'

@@ -2,7 +2,7 @@ import { test, expect } from './support/test';
 import { expectNoAxeViolations } from './support/axe';
 import { storageStateFor } from './support/users';
 
-const LESSON = '/app/s/html-essencial/ss/primeiros-passos/lesson/0fb4e367-514b-5e00-889c-e2c1b08d6efd';
+const LESSON = '/app/c/html-essencial/m/primeiros-passos/lesson/0fb4e367-514b-5e00-889c-e2c1b08d6efd';
 
 interface Scan {
     path: string;
@@ -24,8 +24,8 @@ const SCANS: Record<'anonymous' | 'student' | 'admin', Scan[]> = {
     ],
     student: [
         { path: '/app' },
-        { path: '/app/s/html-essencial' },
-        { path: '/app/s/html-essencial/ss/primeiros-passos' },
+        { path: '/app/c/html-essencial' },
+        { path: '/app/c/html-essencial/m/primeiros-passos' },
         { path: LESSON },
         { path: '/app/ranking' },
         { path: '/app/conquistas' },

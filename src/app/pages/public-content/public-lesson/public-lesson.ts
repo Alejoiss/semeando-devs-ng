@@ -52,10 +52,10 @@ export class PublicLesson {
 
     constructor() {
         effect(() => {
-            const { lesson, module } = this.page();
+            const { lesson, course } = this.page();
             this.seo.update({
-                title: `${lesson.title} | ${module.title} - Semeando Devs`,
-                description: lesson.description || `Aula de ${module.title}: ${lesson.title}.`,
+                title: `${lesson.title} | ${course.title} - Semeando Devs`,
+                description: lesson.description || `Aula de ${course.title}: ${lesson.title}.`,
             });
         });
     }

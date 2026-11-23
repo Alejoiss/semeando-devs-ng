@@ -12,7 +12,7 @@ describe('AchievementModalComponent', () => {
 
     const unseenData = {
         achievement_id: 'ach-1',
-        achievement: { id: 'ach-1', name: 'Aprendiz de Tags', requirement: 'Conclua o módulo de HTML', icon: 'tags.png' },
+        achievement: { id: 'ach-1', name: 'Aprendiz de Tags', requirement: 'Conclua o curso de HTML', icon: 'tags.png' },
     };
 
     const buttons = () => Array.from(fixture.nativeElement.querySelectorAll('button')) as HTMLButtonElement[];
@@ -40,7 +40,7 @@ describe('AchievementModalComponent', () => {
         fixture.detectChanges();
 
         expect(text()).toContain('Aprendiz de Tags');
-        expect(text()).toContain('Conclua o módulo de HTML');
+        expect(text()).toContain('Conclua o curso de HTML');
     });
 
     it('marks it as viewed when closing, without navigating', () => {

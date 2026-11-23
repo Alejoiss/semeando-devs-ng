@@ -11,7 +11,7 @@ describe('dailyLimitGuard', () => {
     let router: Router;
     let profileReady: Promise<void>;
 
-    const lessonUrl = '/app/s/html/ss/tags/lesson/l1';
+    const lessonUrl = '/app/c/html/m/tags/lesson/l1';
 
     const run = (url = lessonUrl, params: Record<string, string> = { lessonId: 'l1' }, query: Record<string, string> = {}) =>
         TestBed.runInInjectionContext(() =>

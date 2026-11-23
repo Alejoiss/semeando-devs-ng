@@ -33,7 +33,7 @@ export class TabContent {
         return this.sanitizer.bypassSecurityTrustHtml(html || '');
     }
 
-    subModuleId = input<string | null>(null);
+    moduleId = input<string | null>(null);
     lessonId = input<string | null>(null);
     lessonType = input<LessonType>(LessonType.LESSON);
 
@@ -137,23 +137,23 @@ export class TabContent {
                 setTimeout(() => this.showSuccess.set(false), 3000);
             } else {
                 // Modo Criação
-                const smId = this.subModuleId();
+                const smId = this.moduleId();
                 if (!smId) {
-                    this.errorMessage.set('Submódulo não identificado.');
+                    this.errorMessage.set('Módulo não identificado.');
                     this.isSaving.set(false);
                     return;
                 }
                 const user = this.userService.currentUser();
                 if (!user) throw new Error('Usuário não autenticado.');
 
-                const lessonCount = await this.lessonService.getLessonCountBySubModuleId(smId);
+                const lessonCount = await this.lessonService.getLessonCountByModuleId(smId);
 
                 const newLesson = await this.lessonService.createLesson({
                     title: this.lessonForm.value.title!,
                     description: this.lessonForm.value.description!,
                     type: this.lessonType(),
                     order: lessonCount + 1,
-                    subModuleId: smId,
+                    moduleId: smId,
                     xp: 50,
                     createdBy: user.id,
                 });

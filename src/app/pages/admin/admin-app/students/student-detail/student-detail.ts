@@ -1,8 +1,8 @@
 import { ChangeDetectionStrategy, Component, inject, signal, effect, OnInit, computed } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { AdminStudentService } from '../../../../../services/admin-student';
-import { ModuleService } from '../../../../../services/module';
-import { UserModuleService } from '../../../../../services/user-module';
+import { CourseService } from '../../../../../services/course';
+import { UserCourseService } from '../../../../../services/user-course';
 import { UserLessonService } from '../../../../../services/user-lesson';
 import { AchievementsService } from '../../../../../services/achievements';
 import { XpService } from '../../../../../services/xp';
@@ -25,8 +25,8 @@ import { UserQuiz } from '../../../../../../models/user-quiz/user-quiz';
 export class AdminStudentDetail implements OnInit {
     private readonly route = inject(ActivatedRoute);
     private readonly adminStudentService = inject(AdminStudentService);
-    private readonly moduleService = inject(ModuleService);
-    private readonly userModuleService = inject(UserModuleService);
+    private readonly courseService = inject(CourseService);
+    private readonly userCourseService = inject(UserCourseService);
     private readonly userLessonService = inject(UserLessonService);
     private readonly userQuizService = inject(UserQuizService);
     private readonly achievementsService = inject(AchievementsService);
@@ -42,7 +42,7 @@ export class AdminStudentDetail implements OnInit {
 
     // Progress Tab State
     readonly curriculum = signal<any[]>([]);
-    readonly userModules = signal<any[]>([]);
+    readonly userCourses = signal<any[]>([]);
     readonly userLessons = signal<any[]>([]);
     readonly isProgressLoading = signal(false);
 
@@ -111,22 +111,22 @@ export class AdminStudentDetail implements OnInit {
     async loadProgress(id: string) {
         this.isProgressLoading.set(true);
         try {
-            const [curriculum, userModules, userLessons, userQuizzes] = await Promise.all([
-                this.moduleService.getCurriculum(),
-                this.userModuleService.getUserModulesForUser(id),
+            const [curriculum, userCourses, userLessons, userQuizzes] = await Promise.all([
+                this.courseService.getCurriculum(),
+                this.userCourseService.getUserCoursesForUser(id),
                 this.userLessonService.getUserLessonsForUser(id),
                 this.userQuizService.getUserQuizzesForUser(id)
             ]);
 
             // Process curriculum to include user progress and expanded state
             const processed = curriculum.map((mod: any) => {
-                const userModule = userModules.find((um: any) => um.module_id === mod.id);
+                const userCourse = userCourses.find((um: any) => um.module_id === mod.id);
                 
                 // Calculate percentage
                 let completedCount = 0;
                 let totalCount = 0;
                 
-                const submodules = mod.submodules.map((sub: any) => {
+                const modules = mod.modules.map((sub: any) => {
                     let subCompletedCount = 0;
                     let subTotalCount = 0;
                     
@@ -165,15 +165,15 @@ export class AdminStudentDetail implements OnInit {
                 return {
                     ...mod,
                     expanded: false,
-                    isStarted: !!userModule,
-                    isCompleted: userModule?.completed || false,
+                    isStarted: !!userCourse,
+                    isCompleted: userCourse?.completed || false,
                     progressPercentage,
-                    submodules
+                    modules
                 };
             });
 
             this.curriculum.set(processed);
-            this.userModules.set(userModules);
+            this.userCourses.set(userCourses);
             this.userLessons.set(userLessons);
         } catch (err) {
             console.error('Erro ao carregar progresso:', err);
@@ -182,12 +182,12 @@ export class AdminStudentDetail implements OnInit {
         }
     }
 
-    toggleModule(mod: any) {
+    toggleCourse(mod: any) {
         mod.expanded = !mod.expanded;
         this.curriculum.update(c => [...c]);
     }
 
-    toggleSubmodule(sub: any) {
+    toggleModule(sub: any) {
         sub.expanded = !sub.expanded;
         this.curriculum.update(c => [...c]);
     }

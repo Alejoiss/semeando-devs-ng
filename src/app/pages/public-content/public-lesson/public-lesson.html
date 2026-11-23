@@ -6,11 +6,11 @@
             <ol class="flex flex-wrap items-center gap-2">
                 <li><a routerLink="/cursos" class="hover:text-primary transition-colors">Cursos</a></li>
                 <li aria-hidden="true">/</li>
-                <li><a [routerLink]="['/cursos', page().module.slug]" class="hover:text-primary transition-colors">{{ page().module.title }}</a></li>
+                <li><a [routerLink]="['/cursos', page().course.slug]" class="hover:text-primary transition-colors">{{ page().course.title }}</a></li>
                 <li aria-hidden="true">/</li>
                 <li>
-                    <a [routerLink]="['/cursos', page().module.slug]" [fragment]="page().submodule.slug"
-                       class="hover:text-primary transition-colors">{{ page().submodule.title }}</a>
+                    <a [routerLink]="['/cursos', page().course.slug]" [fragment]="page().module.slug"
+                       class="hover:text-primary transition-colors">{{ page().module.title }}</a>
                 </li>
             </ol>
         </nav>

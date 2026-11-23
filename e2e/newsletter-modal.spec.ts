@@ -34,7 +34,7 @@ test.describe('newsletter modal', () => {
         await expect.poll(() => sql(`select viewed from user_newsletter where newsletter_id = '${id}' and user_id = '${userId}'`)).toBe('t');
 
         await page.reload();
-        await expect(page.getByRole('heading', { name: 'Módulos' }).or(page.getByText('Lições hoje')).first()).toBeVisible();
+        await expect(page.getByRole('heading', { name: 'Cursos' }).or(page.getByText('Lições hoje')).first()).toBeVisible();
         await expect(page.getByText('Olá, novidade do teste E2E!')).toHaveCount(0);
     });
 

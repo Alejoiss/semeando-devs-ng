@@ -150,11 +150,11 @@
                     </section>
 
                     <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                        <section class="bg-[#091328] rounded-3xl p-6 flex flex-col gap-4" aria-labelledby="modules-title">
-                            <h3 id="modules-title" class="font-headline font-bold text-lg text-[#dee5ff]">Lições por linguagem</h3>
+                        <section class="bg-[#091328] rounded-3xl p-6 flex flex-col gap-4" aria-labelledby="courses-title">
+                            <h3 id="courses-title" class="font-headline font-bold text-lg text-[#dee5ff]">Lições por linguagem</h3>
                             <div class="overflow-x-auto rounded-2xl" tabindex="0" role="region" aria-label="Tabela de lições por linguagem">
                                 <table class="w-full text-left font-body text-[#dee5ff] border-separate border-spacing-y-2">
-                                    <caption class="sr-only">Lições concluídas por módulo</caption>
+                                    <caption class="sr-only">Lições concluídas por curso</caption>
                                     <thead>
                                         <tr class="font-label text-sm text-[#dee5ff]/80">
                                             <th scope="col" class="px-4 py-2 font-medium">Linguagem</th>
@@ -162,10 +162,10 @@
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        @for (module of data.byModule; track module.moduleId) {
+                                        @for (course of data.byCourse; track course.courseId) {
                                             <tr class="bg-[#0f1930]">
-                                                <th scope="row" class="px-4 py-3 rounded-l-2xl font-semibold">{{ module.title }}</th>
-                                                <td class="px-4 py-3 rounded-r-2xl text-right">{{ module.lessons }}</td>
+                                                <th scope="row" class="px-4 py-3 rounded-l-2xl font-semibold">{{ course.title }}</th>
+                                                <td class="px-4 py-3 rounded-r-2xl text-right">{{ course.lessons }}</td>
                                             </tr>
                                         }
                                     </tbody>
@@ -189,7 +189,7 @@
                                             <tr class="bg-[#0f1930]">
                                                 <th scope="row" class="px-4 py-3 rounded-l-2xl font-semibold">
                                                     {{ lesson.title }}
-                                                    <span class="block font-label text-xs font-normal text-[#dee5ff]/70">{{ lesson.moduleTitle }}</span>
+                                                    <span class="block font-label text-xs font-normal text-[#dee5ff]/70">{{ lesson.courseTitle }}</span>
                                                 </th>
                                                 <td class="px-4 py-3 rounded-r-2xl text-right">{{ lesson.lessons }}</td>
                                             </tr>

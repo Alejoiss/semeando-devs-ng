@@ -7,14 +7,14 @@ describe('LandingPage', () => {
     let fixture: ComponentFixture<LandingPage>;
     let component: any;
 
-    const modules = [
+    const courses = [
         { id: 'm1', slug: 'html', title: 'HTML', description: 'Estrutura da web', icon: 'code', avatar: null, inRevision: false },
         { id: 'm2', slug: 'react', title: 'React', description: 'Interfaces', icon: null, avatar: 'react.png', inRevision: true },
     ];
 
     const text = () => (fixture.nativeElement.textContent as string).replace(/\s+/g, ' ');
 
-    function setup(data: Record<string, unknown> = { modules }, reducedMotion = true) {
+    function setup(data: Record<string, unknown> = { courses }, reducedMotion = true) {
         spyOn(window, 'matchMedia').and.callFake(
             (query: string) => ({ matches: reducedMotion && query.includes('reduce'), media: query, addEventListener() {}, removeEventListener() {} }) as unknown as MediaQueryList,
         );
@@ -40,19 +40,19 @@ describe('LandingPage', () => {
             expect(links).toContain('/auth/register');
         });
 
-        it('shows the modules from the route data', () => {
+        it('shows the courses from the route data', () => {
             expect(fixture.nativeElement.querySelectorAll('#courses article').length).toBe(2);
             expect(text()).toContain('HTML');
             expect(text()).toContain('Estrutura da web');
         });
 
-        it('links available modules to their public page', () => {
+        it('links available courses to their public page', () => {
             const link = fixture.nativeElement.querySelector('#courses article a') as HTMLAnchorElement;
             expect(link.getAttribute('href')).toBe('/cursos/html');
             expect(link.textContent).toContain('HTML');
         });
 
-        it('shows modules in revision as "Em Breve", without a link', () => {
+        it('shows courses in revision as "Em Breve", without a link', () => {
             const article = fixture.nativeElement.querySelectorAll('#courses article')[1] as HTMLElement;
 
             expect(article.textContent).toContain('Em Breve');
@@ -60,7 +60,7 @@ describe('LandingPage', () => {
             expect(article.querySelector('img')!.getAttribute('src')).toBe('react.png');
         });
 
-        it('shows the icon of a module without avatar, with a default', () => {
+        it('shows the icon of a course without avatar, with a default', () => {
             expect(fixture.nativeElement.querySelector('#courses article .material-symbols-outlined').textContent).toContain('code');
         });
 
@@ -70,7 +70,7 @@ describe('LandingPage', () => {
         });
     });
 
-    it('shows no modules when the route has none', () => {
+    it('shows no courses when the route has none', () => {
         setup({});
         expect(fixture.nativeElement.querySelectorAll('#courses article').length).toBe(0);
     });
@@ -173,7 +173,7 @@ describe('LandingPage', () => {
 
     describe('animations', () => {
         it('are skipped for users who prefer reduced motion', async () => {
-            setup({ modules }, true);
+            setup({ courses }, true);
             await fixture.whenStable();
             await new Promise(r => setTimeout(r, 20));
 

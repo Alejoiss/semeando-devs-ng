@@ -109,10 +109,10 @@
                     ariaLabel="Gráfico de barras mostrando o total de seeds distribuídas por mês" />
             </div>
             <div class="bg-[#0f1930] rounded-2xl p-4">
-                <h3 class="text-sm font-label text-[#dee5ff]/60 mb-3">Lições concluídas (por Módulo)</h3>
+                <h3 class="text-sm font-label text-[#dee5ff]/60 mb-3">Lições concluídas (por Curso)</h3>
                 <app-bar-chart
-                    [options]="service.lessonsPerModuleOption()"
-                    ariaLabel="Gráfico de barras horizontais mostrando o total de lições concluídas por módulo" />
+                    [options]="service.lessonsPerCourseOption()"
+                    ariaLabel="Gráfico de barras horizontais mostrando o total de lições concluídas por curso" />
             </div>
         </div>
     </section>

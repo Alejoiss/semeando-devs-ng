@@ -43,8 +43,8 @@ describe('LessonService', () => {
     });
 
     // Task 4.4 — REQ-4.1: method exists and accepts a slug
-    it('should expose getLessonsBySubModuleSlug as a function', () => {
-        expect(typeof service.getLessonsBySubModuleSlug).toBe('function');
+    it('should expose getLessonsByModuleSlug as a function', () => {
+        expect(typeof service.getLessonsByModuleSlug).toBe('function');
     });
 
     // Task 4.4 — REQ-4.1, REQ-4.2: internal Supabase client is configured
@@ -52,32 +52,32 @@ describe('LessonService', () => {
         expect(service['supabase']).toBeDefined();
     });
 
-    describe('getLessonsByModuleSlug', () => {
-        it('fetches lessons by module slug and maps them correctly', async () => {
+    describe('getLessonsByCourseSlug', () => {
+        it('fetches lessons by course slug and maps them correctly', async () => {
             const mockLessons = [
                 {
                     id: 'l1',
                     order: 1,
                     sub_module_id: 'sm1',
-                    subModule: { id: 'sm1', module: { slug: 'module-slug' } }
+                    module: { id: 'sm1', course: { slug: 'course-slug' } }
                 }
             ];
             spyOn(queryChain, 'then').and.callFake((onfulfilled: any) => {
                 return Promise.resolve({ data: mockLessons, error: null }).then(onfulfilled);
             });
 
-            const result = await service.getLessonsByModuleSlug('module-slug');
+            const result = await service.getLessonsByCourseSlug('course-slug');
             expect(result).toEqual([
                 {
                     id: 'l1',
                     order: 1,
-                    subModuleId: 'sm1',
-                    subModule: { id: 'sm1' }
+                    moduleId: 'sm1',
+                    module: { id: 'sm1' }
                 }
             ]);
             expect(supabaseSpy.from).toHaveBeenCalledWith('lessons');
-            expect(fromSpy.select).toHaveBeenCalledWith('id, order, sub_module_id, subModule:submodules!inner(id, module:modules!inner(slug))');
-            expect(queryChain.eq).toHaveBeenCalledWith('submodules.modules.slug', 'module-slug');
+            expect(fromSpy.select).toHaveBeenCalledWith('id, order, sub_module_id, module:submodules!inner(id, course:modules!inner(slug))');
+            expect(queryChain.eq).toHaveBeenCalledWith('modules.modules.slug', 'course-slug');
             expect(queryChain.order).toHaveBeenCalledWith('order', { ascending: true });
         });
 
@@ -86,17 +86,17 @@ describe('LessonService', () => {
                 return Promise.resolve({ data: null, error: { message: 'Query failed' } }).then(onfulfilled);
             });
 
-            await expectAsync(service.getLessonsByModuleSlug('module-slug')).toBeRejectedWithError('Query failed');
+            await expectAsync(service.getLessonsByCourseSlug('course-slug')).toBeRejectedWithError('Query failed');
         });
     });
 
     describe('getLessonsLightweight', () => {
-        it('fetches lightweight lessons and maps subModule.module_id to moduleId', async () => {
+        it('fetches lightweight lessons and maps module.module_id to courseId', async () => {
             const mockLessons = [
                 {
                     id: 'l1',
                     sub_module_id: 'sm1',
-                    subModule: { module_id: 'm1' }
+                    module: { module_id: 'm1' }
                 }
             ];
             spyOn(queryChain, 'then').and.callFake((onfulfilled: any) => {
@@ -107,12 +107,12 @@ describe('LessonService', () => {
             expect(result).toEqual([
                 {
                     id: 'l1',
-                    subModuleId: 'sm1',
-                    moduleId: 'm1'
+                    moduleId: 'sm1',
+                    courseId: 'm1'
                 }
             ]);
             expect(supabaseSpy.from).toHaveBeenCalledWith('lessons');
-            expect(fromSpy.select).toHaveBeenCalledWith('id, sub_module_id, subModule:submodules!inner(module_id)');
+            expect(fromSpy.select).toHaveBeenCalledWith('id, sub_module_id, module:submodules!inner(module_id)');
         });
 
         it('throws error if query fails', async () => {

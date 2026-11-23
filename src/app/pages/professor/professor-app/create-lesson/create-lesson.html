@@ -3,7 +3,7 @@
     <div class="flex items-center gap-4">
         <button type="button" (click)="goBack()" class="flex items-center gap-2 text-on-surface-variant hover:text-primary transition-colors pl-4">
             <span class="material-symbols-rounded" aria-hidden="true">arrow_back</span>
-            <span class="text-label-lg font-bold">Voltar ao Submódulo</span>
+            <span class="text-label-lg font-bold">Voltar ao Módulo</span>
         </button>
     </div>
 
@@ -75,7 +75,7 @@
         <div class="flex flex-col gap-6 mt-4">
             @switch (activeTab()) {
                 @case ('content') {
-                    <app-tab-content [subModuleId]="subModuleId()" [lessonId]="lessonId()" [lessonType]="lessonType()" />
+                    <app-tab-content [moduleId]="moduleId()" [lessonId]="lessonId()" [lessonType]="lessonType()" />
                 }
                 @case ('extra') {
                     <app-tab-extra-material [lessonId]="lessonId()" />

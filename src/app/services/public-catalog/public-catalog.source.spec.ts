@@ -46,7 +46,7 @@ describe('public catalog source', () => {
             source = TestBed.inject(PUBLIC_CATALOG_SOURCE);
         });
 
-        it('lists the showcase modules', async () => {
+        it('lists the showcase courses', async () => {
             const stub = respondWith({ data: [{ id: 'm1' }] });
 
             expect(await source.showcase()).toEqual([{ id: 'm1' }] as any);
@@ -62,8 +62,8 @@ describe('public catalog source', () => {
             await expectAsync(source.showcase()).toBeRejectedWithError('boom');
         });
 
-        it('lists the curriculum of modules that are not in revision, ordered by submodule and lesson', async () => {
-            const stub = respondWith({ data: [{ id: 'm1', submodules: [] }] });
+        it('lists the curriculum of courses that are not in revision, ordered by module and lesson', async () => {
+            const stub = respondWith({ data: [{ id: 'm1', modules: [] }] });
 
             await source.curriculum();
 

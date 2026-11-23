@@ -26,13 +26,13 @@ export class CreateLesson {
 
     activeTab = signal<LessonTab>('content');
 
-    subModuleId = signal<string | null>(null);
+    moduleId = signal<string | null>(null);
     lessonId = signal<string | null>(null);
     lessonType = signal<LessonType>(LessonType.LESSON);
 
     constructor() {
         this.lessonId.set(this.route.snapshot.paramMap.get('id'));
-        this.subModuleId.set(this.route.snapshot.paramMap.get('idSubModule'));
+        this.moduleId.set(this.route.snapshot.paramMap.get('idModule'));
         
         const typeParam = this.route.snapshot.queryParamMap.get('type');
         if (typeParam === 'CHALLENGE') {
@@ -50,11 +50,11 @@ export class CreateLesson {
                 if (lesson) {
                     this.lessonType.set(lesson.type);
                     if (lesson.type === LessonType.REVISION) {
-                        const subModuleId = lesson.subModuleId || this.subModuleId();
-                        if (subModuleId) {
-                            this.router.navigate(['/professor/editar-submodulo', subModuleId], { replaceUrl: true });
+                        const moduleId = lesson.moduleId || this.moduleId();
+                        if (moduleId) {
+                            this.router.navigate(['/professor/editar-modulo', moduleId], { replaceUrl: true });
                         } else {
-                            this.router.navigate(['/professor/meus-modulos'], { replaceUrl: true });
+                            this.router.navigate(['/professor/meus-cursos'], { replaceUrl: true });
                         }
                     }
                 }
@@ -69,9 +69,9 @@ export class CreateLesson {
     }
 
     goBack() {
-        const sId = this.subModuleId();
+        const sId = this.moduleId();
         if (sId) {
-            this.router.navigate(['/professor/editar-submodulo', sId]);
+            this.router.navigate(['/professor/editar-modulo', sId]);
         } else {
             window.history.back();
         }

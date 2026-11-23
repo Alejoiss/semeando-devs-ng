@@ -7,17 +7,17 @@ Explicar as regras que valem para todos os tipos de lição: o que cada tipo ent
 Alunos logados (Free e PRÓ).
 
 ## 3. Passo a Passo (Jornada do Usuário)
-Cada submódulo lista suas lições em ordem. O aluno percorre uma a uma, e a próxima só libera depois que a anterior é concluída.
+Cada módulo lista suas lições em ordem. O aluno percorre uma a uma, e a próxima só libera depois que a anterior é concluída.
 
 | Tipo | O que o aluno faz | Quando conclui | XP |
 |---|---|---|---|
 | Aula | Lê o conteúdo (e o material extra, se houver) e responde ao quiz de 10 perguntas | Aprovação no quiz (70% ou mais) | 50 |
-| Revisão | Responde a 10 perguntas aleatórias das lições anteriores do mesmo submódulo | Aprovação no quiz (70% ou mais) | 50 |
+| Revisão | Responde a 10 perguntas aleatórias das lições anteriores do mesmo módulo | Aprovação no quiz (70% ou mais) | 50 |
 | Desafio | Escreve código no editor e envia para feedback da IA | Envio avaliado pela IA | 100 |
 
 - Os Seeds ganhos são sempre 10% do XP da lição.
 - Detalhes de cada tipo: [Aula teórica](consumo-aula-teorica.md), [Quiz e Revisão](consumo-quiz.md) e [Desafio de código](consumo-desafio-codigo.md).
-- Ao concluir a última lição do último submódulo, o aluno vai para a [tela de conclusão do módulo](conclusao-modulo.md).
+- Ao concluir a última lição do último módulo, o aluno vai para a [tela de conclusão do curso](conclusao-curso.md).
 
 **Limite diário**
 - Plano Free: até 5 lições concluídas por dia. O dia segue o horário de Brasília.

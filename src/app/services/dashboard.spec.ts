@@ -110,11 +110,11 @@ describe('DashboardService', () => {
         expect(data.length).toBe(12);
     });
 
-    it('displays chart of completed lessons per module', async () => {
-        await service['loadLessonsPerModule']();
+    it('displays chart of completed lessons per course', async () => {
+        await service['loadLessonsPerCourse']();
         // Since mockSupabase returns a generic structure, this will likely hit the empty state in the test 
         // unless we mock it more specifically. We can test that the option is defined.
-        const option = service.lessonsPerModuleOption() as any;
+        const option = service.lessonsPerCourseOption() as any;
         expect(option).toBeTruthy();
     });
 });

@@ -28,7 +28,7 @@ async function stubEvaluation(page: Page, response: { status: number; body: obje
 }
 
 async function openChallenge(page: Page) {
-    await page.goto('/app/s/html-essencial/ss/primeiros-passos');
+    await page.goto('/app/c/html-essencial/m/primeiros-passos');
     await page.getByRole('article').filter({ hasText: 'Desafio: sua primeira página' }).getByRole('button', { name: /Iniciar/ }).click();
     await expect(page).toHaveURL(new RegExp(`/lesson/${CHALLENGE_ID}/challenge$`));
     await expect(page.locator('app-challenge header').getByRole('heading', { level: 1, name: 'Desafio: sua primeira página' })).toBeVisible();
@@ -47,7 +47,7 @@ test.describe('code challenge (AI evaluation stubbed)', () => {
 
     test.beforeEach(() => unlockChallenge());
 
-    test('submitting code shows the AI feedback and XP, then continues to the submodule', async ({ page }) => {
+    test('submitting code shows the AI feedback and XP, then continues to the module', async ({ page }) => {
         const requests = await stubEvaluation(page, {
             status: 200,
             body: { aiFeedback: 'Ótimo trabalho, a estrutura está correta.', xpAwarded: 50, earnedAchievements: [], subModuleCompleted: false, moduleCompleted: false },
@@ -67,7 +67,7 @@ test.describe('code challenge (AI evaluation stubbed)', () => {
 
         await expect(page.getByRole('button', { name: /Enviar Código/ })).toBeEnabled();
         await page.getByRole('button', { name: /Continuar/ }).click();
-        await expect(page).toHaveURL(/\/app\/s\/html-essencial\/ss\/primeiros-passos$/);
+        await expect(page).toHaveURL(/\/app\/c\/html-essencial\/m\/primeiros-passos$/);
     });
 
     test('an evaluation failure shows an error and does not mark the challenge as done', async ({ page }) => {

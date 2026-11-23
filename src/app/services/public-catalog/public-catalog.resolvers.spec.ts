@@ -13,8 +13,8 @@ import {
     publicCurriculumResolver,
     publicLessonAdsResolver,
     publicLessonResolver,
-    publicModuleResolver,
-    showcaseModulesResolver,
+    publicCourseResolver,
+    showcaseCoursesResolver,
 } from './public-catalog.resolvers';
 
 describe('public catalog resolvers', () => {
@@ -27,7 +27,7 @@ describe('public catalog resolvers', () => {
     const inCtx = <T>(fn: () => T): T => TestBed.runInInjectionContext(fn);
 
     function configure(platform: 'browser' | 'server' = 'browser') {
-        catalog = jasmine.createSpyObj('PublicCatalogService', ['getShowcaseModules', 'getCurriculum', 'getModule', 'getLessonPage']);
+        catalog = jasmine.createSpyObj('PublicCatalogService', ['getShowcaseCourses', 'getCurriculum', 'getCourse', 'getLessonPage']);
         assign = jasmine.createSpy('assign');
         TestBed.configureTestingModule({
             providers: [
@@ -46,14 +46,14 @@ describe('public catalog resolvers', () => {
     describe('list resolvers', () => {
         beforeEach(() => configure());
 
-        it('showcaseModulesResolver returns the modules', async () => {
-            catalog.getShowcaseModules.and.resolveTo([{ id: 'm1' }] as any);
-            expect(await inCtx(() => showcaseModulesResolver(route(), state('/')))).toEqual([{ id: 'm1' }] as any);
+        it('showcaseCoursesResolver returns the courses', async () => {
+            catalog.getShowcaseCourses.and.resolveTo([{ id: 'm1' }] as any);
+            expect(await inCtx(() => showcaseCoursesResolver(route(), state('/')))).toEqual([{ id: 'm1' }] as any);
         });
 
-        it('showcaseModulesResolver falls back to an empty list on error', async () => {
-            catalog.getShowcaseModules.and.rejectWith(new Error('down'));
-            expect(await inCtx(() => showcaseModulesResolver(route(), state('/')))).toEqual([]);
+        it('showcaseCoursesResolver falls back to an empty list on error', async () => {
+            catalog.getShowcaseCourses.and.rejectWith(new Error('down'));
+            expect(await inCtx(() => showcaseCoursesResolver(route(), state('/')))).toEqual([]);
         });
 
         it('publicCurriculumResolver returns the curriculum, or an empty list on error', async () => {
@@ -65,23 +65,23 @@ describe('public catalog resolvers', () => {
         });
     });
 
-    describe('publicModuleResolver', () => {
+    describe('publicCourseResolver', () => {
         const url = '/cursos/html';
-        const resolve = () => inCtx(() => publicModuleResolver(route({ moduleSlug: 'html' }), state(url))) as Promise<unknown>;
+        const resolve = () => inCtx(() => publicCourseResolver(route({ courseSlug: 'html' }), state(url))) as Promise<unknown>;
 
         describe('in the browser', () => {
             beforeEach(() => configure('browser'));
 
-            it('loads the module by slug', async () => {
-                const module = { id: 'm1' };
-                catalog.getModule.and.resolveTo(module as any);
+            it('loads the course by slug', async () => {
+                const course = { id: 'm1' };
+                catalog.getCourse.and.resolveTo(course as any);
 
-                expect(await resolve()).toBe(module);
-                expect(catalog.getModule).toHaveBeenCalledWith('html');
+                expect(await resolve()).toBe(course);
+                expect(catalog.getCourse).toHaveBeenCalledWith('html');
             });
 
-            it('redirects to /nao-encontrado without changing the URL when the module does not exist', async () => {
-                catalog.getModule.and.resolveTo(null);
+            it('redirects to /nao-encontrado without changing the URL when the course does not exist', async () => {
+                catalog.getCourse.and.resolveTo(null);
                 const result = await resolve();
                 expect(result instanceof RedirectCommand).toBeTrue();
                 expect((result as RedirectCommand).redirectTo.toString()).toBe('/nao-encontrado');
@@ -90,7 +90,7 @@ describe('public catalog resolvers', () => {
 
             it('clears the reload marker after a successful load', async () => {
                 sessionStorage.setItem('public-catalog-reload', url);
-                catalog.getModule.and.resolveTo({ id: 'm1' } as any);
+                catalog.getCourse.and.resolveTo({ id: 'm1' } as any);
 
                 await resolve();
 
@@ -98,7 +98,7 @@ describe('public catalog resolvers', () => {
             });
 
             it('reloads the page once when the API fails, leaving the navigation pending', async () => {
-                catalog.getModule.and.rejectWith(new Error('down'));
+                catalog.getCourse.and.rejectWith(new Error('down'));
                 let settled = false;
 
                 resolve().then(() => (settled = true));
@@ -111,7 +111,7 @@ describe('public catalog resolvers', () => {
 
             it('does not reload a second time for the same URL and redirects to not found instead', async () => {
                 sessionStorage.setItem('public-catalog-reload', url);
-                catalog.getModule.and.rejectWith(new Error('down'));
+                catalog.getCourse.and.rejectWith(new Error('down'));
 
                 const result = await resolve();
 
@@ -122,7 +122,7 @@ describe('public catalog resolvers', () => {
 
             it('reloads again when the marker belongs to a different URL', async () => {
                 sessionStorage.setItem('public-catalog-reload', '/cursos/outro');
-                catalog.getModule.and.rejectWith(new Error('down'));
+                catalog.getCourse.and.rejectWith(new Error('down'));
 
                 resolve();
                 await new Promise(r => setTimeout(r, 20));
@@ -135,7 +135,7 @@ describe('public catalog resolvers', () => {
             beforeEach(() => configure('server'));
 
             it('propagates the error so the build fails instead of baking in a wrong page', async () => {
-                catalog.getModule.and.rejectWith(new Error('down'));
+                catalog.getCourse.and.rejectWith(new Error('down'));
                 await expectAsync(resolve()).toBeRejectedWithError('down');
                 expect(assign).not.toHaveBeenCalled();
             });
@@ -145,7 +145,7 @@ describe('public catalog resolvers', () => {
     describe('publicLessonResolver', () => {
         beforeEach(() => configure('browser'));
 
-        const params = { moduleSlug: 'html', submoduleSlug: 'tags', lessonSlug: 'o-que-e-html' };
+        const params = { courseSlug: 'html', moduleSlug: 'tags', lessonSlug: 'o-que-e-html' };
 
         it('loads the lesson page from the three slugs', async () => {
             const page = { content: { kind: 'full' } };
@@ -167,7 +167,7 @@ describe('public catalog resolvers', () => {
     describe('publicLessonAdsResolver', () => {
         beforeEach(() => configure('browser'));
 
-        const params = { moduleSlug: 'html', submoduleSlug: 'tags', lessonSlug: 'aula' };
+        const params = { courseSlug: 'html', moduleSlug: 'tags', lessonSlug: 'aula' };
         const resolve = () => inCtx(() => publicLessonAdsResolver(route(params), state('/x'))) as Promise<boolean>;
 
         it('shows ads only for free lessons with full content', async () => {

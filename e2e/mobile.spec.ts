@@ -1,7 +1,7 @@
 import { test, expect } from './support/test';
 import { storageStateFor } from './support/users';
 
-const LESSON = '/app/s/html-essencial/ss/primeiros-passos/lesson/0fb4e367-514b-5e00-889c-e2c1b08d6efd';
+const LESSON = '/app/c/html-essencial/m/primeiros-passos/lesson/0fb4e367-514b-5e00-889c-e2c1b08d6efd';
 
 test.describe('mobile viewport', () => {
     test.use({ storageState: storageStateFor('challenger') });
@@ -19,7 +19,7 @@ test.describe('mobile viewport', () => {
         await expect(page.getByRole('heading', { level: 1, name: 'Ranking da Comunidade' })).toBeVisible();
     });
 
-    for (const path of ['/app', '/app/s/html-essencial', LESSON, '/app/ranking', '/app/conquistas', '/app/upgrade']) {
+    for (const path of ['/app', '/app/c/html-essencial', LESSON, '/app/ranking', '/app/conquistas', '/app/upgrade']) {
         test(`${path} does not scroll horizontally`, async ({ page }) => {
             await page.goto(path);
             await expect(page.getByRole('heading').first()).toBeVisible();

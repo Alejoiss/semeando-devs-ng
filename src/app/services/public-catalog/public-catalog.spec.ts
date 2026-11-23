@@ -40,24 +40,24 @@ describe('PublicCatalogService', () => {
         service = TestBed.inject(PublicCatalogService);
     });
 
-    it('keeps only theory lessons, in order, and drops submodules without them', async () => {
-        const [module] = await service.getCurriculum();
+    it('keeps only theory lessons, in order, and drops modules without them', async () => {
+        const [course] = await service.getCurriculum();
 
-        expect(module.avatar).toBe('css.png');
-        expect(module.submodules.map(sub => sub.slug)).toEqual(['introducao']);
-        expect(module.submodules[0].lessons.map(lesson => lesson.id)).toEqual(['l1', 'l2', 'l3']);
+        expect(course.avatar).toBe('css.png');
+        expect(course.modules.map(sub => sub.slug)).toEqual(['introducao']);
+        expect(course.modules[0].lessons.map(lesson => lesson.id)).toEqual(['l1', 'l2', 'l3']);
     });
 
-    it('generates unique lesson slugs within a submodule', async () => {
-        const [module] = await service.getCurriculum();
+    it('generates unique lesson slugs within a module', async () => {
+        const [course] = await service.getCurriculum();
 
-        expect(module.submodules[0].lessons.map(lesson => lesson.slug)).toEqual(['o-que-e-css', 'sintaxe', 'sintaxe-2']);
+        expect(course.modules[0].lessons.map(lesson => lesson.slug)).toEqual(['o-que-e-css', 'sintaxe', 'sintaxe-2']);
     });
 
-    it('marks only the first theory lesson of each submodule as free', async () => {
-        const [module] = await service.getCurriculum();
+    it('marks only the first theory lesson of each module as free', async () => {
+        const [course] = await service.getCurriculum();
 
-        expect(module.submodules[0].lessons.map(lesson => lesson.isFree)).toEqual([true, false, false]);
+        expect(course.modules[0].lessons.map(lesson => lesson.isFree)).toEqual([true, false, false]);
     });
 
     it('serves the full content of free lessons', async () => {
@@ -85,8 +85,8 @@ describe('PublicCatalogService', () => {
         expect(await service.getLessonPage('css', 'introducao', 'nao-existe')).toBeNull();
     });
 
-    it('returns null for unknown modules', async () => {
-        expect(await service.getModule('nao-existe')).toBeNull();
+    it('returns null for unknown courses', async () => {
+        expect(await service.getCourse('nao-existe')).toBeNull();
     });
 
     it('shares the same request when a lesson page is resolved twice', async () => {
@@ -100,7 +100,7 @@ describe('PublicCatalogService', () => {
     });
 
     it('loads the curriculum only once', async () => {
-        await service.getModule('css');
+        await service.getCourse('css');
         await service.getCurriculum();
 
         expect(source.curriculum).toHaveBeenCalledTimes(1);

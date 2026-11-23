@@ -2,15 +2,15 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideRouter, ActivatedRoute } from '@angular/router';
 
 import { Courses } from './courses';
-import { PublicModule } from '../../services/public-catalog/public-catalog';
+import { PublicCourse } from '../../services/public-catalog/public-catalog';
 
 describe('Courses', () => {
   let component: Courses;
   let fixture: ComponentFixture<Courses>;
 
-  const curriculum: PublicModule[] = [{
+  const curriculum: PublicCourse[] = [{
     id: 'm1', slug: 'css', title: 'CSS', description: 'Estilos', icon: null, avatar: 'css.png',
-    submodules: [{
+    modules: [{
       id: 's1', slug: 'introducao', title: 'Introdução', description: '', icon: null,
       lessons: [{ id: 'l1', slug: 'o-que-e-css', title: 'O que é CSS', description: '', isFree: true }],
     }],
@@ -35,7 +35,7 @@ describe('Courses', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should link each module to its public page and each lesson to its preview when expanded', () => {
+  it('should link each course to its public page and each lesson to its preview when expanded', () => {
     const element: HTMLElement = fixture.nativeElement;
     expect(element.querySelector('a[href="/cursos/css"]')).toBeTruthy();
 

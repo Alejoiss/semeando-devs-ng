@@ -15,7 +15,7 @@ Ao abrir o painel de edição, o professor interage com 4 abas independentes de 
 3. **Aba de Quiz:** Um gerador de múltiplas escolhas. O professor cria os enunciados e define os botões das alternativas, marcando explicitamente qual delas é a verdadeira (gabarito).
 4. **Aba de Código (Exclusiva para `Desafios`):** Um ambiente técnico onde o professor define as instruções de código (o que deve ser resolvido), o *código inicial* que será apresentado ao aluno, e a suíte de testes (validação) que rodará por baixo dos panos para verificar se a solução do aluno está certa.
 
-*(Nota Arquitetural: Lições do tipo REVISION não podem ser abertas neste editor. Como são construídas sistematicamente com base em quizzes anteriores, o sistema redireciona o professor de volta ao painel de submódulo se tentar abri-la à força).*
+*(Nota Arquitetural: Lições do tipo REVISION não podem ser abertas neste editor. Como são construídas sistematicamente com base em quizzes anteriores, o sistema redireciona o professor de volta ao painel de módulo se tentar abri-la à força).*
 
 ## 4. Gatilhos de Marketing e Comunicação
 - N/A.

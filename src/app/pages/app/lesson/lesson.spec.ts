@@ -13,9 +13,9 @@ import { ExtraMaterialService } from '../../../services/extra-material';
 import { of } from 'rxjs';
 
 const MOCK_LESSONS: LessonModel[] = [
-    { id: 'l1', title: 'Intro', description: 'Desc 1', type: LessonType.LESSON, order: 1, subModuleId: 'sm1', xp: 100 },
-    { id: 'l2', title: 'Desafio', description: 'Desc 2', type: LessonType.CHALLENGE, order: 2, subModuleId: 'sm1', xp: 100 },
-    { id: 'l3', title: 'Revisão', description: 'Desc 3', type: LessonType.REVISION, order: 3, subModuleId: 'sm1', xp: 100 },
+    { id: 'l1', title: 'Intro', description: 'Desc 1', type: LessonType.LESSON, order: 1, moduleId: 'sm1', xp: 100 },
+    { id: 'l2', title: 'Desafio', description: 'Desc 2', type: LessonType.CHALLENGE, order: 2, moduleId: 'sm1', xp: 100 },
+    { id: 'l3', title: 'Revisão', description: 'Desc 3', type: LessonType.REVISION, order: 3, moduleId: 'sm1', xp: 100 },
 ];
 
 const MOCK_USER_LESSONS: Partial<UserLesson>[] = [
@@ -39,7 +39,7 @@ describe('Lesson Page', () => {
                 get: (key: string) => {
                     const map: Record<string, string> = {
                         slug: 'html',
-                        slugSubmodule: 'html-basico',
+                        slugModule: 'html-basico',
                         lessonId: 'l2',
                     };
                     return map[key] ?? null;
@@ -50,7 +50,7 @@ describe('Lesson Page', () => {
             get: (key: string) => {
                 const map: Record<string, string> = {
                     slug: 'html',
-                    slugSubmodule: 'html-basico',
+                    slugModule: 'html-basico',
                     lessonId: 'l2',
                 };
                 return map[key] ?? null;
@@ -62,12 +62,12 @@ describe('Lesson Page', () => {
     };
 
     beforeEach(async () => {
-        lessonServiceSpy = jasmine.createSpyObj('LessonService', ['getLessonsBySubModuleSlug']);
+        lessonServiceSpy = jasmine.createSpyObj('LessonService', ['getLessonsByModuleSlug']);
         userLessonServiceSpy = jasmine.createSpyObj('UserLessonService', ['getUserLessons']);
         sectionContentServiceSpy = jasmine.createSpyObj('SectionContentService', ['getSectionContentsByLessonId']);
         extraMaterialServiceSpy = jasmine.createSpyObj('ExtraMaterialService', ['getExtraMaterialsByLessonId']);
 
-        lessonServiceSpy.getLessonsBySubModuleSlug.and.returnValue(Promise.resolve(MOCK_LESSONS));
+        lessonServiceSpy.getLessonsByModuleSlug.and.returnValue(Promise.resolve(MOCK_LESSONS));
         userLessonServiceSpy.getUserLessons.and.returnValue(Promise.resolve(MOCK_USER_LESSONS as UserLesson[]));
         sectionContentServiceSpy.getSectionContentsByLessonId.and.returnValue(Promise.resolve([]));
         extraMaterialServiceSpy.getExtraMaterialsByLessonId.and.returnValue(Promise.resolve([]));
@@ -103,20 +103,20 @@ describe('Lesson Page', () => {
     });
 
     // Task 4.8 — REQ-6.2: reads route params on init
-    it('should read slugSubmodule and lessonId from route on init', async () => {
+    it('should read slugModule and lessonId from route on init', async () => {
         fixture.detectChanges();
         await fixture.whenStable();
 
-        expect(component.slugSubmodule()).toBe('html-basico');
+        expect(component.slugModule()).toBe('html-basico');
         expect(component.lessonId()).toBe('l2');
     });
 
     // Task 4.8 — REQ-6.3: calls services with the correct slug
-    it('should call getLessonsBySubModuleSlug with the slugSubmodule param', async () => {
+    it('should call getLessonsByModuleSlug with the slugModule param', async () => {
         fixture.detectChanges();
         await fixture.whenStable();
 
-        expect(lessonServiceSpy.getLessonsBySubModuleSlug).toHaveBeenCalledWith('html-basico');
+        expect(lessonServiceSpy.getLessonsByModuleSlug).toHaveBeenCalledWith('html-basico');
     });
 
     // Task 4.8 — REQ-6.4: activeLesson matches the lessonId route param
@@ -130,7 +130,7 @@ describe('Lesson Page', () => {
 
     // Task 4.8 — REQ-6.4: error signal when service throws
     it('should set error signal when a service throws', async () => {
-        lessonServiceSpy.getLessonsBySubModuleSlug.and.returnValue(Promise.reject(new Error('Sem conexão')));
+        lessonServiceSpy.getLessonsByModuleSlug.and.returnValue(Promise.reject(new Error('Sem conexão')));
         fixture.detectChanges();
         await fixture.whenStable();
 
@@ -143,7 +143,7 @@ describe('Lesson Page', () => {
         expect(component.isLoading()).toBeTrue();
     });
 
-    // Task 4.9 — REQ-7.1, REQ-7.2: sidebar shows all submodule lessons
+    // Task 4.9 — REQ-7.1, REQ-7.2: sidebar shows all module lessons
     it('should expose all lessons via lessonsWithState for the sidebar', async () => {
         fixture.detectChanges();
         await fixture.whenStable();

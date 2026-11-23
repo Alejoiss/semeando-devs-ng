@@ -1,5 +1,5 @@
-export interface RevenueReportModule {
-    moduleId: string;
+export interface RevenueReportCourse {
+    courseId: string;
     title: string;
     lessons: number;
 }
@@ -13,7 +13,7 @@ export interface RevenueReportTeacher {
 export interface RevenueReportTopLesson {
     lessonId: string;
     title: string;
-    moduleTitle: string;
+    courseTitle: string;
     lessons: number;
 }
 
@@ -24,7 +24,7 @@ export interface RevenueReport {
     activeStudents: number;
     previousTotalLessons: number;
     previousActiveStudents: number;
-    byModule: RevenueReportModule[];
+    byCourse: RevenueReportCourse[];
     byTeacher: RevenueReportTeacher[];
     topLessons: RevenueReportTopLesson[];
 }

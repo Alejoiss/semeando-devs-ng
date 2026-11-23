@@ -58,7 +58,7 @@ describe('AdsenseService', () => {
         userServiceMock.currentUser.set({ id: 'user-123', isPro: false });
         service = TestBed.inject(AdsenseService);
 
-        navigate('/app/s/modulo-1', { showAds: true });
+        navigate('/app/c/curso-1', { showAds: true });
 
         expect(service.shouldShowAds()).toBeTrue();
         expect(adScript()?.getAttribute('src')).toContain('client=ca-pub-1234567890123456');
@@ -68,7 +68,7 @@ describe('AdsenseService', () => {
         userServiceMock.currentUser.set({ id: 'user-123', isPro: true });
         service = TestBed.inject(AdsenseService);
 
-        navigate('/app/s/modulo-1', { showAds: true });
+        navigate('/app/c/curso-1', { showAds: true });
 
         expect(service.shouldShowAds()).toBeFalse();
         expect(adScript()).toBeNull();
@@ -87,7 +87,7 @@ describe('AdsenseService', () => {
         userServiceMock.isProfileResolved.set(false);
         service = TestBed.inject(AdsenseService);
 
-        navigate('/app/s/modulo-1', { showAds: true });
+        navigate('/app/c/curso-1', { showAds: true });
         expect(service.shouldShowAds()).toBeFalse();
         expect(adScript()).toBeNull();
 
@@ -112,7 +112,7 @@ describe('AdsenseService', () => {
         userServiceMock.currentUser.set({ id: 'user-123', isPro: false });
         service = TestBed.inject(AdsenseService);
 
-        navigate('/app/s/modulo-1', { showAds: true });
+        navigate('/app/c/curso-1', { showAds: true });
         expect(service.shouldShowAds()).toBeTrue();
 
         navigate('/app/upgrade', {});
@@ -124,7 +124,7 @@ describe('AdsenseService', () => {
         userServiceMock.currentUser.set({ id: 'user-123', isPro: false });
         service = TestBed.inject(AdsenseService);
 
-        navigate('/app/s/modulo-1', { showAds: true });
+        navigate('/app/c/curso-1', { showAds: true });
 
         expect(service.isEnabled).toBeFalse();
         expect(adScript()).toBeNull();

@@ -42,7 +42,7 @@ describe('AdminDashboard', () => {
             xpOption: signal({}),
             aiUsageOption: signal({}),
             seedOption: signal({}),
-            lessonsPerModuleOption: signal({}),
+            lessonsPerCourseOption: signal({}),
         };
         TestBed.configureTestingModule({ providers: [{ provide: DashboardService, useValue: service }] });
         TestBed.overrideComponent(AdminDashboard, {

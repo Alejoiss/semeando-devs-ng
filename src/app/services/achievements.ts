@@ -33,12 +33,12 @@ export class AchievementsService {
         }
     }
 
-    async getAchievementByModuleId(moduleId: string): Promise<Achievements | null> {
+    async getAchievementByCourseId(courseId: string): Promise<Achievements | null> {
         try {
             const { data, error } = await this.supabase
                 .from('achievements')
                 .select('*')
-                .eq('module_id', moduleId)
+                .eq('module_id', courseId)
                 .single();
 
             if (error) {
@@ -48,7 +48,7 @@ export class AchievementsService {
 
             return new Achievements(data);
         } catch (error) {
-            console.error('Error fetching achievement by module id:', error);
+            console.error('Error fetching achievement by course id:', error);
             return null;
         }
     }

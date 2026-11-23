@@ -6,7 +6,7 @@ import { MarkdownModule } from 'ngx-markdown';
 import { Footer } from '../../components/footer/footer';
 import { Header } from '../../components/header/header';
 import { CommonModule } from '@angular/common';
-import { ShowcaseModule } from '../../services/public-catalog/public-catalog';
+import { ShowcaseCourse } from '../../services/public-catalog/public-catalog';
 import { BrandLoader } from '../../components/brand-loader/brand-loader';
 import { prefersReducedMotion } from '../../utils/motion';
 import type { LandingMotion } from './landing-motion';
@@ -20,7 +20,7 @@ import type { LandingMotion } from './landing-motion';
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class LandingPage {
-    protected readonly modules = signal<ShowcaseModule[]>(inject(ActivatedRoute).snapshot.data['modules'] ?? []);
+    protected readonly courses = signal<ShowcaseCourse[]>(inject(ActivatedRoute).snapshot.data['courses'] ?? []);
     protected readonly activeMethodology = signal<'teoria' | 'revisao' | 'desafio'>('teoria');
     private motion?: LandingMotion;
 
@@ -51,7 +51,7 @@ export class LandingPage {
         },
         {
             question: 'O que já está disponível no plano atual?',
-            answer: 'Você tem acesso completo a todos os módulos básicos, organizados em submódulos, lições, quizzes e desafios práticos.',
+            answer: 'Você tem acesso completo a todos os cursos básicos, organizados em módulos, lições, quizzes e desafios práticos.',
             expanded: false
         },
         {
@@ -61,7 +61,7 @@ export class LandingPage {
         },
         {
             question: 'O que são as lições de desafio e de revisão?',
-            answer: 'Desafio: escreva código e receba avaliação automática de uma IA, que aponta o que está ótimo e o que pode melhorar. Revisão: 10 perguntas aleatórias das lições anteriores do mesmo submódulo, para reforçar o conhecimento e evitar o esquecimento.',
+            answer: 'Desafio: escreva código e receba avaliação automática de uma IA, que aponta o que está ótimo e o que pode melhorar. Revisão: 10 perguntas aleatórias das lições anteriores do mesmo módulo, para reforçar o conhecimento e evitar o esquecimento.',
             expanded: false
         },
         {
@@ -81,12 +81,12 @@ export class LandingPage {
         },
         {
             question: 'Preciso pagar para começar?',
-            answer: 'Não! Cadastre-se gratuitamente para ter acesso a todos os módulos, submódulos e lições da plataforma, limitado à conclusão de até 5 lições por dia. Quando quiser estudar sem limite diário, basta assinar o plano Pró.',
+            answer: 'Não! Cadastre-se gratuitamente para ter acesso a todos os cursos, módulos e lições da plataforma, limitado à conclusão de até 5 lições por dia. Quando quiser estudar sem limite diário, basta assinar o plano Pró.',
             expanded: false
         },
         {
             question: 'Quanto custa a assinatura e o que inclui?',
-            answer: 'R$ 29,90 por mês ou R$ 299,90 por ano. O plano Pró remove o limite diário de lições e amplia as avaliações de código por IA de 5 para 30 por dia. Não há conteúdo exclusivo: todos os módulos estão disponíveis também no plano gratuito. O cancelamento pode ser feito a qualquer momento e o acesso Pró continua até o fim do período já pago.',
+            answer: 'R$ 29,90 por mês ou R$ 299,90 por ano. O plano Pró remove o limite diário de lições e amplia as avaliações de código por IA de 5 para 30 por dia. Não há conteúdo exclusivo: todos os cursos estão disponíveis também no plano gratuito. O cancelamento pode ser feito a qualquer momento e o acesso Pró continua até o fim do período já pago.',
             expanded: false
         },
         {

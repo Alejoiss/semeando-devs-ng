@@ -31,8 +31,8 @@ describe('Professor shell', () => {
             fixture.detectChanges();
         });
 
-        it('links to my modules, create module and back to the student area', () => {
-            expect(hrefs()).toEqual(['/professor/meus-modulos', '/professor/criar-modulo', '/app']);
+        it('links to my courses, create course and back to the student area', () => {
+            expect(hrefs()).toEqual(['/professor/meus-cursos', '/professor/criar-curso', '/app']);
         });
 
         it('logs out, closes the sidebar and goes to the home page', async () => {

@@ -11,7 +11,7 @@ As páginas institucionais são abertas e não exigem autenticação.
 
 **Landing Page (`/`; `/home` redireciona para ela):**
 1. O usuário chega à página principal. O bloco inicial (Hero) destaca o modelo de aprendizado e fornece um Call To Action (CTA) claro: "Começar Minha Jornada", que direciona para a criação de conta ou login.
-2. Ao rolar, ele encontra os Módulos de Aprendizado em formato de vitrine.
+2. Ao rolar, ele encontra os Cursos de Aprendizado em formato de vitrine.
 3. Em seguida, descobre a Metodologia dividida em 3 passos (Teoria, Revisão e Desafios de Código).
 4. É apresentado ao ecossistema de Gamificação (XP, Seeds, Ranking e Conquistas).
 5. Acessa uma área de Perguntas Frequentes (FAQ) retráteis.
@@ -23,7 +23,7 @@ As páginas institucionais são abertas e não exigem autenticação.
 3. Existe um botão de conveniência **"Copiar E-mail"** que envia o endereço de e-mail automaticamente para a área de transferência do usuário, facilitando o envio via seu aplicativo de e-mail favorito.
 
 **Catálogo público (`/cursos`):**
-- Lista módulos, submódulos e lições. A primeira lição de cada submódulo é gratuita e aberta, com conteúdo completo. As demais exibem apenas uma prévia e um convite para criar conta.
+- Lista cursos, módulos e lições. A primeira lição de cada módulo é gratuita e aberta, com conteúdo completo. As demais exibem apenas uma prévia e um convite para criar conta.
 
 **Termos de uso (`/termos-de-uso`):**
 - Conteúdo textual das políticas e regulamentos da Semeando Devs.

@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, Component, signal, inject } from '@angular/cor
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { Header } from '../../components/header/header';
 import { Footer } from '../../components/footer/footer';
-import { PublicModule, publicLessonPath } from '../../services/public-catalog/public-catalog';
+import { PublicCourse, publicLessonPath } from '../../services/public-catalog/public-catalog';
 
 @Component({
     selector: 'app-courses',
@@ -13,17 +13,17 @@ import { PublicModule, publicLessonPath } from '../../services/public-catalog/pu
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class Courses {
-    protected readonly curriculum = signal<PublicModule[]>(inject(ActivatedRoute).snapshot.data['curriculum'] ?? []);
+    protected readonly curriculum = signal<PublicCourse[]>(inject(ActivatedRoute).snapshot.data['curriculum'] ?? []);
+    protected readonly expandedCourses = signal<ReadonlySet<string>>(new Set());
     protected readonly expandedModules = signal<ReadonlySet<string>>(new Set());
-    protected readonly expandedSubmodules = signal<ReadonlySet<string>>(new Set());
     protected readonly lessonPath = publicLessonPath;
+
+    protected toggleCourse(id: string) {
+        this.expandedCourses.update(ids => toggle(ids, id));
+    }
 
     protected toggleModule(id: string) {
         this.expandedModules.update(ids => toggle(ids, id));
-    }
-
-    protected toggleSubmodule(id: string) {
-        this.expandedSubmodules.update(ids => toggle(ids, id));
     }
 }
 

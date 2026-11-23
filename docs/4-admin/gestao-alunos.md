@@ -12,7 +12,7 @@ Administradores da plataforma.
 3. **Pesquisa Inteligente:** O administrador pode utilizar a Barra de Pesquisa. Ao digitar, o sistema aguarda 300ms (*debounce*) e realiza a busca automaticamente por nome ou e-mail (retornando à primeira página de resultados).
 4. **Ordenação:** É possível ordenar a lista clicando nas colunas "Nome" ou "Data de Cadastro" (crescente ou decrescente).
 5. **Paginação:** A lista é paginada por lotes (10 alunos por página por padrão). O admin usa os controles de navegação para ir e voltar.
-6. **Detalhes do Aluno:** Ao clicar sobre a linha de um estudante, o administrador é direcionado para a rota `/admin/lista-de-alunos/:id-aluno` onde vê: se aceitou os termos de uso, se aceitou a newsletter, o progresso em todos os cursos (por módulo, submódulo e lição), as conquistas, o total de XP e o total de Seeds.
+6. **Detalhes do Aluno:** Ao clicar sobre a linha de um estudante, o administrador é direcionado para a rota `/admin/lista-de-alunos/:id-aluno` onde vê: se aceitou os termos de uso, se aceitou a newsletter, o progresso em todos os cursos (por curso, módulo e lição), as conquistas, o total de XP e o total de Seeds.
 
 ## 4. Gatilhos de Marketing e Comunicação
 - Nenhum gatilho direto a partir da listagem. No entanto, é desta listagem que a equipe extrai ou visualiza o status (ativo/inativo) de um lead ou aluno PRO.

@@ -1,7 +1,7 @@
 import { test, expect } from './support/test';
 import { storageStateFor } from './support/users';
 
-const CHALLENGE_URL = '/app/s/html-essencial/ss/primeiros-passos/lesson/0ba1e272-a3c2-536f-93e2-9ef72798eed1/challenge';
+const CHALLENGE_URL = '/app/c/html-essencial/m/primeiros-passos/lesson/0ba1e272-a3c2-536f-93e2-9ef72798eed1/challenge';
 
 test('login renders when the Monaco CDN is unreachable', async ({ page }) => {
     await page.route(url => url.hostname === 'cdn.jsdelivr.net', route => route.abort());

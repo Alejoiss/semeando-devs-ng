@@ -12,44 +12,44 @@
         </div>
 
         <div class="space-y-6">
-            @for (module of curriculum(); track module.id) {
-                <section class="glass-card rounded-2xl overflow-hidden shadow-lg" [attr.aria-labelledby]="'modulo-' + module.slug">
+            @for (course of curriculum(); track course.id) {
+                <section class="glass-card rounded-2xl overflow-hidden shadow-lg" [attr.aria-labelledby]="'curso-' + course.slug">
                     <div class="p-6 bg-surface-container flex items-center justify-between gap-4">
                         <div class="flex items-center gap-4 min-w-0">
-                            @if (module.avatar) {
+                            @if (course.avatar) {
                                 <div class="w-12 h-12 rounded-xl bg-[#fff] p-1 overflow-hidden flex items-center justify-center shrink-0">
-                                    <img [src]="module.avatar" alt="" width="48" height="48" class="w-full h-full object-contain rounded-lg" />
+                                    <img [src]="course.avatar" alt="" width="48" height="48" class="w-full h-full object-contain rounded-lg" />
                                 </div>
                             } @else {
                                 <div class="w-12 h-12 rounded-xl bg-primary/10 text-primary flex items-center justify-center shrink-0">
-                                    <span class="material-symbols-outlined text-2xl" aria-hidden="true">{{ module.icon || 'school' }}</span>
+                                    <span class="material-symbols-outlined text-2xl" aria-hidden="true">{{ course.icon || 'school' }}</span>
                                 </div>
                             }
                             <div class="min-w-0">
-                                <h2 [id]="'modulo-' + module.slug" class="text-xl font-bold">
-                                    <a [routerLink]="['/cursos', module.slug]" class="hover:text-primary transition-colors">{{ module.title }}</a>
+                                <h2 [id]="'curso-' + course.slug" class="text-xl font-bold">
+                                    <a [routerLink]="['/cursos', course.slug]" class="hover:text-primary transition-colors">{{ course.title }}</a>
                                 </h2>
-                                <p class="text-sm text-on-surface-variant mt-1">{{ module.description }}</p>
+                                <p class="text-sm text-on-surface-variant mt-1">{{ course.description }}</p>
                             </div>
                         </div>
-                        <button type="button" (click)="toggleModule(module.id)"
+                        <button type="button" (click)="toggleCourse(course.id)"
                                 class="w-11 h-11 shrink-0 rounded-xl flex items-center justify-center text-on-surface-variant hover:bg-surface-container-high transition-colors"
-                                [attr.aria-expanded]="expandedModules().has(module.id)"
-                                [attr.aria-controls]="'conteudo-' + module.slug"
-                                [attr.aria-label]="'Mostrar capítulos de ' + module.title">
+                                [attr.aria-expanded]="expandedCourses().has(course.id)"
+                                [attr.aria-controls]="'conteudo-' + course.slug"
+                                [attr.aria-label]="'Mostrar capítulos de ' + course.title">
                             <span class="material-symbols-outlined transition-transform" aria-hidden="true"
-                                  [class.rotate-180]="expandedModules().has(module.id)">expand_more</span>
+                                  [class.rotate-180]="expandedCourses().has(course.id)">expand_more</span>
                         </button>
                     </div>
 
-                    @if (expandedModules().has(module.id)) {
-                        <div [id]="'conteudo-' + module.slug" class="p-6 pt-0 bg-surface-container">
+                    @if (expandedCourses().has(course.id)) {
+                        <div [id]="'conteudo-' + course.slug" class="p-6 pt-0 bg-surface-container">
                             <div class="space-y-4 mt-6">
-                                @for (sub of module.submodules; track sub.id) {
+                                @for (sub of course.modules; track sub.id) {
                                     <div class="rounded-xl overflow-hidden bg-surface-container-low">
-                                        <button type="button" (click)="toggleSubmodule(sub.id)"
+                                        <button type="button" (click)="toggleModule(sub.id)"
                                                 class="w-full p-4 hover:bg-surface-container-high transition-colors flex items-center justify-between text-left"
-                                                [attr.aria-expanded]="expandedSubmodules().has(sub.id)">
+                                                [attr.aria-expanded]="expandedModules().has(sub.id)">
                                             <span class="flex items-center gap-3">
                                                 <span class="w-8 h-8 rounded-lg bg-secondary/10 text-secondary flex items-center justify-center">
                                                     <span class="material-symbols-outlined text-sm" aria-hidden="true">{{ sub.icon || 'folder' }}</span>
@@ -57,14 +57,14 @@
                                                 <span class="font-semibold">{{ sub.title }}</span>
                                             </span>
                                             <span class="material-symbols-outlined text-on-surface-variant transition-transform" aria-hidden="true"
-                                                  [class.rotate-180]="expandedSubmodules().has(sub.id)">expand_more</span>
+                                                  [class.rotate-180]="expandedModules().has(sub.id)">expand_more</span>
                                         </button>
 
-                                        @if (expandedSubmodules().has(sub.id)) {
+                                        @if (expandedModules().has(sub.id)) {
                                             <ol class="px-4 pb-4 pt-2 flex flex-col space-y-1">
                                                 @for (lesson of sub.lessons; track lesson.id) {
                                                     <li>
-                                                        <a [routerLink]="lessonPath(module.slug, sub.slug, lesson.slug)"
+                                                        <a [routerLink]="lessonPath(course.slug, sub.slug, lesson.slug)"
                                                            class="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-surface-container-highest transition-colors">
                                                             <span class="material-symbols-outlined text-tertiary text-sm" aria-hidden="true">article</span>
                                                             <span class="text-sm text-on-surface-variant">{{ lesson.title }}</span>

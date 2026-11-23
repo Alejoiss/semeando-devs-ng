@@ -45,7 +45,7 @@
         <section id="courses" class="py-24 px-6 max-w-7xl mx-auto">
             <div data-reveal class="section-title text-center mb-16">
                 <span>Sua Jornada Começa Aqui</span>
-                <h2>Módulos de Aprendizado</h2>
+                <h2>Cursos de Aprendizado</h2>
                 <p class="text-on-surface-variant max-w-2xl mx-auto">
                     Escolha sua porta de entrada para o mundo do desenvolvimento. Nossas trilhas são estruturadas para
                     levar você do zero ao domínio total.
@@ -53,30 +53,30 @@
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                @for(module of modules(); track module.id) {
+                @for(course of courses(); track course.id) {
                 <article data-reveal class="track-card transition"
-                    [class.grayscale-[0.5]]="module.inRevision" [class.hover:grayscale-0]="module.inRevision">
+                    [class.grayscale-[0.5]]="course.inRevision" [class.hover:grayscale-0]="course.inRevision">
 
-                    @if (module.avatar) {
+                    @if (course.avatar) {
                     <div class="card-icon bg-[#fff] p-1 overflow-hidden">
-                        <img [src]="module.avatar" alt="" width="64" height="64" class="w-full h-full object-contain rounded-lg" />
+                        <img [src]="course.avatar" alt="" width="64" height="64" class="w-full h-full object-contain rounded-lg" />
                     </div>
                     } @else {
                     <div class="card-icon bg-primary/10 text-primary">
-                        <span class="material-symbols-outlined text-4xl">{{ module.icon || 'school' }}</span>
+                        <span class="material-symbols-outlined text-4xl">{{ course.icon || 'school' }}</span>
                     </div>
                     }
 
                     <h3>
-                        @if (module.inRevision) {
-                        {{ module.title }}
+                        @if (course.inRevision) {
+                        {{ course.title }}
                         } @else {
-                        <a [routerLink]="['/cursos', module.slug]" class="hover:text-primary transition-colors">{{ module.title }}</a>
+                        <a [routerLink]="['/cursos', course.slug]" class="hover:text-primary transition-colors">{{ course.title }}</a>
                         }
                     </h3>
-                    <p>{{ module.description }}</p>
+                    <p>{{ course.description }}</p>
 
-                    @if(module.inRevision) {
+                    @if(course.inRevision) {
                     <div class="mt-auto">
                         <span
                             class="px-3 py-1 rounded-full bg-surface-container-highest text-[10px] font-bold uppercase tracking-[0.2em]">Em

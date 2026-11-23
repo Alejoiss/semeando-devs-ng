@@ -1,0 +1,185 @@
+@if (isLoading()) {
+    <div class="relative z-10 max-w-6xl mx-auto p-6 md:p-10">
+        <div class="mb-12 animate-pulse">
+            <div class="h-5 w-32 bg-surface-container-high rounded-full mb-6"></div>
+            <div class="h-10 w-3/4 bg-surface-container-high rounded-2xl mb-4"></div>
+            <div class="h-5 w-full max-w-2xl bg-surface-container rounded-full mb-2"></div>
+            <div class="h-5 w-2/3 bg-surface-container rounded-full mb-8"></div>
+            <div class="h-3 w-64 bg-surface-container-high rounded-full"></div>
+        </div>
+        <div class="space-y-10">
+            @for (i of [1, 2, 3]; track i) {
+                <div class="flex items-center gap-6 animate-pulse">
+                    <div class="w-16 h-16 rounded-full bg-surface-container-high flex-shrink-0"></div>
+                    <div class="flex-1 h-28 bg-surface-container-high rounded-2xl"></div>
+                </div>
+            }
+        </div>
+    </div>
+} @else if (error()) {
+    <div class="relative z-10 max-w-6xl mx-auto p-6 md:p-10 flex flex-col items-center justify-center min-h-[40vh] gap-4">
+        <span class="material-symbols-outlined text-5xl text-error">error</span>
+        <p class="text-on-surface-variant text-lg text-center">{{ error() }}</p>
+    </div>
+} @else {
+    <div class="relative z-10 max-w-6xl mx-auto p-6 md:p-10">
+        <div class="mb-12">
+            <div class="flex items-center gap-4 mb-4">
+                <span class="px-3 py-1 bg-primary/10 text-primary rounded-full font-label text-xs uppercase tracking-widest">Trilha</span>
+                <div class="flex items-center gap-2 text-on-surface-variant font-label text-xs">
+                    <span class="material-symbols-outlined text-[14px]">chevron_right</span>
+                    {{ module()?.title ?? slugModule() }}
+                </div>
+            </div>
+            <h1 class="text-4xl md:text-5xl font-extrabold font-headline tracking-tight text-on-surface mb-4">
+                Trilha de Lições: <span class="text-gradient-from-primary">{{ module()?.title }}</span>
+            </h1>
+            <p class="text-on-surface-variant text-lg leading-relaxed max-w-3xl">{{ module()?.description }}</p>
+
+            @if (lessonsWithState().length > 0) {
+                <div class="mt-8 flex items-center gap-4">
+                    <div class="w-full max-w-xs h-3 bg-surface-container rounded-full overflow-hidden">
+                        <div class="h-full bg-gradient-to-r from-primary to-tertiary shadow-[0_0_12px_rgba(63,194,251,0.5)] transition-[width] duration-500"
+                             [style.width.%]="completionPercentage()">
+                        </div>
+                    </div>
+                    <span class="font-label font-bold text-primary">
+                        {{ completedCount() }}/{{ lessonsWithState().length }} Completas
+                    </span>
+                </div>
+            }
+        </div>
+
+        <section class="relative">
+            <div class="space-y-14 relative z-10">
+                @for (item of lessonsWithState(); track item.lesson.id; let isEven = $even; let isFirst = $first; let isLast = $last; let index = $index) {
+                    @let isCompleted = item.progressState === 'completed';
+                    @let isInProgress = item.progressState === 'in-progress';
+                    @let notStarted = item.progressState === 'not-started';
+                    @let isBlocked = item.progressState === 'blocked';
+                    @let isLesson = item.lesson.type === 'LESSON';
+                    @let isChallenge = item.lesson.type === 'CHALLENGE';
+                    @let isRevision = item.lesson.type === 'REVISION';
+                    @let prevCompleted = index > 0 ? (lessonsWithState()[index - 1].progressState === 'completed') : false;
+
+                    <article class="grid grid-cols-[auto_1fr] md:grid-cols-9 items-center gap-4 md:gap-6 relative">
+                        <!-- Line segments -->
+                        @if (!isFirst) {
+                            <div [class]="
+                                'absolute top-0 bottom-1/2 w-[4px] -translate-x-1/2 z-0 ' +
+                                'left-[32px] md:left-1/2 ' +
+                                (prevCompleted ? 'bg-primary shadow-[0_0_8px_rgba(63,194,251,0.4)]' : 'bg-surface-container-highest')
+                            "></div>
+                        }
+                        @if (!isLast) {
+                            <div [class]="
+                                'absolute top-1/2 bottom-0 w-[4px] -translate-x-1/2 z-0 ' +
+                                'left-[32px] md:left-1/2 ' +
+                                (isCompleted ? 'bg-primary shadow-[0_0_8px_rgba(63,194,251,0.4)]' : 'bg-surface-container-highest')
+                            "></div>
+                        }
+
+                        <div [class]="
+                            'w-16 h-16 rounded-full flex items-center justify-center flex-shrink-0 justify-self-center z-10 md:col-start-5 md:col-span-1 ' +
+                            (isCompleted
+                                ? (isChallenge ? 'bg-secondary shadow-[0_0_20px_rgba(254,105,172,0.4)] text-on-secondary' : 'bg-primary shadow-[0_0_20px_rgba(63,194,251,0.4)] text-on-primary')
+                                : isInProgress
+                                    ? 'bg-surface-container border-2 border-primary text-primary shadow-[0_0_15px_rgba(63,194,251,0.2)] animate-pulse'
+                                    : isBlocked
+                                        ? 'bg-surface-container-highest/50 text-on-surface-variant/30'
+                                        : 'bg-surface-container-high text-on-surface-variant')
+                        ">
+                            <span class="material-symbols-outlined text-3xl">
+                                {{ isCompleted ? 'check_circle' : isInProgress ? 'play_circle' : isBlocked ? 'lock' : (isChallenge ? 'terminal' : 'play_circle') }}
+                            </span>
+                        </div>
+
+                        <div [class]="
+                            'glass-card p-6 rounded-2xl transition md:col-span-4 ' +
+                            (isEven ? 'md:col-start-6 border-l-4 ' : 'md:col-start-1 md:row-start-1 border-r-4 ') +
+                            (isCompleted
+                                ? (isChallenge ? 'border-secondary' : 'border-primary')
+                                : isInProgress
+                                    ? 'border-primary/50 bg-surface-container-low'
+                                    : isBlocked
+                                        ? 'bg-surface-container-lowest/30 grayscale border-transparent hover:bg-surface-container-lowest/30 select-none'
+                                        : 'bg-surface-container-lowest/50 hover:bg-surface-container-low border-surface-container-highest') +
+                            (isEven ? '' : ' md:text-right')
+                        ">
+                            <div class="flex justify-between items-start mb-2">
+                                <span [class]="
+                                    'font-label text-xs font-bold uppercase tracking-widest ' +
+                                    (isChallenge ? 'text-secondary' : isRevision ? 'text-tertiary' : isInProgress ? 'text-primary-dim' : isCompleted ? 'text-primary' : 'text-on-surface-variant')
+                                ">
+                                    {{ isLesson ? 'Lição' : isChallenge ? 'Desafio' : 'Revisão' }}
+                                </span>
+                                @if (isCompleted) {
+                                    @let quiz = lessonQuizzesMap().get(item.lesson.id);
+                                    <span class="px-3 py-1 bg-tertiary/10 text-tertiary font-label text-xs rounded-full">
+                                        Concluído{{ quiz ? ' • Nota: ' + quiz.score + '/' + quiz.totalQuestions : '' }}
+                                    </span>
+                                } @else if (isInProgress) {
+                                    <div>
+                                        <span class="px-3 py-1 bg-primary/10 text-primary font-label text-xs rounded-full mr-2">Em Progresso</span>
+                                        @let quiz = lessonQuizzesMap().get(item.lesson.id);
+                                        @if (quiz) {
+                                            <span class="px-3 py-1 bg-error/10 text-error font-label text-xs rounded-full">
+                                                Nota: {{ quiz.score + '/' + quiz.totalQuestions }}
+                                            </span>
+                                        }
+                                    </div>
+                                } @else if (isBlocked) {
+                                    <span class="px-3 py-1 bg-surface-container-highest text-on-surface-variant/80 font-label text-xs rounded-full">Bloqueado</span>
+                                } @else {
+                                    <span class="px-3 py-1 bg-surface-container-highest text-on-surface-variant font-label text-xs rounded-full">Disponível</span>
+                                }
+                            </div>
+                            <h3 class="text-xl font-headline font-bold mb-2">{{ item.lesson.title }}</h3>
+                            <p class="text-on-surface-variant text-sm mb-4">{{ item.lesson.description }}</p>
+
+                            @if (!isBlocked && (isCompleted || isInProgress || notStarted)) {
+                                @if (notStarted) {
+                                    <button (click)="onStartLesson(item.lesson)"
+                                       [class]="'px-6 py-2 bg-gradient-to-r from-primary to-primary-dim text-on-primary-container font-headline font-bold rounded-lg inline-flex items-center gap-2 ' + (isEven ? '' : 'ml-auto justify-end')">
+                                        Iniciar
+                                        <span class="material-symbols-outlined text-sm">arrow_forward</span>
+                                    </button>
+                                } @else {
+                                    <a [routerLink]="isRevision ? ['lesson', item.lesson.id, 'quiz'] : (isChallenge ? ['lesson', item.lesson.id, 'challenge'] : ['lesson', item.lesson.id])"
+                                       [class]="
+                                        isCompleted
+                                            ? 'flex items-center gap-2 font-label text-sm font-bold ' + (isEven ? '' : 'ml-auto justify-end ') + (isChallenge ? 'text-secondary' : 'text-primary')
+                                            : 'px-6 py-2 bg-gradient-to-r from-primary to-primary-dim text-on-primary-container font-headline font-bold rounded-lg inline-flex items-center gap-2 ' + (isEven ? '' : 'ml-auto justify-end')
+                                    ">
+                                        {{ isCompleted ? 'Rever Aula' : 'Continuar' }}
+                                        <span class="material-symbols-outlined text-sm">arrow_forward</span>
+                                    </a>
+                                }
+                            } @else if (isBlocked) {
+                                @if (!isPro() && dailyLimitService.isDailyLimitReached()) {
+                                    <div [class]="'flex flex-col gap-3 ' + (isEven ? '' : 'items-end')">
+                                        <p class="text-xs text-on-surface-variant/70 leading-relaxed">
+                                            Você atingiu o limite máximo de lições diárias no plano gratuito. Faça o upgrade para o plano Pró ou volte amanhã.
+                                        </p>
+                                        <a routerLink="/app/upgrade"
+                                           [class]="'px-5 py-2 bg-gradient-to-r from-secondary to-primary-container text-on-primary-container font-headline font-bold rounded-lg inline-flex items-center gap-2 text-sm ' + (isEven ? '' : 'ml-auto')">
+                                            <span class="material-symbols-outlined text-sm">rocket_launch</span>
+                                            Upgrade para Pró
+                                        </a>
+                                    </div>
+                                } @else {
+                                    <div [class]="'flex items-center gap-2 font-label text-sm font-bold text-on-surface-variant/80 ' + (isEven ? '' : 'ml-auto justify-end')">
+                                        <span class="material-symbols-outlined text-sm">lock</span>
+                                        Conclua a lição anterior
+                                    </div>
+                                }
+                            }
+                        </div>
+                    </article>
+                } @empty {
+                    <p class="text-on-surface-variant text-center py-16">Nenhuma lição encontrada para este módulo.</p>
+                }
+            </div>
+        </section>
+    </div>
+}

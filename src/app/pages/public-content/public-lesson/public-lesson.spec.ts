@@ -17,8 +17,8 @@ describe('PublicLesson page', () => {
     let currentUser: ReturnType<typeof signal<any>>;
 
     const base = (content: PublicLessonPage['content'], over: Partial<PublicLessonPage> = {}): PublicLessonPage => ({
-        module: { slug: 'html', title: 'HTML' },
-        submodule: { slug: 'tags', title: 'Tags' },
+        course: { slug: 'html', title: 'HTML' },
+        module: { slug: 'tags', title: 'Tags' },
         lesson: { id: 'l1', slug: 'o-que-e-html', title: 'O que é HTML', description: 'Primeira aula', isFree: true },
         content,
         previous: null,

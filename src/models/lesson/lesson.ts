@@ -10,7 +10,7 @@ export interface Lesson {
     description: string;
     type: LessonType;
     order: number;
-    subModuleId: string;
+    moduleId: string;
     xp: number;
     language?: string;
     initialCode?: string;

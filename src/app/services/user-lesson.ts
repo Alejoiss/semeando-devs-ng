@@ -44,7 +44,7 @@ export class UserLessonService {
             completed: item.completed,
             lesson: item.lesson ? {
                 id: item.lesson.id,
-                subModuleId: item.lesson.sub_module_id
+                moduleId: item.lesson.sub_module_id
             } : undefined
         }));
     }
@@ -104,7 +104,7 @@ export class UserLessonService {
                 description: data.lesson.description,
                 type: data.lesson.type,
                 order: data.lesson.order,
-                subModuleId: data.lesson.sub_module_id,
+                moduleId: data.lesson.sub_module_id,
                 xp: data.lesson.xp,
                 language: data.lesson.language,
                 initialCode: data.lesson.initial_code,
@@ -128,7 +128,7 @@ export class UserLessonService {
         }
     }
 
-    async evaluateChallenge(lessonId: string, description: string, code: string): Promise<{ aiFeedback: string; xpAwarded: number; earnedAchievements: any[]; subModuleCompleted: boolean; moduleCompleted: boolean }> {
+    async evaluateChallenge(lessonId: string, description: string, code: string): Promise<{ aiFeedback: string; xpAwarded: number; earnedAchievements: any[]; moduleCompleted: boolean; courseCompleted: boolean }> {
         const { data: { session }, error: authError } = await this.supabase.auth.getSession();
         if (authError || !session) throw new Error('User not authenticated');
 
@@ -146,6 +146,11 @@ export class UserLessonService {
             throw new Error(data.error || 'Failed to evaluate challenge');
         }
 
+        // A edge function mantém os nomes antigos: subModuleCompleted = módulo concluído, moduleCompleted = curso concluído.
+        if ('subModuleCompleted' in data) {
+            const { subModuleCompleted, moduleCompleted, ...rest } = data;
+            return { ...rest, moduleCompleted: subModuleCompleted, courseCompleted: moduleCompleted };
+        }
         return data;
     }
 }

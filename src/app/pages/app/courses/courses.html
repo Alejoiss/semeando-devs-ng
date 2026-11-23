@@ -1,0 +1,193 @@
+<div class="max-w-7xl mx-auto px-6 lg:px-12">
+    <!-- Hero Title Section -->
+    <div class="mb-12">
+        <div class="flex items-center gap-2 mb-2">
+            <span class="h-1 w-8 bg-secondary rounded-full"></span>
+            <span class="font-label text-secondary uppercase tracking-[0.3em] text-[10px] font-bold">Trilha Atual</span>
+        </div>
+        <h2 class="text-4xl md:text-5xl font-black font-headline text-on-surface tracking-tight">
+            Trilhas de Aprendizado
+        </h2>
+        <p class="text-on-surface-variant mt-4 max-w-2xl font-body leading-relaxed">
+            Evolua suas habilidades em nossa comunidade digital. Domine as principais tecnologias da web por meio de
+            missões gamificadas e domínio técnico.
+        </p>
+    </div>
+
+    <!-- Bento Grid Layout -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        <!-- Track Cards (Column span 8) -->
+        <div class="lg:col-span-8 flex flex-col gap-6">
+
+            @if (isLoading()) {
+            <!-- Loading Skeleton -->
+            @for (_ of [1, 2, 3]; track $index) {
+            <div class="relative overflow-hidden bg-surface-container rounded-lg p-6 animate-pulse">
+                <div class="flex flex-col md:flex-row md:items-center justify-between gap-6">
+                    <div class="flex gap-5">
+                        <div class="h-16 w-16 shrink-0 rounded-2xl bg-surface-container-highest"></div>
+                        <div class="flex flex-col gap-3 justify-center">
+                            <div class="h-5 w-40 bg-surface-container-highest rounded-lg"></div>
+                            <div class="h-3 w-64 bg-surface-container-highest rounded-lg"></div>
+                            <div class="h-2 w-48 bg-surface-container-highest rounded-full"></div>
+                        </div>
+                    </div>
+                    <div class="h-11 w-32 bg-surface-container-highest rounded-xl shrink-0"></div>
+                </div>
+            </div>
+            }
+            } @else if (error()) {
+            <!-- Error State -->
+            <div class="bg-surface-container rounded-lg p-8 flex flex-col items-center gap-4 text-center">
+                <span class="material-symbols-outlined text-5xl text-error" data-icon="error">error</span>
+                <h3 class="text-lg font-bold font-headline text-on-surface">Erro ao carregar cursos</h3>
+                <p class="text-on-surface-variant text-sm font-body">{{ error() }}</p>
+            </div>
+            } @else {
+            <!-- Dynamic Course Cards -->
+            @for (item of coursesWithState(); track item.course.id) {
+            <div
+                class="group relative overflow-hidden bg-surface-container rounded-lg p-6 transition hover:bg-surface-container-high hover:translate-y-[-4px]">
+                <div class="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
+                    <div class="flex gap-5">
+                        <div
+                            class="h-16 w-16 shrink-0 flex items-center justify-center rounded-2xl bg-[#fff] p-1 overflow-hidden text-primary">
+                            @if ( item.course.icon) {
+                            <span class="material-symbols-outlined text-3xl" [attr.data-icon]="item.course.icon">
+                                {{ item.course.icon }}
+                            </span>
+                            } @else {
+                            <img [src]="item.course.avatar" alt="{{ item.course.title }}"
+                                class="w-full h-full object-contain rounded-xl">
+                            }
+                        </div>
+                        <div>
+                            <h3 class="text-xl font-bold font-headline mb-1">{{ item.course.title }}</h3>
+                            <p class="text-on-surface-variant text-sm mb-4">{{ item.course.description }}</p>
+                            <div class="flex items-center gap-3">
+                                <div class="w-48 h-2 bg-surface-container-highest rounded-full overflow-hidden">
+                                    <div class="h-full bg-gradient-to-r from-primary to-tertiary shadow-[0_0_10px_rgba(63,194,251,0.5)] transition-[width] duration-500"
+                                        [style.width.%]="item.progressPercentage">
+                                    </div>
+                                </div>
+                                <span class="font-label text-xs text-on-surface-variant">
+                                    @if (item.progressState === 'completed') {
+                                    Concluído
+                                    } @else if (item.progressState === 'in-progress') {
+                                    {{ item.progressPercentage }}% concluído
+                                    } @else {
+                                    Não iniciado
+                                    }
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+
+                    @if (item.progressState === 'completed') {
+                    <button [routerLink]="['c', item.course.slug]"
+                        class="flex items-center gap-2 px-8 py-3 bg-gradient-to-r from-primary to-primary-container text-on-primary-container font-headline font-bold rounded-xl glow-primary hover:scale-105 active:scale-95 transition">
+                        <span class="material-symbols-outlined text-sm" data-icon="check_circle">check_circle</span>
+                        Revisar
+                    </button>
+                    } @else if (item.progressState === 'in-progress') {
+                    <button [routerLink]="['c', item.course.slug]"
+                        class="px-8 py-3 bg-gradient-to-r from-secondary to-primary-container text-on-primary-container font-headline font-bold rounded-xl hover:scale-105 active:scale-95 transition">
+                        Continuar
+                    </button>
+                    } @else {
+                    <button (click)="onStartCourse(item.course.id, item.course.slug)"
+                        class="px-8 py-3 bg-gradient-to-r from-primary to-primary-container text-on-primary-container font-headline font-bold rounded-xl glow-primary hover:scale-105 active:scale-95 transition">
+                        Iniciar
+                    </button>
+                    }
+                </div>
+            </div>
+            } @empty {
+            <div class="bg-surface-container rounded-lg p-8 flex flex-col items-center gap-4 text-center">
+                <span class="material-symbols-outlined text-5xl text-on-surface-variant" data-icon="inbox">inbox</span>
+                <p class="text-on-surface-variant text-sm font-body">Nenhum curso disponível no momento.</p>
+            </div>
+            }
+            }
+        </div>
+
+        <!-- Sidebar Content (Column span 4) -->
+        <div class="lg:col-span-4 flex flex-col gap-6">
+            <!-- Weekly Leaderboards Card (Now more prominent) -->
+            <div class="bg-surface-container rounded-lg overflow-hidden flex flex-col">
+                <div class="relative h-48 group overflow-hidden">
+                    <img alt="Ranking Semanal"
+                        class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                        src="https://lh3.googleusercontent.com/aida-public/AB6AXuC_MYh0FsK5RgSMyVBgXVH7lzmczynLkRtsvxnsaQZCNOGJT4XP7KjcwUGNvyJRxlsN_HSmR8V5ZzP-B9CZnnf7ObGN7LsreC7BTHly6IZzuSUxIpFayqEMRh6XLgH8ghVfOy4TDLZUFrm8Kn3QTNOgkg55H138tYZu7QGjH8nxktyxydhYch_oFUWjcblizeuqqtwuA7vTK4HjGpkQ49QwwdqphNo90fqq8PmNLyptS791JK7fwscfkz6Rm4BY6BG5PHUI-nxBApg" />
+                    <div
+                        class="absolute inset-0 bg-gradient-to-t from-surface-container via-surface-container/20 to-transparent">
+                    </div>
+                    <div class="absolute bottom-0 left-0 p-6">
+                        <div
+                            class="inline-flex items-center gap-2 bg-primary/20 backdrop-blur-md px-3 py-1 rounded-full border border-primary/30 mb-2">
+                            <span class="material-symbols-outlined text-xs text-primary"
+                                data-icon="emoji_events">emoji_events</span>
+                            <span class="text-[10px] font-bold text-primary uppercase tracking-widest">
+                                Destaque Semanal
+                            </span>
+                        </div>
+                        <h4 class="text-on-surface font-headline font-bold text-2xl">Rankings Semanais</h4>
+                    </div>
+                </div>
+                <div class="p-6">
+                    <p class="text-on-surface-variant text-sm font-body leading-relaxed mb-6">
+                        Participe da competição saudável com outros desenvolvedores da comunidade e ganhe medalhas
+                        exclusivas em seu perfil.
+                    </p>
+                    <div class="space-y-3 mb-6">
+                        @for (user of podiumUsers(); track user.userId) {
+                        <div
+                            class="flex items-center justify-between p-3 bg-background/40 rounded-xl transition hover:bg-background/60">
+                            <div class="flex items-center gap-3">
+                                <span
+                                    [class]="$index === 0 ? 'text-primary font-bold' : $index === 1 ? 'text-secondary font-bold' : 'text-tertiary font-bold'">
+                                    {{ user.position }}º
+                                </span>
+                                <span class="text-sm text-on-surface flex items-center gap-1">
+                                    {{ user.name }}
+                                    @if (user.is_pro) {
+                                    <span class="material-symbols-outlined text-secondary text-[10px]" data-icon="star"
+                                        style="font-variation-settings: 'FILL' 1;">star</span>
+                                    }
+                                </span>
+                            </div>
+                            <span class="text-xs text-on-surface-variant font-label">{{ user.xp | number:'1.0-0' }}
+                                XP</span>
+                        </div>
+                        }
+
+                        @if (currentUserPosition()) {
+                        <div class="pt-2 border-t border-surface-container-highest/50">
+                            <div
+                                class="flex items-center justify-between p-3 bg-primary/10 rounded-xl border border-primary/20">
+                                <div class="flex items-center gap-3">
+                                    <span class="text-primary font-bold">{{ currentUserPosition() }}º</span>
+                                    <span class="text-sm font-bold text-on-surface flex items-center gap-1">
+                                        Você
+                                        @if (userService.currentUser()?.isPro) {
+                                        <span class="material-symbols-outlined text-secondary text-[10px]"
+                                            data-icon="star" style="font-variation-settings: 'FILL' 1;">star</span>
+                                        }
+                                    </span>
+                                </div>
+                                <span class="text-xs text-primary font-bold font-label">{{ currentUserXp() |
+                                    number:'1.0-0' }} XP</span>
+                            </div>
+                        </div>
+                        }
+                    </div>
+                    <button routerLink="/app/ranking"
+                        class="w-full py-3 bg-surface-container-highest hover:bg-surface-bright text-on-surface font-headline font-bold rounded-xl transition flex items-center justify-center gap-2">
+                        Ver Leaderboard Completo
+                        <span class="material-symbols-outlined text-sm" data-icon="arrow_forward">arrow_forward</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -27,7 +27,7 @@ describe('UserLessonService queries', () => {
         const [first, second] = await service.getUserLessons();
         expect(first.completedAt).toEqual(new Date('2026-01-02T00:00:00Z'));
         expect(first.savedCode).toBe('sc');
-        expect(first.lesson).toEqual(jasmine.objectContaining({ subModuleId: 's', initialCode: 'c', createdBy: 'u' }));
+        expect(first.lesson).toEqual(jasmine.objectContaining({ moduleId: 's', initialCode: 'c', createdBy: 'u' }));
         expect(second.completedAt).toBeNull();
         expect(second.lesson).toBeUndefined();
     });
@@ -47,7 +47,7 @@ describe('UserLessonService queries', () => {
     it('lists the lessons of another user in the light shape', async () => {
         use(me, { data: [{ id: 'a', completed: true, lesson: { id: 'l', sub_module_id: 's' } }, { id: 'b', completed: false, lesson: null }] });
         expect(await service.getUserLessonsForUser('u')).toEqual([
-            { id: 'a', completed: true, lesson: { id: 'l', subModuleId: 's' } },
+            { id: 'a', completed: true, lesson: { id: 'l', moduleId: 's' } },
             { id: 'b', completed: false, lesson: undefined },
         ]);
         use(me, { data: null });
@@ -81,6 +81,12 @@ describe('UserLessonService queries', () => {
         it('requires a session', async () => {
             use(null, {});
             await expectAsync(service.evaluateChallenge('l', 'd', 'c')).toBeRejectedWithError('User not authenticated');
+        });
+
+        it('maps the edge function completion flags to the module/course vocabulary', async () => {
+            use(me, {});
+            spyOn(window, 'fetch').and.resolveTo(new Response(JSON.stringify({ aiFeedback: 'ok', subModuleCompleted: true, moduleCompleted: false }), { status: 200 }));
+            expect(await service.evaluateChallenge('l', 'd', 'c')).toEqual({ aiFeedback: 'ok', moduleCompleted: true, courseCompleted: false } as any);
         });
 
         it('posts to the edge function with the bearer token', async () => {

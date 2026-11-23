@@ -10,7 +10,7 @@ Administradores da plataforma (Equipe Semeando Devs).
 1. O administrador acessa o painel admin (`/admin/dashboard`).
 2. A tela exibe um painel de controle contendo:
    - **Cartões de KPI (Key Performance Indicators):** Métricas consolidadas (Total de Alunos, Alunos PRO, MRR Estimado, Assinaturas Ativas, Novos Alunos e Cancelamentos no período).
-   - **Gráficos Visuais:** Gráficos de linha (evolução temporal), Rosca/Donut (proporções) e Barras (comparações). Cobrem: novos cadastros, PRO vs Gratuito, receita mensal, status e ciclo das assinaturas, XP distribuído, uso de IA, Seeds distribuídas e lições concluídas por módulo.
+   - **Gráficos Visuais:** Gráficos de linha (evolução temporal), Rosca/Donut (proporções) e Barras (comparações). Cobrem: novos cadastros, PRO vs Gratuito, receita mensal, status e ciclo das assinaturas, XP distribuído, uso de IA, Seeds distribuídas e lições concluídas por curso.
 3. O administrador pode utilizar o **Seletor de Período** no topo da tela para alterar a janela de tempo analisada:
    - 7 dias
    - 30 dias

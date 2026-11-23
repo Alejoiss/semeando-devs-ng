@@ -56,11 +56,11 @@ export class SectionContentService {
         }
     }
 
-    async getSectionContentsByModuleId(moduleId: string): Promise<SectionContent[]> {
+    async getSectionContentsByCourseId(courseId: string): Promise<SectionContent[]> {
         const { data, error } = await this.supabase
             .from('section_content')
             .select('id, type, content, file, fileDescription:file_description, order')
-            .eq('module_id', moduleId)
+            .eq('module_id', courseId)
             .order('order', { ascending: true });
 
         if (error) {
@@ -70,11 +70,11 @@ export class SectionContentService {
         return (data ?? []) as unknown as SectionContent[];
     }
 
-    async upsertSectionContentsForModule(moduleId: string, contents: Partial<SectionContent>[]): Promise<void> {
+    async upsertSectionContentsForCourse(courseId: string, contents: Partial<SectionContent>[]): Promise<void> {
         if (!contents.length) return;
         const payload = contents.map(c => ({
             id: c.id,
-            module_id: moduleId,
+            module_id: courseId,
             type: c.type,
             content: c.content,
             file: c.file,

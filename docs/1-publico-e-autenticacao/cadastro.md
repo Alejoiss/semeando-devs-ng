@@ -1,7 +1,7 @@
 # Fluxo de Cadastro
 
 ## 1. Objetivo do Fluxo
-Permitir que novos visitantes criem uma conta gratuita na plataforma, dando o primeiro passo para se tornarem alunos e acessarem os módulos abertos ou comprarem a assinatura PRÓ.
+Permitir que novos visitantes criem uma conta gratuita na plataforma, dando o primeiro passo para se tornarem alunos e acessarem os cursos abertos ou comprarem a assinatura PRÓ.
 
 ## 2. Público-Alvo
 Visitantes (futuros alunos) que ainda não possuem conta na Semeando Devs.

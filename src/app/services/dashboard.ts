@@ -97,7 +97,7 @@ export class DashboardService {
     readonly xpOption = signal<EChartsOption>(emptyOption('Carregando...'));
     readonly aiUsageOption = signal<EChartsOption>(emptyOption('Carregando...'));
     readonly seedOption = signal<EChartsOption>(emptyOption('Carregando...'));
-    readonly lessonsPerModuleOption = signal<EChartsOption>(emptyOption('Carregando...'));
+    readonly lessonsPerCourseOption = signal<EChartsOption>(emptyOption('Carregando...'));
 
     constructor() {
         effect(() => {
@@ -121,7 +121,7 @@ export class DashboardService {
             this.loadXp(),
             this.loadAiUsage(),
             this.loadSeeds(),
-            this.loadLessonsPerModule(),
+            this.loadLessonsPerCourse(),
         ]);
     }
 
@@ -368,14 +368,14 @@ export class DashboardService {
         });
     }
 
-    private async loadLessonsPerModule(): Promise<void> {
+    private async loadLessonsPerCourse(): Promise<void> {
         const { data, error } = await this.supabase
             .from('user_lessons')
             .select(`
                 id,
                 lesson:lesson_id (
-                    sub_module:sub_module_id (
-                        module:module_id (
+                    module:sub_module_id (
+                        course:module_id (
                             title
                         )
                     )
@@ -383,25 +383,25 @@ export class DashboardService {
             `)
             .eq('completed', true);
 
-        if (error) { this.lessonsPerModuleOption.set(emptyOption('Erro ao carregar dados')); return; }
+        if (error) { this.lessonsPerCourseOption.set(emptyOption('Erro ao carregar dados')); return; }
 
         const counts: Record<string, number> = {};
         for (const row of data ?? []) {
-            const moduleTitle = (row.lesson as any)?.sub_module?.module?.title;
-            if (moduleTitle) {
-                counts[moduleTitle] = (counts[moduleTitle] ?? 0) + 1;
+            const courseTitle = (row.lesson as any)?.module?.course?.title;
+            if (courseTitle) {
+                counts[courseTitle] = (counts[courseTitle] ?? 0) + 1;
             }
         }
 
         const keys = Object.keys(counts).sort((a, b) => counts[b] - counts[a]); // Sort descending
         if (keys.length === 0) {
-            this.lessonsPerModuleOption.set(emptyOption('Sem lições concluídas'));
+            this.lessonsPerCourseOption.set(emptyOption('Sem lições concluídas'));
             return;
         }
 
         const values = keys.map(k => counts[k]);
 
-        this.lessonsPerModuleOption.set({
+        this.lessonsPerCourseOption.set({
             ...baseChartDefaults(),
             tooltip: { trigger: 'axis', axisPointer: { type: 'shadow' } },
             xAxis: { type: 'value', axisLabel: { color: DASHBOARD_PALETTE.onSurface }, splitLine: { lineStyle: { color: 'rgba(222,229,255,0.08)' } } },

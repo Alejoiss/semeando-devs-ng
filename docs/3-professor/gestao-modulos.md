@@ -1,35 +1,33 @@
 # Gestão de Módulos
 
 ## 1. Objetivo do Fluxo
-Permitir que o professor crie a estrutura macro de um curso (Módulo), definindo seu título, descrição, identidade visual (capa) e conteúdo inicial de apresentação, além de gerenciar a ordenação de seus submódulos.
+Organizar o conteúdo de um Curso em blocos menores (Módulos), permitindo ao professor estruturar etapas lógicas, definir o escopo de um grupo de aulas e gerenciar a ordenação das lições internas.
 
 ## 2. Público-Alvo
 Professores e Administradores.
 
 ## 3. Passo a Passo (Jornada do Usuário)
-O fluxo ocorre na rota `/professor/criar-modulo` ou `/professor/editar-modulo/:id`.
+O fluxo ocorre na rota `/professor/criar-modulo/:courseId` ou `/professor/editar-modulo/:id`.
 
 **Aba 1: Dados do Módulo**
-1. O professor preenche **Título** e **Descrição**.
-2. Ele escolhe a identidade visual via Ícone ou Upload de Imagem de Capa (até 2MB).
-3. Ao salvar um módulo novo, a estrutura é gerada no banco e a página recarrega para o modo de Edição. Por padrão, novos módulos nascem com status *Em Revisão* (ocultos).
+1. O professor preenche **Título** (min. 3 caracteres) e **Descrição** (min. 10 caracteres).
+2. Escolhe um ícone nativo ou envia uma imagem customizada.
+3. Salva os dados para consolidar a estrutura no banco de dados.
 
-**Aba 2: Apresentação**
-1. O professor pode construir páginas de apresentação usando blocos empilháveis (Textos em Markdown, alertas, imagens).
-2. Pode reordenar esses blocos usando *Drag and Drop*.
-
-**Aba 3: Submódulos**
-1. Lista todos os submódulos que pertencem a este módulo pai.
-2. O professor pode reordená-los facilmente clicando e arrastando (*Drag and Drop*), com a ordem sendo salva automaticamente na nuvem em tempo real.
-3. Permite acesso direto à criação ou edição dos submódulos filhos.
+**Aba 2: Lições**
+1. O painel lista em formato de blocos todas as aulas teóricas, desafios e revisões criadas.
+2. O professor pode usar o botão **Nova Lição** para redigir teoria ou **Novo Desafio** para exercícios focados em código prático.
+3. O professor pode gerar automaticamente uma **Revisão** clicando no botão específico. O sistema criará (*server-side*) uma lição agregadora que compila informações dos conteúdos anteriores.
+4. **Ordenação:** Assim como nos módulos, as lições podem ser reordenadas via *Drag and Drop*.
+5. **Validação:** Cada lição possui um botão de "Validar". O professor realiza uma checagem técnica de que a lição não tem erros grosseiros (falta de texto, quiz sem resposta correta marcada). Somente se todas estiverem validadas, o curso-mãe ganha permissão de ser publicado.
 
 ## 4. Gatilhos de Marketing e Comunicação
-- Nenhum gatilho gerado diretamente nesta etapa de construção.
+- N/A. O trabalho nesta área é apenas de organização de currículo.
 
 ## 5. Dúvidas Frequentes e Suporte
-- **Problema:** "Não consigo enviar a imagem da capa, nada acontece".
-  - **Solução:** Lembrar o professor de que o arquivo deve ter menos de 2MB. O navegador lança um alerta se o arquivo for excessivamente pesado.
+- **Problema:** "Mudei a ordem da lição mas ela voltou pro lugar".
+  - **Solução:** Em caso de microqueda de conexão à internet, a reordenação pelo Supabase falha. O sistema bloqueia a visualização mentirosa e restaura a lista como estava originalmente. O professor deve refazer o arraste.
 
 ## 6. Casos de Erro e Tratamento
-- **Validações:** Título curto (menos de 2 caracteres) ou descrição curta bloqueiam o botão de Salvar.
-- **Falha de Reordenação:** Se a reordenação por *Drag and Drop* falhar por falta de conexão, o sistema avisa: `"Erro ao reordenar submódulos. A ordem anterior foi restaurada."` e volta os itens visualmente ao estado original.
+- Validações de Formulário para campos em branco impedem o salvamento.
+- Falha ao gerar revisão exibe um alerta de interface: `"Erro ao criar lição de revisão."`

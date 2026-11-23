@@ -16,30 +16,30 @@ describe('SectionContentService queries', () => {
         service = TestBed.inject(SectionContentService);
     });
 
-    it('reads contents by lesson and by module', async () => {
+    it('reads contents by lesson and by course', async () => {
         use({ data: [{ id: 'c' }] });
         expect((await service.getSectionContentsByLessonId('l')).length).toBe(1);
-        expect((await service.getSectionContentsByModuleId('m')).length).toBe(1);
+        expect((await service.getSectionContentsByCourseId('m')).length).toBe(1);
         use({ data: null });
         expect(await service.getSectionContentsByLessonId('l')).toEqual([]);
-        expect(await service.getSectionContentsByModuleId('m')).toEqual([]);
+        expect(await service.getSectionContentsByCourseId('m')).toEqual([]);
         use(fails);
         await expectAsync(service.getSectionContentsByLessonId('l')).toBeRejectedWithError('boom');
-        await expectAsync(service.getSectionContentsByModuleId('m')).toBeRejectedWithError('boom');
+        await expectAsync(service.getSectionContentsByCourseId('m')).toBeRejectedWithError('boom');
     });
 
     it('upserts contents with snake_case columns, skipping empty lists', async () => {
         const stub = use({});
         await service.upsertSectionContents('l', []);
-        await service.upsertSectionContentsForModule('m', []);
+        await service.upsertSectionContentsForCourse('m', []);
         expect(stub.client.from).not.toHaveBeenCalled();
         await service.upsertSectionContents('l', content);
         expect(stub.spy(0, 'upsert')).toHaveBeenCalledWith([{ id: 'c', lesson_id: 'l', type: 'MARKDOWN', content: 'x', file: null, file_description: 'd', order: 1 }]);
-        await service.upsertSectionContentsForModule('m', content);
+        await service.upsertSectionContentsForCourse('m', content);
         expect(stub.spy(1, 'upsert').calls.mostRecent().args[0][0].module_id).toBe('m');
         use(fails);
         await expectAsync(service.upsertSectionContents('l', content)).toBeRejectedWithError('boom');
-        await expectAsync(service.upsertSectionContentsForModule('m', content)).toBeRejectedWithError('boom');
+        await expectAsync(service.upsertSectionContentsForCourse('m', content)).toBeRejectedWithError('boom');
     });
 
     it('deletes contents by id, skipping empty lists', async () => {

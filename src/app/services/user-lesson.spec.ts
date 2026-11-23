@@ -73,7 +73,7 @@ describe('UserLessonService', () => {
                 {
                     id: 'ul-1',
                     completed: true,
-                    lesson: { id: 'l-1', subModuleId: 'sm-1' }
+                    lesson: { id: 'l-1', moduleId: 'sm-1' }
                 }
             ]);
             expect(supabaseSpy.from).toHaveBeenCalledWith('user_lessons');

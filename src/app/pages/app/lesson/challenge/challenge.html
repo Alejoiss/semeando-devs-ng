@@ -17,7 +17,7 @@
         <button
             (click)="goBack()"
             class="px-6 py-3 rounded-2xl font-headline font-bold text-sm bg-surface border border-outline-variant/20 text-on-surface hover:bg-surface-bright transition">
-            Voltar para o Submódulo
+            Voltar para o Módulo
         </button>
     </main>
 } @else {
@@ -26,7 +26,7 @@
             <div class="flex-1 text-left">
                 <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-secondary-container/30 border border-secondary/20 mb-4">
                     <span class="w-1.5 h-1.5 rounded-full bg-secondary"></span>
-                    <span class="font-label text-[10px] uppercase tracking-widest text-secondary-fixed">{{ slugSubmodule() }} • Desafio Prático</span>
+                    <span class="font-label text-[10px] uppercase tracking-widest text-secondary-fixed">{{ slugModule() }} • Desafio Prático</span>
                 </div>
                 <h1 class="text-4xl md:text-5xl font-headline font-black text-on-surface tracking-tight mb-4">
                     {{ lesson()?.title }}

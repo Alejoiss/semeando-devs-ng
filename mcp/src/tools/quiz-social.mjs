@@ -44,9 +44,9 @@ async function loadQuestion(db, row) {
     source: {
       lesson_id: lesson.id,
       lesson_title: lesson.title,
-      submodule: lesson.submodules?.title,
-      module: lesson.submodules?.modules?.title,
-      module_slug: lesson.submodules?.modules?.slug,
+      module: lesson.submodules?.title,
+      course: lesson.submodules?.modules?.title,
+      course_slug: lesson.submodules?.modules?.slug,
     },
   };
 }
@@ -63,16 +63,16 @@ export function registerQuizSocialTools(server, ctx) {
       description:
         'Sorteia uma pergunta de quiz (com 4 alternativas, a correta e a justificativa de cada) que ainda NÃO foi publicada nas redes sociais, de aulas validadas. Não marca como publicada: chame mark_question_published só depois que o post der certo.',
       inputSchema: {
-        module: z
+        course: z
           .string()
           .optional()
-          .describe('Módulo por nome ou slug, sem diferenciar maiúsculas/acentos (ex.: "python", "html"). Omitido = todos'),
-        submodule: z.string().optional().describe('Filtra por parte do título do submódulo (ex.: "operadores")'),
+          .describe('Curso por nome ou slug, sem diferenciar maiúsculas/acentos (ex.: "python", "html"). Omitido = todos'),
+        module: z.string().optional().describe('Filtra por parte do título do módulo (ex.: "operadores")'),
         lesson_id: z.string().uuid().optional().describe('Restringe a uma aula'),
       },
       annotations: { readOnlyHint: true },
     },
-    async ({ module, submodule, lesson_id }) => {
+    async ({ course, module, lesson_id }) => {
       const rows = await fetchAll(
         () =>
           db
@@ -91,14 +91,14 @@ export function registerQuizSocialTools(server, ctx) {
 
       const modOf = (r) => r.quizzes.lessons.submodules?.modules;
       let scoped = rows;
-      if (module) {
-        scoped = scoped.filter((r) => matches(module, modOf(r)?.slug, modOf(r)?.title));
+      if (course) {
+        scoped = scoped.filter((r) => matches(course, modOf(r)?.slug, modOf(r)?.title));
         if (!scoped.length) {
           const available = [...new Set(rows.map((r) => modOf(r)?.title).filter(Boolean))].sort();
-          throw new Error(`Nenhum módulo com perguntas corresponde a "${module}". Disponíveis: ${available.join(', ')}.`);
+          throw new Error(`Nenhum curso com perguntas corresponde a "${course}". Disponíveis: ${available.join(', ')}.`);
         }
       }
-      if (submodule) scoped = scoped.filter((r) => matches(submodule, r.quizzes.lessons.submodules?.title));
+      if (module) scoped = scoped.filter((r) => matches(module, r.quizzes.lessons.submodules?.title));
       if (lesson_id) scoped = scoped.filter((r) => r.quizzes.lessons.id === lesson_id);
 
       const candidates = scoped.filter((r) => !published.has(r.id));

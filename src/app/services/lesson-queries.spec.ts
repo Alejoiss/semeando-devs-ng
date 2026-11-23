@@ -20,21 +20,21 @@ describe('LessonService queries', () => {
         service = TestBed.inject(LessonService);
     });
 
-    it('lists lessons by submodule slug and rethrows failures', async () => {
+    it('lists lessons by module slug and rethrows failures', async () => {
         use({ data: [row] });
-        expect((await service.getLessonsBySubModuleSlug('s')).length).toBe(1);
+        expect((await service.getLessonsByModuleSlug('s')).length).toBe(1);
         use({ data: null });
-        expect(await service.getLessonsBySubModuleSlug('s')).toEqual([]);
+        expect(await service.getLessonsByModuleSlug('s')).toEqual([]);
         use({ error: { message: 'boom' } });
-        await expectAsync(service.getLessonsBySubModuleSlug('s')).toBeRejectedWithError('boom');
+        await expectAsync(service.getLessonsByModuleSlug('s')).toBeRejectedWithError('boom');
     });
 
-    it('maps lessons by submodule id to the model', async () => {
+    it('maps lessons by module id to the model', async () => {
         use({ data: [row] });
-        const [lesson] = await service.getLessonsBySubModuleId('sm1');
-        expect(lesson).toEqual(jasmine.objectContaining({ subModuleId: 'sm1', initialCode: 'x', createdBy: 'u1', isValidated: true }));
+        const [lesson] = await service.getLessonsByModuleId('sm1');
+        expect(lesson).toEqual(jasmine.objectContaining({ moduleId: 'sm1', initialCode: 'x', createdBy: 'u1', isValidated: true }));
         use({ error: { message: 'boom' } });
-        await expectAsync(service.getLessonsBySubModuleId('sm1')).toBeRejectedWithError('boom');
+        await expectAsync(service.getLessonsByModuleId('sm1')).toBeRejectedWithError('boom');
     });
 
     it('updates the order of every lesson and fails if any update fails', async () => {
@@ -64,7 +64,7 @@ describe('LessonService queries', () => {
 
     it('gets a lesson by id, treating not-found as null', async () => {
         use({ data: row });
-        expect((await service.getLessonById('l1'))?.subModuleId).toBe('sm1');
+        expect((await service.getLessonById('l1'))?.moduleId).toBe('sm1');
         use({ data: null, error: { code: 'PGRST116', message: 'none' } });
         expect(await service.getLessonById('l1')).toBeNull();
         use({ data: null, error: { code: 'X', message: 'boom' } });
@@ -73,7 +73,7 @@ describe('LessonService queries', () => {
 
     it('creates a lesson, sending is_validated only when provided', async () => {
         const stub = use({ data: row });
-        const created = await service.createLesson({ title: 'T', subModuleId: 'sm1' });
+        const created = await service.createLesson({ title: 'T', moduleId: 'sm1' });
         expect(created.id).toBe('l1');
         expect(stub.spy(0, 'insert').calls.mostRecent().args[0]).not.toEqual(jasmine.objectContaining({ is_validated: jasmine.anything() }));
         const withFlag = use({ data: row });
@@ -85,7 +85,7 @@ describe('LessonService queries', () => {
 
     it('updates only the provided fields', async () => {
         const stub = use({ data: row });
-        await service.updateLesson('l1', { title: 'N', xp: 5, language: 'ts', initialCode: 'c', order: 1, subModuleId: 's', type: LessonType.LESSON, description: 'd' });
+        await service.updateLesson('l1', { title: 'N', xp: 5, language: 'ts', initialCode: 'c', order: 1, moduleId: 's', type: LessonType.LESSON, description: 'd' });
         expect(stub.spy(0, 'update').calls.mostRecent().args[0]).toEqual({
             title: 'N', description: 'd', type: 'LESSON', order: 1, sub_module_id: 's', xp: 5, language: 'ts', initial_code: 'c',
         });
@@ -96,13 +96,13 @@ describe('LessonService queries', () => {
         await expectAsync(service.updateLesson('l1', {})).toBeRejectedWithError('boom');
     });
 
-    it('counts lessons by submodule', async () => {
+    it('counts lessons by module', async () => {
         use({ count: 4 });
-        expect(await service.getLessonCountBySubModuleId('sm1')).toBe(4);
+        expect(await service.getLessonCountByModuleId('sm1')).toBe(4);
         use({ count: null });
-        expect(await service.getLessonCountBySubModuleId('sm1')).toBe(0);
+        expect(await service.getLessonCountByModuleId('sm1')).toBe(0);
         use({ error: { message: 'boom' } });
-        await expectAsync(service.getLessonCountBySubModuleId('sm1')).toBeRejectedWithError('boom');
+        await expectAsync(service.getLessonCountByModuleId('sm1')).toBeRejectedWithError('boom');
     });
 
     it('invalidates a lesson', async () => {

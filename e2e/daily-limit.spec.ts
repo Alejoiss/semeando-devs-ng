@@ -12,8 +12,8 @@ const COMPLETED_TODAY = [
 ];
 const NEW_LESSON = 'da235cfc-d669-56c7-b33d-445607b61bf2';
 const NEW_CHALLENGE = '4ee4d6ef-b95e-5180-ab62-183e4263cb6c';
-const SUBMODULE_PATH = '/app/s/html-essencial/ss/formularios';
-const lessonPath = (id: string) => `/app/s/html-essencial/ss/formularios/lesson/${id}`;
+const MODULE_PATH = '/app/c/html-essencial/m/formularios';
+const lessonPath = (id: string) => `/app/c/html-essencial/m/formularios/lesson/${id}`;
 
 test.describe('daily lesson limit (free plan)', () => {
     test.describe.configure({ mode: 'serial' });
@@ -28,7 +28,7 @@ test.describe('daily lesson limit (free plan)', () => {
     });
 
     test('after five lessons today the next lesson is blocked and offers the upgrade', async ({ page }) => {
-        await page.goto(SUBMODULE_PATH);
+        await page.goto(MODULE_PATH);
 
         await expect(page.getByText('5/5')).toBeVisible();
         const lesson = page.getByRole('article').filter({ hasText: 'Campos de formulário' });
@@ -40,7 +40,7 @@ test.describe('daily lesson limit (free plan)', () => {
     });
 
     test('a lesson already completed today can still be reviewed', async ({ page }) => {
-        await page.goto('/app/s/html-essencial/ss/primeiros-passos');
+        await page.goto('/app/c/html-essencial/m/primeiros-passos');
 
         await expect(page.getByText('5/5')).toBeVisible();
         const lesson = page.getByRole('article').filter({ hasText: 'O que é HTML?' });
@@ -58,7 +58,7 @@ test.describe('daily lesson limit (free plan)', () => {
     test('lessons completed on a previous day do not count towards today', async ({ page }) => {
         sql(`update user_lessons set completed_at = now() - interval '2 days' where user_id = '${userId}'`);
 
-        await page.goto(SUBMODULE_PATH);
+        await page.goto(MODULE_PATH);
 
         await expect(page.getByText('0/5')).toBeVisible();
         const lesson = page.getByRole('article').filter({ hasText: 'Campos de formulário' });
@@ -68,7 +68,7 @@ test.describe('daily lesson limit (free plan)', () => {
     test('a Pro student is not limited', async ({ page }) => {
         sql(`update profiles set is_pro = true, pro_until = now() + interval '30 days' where id = '${userId}'`);
 
-        await page.goto(SUBMODULE_PATH);
+        await page.goto(MODULE_PATH);
 
         await expect(page.getByText('Lições hoje')).toHaveCount(0);
         const lesson = page.getByRole('article').filter({ hasText: 'Campos de formulário' });

@@ -37,16 +37,16 @@ describe('UserQuizService queries', () => {
         await expectAsync(service.finishAttempt('uq', 1, 1)).toBeRejectedWithError('boom');
     });
 
-    it('lists the attempts of a submodule for the logged user', async () => {
+    it('lists the attempts of a module for the logged user', async () => {
         const stub = use({ user: { id: 'me' } }, { data: [row] });
-        expect((await service.getUserQuizzesBySubModule('s')).length).toBe(1);
+        expect((await service.getUserQuizzesByModule('s')).length).toBe(1);
         expect(stub.spy(0, 'eq')).toHaveBeenCalledWith('user_id', 'me');
         use({ user: { id: 'me' } }, { data: null });
-        expect(await service.getUserQuizzesBySubModule('s')).toEqual([]);
+        expect(await service.getUserQuizzesByModule('s')).toEqual([]);
         use(null, {});
-        await expectAsync(service.getUserQuizzesBySubModule('s')).toBeRejectedWithError('No active session found');
+        await expectAsync(service.getUserQuizzesByModule('s')).toBeRejectedWithError('No active session found');
         use({ user: { id: 'me' } }, fails);
-        await expectAsync(service.getUserQuizzesBySubModule('s')).toBeRejectedWithError('boom');
+        await expectAsync(service.getUserQuizzesByModule('s')).toBeRejectedWithError('boom');
     });
 
     it('lists the attempts of a user', async () => {

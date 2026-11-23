@@ -28,7 +28,7 @@ describe('CreateLesson', () => {
             paramMap: {
                 get: (key: string) => {
                     if (key === 'id') return routeParamId;
-                    if (key === 'idSubModule') return 'sub-1';
+                    if (key === 'idModule') return 'sub-1';
                     return null;
                 }
             }
@@ -47,9 +47,9 @@ describe('CreateLesson', () => {
                 id: 'l1',
                 title: 'Licao Teste',
                 type: 'LESSON',
-                subModuleId: 'sub-1'
+                moduleId: 'sub-1'
             })),
-            getLessonsBySubModuleId: jasmine.createSpy().and.returnValue(Promise.resolve([]))
+            getLessonsByModuleId: jasmine.createSpy().and.returnValue(Promise.resolve([]))
         };
 
         mockSectionContentService = {
@@ -99,17 +99,17 @@ describe('CreateLesson', () => {
         expect(router.navigate).not.toHaveBeenCalled();
     });
 
-    it('should redirect to submodule edit screen if lesson is type REVISION', async () => {
+    it('should redirect to module edit screen if lesson is type REVISION', async () => {
         mockLessonService.getLessonById.and.returnValue(Promise.resolve({
             id: 'l1',
-            title: 'Revisão do Submódulo',
+            title: 'Revisão do Módulo',
             type: 'REVISION',
-            subModuleId: 'sub-1'
+            moduleId: 'sub-1'
         }));
 
         await initComponent();
         await fixture.whenStable();
 
-        expect(router.navigate).toHaveBeenCalledWith(['/professor/editar-submodulo', 'sub-1'], { replaceUrl: true });
+        expect(router.navigate).toHaveBeenCalledWith(['/professor/editar-modulo', 'sub-1'], { replaceUrl: true });
     });
 });

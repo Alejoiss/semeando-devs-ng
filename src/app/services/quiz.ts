@@ -111,18 +111,18 @@ export class QuizService {
         };
     }
 
-    async getRevisionQuestions(lessonId: string, subModuleId: string): Promise<Question[]> {
+    async getRevisionQuestions(lessonId: string, moduleId: string): Promise<Question[]> {
         const lesson = await this.lessonService.getLessonById(lessonId);
         if (!lesson) return [];
 
         const currentOrder = lesson.order;
 
         // 'order' is a reserved PostgREST keyword, so we cannot use .lt('order', ...)
-        // directly. Instead we fetch all lessons in the submodule and filter client-side.
+        // directly. Instead we fetch all lessons in the module and filter client-side.
         const { data: lessonsData, error: lessonsError } = await this.supabase
             .from('lessons')
             .select('id, order')
-            .eq('sub_module_id', subModuleId);
+            .eq('sub_module_id', moduleId);
 
         if (lessonsError) {
             throw new Error(lessonsError.message);
@@ -169,6 +169,11 @@ export class QuizService {
             throw new Error(error.message || 'Error completing quiz');
         }
 
+        // A edge function mantém os nomes antigos: subModuleCompleted = módulo concluído, moduleCompleted = curso concluído.
+        if (data && typeof data === 'object' && 'subModuleCompleted' in data) {
+            const { subModuleCompleted, moduleCompleted, ...rest } = data;
+            return { ...rest, moduleCompleted: subModuleCompleted, courseCompleted: moduleCompleted };
+        }
         return data;
     }
 

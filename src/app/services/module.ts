@@ -9,107 +9,74 @@ import { SupabaseService } from './supabase';
 export class ModuleService {
     private supabase: SupabaseClient = inject(SupabaseService).client;
 
-    async getModules(): Promise<Module[]> {
+    async getModulesByCourseSlug(slug: string): Promise<Module[]> {
         const { data, error } = await this.supabase
-            .from('modules')
-            .select('*');
+            .from('submodules')
+            .select('*, course:modules!inner(*)')
+            .eq('modules.slug', slug)
+            .order('order', { ascending: true });
 
         if (error) {
             throw new Error(error.message);
         }
 
-        return (data || []).map(m => ({
-            ...m,
-            inRevision: m.in_revision
-        })) as Module[];
+        return data as unknown as Module[];
     }
 
-    async getModulesForDisplay(): Promise<Module[]> {
+    async getModulesByCourseId(courseId: string): Promise<Module[]> {
         const { data, error } = await this.supabase
-            .from('modules')
-            .select('id, title, description, slug, avatar, icon, in_revision');
+            .from('submodules')
+            .select('*')
+            .eq('module_id', courseId)
+            .order('order', { ascending: true });
 
         if (error) {
             throw new Error(error.message);
         }
 
-        return (data || []).map(m => ({
-            ...m,
-            inRevision: m.in_revision
-        })) as Module[];
+        return data as unknown as Module[];
     }
 
-    async getModuleBySlug(slug: string): Promise<Module | null> {
-        try {
-            const { data, error } = await this.supabase
-                .from('modules')
-                .select('*')
-                .eq('slug', slug)
-                .single();
-
-            if (error) {
-                return null;
-            }
-
-            return {
-                ...data,
-                inRevision: data.in_revision
-            } as Module;
-        } catch {
-            return null;
-        }
-    }
-
-    async getCurriculum(): Promise<any[]> {
-        const { data, error } = await this.supabase
-            .from('modules')
-            .select(`
-                *,
-                submodules (
-                    *,
-                    lessons (
-                        *
-                    )
-                )
-            `)
-            .eq('in_revision', false)
-            .order('order', { foreignTable: 'submodules', ascending: true })
-            .order('order', { foreignTable: 'submodules.lessons', ascending: true });
+    async getModuleCountByCourseId(courseId: string): Promise<number> {
+        const { count, error } = await this.supabase
+            .from('submodules')
+            .select('*', { count: 'exact', head: true })
+            .eq('module_id', courseId);
 
         if (error) {
             throw new Error(error.message);
         }
 
-        return data;
+        return count ?? 0;
     }
 
-    async getTeacherModules(teacherId: string): Promise<Module[]> {
-        const { data, error } = await this.supabase
-            .from('teacher_modules')
-            .select('*, module:modules(*)')
-            .eq('teacher_id', teacherId);
+    async updateModuleOrder(updates: { id: string; order: number }[]): Promise<void> {
+        const promises = updates.map(u =>
+            this.supabase
+                .from('submodules')
+                .update({ order: u.order })
+                .eq('id', u.id)
+        );
+
+        const results = await Promise.all(promises);
+        const error = results.find(r => r.error)?.error;
 
         if (error) {
             throw new Error(error.message);
         }
-
-        return (data || []).map((tm: any) => ({
-            ...tm.module,
-            inRevision: tm.module.in_revision
-        })) as Module[];
     }
 
-    async createModule(payload: CreateModulePayload): Promise<Module> {
+    async createModule(payload: { title: string; description: string; slug: string; module_id: string; avatar?: string | null; icon?: string | null; order?: number }): Promise<Module> {
         const { data, error } = await this.supabase
-            .from('modules')
+            .from('submodules')
             .insert({
                 title: payload.title,
                 description: payload.description,
                 slug: payload.slug,
+                module_id: payload.module_id,
                 avatar: payload.avatar,
                 icon: payload.icon,
-                in_revision: payload.inRevision ?? true,
-                created_by: payload.createdBy
+                order: payload.order ?? 0
             })
             .select('*')
             .single();
@@ -118,10 +85,40 @@ export class ModuleService {
             throw new Error(error.message);
         }
 
-        return {
-            ...data,
-            inRevision: data.in_revision
-        } as Module;
+        return data as unknown as Module;
+    }
+
+    async updateModule(id: string, payload: { title?: string; description?: string; slug?: string; avatar?: string | null; icon?: string | null }): Promise<Module> {
+        const { data, error } = await this.supabase
+            .from('submodules')
+            .update(payload)
+            .eq('id', id)
+            .select('*')
+            .single();
+
+        if (error) {
+            throw new Error(error.message);
+        }
+
+        return data as unknown as Module;
+    }
+
+    async getModuleById(id: string): Promise<Module | null> {
+        try {
+            const { data, error } = await this.supabase
+                .from('submodules')
+                .select('*')
+                .eq('id', id)
+                .single();
+
+            if (error) {
+                return null;
+            }
+
+            return data as unknown as Module;
+        } catch {
+            return null;
+        }
     }
 
     async uploadModuleAvatar(file: File): Promise<string> {
@@ -133,7 +130,7 @@ export class ModuleService {
         const fileName = `${uuid}/${file.name}`;
 
         const { error } = await this.supabase.storage
-            .from('module-avatars')
+            .from('submodule-avatars')
             .upload(fileName, file);
 
         if (error) {
@@ -141,115 +138,20 @@ export class ModuleService {
         }
 
         const { data } = this.supabase.storage
-            .from('module-avatars')
+            .from('submodule-avatars')
             .getPublicUrl(fileName);
 
         return data.publicUrl;
     }
 
-    async assignTeacherToModule(teacherId: string, moduleId: string): Promise<void> {
+    async deleteModule(id: string): Promise<void> {
         const { error } = await this.supabase
-            .from('teacher_modules')
-            .insert({
-                teacher_id: teacherId,
-                module_id: moduleId
-            });
-
-        if (error) {
-            throw new Error(error.message);
-        }
-    }
-
-    async getModuleById(id: string): Promise<Module | null> {
-        try {
-            const { data, error } = await this.supabase
-                .from('modules')
-                .select('*')
-                .eq('id', id)
-                .single();
-
-            if (error) {
-                return null;
-            }
-
-            return {
-                ...data,
-                inRevision: data.in_revision
-            } as Module;
-        } catch {
-            return null;
-        }
-    }
-
-    async updateModule(id: string, payload: Partial<CreateModulePayload>): Promise<Module> {
-        const updateData: any = {};
-        if (payload.title !== undefined) updateData.title = payload.title;
-        if (payload.description !== undefined) updateData.description = payload.description;
-        if (payload.slug !== undefined) updateData.slug = payload.slug;
-        if (payload.avatar !== undefined) updateData.avatar = payload.avatar;
-        if (payload.icon !== undefined) updateData.icon = payload.icon;
-        if (payload.inRevision !== undefined) updateData.in_revision = payload.inRevision;
-
-        const { data, error } = await this.supabase
-            .from('modules')
-            .update(updateData)
-            .eq('id', id)
-            .select('*')
-            .single();
-
-        if (error) {
-            throw new Error(error.message);
-        }
-
-        return {
-            ...data,
-            inRevision: data.in_revision
-        } as Module;
-    }
-
-    async checkAllLessonsValidated(moduleId: string): Promise<boolean> {
-        const { data: submodules, error: subError } = await this.supabase
             .from('submodules')
-            .select('id')
-            .eq('module_id', moduleId);
-
-        if (subError || !submodules) return false;
-
-        if (submodules.length === 0) return true;
-
-        const submoduleIds = submodules.map((s: any) => s.id);
-
-        const { data: lessons, error: lessonError } = await this.supabase
-            .from('lessons')
-            .select('id, is_validated')
-            .in('sub_module_id', submoduleIds)
-            .neq('type', 'REVISION');
-
-        if (lessonError) return false;
-
-        if (!lessons || lessons.length === 0) return true;
-
-        return lessons.every((l: any) => l.is_validated === true);
-    }
-
-    async updateModuleAvailability(moduleId: string, available: boolean): Promise<void> {
-        const { error } = await this.supabase
-            .from('modules')
-            .update({ in_revision: !available })
-            .eq('id', moduleId);
+            .delete()
+            .eq('id', id);
 
         if (error) {
             throw new Error(error.message);
         }
     }
-}
-
-export interface CreateModulePayload {
-    title: string;
-    description: string;
-    slug: string;
-    avatar?: string | null;
-    icon?: string | null;
-    inRevision?: boolean;
-    createdBy: string;
 }

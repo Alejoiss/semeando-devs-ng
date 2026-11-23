@@ -17,9 +17,8 @@ export class UserModuleService {
         }
 
         const { data, error } = await this.supabase
-            .from('user_modules')
-            .select('*, module:modules(*)')
-            .eq('user_id', user.id);
+            .from('user_submodules')
+            .select('*, module:submodules(*)').eq('user_id', user.id);
 
         if (error) {
             throw new Error(error.message);
@@ -28,17 +27,17 @@ export class UserModuleService {
         return (data ?? []) as unknown as UserModule[];
     }
 
-    async getUserModulesForUser(userId: string): Promise<any[]> {
+    async getUserModulesForUser(userId: string): Promise<UserModule[]> {
         const { data, error } = await this.supabase
-            .from('user_modules')
-            .select('module_id, completed')
+            .from('user_submodules')
+            .select('*, module:submodules(*)')
             .eq('user_id', userId);
 
         if (error) {
             throw new Error(error.message);
         }
 
-        return data ?? [];
+        return (data ?? []) as unknown as UserModule[];
     }
 
     async startModule(moduleId: string): Promise<void> {
@@ -49,10 +48,10 @@ export class UserModuleService {
         }
 
         const { error } = await this.supabase
-            .from('user_modules')
+            .from('user_submodules')
             .insert({
                 user_id: user.id,
-                module_id: moduleId,
+                sub_module_id: moduleId,
                 completed: false,
                 completed_at: null
             });
@@ -60,26 +59,5 @@ export class UserModuleService {
         if (error) {
             throw new Error(error.message);
         }
-    }
-
-    async isModuleCompleted(moduleId: string): Promise<boolean> {
-        const { data: { user }, error: authError } = await this.supabase.auth.getUser();
-
-        if (authError || !user) {
-            return false;
-        }
-
-        const { data, error } = await this.supabase
-            .from('user_modules')
-            .select('completed')
-            .eq('user_id', user.id)
-            .eq('module_id', moduleId)
-            .single();
-
-        if (error || !data) {
-            return false;
-        }
-
-        return (data as { completed: boolean }).completed === true;
     }
 }

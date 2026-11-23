@@ -21,28 +21,28 @@ export function registerContentTools(server, ctx) {
   const { db, config } = ctx;
   const read = { annotations: { readOnlyHint: true } };
 
-  defineTool(server, ctx, 'list_modules', { title: 'Listar módulos', description: 'Lista os módulos.', inputSchema: {}, ...read }, async () =>
+  defineTool(server, ctx, 'list_courses', { title: 'Listar cursos', description: 'Lista os cursos.', inputSchema: {}, ...read }, async () =>
     unwrap(await db.from('modules').select('id, title, slug, icon, in_revision').order('title'), 'modules'),
   );
 
   defineTool(
     server,
     ctx,
-    'list_submodules',
+    'list_modules',
     {
-      title: 'Listar submódulos',
-      description: 'Lista os submódulos de um módulo (por id ou slug). Use para achar o submódulo de destino de uma lição.',
-      inputSchema: { module_id: id.optional(), module_slug: z.string().optional() },
+      title: 'Listar módulos',
+      description: 'Lista os módulos de um curso (por id ou slug). Use para achar o módulo de destino de uma lição.',
+      inputSchema: { course_id: id.optional(), course_slug: z.string().optional() },
       ...read,
     },
-    async ({ module_id, module_slug }) => {
-      let moduleId = module_id;
-      if (!moduleId && module_slug) {
-        moduleId = unwrap(await db.from('modules').select('id').eq('slug', module_slug).single(), 'module').id;
+    async ({ course_id, course_slug }) => {
+      let courseId = course_id;
+      if (!courseId && course_slug) {
+        courseId = unwrap(await db.from('modules').select('id').eq('slug', course_slug).single(), 'course').id;
       }
-      if (!moduleId) throw new Error('Informe module_id ou module_slug.');
+      if (!courseId) throw new Error('Informe course_id ou course_slug.');
       return unwrap(
-        await db.from('submodules').select('id, title, slug, description, icon, order').eq('module_id', moduleId).order('order'),
+        await db.from('submodules').select('id, title, slug, description, icon, order').eq('module_id', courseId).order('order'),
         'submodules',
       );
     },
@@ -51,10 +51,10 @@ export function registerContentTools(server, ctx) {
   defineTool(
     server,
     ctx,
-    'find_submodule',
+    'find_module',
     {
-      title: 'Buscar submódulo por título',
-      description: 'Busca submódulos pelo título (ex.: "A história do HTML"), com o módulo a que pertencem.',
+      title: 'Buscar módulo por título',
+      description: 'Busca módulos pelo título (ex.: "A história do HTML"), com o curso a que pertencem.',
       inputSchema: { query: z.string().min(2) },
       ...read,
     },
@@ -62,7 +62,7 @@ export function registerContentTools(server, ctx) {
       unwrap(
         await db
           .from('submodules')
-          .select('id, title, slug, module:modules(id, title, slug)')
+          .select('id, title, slug, course:modules(id, title, slug)')
           .ilike('title', `%${query.replace(/[%_]/g, '')}%`)
           .limit(20),
         'submodules',
@@ -75,16 +75,16 @@ export function registerContentTools(server, ctx) {
     'list_lessons',
     {
       title: 'Listar lições',
-      description: 'Lista as lições de um submódulo, em ordem.',
-      inputSchema: { submodule_id: id },
+      description: 'Lista as lições de um módulo, em ordem.',
+      inputSchema: { module_id: id },
       ...read,
     },
-    async ({ submodule_id }) =>
+    async ({ module_id }) =>
       unwrap(
         await db
           .from('lessons')
           .select('id, title, description, type, order, xp, is_validated')
-          .eq('sub_module_id', submodule_id)
+          .eq('sub_module_id', module_id)
           .order('order'),
         'lessons',
       ),
@@ -137,14 +137,14 @@ export function registerContentTools(server, ctx) {
     {
       title: 'Criar lição',
       description:
-        'Cria uma lição completa num submódulo: dados, seções, materiais extras e perguntas do quiz. Uma LESSON válida exige >=1 seção, >=1 material extra e 10 perguntas com 4 alternativas (1 correta). A lição nasce como rascunho (is_validated = null, não aparece para alunos) a menos que publish=true; se algo falhar no meio, a lição parcial é removida.',
+        'Cria uma lição completa num módulo: dados, seções, materiais extras e perguntas do quiz. Uma LESSON válida exige >=1 seção, >=1 material extra e 10 perguntas com 4 alternativas (1 correta). A lição nasce como rascunho (is_validated = null, não aparece para alunos) a menos que publish=true; se algo falhar no meio, a lição parcial é removida.',
       inputSchema: {
-        submodule_id: id,
+        module_id: id,
         title: z.string().min(1),
         description: z.string().min(1),
         type: lessonType.default('LESSON'),
         xp: z.number().int().min(0).default(20),
-        order: z.number().int().optional().describe('Padrão: ao final do submódulo'),
+        order: z.number().int().optional().describe('Padrão: ao final do módulo'),
         language: z.string().optional().describe('Só para CHALLENGE'),
         initial_code: z.string().optional().describe('Só para CHALLENGE'),
         sections: z.array(sectionSchema).default([]),
@@ -157,13 +157,13 @@ export function registerContentTools(server, ctx) {
       const [owner, created_by, order] = await Promise.all([
         ownerFields(db),
         resolveAuthorId(db, config),
-        a.order ?? nextOrder(db, 'lessons', 'sub_module_id', a.submodule_id),
+        a.order ?? nextOrder(db, 'lessons', 'sub_module_id', a.module_id),
       ]);
       const lesson = unwrap(
         await db
           .from('lessons')
           .insert({
-            sub_module_id: a.submodule_id,
+            sub_module_id: a.module_id,
             title: a.title,
             description: a.description,
             type: a.type,

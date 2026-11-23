@@ -15,13 +15,13 @@ describe('AdminRevenueReport', () => {
         activeStudents: 4,
         previousTotalLessons: 8,
         previousActiveStudents: 0,
-        byModule: [{ moduleId: 'm1', title: 'HTML', lessons: 10 }],
+        byCourse: [{ courseId: 'm1', title: 'HTML', lessons: 10 }],
         byTeacher: [
             { teacherId: 't1', name: 'Ana', lessons: 6 },
             { teacherId: 't2', name: null, lessons: 3 },
             { teacherId: null, name: null, lessons: 1 },
         ],
-        topLessons: [{ lessonId: 'l1', title: 'O que é HTML', moduleTitle: 'HTML', lessons: 5 }],
+        topLessons: [{ lessonId: 'l1', title: 'O que é HTML', courseTitle: 'HTML', lessons: 5 }],
         ...over,
     });
 
@@ -205,7 +205,7 @@ describe('AdminRevenueReport', () => {
             expect(component.studentsTrend()).toBeNull();
         });
 
-        it('lists lessons per module and the most completed lessons', async () => {
+        it('lists lessons per course and the most completed lessons', async () => {
             await generate();
             expect(text()).toContain('Lições por linguagem');
             expect(text()).toContain('Lições mais concluídas');
@@ -213,7 +213,7 @@ describe('AdminRevenueReport', () => {
         });
 
         it('says so when no lesson was completed in the month', async () => {
-            service.getReport.and.resolveTo(report({ totalLessons: 0, byTeacher: [], byModule: [], topLessons: [] }));
+            service.getReport.and.resolveTo(report({ totalLessons: 0, byTeacher: [], byCourse: [], topLessons: [] }));
             await generate();
 
             expect(text()).toContain('Nenhuma lição concluída por alunos neste mês.');

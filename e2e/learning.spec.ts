@@ -22,7 +22,7 @@ test.describe('student learning journey', () => {
 
     test.beforeEach(() => clearUserProgress(studentId));
 
-    test('module → submodule → lesson → quiz awards XP and the first achievement', async ({ page }) => {
+    test('course → module → lesson → quiz awards XP and the first achievement', async ({ page }) => {
         test.setTimeout(120_000);
         const correct = correctAnswers();
         expect(correct).toHaveLength(10);
@@ -33,7 +33,7 @@ test.describe('student learning journey', () => {
         await expect(page).toHaveURL(/\/app\/s\/html-essencial$/);
 
         await page.getByRole('button', { name: 'Iniciar' }).first().click();
-        await expect(page).toHaveURL(/\/ss\/primeiros-passos$/);
+        await expect(page).toHaveURL(/\/m\/primeiros-passos$/);
 
         await page.getByRole('button', { name: 'Iniciar' }).first().click();
         await page.getByRole('button', { name: /Próximo: Iniciar Quiz \(10 questões\)/ }).click();
@@ -69,9 +69,9 @@ test.describe('student learning journey', () => {
 
     });
 
-    test('the "Módulos" breadcrumb leads to the module list', async ({ page }) => {
-        await page.goto('/app/s/html-essencial');
-        await page.getByRole('link', { name: 'Módulos' }).last().click();
+    test('the "Cursos" breadcrumb leads to the course list', async ({ page }) => {
+        await page.goto('/app/c/html-essencial');
+        await page.getByRole('link', { name: 'Cursos' }).last().click();
         await expect(page).toHaveURL(/\/app$/);
         await expect(page).not.toHaveTitle(/não encontrada/i);
     });

@@ -10,17 +10,8 @@ export interface PublicLessonSummary {
     slug: string;
     title: string;
     description: string;
-    /** Primeira aula do submódulo: aberta por completo, sem login. */
+    /** Primeira aula do módulo: aberta por completo, sem login. */
     isFree: boolean;
-}
-
-export interface PublicSubmodule {
-    id: string;
-    slug: string;
-    title: string;
-    description: string;
-    icon: string | null;
-    lessons: PublicLessonSummary[];
 }
 
 export interface PublicModule {
@@ -29,11 +20,20 @@ export interface PublicModule {
     title: string;
     description: string;
     icon: string | null;
-    avatar: string | null;
-    submodules: PublicSubmodule[];
+    lessons: PublicLessonSummary[];
 }
 
-export interface ShowcaseModule {
+export interface PublicCourse {
+    id: string;
+    slug: string;
+    title: string;
+    description: string;
+    icon: string | null;
+    avatar: string | null;
+    modules: PublicModule[];
+}
+
+export interface ShowcaseCourse {
     id: string;
     slug: string;
     title: string;
@@ -54,16 +54,16 @@ export type PublicLessonContent =
     | { kind: 'preview'; markdown: string };
 
 export interface PublicLessonPage {
+    course: Pick<PublicCourse, 'slug' | 'title'>;
     module: Pick<PublicModule, 'slug' | 'title'>;
-    submodule: Pick<PublicSubmodule, 'slug' | 'title'>;
     lesson: PublicLessonSummary;
     content: PublicLessonContent;
     previous: PublicLessonLink | null;
     next: PublicLessonLink | null;
 }
 
-export function publicLessonPath(moduleSlug: string, submoduleSlug: string, lessonSlug: string): string[] {
-    return ['/cursos', moduleSlug, submoduleSlug, lessonSlug];
+export function publicLessonPath(courseSlug: string, moduleSlug: string, lessonSlug: string): string[] {
+    return ['/cursos', courseSlug, moduleSlug, lessonSlug];
 }
 
 // O desempate por id segue a mesma regra da função get_lesson_previews/get_free_lesson_sections no banco
@@ -71,7 +71,7 @@ const byOrder = (a: { order: number; id: string }, b: { order: number; id: strin
     a.order - b.order || (a.id < b.id ? -1 : a.id > b.id ? 1 : 0);
 const byTitle = (a: { title: string }, b: { title: string }) => a.title.localeCompare(b.title, 'pt-BR');
 
-/** Gera slugs estáveis e únicos por submódulo, já que as aulas não possuem slug próprio no banco. */
+/** Gera slugs estáveis e únicos por módulo, já que as aulas não possuem slug próprio no banco. */
 function withLessonSlugs(lessons: CurriculumRow['submodules'][number]['lessons']): PublicLessonSummary[] {
     const used = new Set<string>();
     return lessons.map((lesson, index) => {
@@ -85,15 +85,15 @@ function withLessonSlugs(lessons: CurriculumRow['submodules'][number]['lessons']
     });
 }
 
-function toPublicModules(rows: CurriculumRow[]): PublicModule[] {
-    return [...rows].sort(byTitle).map(module => ({
-        id: module.id,
-        slug: module.slug,
-        title: module.title,
-        description: module.description ?? '',
-        icon: module.icon,
-        avatar: module.avatar,
-        submodules: [...module.submodules]
+function toPublicCourses(rows: CurriculumRow[]): PublicCourse[] {
+    return [...rows].sort(byTitle).map(course => ({
+        id: course.id,
+        slug: course.slug,
+        title: course.title,
+        description: course.description ?? '',
+        icon: course.icon,
+        avatar: course.avatar,
+        modules: [...course.submodules]
             .sort(byOrder)
             .map(sub => ({
                 id: sub.id,
@@ -108,7 +108,7 @@ function toPublicModules(rows: CurriculumRow[]): PublicModule[] {
 }
 
 /**
- * Catálogo público (sem login) das páginas pré-renderizadas: módulos, submódulos e títulos das aulas. O que é carregado no servidor vai no
+ * Catálogo público (sem login) das páginas pré-renderizadas: cursos, módulos e títulos das aulas. O que é carregado no servidor vai no
  * TransferState para que a hidratação no navegador reutilize exatamente o mesmo conteúdo.
  */
 @Injectable({
@@ -118,72 +118,72 @@ export class PublicCatalogService {
     private readonly source = inject(PUBLIC_CATALOG_SOURCE);
     private readonly transferState = inject(TransferState);
     private readonly isServer = isPlatformServer(inject(PLATFORM_ID));
-    private curriculumRequest: Promise<PublicModule[]> | null = null;
+    private curriculumRequest: Promise<PublicCourse[]> | null = null;
     // A página da aula é resolvida duas vezes por navegação (conteúdo e anúncios); a mesma promessa atende as duas
     private readonly lessonPageRequests = new Map<string, Promise<PublicLessonPage | null>>();
 
-    getCurriculum(): Promise<PublicModule[]> {
+    getCurriculum(): Promise<PublicCourse[]> {
         return this.transfer('public-curriculum', () => this.loadCurriculum());
     }
 
-    /** Módulos da vitrine da home, incluindo os ainda em revisão (exibidos como "Em breve"). */
-    getShowcaseModules(): Promise<ShowcaseModule[]> {
+    /** Cursos da vitrine da home, incluindo os ainda em revisão (exibidos como "Em breve"). */
+    getShowcaseCourses(): Promise<ShowcaseCourse[]> {
         return this.transfer('public-showcase', async () => {
             const rows = await this.source.showcase();
             return rows
-                .map(module => ({
-                    id: module.id,
-                    slug: module.slug,
-                    title: module.title,
-                    description: module.description ?? '',
-                    icon: module.icon,
-                    avatar: module.avatar,
-                    inRevision: module.in_revision,
+                .map(course => ({
+                    id: course.id,
+                    slug: course.slug,
+                    title: course.title,
+                    description: course.description ?? '',
+                    icon: course.icon,
+                    avatar: course.avatar,
+                    inRevision: course.in_revision,
                 }))
                 .sort((a, b) => Number(a.inRevision) - Number(b.inRevision) || byTitle(a, b));
         });
     }
 
-    getModule(moduleSlug: string): Promise<PublicModule | null> {
-        return this.transfer(`public-module:${moduleSlug}`, () => this.findModule(moduleSlug));
+    getCourse(courseSlug: string): Promise<PublicCourse | null> {
+        return this.transfer(`public-course:${courseSlug}`, () => this.findCourse(courseSlug));
     }
 
-    getLessonPage(moduleSlug: string, submoduleSlug: string, lessonSlug: string): Promise<PublicLessonPage | null> {
-        const key = `public-lesson:${moduleSlug}/${submoduleSlug}/${lessonSlug}`;
+    getLessonPage(courseSlug: string, moduleSlug: string, lessonSlug: string): Promise<PublicLessonPage | null> {
+        const key = `public-lesson:${courseSlug}/${moduleSlug}/${lessonSlug}`;
         let request = this.lessonPageRequests.get(key);
         if (!request) {
-            request = this.loadLessonPage(key, moduleSlug, submoduleSlug, lessonSlug);
+            request = this.loadLessonPage(key, courseSlug, moduleSlug, lessonSlug);
             request.catch(() => this.lessonPageRequests.delete(key));
             this.lessonPageRequests.set(key, request);
         }
         return request;
     }
 
-    private loadLessonPage(key: string, moduleSlug: string, submoduleSlug: string, lessonSlug: string): Promise<PublicLessonPage | null> {
+    private loadLessonPage(key: string, courseSlug: string, moduleSlug: string, lessonSlug: string): Promise<PublicLessonPage | null> {
         return this.transfer(key, async () => {
-            const module = await this.findModule(moduleSlug);
-            const submodule = module?.submodules.find(sub => sub.slug === submoduleSlug);
-            const index = submodule?.lessons.findIndex(lesson => lesson.slug === lessonSlug) ?? -1;
-            if (!module || !submodule || index < 0) {
+            const course = await this.findCourse(courseSlug);
+            const module = course?.modules.find(sub => sub.slug === moduleSlug);
+            const index = module?.lessons.findIndex(lesson => lesson.slug === lessonSlug) ?? -1;
+            if (!course || !module || index < 0) {
                 return null;
             }
 
-            const lesson = submodule.lessons[index];
+            const lesson = module.lessons[index];
             const content = await this.loadLessonContent(lesson);
             if (!content) {
                 return null;
             }
 
             const toLink = (target: PublicLessonSummary | undefined): PublicLessonLink | null =>
-                target ? { title: target.title, path: publicLessonPath(module.slug, submodule.slug, target.slug) } : null;
+                target ? { title: target.title, path: publicLessonPath(course.slug, module.slug, target.slug) } : null;
 
             return {
+                course: { slug: course.slug, title: course.title },
                 module: { slug: module.slug, title: module.title },
-                submodule: { slug: submodule.slug, title: submodule.title },
                 lesson,
                 content,
-                previous: toLink(submodule.lessons[index - 1]),
-                next: toLink(submodule.lessons[index + 1]),
+                previous: toLink(module.lessons[index - 1]),
+                next: toLink(module.lessons[index + 1]),
             };
         });
     }
@@ -214,16 +214,16 @@ export class PublicCatalogService {
         return value;
     }
 
-    private loadCurriculum(): Promise<PublicModule[]> {
-        this.curriculumRequest ??= this.source.curriculum().then(toPublicModules).catch(error => {
+    private loadCurriculum(): Promise<PublicCourse[]> {
+        this.curriculumRequest ??= this.source.curriculum().then(toPublicCourses).catch(error => {
             this.curriculumRequest = null;
             throw error;
         });
         return this.curriculumRequest;
     }
 
-    private async findModule(moduleSlug: string): Promise<PublicModule | null> {
+    private async findCourse(courseSlug: string): Promise<PublicCourse | null> {
         const curriculum = await this.loadCurriculum();
-        return curriculum.find(module => module.slug === moduleSlug) ?? null;
+        return curriculum.find(course => course.slug === courseSlug) ?? null;
     }
 }

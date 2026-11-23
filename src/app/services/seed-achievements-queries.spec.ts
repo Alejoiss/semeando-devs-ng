@@ -78,13 +78,13 @@ describe('SeedService and AchievementsService queries', () => {
             expect(await service.getAchievements()).toEqual([]);
         });
 
-        it('gets the achievement of a module, null when absent or failing', async () => {
+        it('gets the achievement of a course, null when absent or failing', async () => {
             use({ data: { id: 'a' } });
-            expect(await service.getAchievementByModuleId('m')).not.toBeNull();
+            expect(await service.getAchievementByCourseId('m')).not.toBeNull();
             use({ error: { code: 'PGRST116', message: '' } });
-            expect(await service.getAchievementByModuleId('m')).toBeNull();
+            expect(await service.getAchievementByCourseId('m')).toBeNull();
             use(fails);
-            expect(await service.getAchievementByModuleId('m')).toBeNull();
+            expect(await service.getAchievementByCourseId('m')).toBeNull();
         });
 
         it('lists the completed achievements of the logged user', async () => {

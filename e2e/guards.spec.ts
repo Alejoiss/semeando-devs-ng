@@ -23,7 +23,7 @@ test.describe('student', () => {
         await expect(page).toHaveURL(/\/app$/);
     });
 
-    for (const path of ['/professor', '/professor/meus-modulos', '/admin', '/admin/dashboard']) {
+    for (const path of ['/professor', '/professor/meus-cursos', '/admin', '/admin/dashboard']) {
         test(`${path} sends the student back to /app`, async ({ page }) => {
             await page.goto(path);
             await expect(page).toHaveURL(/\/app$/);
@@ -36,7 +36,7 @@ test.describe('teacher', () => {
 
     test('can open the teacher area', async ({ page }) => {
         await page.goto('/professor');
-        await expect(page).toHaveURL(/\/professor\/meus-modulos$/);
+        await expect(page).toHaveURL(/\/professor\/meus-cursos$/);
     });
 
     test('is sent back to /app from the admin area', async ({ page }) => {
@@ -55,6 +55,6 @@ test.describe('admin', () => {
 
     test('can also open the teacher area', async ({ page }) => {
         await page.goto('/professor');
-        await expect(page).toHaveURL(/\/professor\/meus-modulos$/);
+        await expect(page).toHaveURL(/\/professor\/meus-cursos$/);
     });
 });

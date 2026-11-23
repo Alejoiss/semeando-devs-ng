@@ -46,7 +46,7 @@ export class UserQuizService {
         return this.mapUserQuiz(data);
     }
 
-    async getUserQuizzesBySubModule(subModuleId: string): Promise<UserQuiz[]> {
+    async getUserQuizzesByModule(moduleId: string): Promise<UserQuiz[]> {
         const { data: { session } } = await this.supabase.auth.getSession();
         if (!session) throw new Error('No active session found');
 
@@ -62,7 +62,7 @@ export class UserQuizService {
                     questions:questions (count)
                 )
             `)
-            .eq('quiz.lesson.sub_module_id', subModuleId)
+            .eq('quiz.lesson.sub_module_id', moduleId)
             .eq('user_id', session.user.id);
 
         if (fetchError) {

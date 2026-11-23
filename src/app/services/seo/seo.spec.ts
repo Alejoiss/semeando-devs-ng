@@ -75,7 +75,7 @@ describe('SeoService', () => {
             expect(content('name="robots"')).toBe('index, follow');
         });
 
-        for (const path of ['/app', '/app/perfil', '/professor/meus-modulos', '/admin/dashboard', '/auth/login', '/recuperar-senha', '/redefinir-senha', '/nao-encontrado']) {
+        for (const path of ['/app', '/app/perfil', '/professor/meus-cursos', '/admin/dashboard', '/auth/login', '/recuperar-senha', '/redefinir-senha', '/nao-encontrado']) {
             it(`marks ${path} as noindex`, async () => {
                 await router.navigateByUrl(path);
                 expect(content('name="robots"')).toBe('noindex, follow');

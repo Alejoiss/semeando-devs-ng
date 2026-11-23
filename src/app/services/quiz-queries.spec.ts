@@ -133,6 +133,11 @@ describe('QuizService queries', () => {
             await expectAsync(service.completeQuiz(null, 'l', 1, 2, 3)).toBeRejectedWithError('No active session found');
         });
 
+        it('maps the edge function completion flags to the module/course vocabulary', async () => {
+            withClient({ access_token: 'tok' }, { data: { xp: 5, subModuleCompleted: true, moduleCompleted: false }, error: null });
+            expect(await service.completeQuiz('a', 'l', 1, 2, 3)).toEqual({ xp: 5, moduleCompleted: true, courseCompleted: false });
+        });
+
         it('invokes complete-quiz with the bearer token', async () => {
             const invoke = withClient({ access_token: 'tok' }, { data: { xp: 5 }, error: null });
             expect(await service.completeQuiz('a', 'l', 1, 2, 3)).toEqual({ xp: 5 });

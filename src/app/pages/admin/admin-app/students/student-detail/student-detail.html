@@ -147,16 +147,16 @@
                 } @else {
                 <div class="flex flex-col gap-4">
                     @for (mod of curriculum(); track mod.id) {
-                    <!-- Module Item -->
+                    <!-- Course Item -->
                     <div class="bg-[#0f1930] rounded-2xl overflow-hidden border border-[#dee5ff]/5">
-                        <button (click)="toggleModule(mod)"
+                        <button (click)="toggleCourse(mod)"
                             class="w-full flex items-center justify-between p-5 hover:bg-[#141f38] transition-colors text-left">
 
                             <div class="flex items-center gap-4">
                                 <div
                                     class="w-12 h-12 rounded-xl bg-[#060e20] flex items-center justify-center overflow-hidden shrink-0">
                                     @if (mod.avatar) {
-                                    <img [ngSrc]="mod.avatar" width="48" height="48" alt="Módulo"
+                                    <img [ngSrc]="mod.avatar" width="48" height="48" alt="Curso"
                                         class="w-full h-full object-cover">
                                     } @else {
                                     <span class="material-symbols-outlined text-[#dee5ff]/30">{{ mod.icon || 'folder'
@@ -197,16 +197,16 @@
                             </div>
                         </button>
 
-                        <!-- Submodules Details -->
+                        <!-- Modules Details -->
                         @if (mod.expanded) {
                         <div class="border-t border-[#dee5ff]/5 p-5 flex flex-col gap-4 bg-[#060e20]/50">
-                            @if (mod.submodules.length === 0) {
-                            <p class="font-body text-sm text-[#dee5ff]/70 text-center py-4">Nenhum submódulo cadastrado.
+                            @if (mod.modules.length === 0) {
+                            <p class="font-body text-sm text-[#dee5ff]/70 text-center py-4">Nenhum módulo cadastrado.
                             </p>
                             } @else {
-                            @for (sub of mod.submodules; track sub.id) {
+                            @for (sub of mod.modules; track sub.id) {
                             <div class="bg-[#091328] rounded-xl overflow-hidden border border-[#dee5ff]/5">
-                                <button (click)="toggleSubmodule(sub)"
+                                <button (click)="toggleModule(sub)"
                                     class="w-full flex items-center justify-between p-4 hover:bg-[#0f1930] transition-colors text-left">
                                     <div class="flex items-center gap-3">
                                         <div
