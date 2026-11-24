@@ -77,7 +77,7 @@ describe('LessonService', () => {
             ]);
             expect(supabaseSpy.from).toHaveBeenCalledWith('lessons');
             expect(fromSpy.select).toHaveBeenCalledWith('id, order, sub_module_id, module:submodules!inner(id, course:modules!inner(slug))');
-            expect(queryChain.eq).toHaveBeenCalledWith('modules.modules.slug', 'course-slug');
+            expect(queryChain.eq).toHaveBeenCalledWith('submodules.modules.slug', 'course-slug');
             expect(queryChain.order).toHaveBeenCalledWith('order', { ascending: true });
         });
 

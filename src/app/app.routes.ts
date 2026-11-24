@@ -1,4 +1,5 @@
-import { Routes } from '@angular/router';
+import { inject } from '@angular/core';
+import { Params, RedirectFunction, Router, Routes } from '@angular/router';
 import { authGuard } from './components/guards/auth.guard';
 import { teacherGuard } from './components/guards/teacher.guard';
 import { dailyLimitGuard } from './components/guards/daily-limit.guard';
@@ -12,6 +13,13 @@ import {
     publicCourseResolver,
     showcaseCoursesResolver,
 } from './services/public-catalog/public-catalog.resolvers';
+
+// redirectTo em string é lido pelo SSR de forma estática, sem trocar ":param"; a função resolve no roteador do navegador.
+const legacyRedirect = (target: (params: Params) => string): RedirectFunction => ({ params, queryParams }) => {
+    const tree = inject(Router).parseUrl(target(params));
+    tree.queryParams = queryParams;
+    return tree;
+};
 
 export const routes: Routes = [
     {
@@ -123,27 +131,27 @@ export const routes: Routes = [
             },
             {
                 path: 's/:slug/ss/:slugModule/lesson/:lessonId/quiz',
-                redirectTo: 'c/:slug/m/:slugModule/lesson/:lessonId/quiz'
+                redirectTo: legacyRedirect(p => `/app/c/${p['slug']}/m/${p['slugModule']}/lesson/${p['lessonId']}/quiz`)
             },
             {
                 path: 's/:slug/ss/:slugModule/lesson/:lessonId/challenge',
-                redirectTo: 'c/:slug/m/:slugModule/lesson/:lessonId/challenge'
+                redirectTo: legacyRedirect(p => `/app/c/${p['slug']}/m/${p['slugModule']}/lesson/${p['lessonId']}/challenge`)
             },
             {
                 path: 's/:slug/ss/:slugModule/lesson/:lessonId',
-                redirectTo: 'c/:slug/m/:slugModule/lesson/:lessonId'
+                redirectTo: legacyRedirect(p => `/app/c/${p['slug']}/m/${p['slugModule']}/lesson/${p['lessonId']}`)
             },
             {
                 path: 's/:slug/ss/:slugModule',
-                redirectTo: 'c/:slug/m/:slugModule'
+                redirectTo: legacyRedirect(p => `/app/c/${p['slug']}/m/${p['slugModule']}`)
             },
             {
                 path: 's/:slug/finished',
-                redirectTo: 'c/:slug/finished'
+                redirectTo: legacyRedirect(p => `/app/c/${p['slug']}/finished`)
             },
             {
                 path: 's/:slug',
-                redirectTo: 'c/:slug'
+                redirectTo: legacyRedirect(p => `/app/c/${p['slug']}`)
             },
             {
                 path: 'ranking',
@@ -220,20 +228,20 @@ export const routes: Routes = [
             },
             {
                 path: 'meus-modulos',
-                redirectTo: 'meus-cursos'
+                redirectTo: '/professor/meus-cursos'
             },
             {
                 path: 'criar-modulo',
                 pathMatch: 'full',
-                redirectTo: 'criar-curso'
+                redirectTo: '/professor/criar-curso'
             },
             {
                 path: 'criar-submodulo/:courseId',
-                redirectTo: 'criar-modulo/:courseId'
+                redirectTo: legacyRedirect(p => `/professor/criar-modulo/${p['courseId']}`)
             },
             {
                 path: 'editar-submodulo/:id',
-                redirectTo: 'editar-modulo/:id'
+                redirectTo: legacyRedirect(p => `/professor/editar-modulo/${p['id']}`)
             },
             {
                 path: 'criar-licao/:idModule',
