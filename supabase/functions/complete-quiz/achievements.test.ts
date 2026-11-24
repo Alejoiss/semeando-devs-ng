@@ -195,6 +195,15 @@ Deno.test('redoing a completed quiz earns PERFECCIONISTA_DO_CODIGO', async () =>
     assertEquals(earnedAchievements.map((a) => a.identification), ['PERFECCIONISTA_DO_CODIGO'])
 })
 
+Deno.test('retries are counted by finished attempts, so a failed first attempt still counts', async () => {
+    const { fake } = await run({ achievements: [ach('PERFECCIONISTA_DO_CODIGO')], retries: 2 })
+    const filters = fake.callsFor('user_quizzes', 'select')
+        .filter((c) => c.filters.some((f) => f[0] === 'eq' && f[1] === 'quiz_id'))
+        .flatMap((c) => c.filters)
+    assertEquals(filters.some((f) => f[0] === 'not' && f[1] === 'completed_at'), true)
+    assertEquals(filters.some((f) => f[0] === 'eq' && f[1] === 'completed'), false)
+})
+
 Deno.test('the first completed attempt does not earn PERFECCIONISTA_DO_CODIGO', async () => {
     const { fake } = await run({ achievements: [ach('PERFECCIONISTA_DO_CODIGO')], retries: 1 })
     assertEquals(updatesOf(fake), [])

@@ -91,7 +91,12 @@ describe('AdminStudentDetail', () => {
             { lesson_id: 'l1', completed: true, score: 80 },
             { lesson: { id: 'l2' }, completed: false },
         ] as any);
-        userQuizzes.getUserQuizzesForUser.and.resolveTo([{ lessonId: 'l3', score: 90 }] as any);
+        userQuizzes.getUserQuizzesForUser.and.resolveTo([
+            { lessonId: 'l3', score: 0, completedAt: null },
+            { lessonId: 'l3', score: 4, completedAt: new Date(2026, 0, 1) },
+            { lessonId: 'l3', score: 90, completedAt: new Date(2026, 0, 2) },
+            { lessonId: 'l3', score: 0, completedAt: new Date(2026, 0, 3) },
+        ] as any);
         achievements.getAchievements.and.resolveTo([
             { id: 'a1', name: 'Aprendiz de Tags', identification: 'APRENDIZ_DE_TAGS', requirement: 'x', icon: '' },
             { id: 'a2', name: 'Imparável', identification: 'IMPARAVEL', requirement: 'y', icon: '' },
@@ -207,7 +212,7 @@ describe('AdminStudentDetail', () => {
 
             expect(lessons[0]).toEqual(jasmine.objectContaining({ isCompleted: true, score: 80, quiz: null }));
             expect(lessons[1]).toEqual(jasmine.objectContaining({ isCompleted: false, score: null }));
-            expect(lessons[2].quiz).toEqual({ lessonId: 'l3', score: 90 } as any);
+            expect(lessons[2].quiz).toEqual(jasmine.objectContaining({ lessonId: 'l3', score: 90 }));
         });
 
         it('starts collapsed and expands courses and modules on demand', async () => {

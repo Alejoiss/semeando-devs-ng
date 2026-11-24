@@ -61,7 +61,7 @@ export async function evaluateAchievements(
                     .select('*', { count: 'exact', head: true })
                     .eq('user_id', userId)
                     .eq('quiz_id', quizData.id)
-                    .eq('completed', true)
+                    .not('completed_at', 'is', null)
                 : Promise.resolve({ count: 0 }),
         ]);
 
@@ -155,7 +155,7 @@ export async function evaluateAchievements(
             }
         }
 
-        // 3.4 Improvement (PERFECCIONISTA_DO_CODIGO): lesson redone, so more than one completed attempt
+        // 3.4 Improvement (PERFECCIONISTA_DO_CODIGO): lesson redone, so more than one finished attempt (passed or not)
         if (retriesRes.count && retriesRes.count > 1) {
             updateAchievement('PERFECCIONISTA_DO_CODIGO', { completed: true });
         }

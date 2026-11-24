@@ -118,6 +118,13 @@ export class AdminStudentDetail implements OnInit {
                 this.userQuizService.getUserQuizzesForUser(id)
             ]);
 
+            const bestQuizByLesson = new Map<string, any>();
+            for (const q of userQuizzes as any[]) {
+                if (!q.completedAt) continue;
+                const best = bestQuizByLesson.get(q.lessonId);
+                if (!best || q.score > best.score) bestQuizByLesson.set(q.lessonId, q);
+            }
+
             // Process curriculum to include user progress and expanded state
             const processed = curriculum.map((mod: any) => {
                 const userCourse = userCourses.find((um: any) => um.module_id === mod.id);
@@ -132,7 +139,7 @@ export class AdminStudentDetail implements OnInit {
                     
                     const lessons = sub.lessons.filter((l: any) => l.type === 'LESSON' || l.type === 'QUIZ' || l.type === 'CHALLENGE').map((lesson: any) => {
                         const userLesson = userLessons.find((ul: any) => (ul.lesson?.id || ul.lesson_id) === lesson.id);
-                        const userQuiz = userQuizzes.find((q: any) => q.lessonId === lesson.id);
+                        const userQuiz = bestQuizByLesson.get(lesson.id);
                         const isCompleted = userLesson?.completed || false;
                         
                         if (isCompleted) {
