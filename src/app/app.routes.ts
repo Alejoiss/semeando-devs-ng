@@ -94,16 +94,6 @@ export const routes: Routes = [
                 data: SHOW_ADS_ROUTE_DATA
             },
             {
-                path: 'trilhas',
-                loadComponent: () => import('./pages/app/tracks/tracks').then((m) => m.Tracks),
-                title: 'Semeando Devs - Trilhas'
-            },
-            {
-                path: 'trilhas/:slug',
-                loadComponent: () => import('./pages/app/track-detail/track-detail').then((m) => m.TrackDetail),
-                title: 'Semeando Devs - Trilha'
-            },
-            {
                 path: 'c/:slug',
                 loadComponent: () => import('./pages/app/module/module').then((m) => m.ModulePage),
                 title: 'Semeando Devs - Módulo',

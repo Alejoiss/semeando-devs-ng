@@ -2,7 +2,8 @@ import { registerLocaleData } from '@angular/common';
 import localePt from '@angular/common/locales/pt';
 import { LOCALE_ID, signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { provideRouter, Router } from '@angular/router';
+import { ActivatedRoute, provideRouter, Router } from '@angular/router';
+import { TrackService } from '../../../services/track';
 import { Courses } from './courses';
 import { CourseService } from '../../../services/course';
 import { UserCourseService } from '../../../services/user-course';
@@ -23,6 +24,8 @@ describe('Courses page', () => {
     let rankingService: jasmine.SpyObj<RankingWeeklyService>;
     let userService: { currentUser: typeof currentUser; loadUserProfile: jasmine.Spy };
     let navigate: jasmine.Spy;
+    let trackService: jasmine.SpyObj<TrackService>;
+    let fragment: string | null;
 
     const mod = (id: string, over: object = {}) => ({
         id, slug: `slug-${id}`, title: `Curso ${id}`, description: `Desc ${id}`, icon: null, avatar: null, inRevision: false, ...over,
@@ -57,6 +60,9 @@ describe('Courses page', () => {
         lessonService = jasmine.createSpyObj('LessonService', ['getLessonsLightweight']);
         userLessonService = jasmine.createSpyObj('UserLessonService', ['getUserLessonsForUser']);
         rankingService = jasmine.createSpyObj('RankingWeeklyService', ['getRanking']);
+        trackService = jasmine.createSpyObj('TrackService', ['getPublishedTracks']);
+        trackService.getPublishedTracks.and.resolveTo([]);
+        fragment = null;
 
         courseService.getCoursesForDisplay.and.resolveTo([mod('a'), mod('b'), mod('c'), mod('rev', { inRevision: true })] as any);
         userCourseService.getUserCoursesForUser.and.resolveTo([
@@ -87,6 +93,8 @@ describe('Courses page', () => {
                 { provide: LessonService, useValue: lessonService },
                 { provide: UserLessonService, useValue: userLessonService },
                 { provide: RankingWeeklyService, useValue: rankingService },
+                { provide: TrackService, useValue: trackService },
+                { provide: ActivatedRoute, useValue: { snapshot: { get fragment() { return fragment; } } } },
             ],
         });
         navigate = spyOn(TestBed.inject(Router), 'navigate').and.resolveTo(true);
@@ -210,6 +218,90 @@ describe('Courses page', () => {
             await settle();
 
             expect(text()).toContain('Erro ao carregar os cursos.');
+        });
+    });
+
+    describe('tracks', () => {
+        const track = (id: string, courseIds: string[], over: object = {}) => ({
+            id, slug: id, title: `Trilha ${id}`, description: '', icon: null, order: 1, published: true,
+            courses: courseIds.map(c => mod(c)), ...over,
+        });
+        const header = (title: string) =>
+            buttons().find(b => b.textContent!.includes(title)) as HTMLButtonElement;
+
+        it('keeps the courses inside collapsed tracks and expands on click', async () => {
+            trackService.getPublishedTracks.and.resolveTo([track('t1', ['a']), track('t2', ['b'])] as any);
+            setup();
+            await settle();
+
+            expect(header('Trilha t2').getAttribute('aria-expanded')).toBe('true');
+            expect(header('Trilha t1').getAttribute('aria-expanded')).toBe('false');
+            expect(text()).not.toContain('Curso a');
+
+            header('Trilha t1').click();
+            await settle();
+
+            expect(header('Trilha t1').getAttribute('aria-expanded')).toBe('true');
+            expect(text()).toContain('Curso a');
+        });
+
+        it('opens the first track when none is in progress', async () => {
+            userCourseService.getUserCoursesForUser.and.resolveTo([]);
+            trackService.getPublishedTracks.and.resolveTo([track('t1', ['a']), track('t2', ['b'])] as any);
+            setup();
+            await settle();
+
+            expect(header('Trilha t1').getAttribute('aria-expanded')).toBe('true');
+            expect(header('Trilha t2').getAttribute('aria-expanded')).toBe('false');
+        });
+
+        it('opens the track named in the URL fragment', async () => {
+            fragment = 't1';
+            trackService.getPublishedTracks.and.resolveTo([track('t1', ['a']), track('t2', ['b'])] as any);
+            setup();
+            await settle();
+
+            expect(header('Trilha t1').getAttribute('aria-expanded')).toBe('true');
+            expect(header('Trilha t2').getAttribute('aria-expanded')).toBe('false');
+        });
+
+        it('summarizes completed courses and ignores courses in revision', async () => {
+            trackService.getPublishedTracks.and.resolveTo([track('t1', ['b', 'c', 'rev'])] as any);
+            setup();
+            await settle();
+
+            expect(header('Trilha t1').textContent).toContain('1 de 2 cursos concluídos');
+        });
+
+        it('lists courses without a track under "Outros cursos" and hides empty tracks', async () => {
+            trackService.getPublishedTracks.and.resolveTo([track('t1', ['a']), track('vazia', ['rev'])] as any);
+            setup();
+            await settle();
+
+            expect(header('Trilha vazia')).toBeUndefined();
+            expect(text()).toContain('Outros cursos');
+            expect(text()).toContain('Curso b');
+            expect(text()).toContain('Curso c');
+        });
+
+        it('falls back to the flat course list when tracks fail to load', async () => {
+            trackService.getPublishedTracks.and.rejectWith(new Error('x'));
+            setup();
+            await settle();
+
+            expect(text()).toContain('Curso a');
+            expect(text()).not.toContain('Outros cursos');
+        });
+
+        it('starts a course from inside a track', async () => {
+            trackService.getPublishedTracks.and.resolveTo([track('t1', ['a'])] as any);
+            setup();
+            await settle();
+
+            button('Iniciar')!.click();
+            await settle();
+
+            expect(userCourseService.startCourse).toHaveBeenCalledWith('a');
         });
     });
 

@@ -44,69 +44,58 @@
                 <p class="text-on-surface-variant text-sm font-body">{{ error() }}</p>
             </div>
             } @else {
-            <!-- Dynamic Course Cards -->
-            @for (item of coursesWithState(); track item.course.id) {
-            <div
-                class="group relative overflow-hidden bg-surface-container rounded-lg p-6 transition hover:bg-surface-container-high hover:translate-y-[-4px]">
-                <div class="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
-                    <div class="flex gap-5">
-                        <div
-                            class="h-16 w-16 shrink-0 flex items-center justify-center rounded-2xl bg-[#fff] p-1 overflow-hidden text-primary">
-                            @if ( item.course.icon) {
-                            <span class="material-symbols-outlined text-3xl" [attr.data-icon]="item.course.icon">
-                                {{ item.course.icon }}
-                            </span>
-                            } @else {
-                            <img [src]="item.course.avatar" alt="{{ item.course.title }}"
-                                class="w-full h-full object-contain rounded-xl">
-                            }
-                        </div>
-                        <div>
-                            <h3 class="text-xl font-bold font-headline mb-1">{{ item.course.title }}</h3>
-                            <p class="text-on-surface-variant text-sm mb-4">{{ item.course.description }}</p>
-                            <div class="flex items-center gap-3">
-                                <div class="w-48 h-2 bg-surface-container-highest rounded-full overflow-hidden">
-                                    <div class="h-full bg-gradient-to-r from-primary to-tertiary shadow-[0_0_10px_rgba(63,194,251,0.5)] transition-[width] duration-500"
-                                        [style.width.%]="item.progressPercentage">
-                                    </div>
-                                </div>
-                                <span class="font-label text-xs text-on-surface-variant">
-                                    @if (item.progressState === 'completed') {
-                                    Concluído
-                                    } @else if (item.progressState === 'in-progress') {
-                                    {{ item.progressPercentage }}% concluído
-                                    } @else {
-                                    Não iniciado
-                                    }
+            @if (trackGroups().length) {
+            @for (group of trackGroups(); track group.track.id) {
+            <section class="bg-surface-container rounded-lg overflow-hidden" [id]="group.track.slug">
+                <h3>
+                    <button type="button" (click)="toggleTrack(group.track.id)"
+                        class="w-full p-6 flex items-center gap-5 text-left transition hover:bg-surface-container-high focus-visible:outline-2 focus-visible:outline-primary"
+                        [attr.aria-expanded]="expandedTrackIds().has(group.track.id)"
+                        [attr.aria-controls]="'trilha-' + group.track.slug">
+                        <span class="h-14 w-14 shrink-0 flex items-center justify-center rounded-2xl bg-primary/10 text-primary">
+                            <span class="material-symbols-outlined text-3xl" aria-hidden="true">{{ group.track.icon || 'route' }}</span>
+                        </span>
+                        <span class="flex-1 min-w-0">
+                            <span class="block text-xl font-bold font-headline text-on-surface">{{ group.track.title }}</span>
+                            <span class="block text-on-surface-variant text-sm mt-1">{{ group.track.description }}</span>
+                            <span class="flex items-center gap-3 mt-3">
+                                <span class="w-40 h-2 bg-surface-container-highest rounded-full overflow-hidden" aria-hidden="true">
+                                    <span class="block h-full bg-gradient-to-r from-primary to-tertiary" [style.width.%]="group.percentage"></span>
                                 </span>
-                            </div>
-                        </div>
-                    </div>
-
-                    @if (item.progressState === 'completed') {
-                    <button [routerLink]="['c', item.course.slug]"
-                        class="flex items-center gap-2 px-8 py-3 bg-gradient-to-r from-primary to-primary-container text-on-primary-container font-headline font-bold rounded-xl glow-primary hover:scale-105 active:scale-95 transition">
-                        <span class="material-symbols-outlined text-sm" data-icon="check_circle">check_circle</span>
-                        Revisar
+                                <span class="font-label text-xs text-on-surface-variant">
+                                    {{ group.completedCount }} de {{ group.items.length }}
+                                    {{ group.items.length === 1 ? 'curso concluído' : 'cursos concluídos' }}
+                                </span>
+                            </span>
+                        </span>
+                        <span class="material-symbols-outlined text-on-surface-variant transition-transform" aria-hidden="true"
+                            [class.rotate-180]="expandedTrackIds().has(group.track.id)">expand_more</span>
                     </button>
-                    } @else if (item.progressState === 'in-progress') {
-                    <button [routerLink]="['c', item.course.slug]"
-                        class="px-8 py-3 bg-gradient-to-r from-secondary to-primary-container text-on-primary-container font-headline font-bold rounded-xl hover:scale-105 active:scale-95 transition">
-                        Continuar
-                    </button>
-                    } @else {
-                    <button (click)="onStartCourse(item.course.id, item.course.slug)"
-                        class="px-8 py-3 bg-gradient-to-r from-primary to-primary-container text-on-primary-container font-headline font-bold rounded-xl glow-primary hover:scale-105 active:scale-95 transition">
-                        Iniciar
-                    </button>
+                </h3>
+                @if (expandedTrackIds().has(group.track.id)) {
+                <div [id]="'trilha-' + group.track.slug" class="px-4 pb-4 flex flex-col gap-4">
+                    @for (item of group.items; track item.course.id) {
+                    <ng-container [ngTemplateOutlet]="courseCard" [ngTemplateOutletContext]="{ $implicit: item }" />
                     }
                 </div>
-            </div>
+                }
+            </section>
+            }
+            @if (ungroupedCourses().length) {
+            <h3 class="font-headline font-bold text-lg text-on-surface mt-4">Outros cursos</h3>
+            @for (item of ungroupedCourses(); track item.course.id) {
+            <ng-container [ngTemplateOutlet]="courseCard" [ngTemplateOutletContext]="{ $implicit: item }" />
+            }
+            }
+            } @else {
+            @for (item of ungroupedCourses(); track item.course.id) {
+            <ng-container [ngTemplateOutlet]="courseCard" [ngTemplateOutletContext]="{ $implicit: item }" />
             } @empty {
             <div class="bg-surface-container rounded-lg p-8 flex flex-col items-center gap-4 text-center">
                 <span class="material-symbols-outlined text-5xl text-on-surface-variant" data-icon="inbox">inbox</span>
                 <p class="text-on-surface-variant text-sm font-body">Nenhum curso disponível no momento.</p>
             </div>
+            }
             }
             }
         </div>
@@ -191,3 +180,62 @@
         </div>
     </div>
 </div>
+
+<ng-template #courseCard let-item>
+            <div
+                class="group relative overflow-hidden bg-surface-container rounded-lg p-6 transition hover:bg-surface-container-high hover:translate-y-[-4px]">
+                <div class="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
+                    <div class="flex gap-5">
+                        <div
+                            class="h-16 w-16 shrink-0 flex items-center justify-center rounded-2xl bg-[#fff] p-1 overflow-hidden text-primary">
+                            @if ( item.course.icon) {
+                            <span class="material-symbols-outlined text-3xl" [attr.data-icon]="item.course.icon">
+                                {{ item.course.icon }}
+                            </span>
+                            } @else {
+                            <img [src]="item.course.avatar" alt="{{ item.course.title }}"
+                                class="w-full h-full object-contain rounded-xl">
+                            }
+                        </div>
+                        <div>
+                            <h3 class="text-xl font-bold font-headline mb-1">{{ item.course.title }}</h3>
+                            <p class="text-on-surface-variant text-sm mb-4">{{ item.course.description }}</p>
+                            <div class="flex items-center gap-3">
+                                <div class="w-48 h-2 bg-surface-container-highest rounded-full overflow-hidden">
+                                    <div class="h-full bg-gradient-to-r from-primary to-tertiary shadow-[0_0_10px_rgba(63,194,251,0.5)] transition-[width] duration-500"
+                                        [style.width.%]="item.progressPercentage">
+                                    </div>
+                                </div>
+                                <span class="font-label text-xs text-on-surface-variant">
+                                    @if (item.progressState === 'completed') {
+                                    Concluído
+                                    } @else if (item.progressState === 'in-progress') {
+                                    {{ item.progressPercentage }}% concluído
+                                    } @else {
+                                    Não iniciado
+                                    }
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+
+                    @if (item.progressState === 'completed') {
+                    <button [routerLink]="['c', item.course.slug]"
+                        class="flex items-center gap-2 px-8 py-3 bg-gradient-to-r from-primary to-primary-container text-on-primary-container font-headline font-bold rounded-xl glow-primary hover:scale-105 active:scale-95 transition">
+                        <span class="material-symbols-outlined text-sm" data-icon="check_circle">check_circle</span>
+                        Revisar
+                    </button>
+                    } @else if (item.progressState === 'in-progress') {
+                    <button [routerLink]="['c', item.course.slug]"
+                        class="px-8 py-3 bg-gradient-to-r from-secondary to-primary-container text-on-primary-container font-headline font-bold rounded-xl hover:scale-105 active:scale-95 transition">
+                        Continuar
+                    </button>
+                    } @else {
+                    <button (click)="onStartCourse(item.course.id, item.course.slug)"
+                        class="px-8 py-3 bg-gradient-to-r from-primary to-primary-container text-on-primary-container font-headline font-bold rounded-xl glow-primary hover:scale-105 active:scale-95 transition">
+                        Iniciar
+                    </button>
+                    }
+                </div>
+            </div>
+</ng-template>
