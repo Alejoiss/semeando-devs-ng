@@ -275,4 +275,135 @@ export function registerStructureTools(server, ctx) {
     },
     { write: true },
   );
+
+  async function trackWithCourses(trackId) {
+    const track = unwrap(await db.from('tracks').select('id, slug, title, description, icon, order, published').eq('id', trackId).single(), 'track');
+    const rows = unwrap(
+      await db.from('track_courses').select('position, course:modules(id, title, slug, in_revision)').eq('track_id', trackId).order('position'),
+      'track_courses',
+    );
+    return { ...track, courses: rows.map((r) => ({ position: r.position, ...r.course })) };
+  }
+
+  async function replaceTrackCourses(trackId, courseIds) {
+    if (new Set(courseIds).size !== courseIds.length) throw new Error('course_ids tem cursos repetidos.');
+    if (courseIds.length) {
+      const found = unwrap(await db.from('modules').select('id').in('id', courseIds), 'cursos');
+      const missing = courseIds.filter((cid) => !found.some((f) => f.id === cid));
+      if (missing.length) throw new Error(`Curso(s) inexistente(s): ${missing.join(', ')}`);
+    }
+    unwrap(await db.from('track_courses').delete().eq('track_id', trackId), 'limpar trilha');
+    if (courseIds.length) {
+      unwrap(
+        await db.from('track_courses').insert(courseIds.map((module_id, i) => ({ track_id: trackId, module_id, position: i + 1 }))),
+        'track_courses',
+      );
+    }
+  }
+
+  defineTool(
+    server,
+    ctx,
+    'list_tracks',
+    {
+      title: 'Listar trilhas',
+      description: 'Lista as trilhas (publicadas ou não) com seus cursos em ordem.',
+      inputSchema: {},
+      annotations: { readOnlyHint: true },
+    },
+    async () => {
+      const tracks = unwrap(await db.from('tracks').select('id').order('order'), 'tracks');
+      return Promise.all(tracks.map((t) => trackWithCourses(t.id)));
+    },
+  );
+
+  defineTool(
+    server,
+    ctx,
+    'create_track',
+    {
+      title: 'Criar trilha',
+      description:
+        'Cria uma trilha OCULTA (published = false) e, opcionalmente, associa cursos na ordem informada. Um curso pode estar em várias trilhas.',
+      inputSchema: {
+        title: z.string().min(1),
+        description: z.string().min(1),
+        slug: z.string().optional().describe('Padrão: derivado do título'),
+        icon: z.string().optional().describe('Nome de ícone Material Symbols'),
+        course_ids: z.array(id).optional().describe('Cursos na ordem da trilha'),
+      },
+    },
+    async ({ course_ids = [], ...t }) => {
+      const slug = t.slug ?? slugify(t.title);
+      await assertFreeSlug('tracks', slug);
+      const last = unwrap(await db.from('tracks').select('order').order('order', { ascending: false }).limit(1), 'ordem');
+      const row = unwrap(
+        await db
+          .from('tracks')
+          .insert({ title: t.title, description: t.description, slug, icon: t.icon ?? null, order: (last[0]?.order ?? 0) + 1, published: false })
+          .select('id')
+          .single(),
+        'tracks',
+      );
+      try {
+        await replaceTrackCourses(row.id, course_ids);
+      } catch (e) {
+        await db.from('tracks').delete().eq('id', row.id);
+        throw e;
+      }
+      return trackWithCourses(row.id);
+    },
+    { write: true },
+  );
+
+  defineTool(
+    server,
+    ctx,
+    'update_track',
+    {
+      title: 'Editar trilha',
+      description:
+        'Altera título, descrição, slug, ícone, ordem entre trilhas ou publicação. course_ids SUBSTITUI a lista de cursos pela ordem enviada. published=true torna a trilha visível a todos os alunos: só use com aprovação explícita.',
+      inputSchema: {
+        track_id: id,
+        title: z.string().min(1).optional(),
+        description: z.string().min(1).optional(),
+        slug: z.string().optional(),
+        icon: z.string().optional(),
+        order: z.number().int().optional(),
+        published: z.boolean().optional(),
+        course_ids: z.array(id).optional().describe('Lista completa de cursos na ordem desejada'),
+      },
+    },
+    async ({ track_id, course_ids, ...patch }) => {
+      const fields = Object.fromEntries(Object.entries(patch).filter(([, v]) => v !== undefined));
+      if (fields.slug) {
+        const cur = unwrap(await db.from('tracks').select('slug').eq('id', track_id).single(), 'track');
+        if (cur.slug !== fields.slug) await assertFreeSlug('tracks', fields.slug);
+      }
+      if (Object.keys(fields).length) unwrap(await db.from('tracks').update(fields).eq('id', track_id), 'update_track');
+      if (course_ids) await replaceTrackCourses(track_id, course_ids);
+      return trackWithCourses(track_id);
+    },
+    { write: true },
+  );
+
+  defineTool(
+    server,
+    ctx,
+    'delete_track',
+    {
+      title: 'Excluir trilha',
+      description: 'Exclui uma trilha e suas associações. Os cursos não são afetados. Exige confirm_title igual ao título.',
+      inputSchema: { track_id: id, confirm_title: z.string() },
+      annotations: { destructiveHint: true },
+    },
+    async ({ track_id, confirm_title }) => {
+      const t = unwrap(await db.from('tracks').select('id, title').eq('id', track_id).single(), 'track');
+      if (t.title !== confirm_title) throw new Error(`confirm_title não confere. Título atual: "${t.title}".`);
+      unwrap(await db.from('tracks').delete().eq('id', track_id), 'delete_track');
+      return { deleted: t };
+    },
+    { write: true },
+  );
 }

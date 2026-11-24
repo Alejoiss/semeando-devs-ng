@@ -27,6 +27,7 @@ Para testar sem risco, aponte `MCP_SUPABASE_*` para o Supabase local (`http://12
 | --- | --- |
 | Quiz nas redes | `get_random_quiz_question`, `mark_question_published`, `unmark_question_published`, `list_published_questions` |
 | Navegação | `list_courses`, `list_modules`, `find_module`, `list_lessons`, `get_lesson` |
+| Trilhas | `list_tracks`, `create_track`, `update_track`, `delete_track` |
 | Estrutura | `create_roadmap`, `create_course`, `update_course`, `delete_course`, `create_module`, `update_module`, `delete_module` |
 | Lições | `create_lesson`, `set_lesson_content`, `update_lesson`, `delete_lesson`, `validate_lesson` |
 | Partes da lição | `add_section`, `update_section`, `delete_section`, `add_extra_material`, `delete_extra_material`, `add_quiz_question`, `update_quiz_question`, `delete_quiz_question` |

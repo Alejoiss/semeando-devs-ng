@@ -1,0 +1,156 @@
+<div class="px-6 pb-12 flex flex-col gap-8">
+    <header class="flex flex-wrap items-start justify-between gap-4">
+        <div class="flex flex-col gap-2">
+            <h2 class="text-3xl font-bold text-[#dee5ff] font-headline">Trilhas</h2>
+            <p class="text-[#dee5ff]/70 font-body">Agrupe cursos em ordem. Um curso pode estar em várias trilhas.</p>
+        </div>
+        @if (!editing()) {
+            <button type="button" (click)="startNew()"
+                class="inline-flex items-center gap-2 h-12 px-6 rounded-xl bg-[#3fc2fb] text-[#060e20] font-headline font-bold focus:outline-none focus-visible:ring-2 focus-visible:ring-[#dee5ff]">
+                <span class="material-symbols-outlined" aria-hidden="true">add</span>
+                Nova trilha
+            </button>
+        }
+    </header>
+
+    @if (loadError()) {
+        <p class="text-error font-label" role="alert">{{ loadError() }}</p>
+    }
+
+    @if (editing(); as current) {
+        <form [formGroup]="form" (ngSubmit)="save()" class="bg-[#091328] rounded-3xl p-8 flex flex-col gap-6" novalidate>
+            <h3 class="font-headline font-bold text-xl text-[#dee5ff]">{{ current === 'new' ? 'Nova trilha' : 'Editar trilha' }}</h3>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                    <label for="track-title" class="block font-label text-sm text-[#dee5ff]/80 mb-2">Título</label>
+                    <input id="track-title" type="text" formControlName="title" (input)="onTitleInput()"
+                        [attr.aria-invalid]="showError('title')"
+                        class="w-full bg-[#060e20] text-[#dee5ff] rounded-xl px-4 h-12 font-body focus:outline-none focus:ring-2 focus:ring-[#3fc2fb]/60">
+                    @if (showError('title')) {
+                        <p class="font-label text-sm text-error mt-2" role="alert">Informe o título.</p>
+                    }
+                </div>
+                <div>
+                    <label for="track-slug" class="block font-label text-sm text-[#dee5ff]/80 mb-2">Endereço (slug)</label>
+                    <input id="track-slug" type="text" formControlName="slug" spellcheck="false"
+                        [attr.aria-invalid]="showError('slug')"
+                        class="w-full bg-[#060e20] text-[#dee5ff] rounded-xl px-4 h-12 font-body focus:outline-none focus:ring-2 focus:ring-[#3fc2fb]/60">
+                    @if (showError('slug')) {
+                        <p class="font-label text-sm text-error mt-2" role="alert">Use letras minúsculas, números e hífens.</p>
+                    }
+                </div>
+                <div class="md:col-span-2">
+                    <label for="track-description" class="block font-label text-sm text-[#dee5ff]/80 mb-2">Descrição</label>
+                    <textarea id="track-description" formControlName="description" rows="3"
+                        class="w-full bg-[#060e20] text-[#dee5ff] rounded-xl px-4 py-3 font-body focus:outline-none focus:ring-2 focus:ring-[#3fc2fb]/60"></textarea>
+                </div>
+                <div>
+                    <label for="track-icon" class="block font-label text-sm text-[#dee5ff]/80 mb-2">Ícone (Material Symbols)</label>
+                    <input id="track-icon" type="text" formControlName="icon" placeholder="route"
+                        class="w-full bg-[#060e20] text-[#dee5ff] rounded-xl px-4 h-12 font-body focus:outline-none focus:ring-2 focus:ring-[#3fc2fb]/60 placeholder:text-[#dee5ff]/60">
+                </div>
+                <div class="flex items-end">
+                    <label class="flex items-center gap-3 h-12 font-label text-[#dee5ff] cursor-pointer">
+                        <input type="checkbox" formControlName="published" class="w-5 h-5 accent-[#3fc2fb]">
+                        Publicada para os alunos
+                    </label>
+                </div>
+            </div>
+
+            <fieldset class="flex flex-col gap-4">
+                <legend class="font-label text-sm text-[#dee5ff]/80 mb-2">Cursos da trilha, em ordem</legend>
+                <ol class="flex flex-col gap-2">
+                    @for (course of selectedCourses(); track course.id; let i = $index; let last = $last) {
+                        <li class="flex items-center gap-3 bg-[#0f1930] rounded-xl px-4 py-3 text-[#dee5ff]">
+                            <span class="font-headline font-bold text-[#3fc2fb] w-6">{{ i + 1 }}</span>
+                            <span class="flex-1 font-body">
+                                {{ course.title }}
+                                @if (course.inRevision) {
+                                    <span class="font-label text-xs text-[#fe69ac] ml-2">oculto</span>
+                                }
+                            </span>
+                            <button type="button" (click)="moveCourse(i, -1)" [disabled]="i === 0"
+                                [attr.aria-label]="'Mover ' + course.title + ' para cima'"
+                                class="w-11 h-11 rounded-lg hover:bg-[#141f38] disabled:opacity-40 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#3fc2fb]">
+                                <span class="material-symbols-outlined" aria-hidden="true">arrow_upward</span>
+                            </button>
+                            <button type="button" (click)="moveCourse(i, 1)" [disabled]="last"
+                                [attr.aria-label]="'Mover ' + course.title + ' para baixo'"
+                                class="w-11 h-11 rounded-lg hover:bg-[#141f38] disabled:opacity-40 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#3fc2fb]">
+                                <span class="material-symbols-outlined" aria-hidden="true">arrow_downward</span>
+                            </button>
+                            <button type="button" (click)="removeCourse(course.id)"
+                                [attr.aria-label]="'Remover ' + course.title + ' da trilha'"
+                                class="w-11 h-11 rounded-lg hover:bg-[#141f38] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#3fc2fb]">
+                                <span class="material-symbols-outlined" aria-hidden="true">close</span>
+                            </button>
+                        </li>
+                    } @empty {
+                        <li class="text-[#dee5ff]/70 font-body">Nenhum curso na trilha ainda.</li>
+                    }
+                </ol>
+
+                @if (availableCourses().length) {
+                    <div>
+                        <label for="track-add-course" class="block font-label text-sm text-[#dee5ff]/80 mb-2">Adicionar curso</label>
+                        <select id="track-add-course" #picker (change)="addCourse(picker.value); picker.value = ''"
+                            class="w-full md:w-80 bg-[#060e20] text-[#dee5ff] rounded-xl px-4 h-12 font-body focus:outline-none focus:ring-2 focus:ring-[#3fc2fb]/60 cursor-pointer">
+                            <option value="">Selecione...</option>
+                            @for (course of availableCourses(); track course.id) {
+                                <option [value]="course.id">{{ course.title }}</option>
+                            }
+                        </select>
+                    </div>
+                }
+            </fieldset>
+
+            @if (saveError()) {
+                <p class="font-label text-sm text-error" role="alert">{{ saveError() }}</p>
+            }
+
+            <div class="flex gap-3">
+                <button type="submit" [disabled]="isSaving()"
+                    class="h-12 px-6 rounded-xl bg-[#3fc2fb] text-[#060e20] font-headline font-bold disabled:opacity-60 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#dee5ff]">
+                    {{ isSaving() ? 'Salvando...' : 'Salvar' }}
+                </button>
+                <button type="button" (click)="cancel()"
+                    class="h-12 px-6 rounded-xl bg-[#0f1930] text-[#dee5ff] font-headline font-bold hover:bg-[#141f38] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#3fc2fb]">
+                    Cancelar
+                </button>
+            </div>
+        </form>
+    } @else if (isLoading()) {
+        <p class="text-[#dee5ff]/70" role="status">Carregando trilhas...</p>
+    } @else {
+        <ul class="grid grid-cols-1 xl:grid-cols-2 gap-4">
+            @for (track of tracks(); track track.id) {
+                <li class="bg-[#091328] rounded-3xl p-6 flex flex-col gap-4">
+                    <div class="flex items-start gap-4">
+                        <span class="material-symbols-outlined text-[#3fc2fb] bg-[#0f1930] rounded-xl p-2" aria-hidden="true">{{ track.icon || 'route' }}</span>
+                        <div class="flex-1">
+                            <h3 class="font-headline font-bold text-xl text-[#dee5ff]">{{ track.title }}</h3>
+                            <p class="font-label text-xs text-[#dee5ff]/70">
+                                {{ track.published ? 'Publicada' : 'Oculta' }} · {{ track.courses.length }}
+                                {{ track.courses.length === 1 ? 'curso' : 'cursos' }}
+                            </p>
+                        </div>
+                    </div>
+                    <p class="font-body text-[#dee5ff]/80">{{ track.description }}</p>
+                    <div class="flex gap-3">
+                        <button type="button" (click)="startEdit(track)"
+                            class="h-11 px-5 rounded-xl bg-[#0f1930] text-[#dee5ff] font-label hover:bg-[#141f38] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#3fc2fb]">
+                            Editar
+                        </button>
+                        <button type="button" (click)="remove(track)"
+                            class="h-11 px-5 rounded-xl bg-[#0f1930] text-error font-label hover:bg-[#141f38] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#3fc2fb]">
+                            Excluir
+                        </button>
+                    </div>
+                </li>
+            } @empty {
+                <li class="text-[#dee5ff]/70 font-body">Nenhuma trilha cadastrada.</li>
+            }
+        </ul>
+    }
+</div>

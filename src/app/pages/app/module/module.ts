@@ -6,6 +6,8 @@ import { UserModuleService } from '../../../services/user-module';
 import { LessonService } from '../../../services/lesson';
 import { UserLessonService } from '../../../services/user-lesson';
 import { CourseService } from '../../../services/course';
+import { TrackService } from '../../../services/track';
+import { TrackSummary } from '../../../../models/track/track';
 import { AchievementsService } from '../../../services/achievements';
 import { UserService } from '../../../services/user';
 import { Module } from '../../../../models/module/module';
@@ -39,12 +41,14 @@ export class ModulePage implements OnInit {
     private lessonService = inject(LessonService);
     private userLessonService = inject(UserLessonService);
     private courseService = inject(CourseService);
+    private trackService = inject(TrackService);
     private achievementsService = inject(AchievementsService);
     protected readonly userService = inject(UserService);
     private sectionContentService = inject(SectionContentService);
     private sanitizer = inject(DomSanitizer);
 
     course = signal<Course | null>(null);
+    tracks = signal<TrackSummary[]>([]);
     modulesWithState = signal<ModuleWithState[]>([]);
     achievement = signal<Achievements | null>(null);
     isLoading = signal<boolean>(true);
@@ -109,12 +113,14 @@ export class ModulePage implements OnInit {
             }
 
             // Group 2: Fetch resources dependent on course ID
-            const [achievement, presentation] = await Promise.all([
+            const [achievement, presentation, tracks] = await Promise.all([
                 this.achievementsService.getAchievementByCourseId(course.id).catch(() => null),
-                this.sectionContentService.getSectionContentsByCourseId(course.id).catch(() => [])
+                this.sectionContentService.getSectionContentsByCourseId(course.id).catch(() => []),
+                this.trackService.getTracksForCourse(course.id).catch(() => [])
             ]);
 
             this.achievement.set(achievement);
+            this.tracks.set(tracks);
             this.presentationContents.set(presentation);
 
             const completedLessonIds = new Set<string>(

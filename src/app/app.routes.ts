@@ -94,6 +94,16 @@ export const routes: Routes = [
                 data: SHOW_ADS_ROUTE_DATA
             },
             {
+                path: 'trilhas',
+                loadComponent: () => import('./pages/app/tracks/tracks').then((m) => m.Tracks),
+                title: 'Semeando Devs - Trilhas'
+            },
+            {
+                path: 'trilhas/:slug',
+                loadComponent: () => import('./pages/app/track-detail/track-detail').then((m) => m.TrackDetail),
+                title: 'Semeando Devs - Trilha'
+            },
+            {
                 path: 'c/:slug',
                 loadComponent: () => import('./pages/app/module/module').then((m) => m.ModulePage),
                 title: 'Semeando Devs - Módulo',
@@ -284,6 +294,11 @@ export const routes: Routes = [
                 title: 'Detalhes do Aluno - Semeando Devs'
             },
 
+            {
+                path: 'trilhas',
+                loadComponent: () => import('./pages/admin/admin-app/tracks/tracks').then(m => m.AdminTracks),
+                title: 'Trilhas - Semeando Devs'
+            },
             {
                 path: 'cadastro-de-cupons',
                 loadComponent: () => import('./pages/admin/admin-app/coupons/coupons').then(m => m.AdminCoupons),

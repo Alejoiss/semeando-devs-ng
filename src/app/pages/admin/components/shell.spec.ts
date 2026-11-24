@@ -39,6 +39,7 @@ describe('Admin shell', () => {
             expect(hrefs()).toEqual([
                 '/admin/dashboard',
                 '/admin/lista-de-alunos',
+                '/admin/trilhas',
                 '/admin/cadastro-de-cupons',
                 '/admin/envio-de-newsletter',
                 '/admin/relatorio-de-receita',

@@ -9,11 +9,8 @@ import { LessonService } from '../../../services/lesson';
 import { UserLessonService } from '../../../services/user-lesson';
 import { RankingWeeklyService } from '../../../services/ranking-weekly';
 import { UserService } from '../../../services/user';
-import { Lesson } from '../../../../models/lesson/lesson';
-import { UserLesson } from '../../../../models/user-lesson/user-lesson';
+import { courseProgress, ProgressState } from '../../../utils/course-progress';
 import { RankingEntry } from '../../../../models/ranking/ranking';
-
-type ProgressState = 'not-started' | 'in-progress' | 'completed';
 
 interface CourseWithState {
     course: Course;
@@ -49,35 +46,16 @@ export class Courses implements OnInit {
     protected readonly isLoading = signal<boolean>(true);
     protected readonly error = signal<string | null>(null);
 
-    protected readonly coursesWithState = computed<CourseWithState[]>(() => {
-        const userCourseMap = new Map<string, any>(
-            this.userCourses().map((um) => [um.module_id || um.course?.id, um])
-        );
-
-        return this.courses().map((course) => {
-            const userCourse = userCourseMap.get(course.id);
-            let progressState: ProgressState = 'not-started';
-            let progressPercentage = 0;
-
-            if (userCourse) {
-                progressState = userCourse.completed ? 'completed' : 'in-progress';
-                
-                if (progressState === 'completed') {
-                    progressPercentage = 100;
-                } else {
-                    const courseLessons = this.allLessons().filter(l => l.courseId === course.id);
-                    if (courseLessons.length > 0) {
-                        const completedCount = this.userLessons().filter(ul => 
-                            ul.completed && courseLessons.some(l => l.id === (ul.lesson?.id || ul.lesson_id))
-                        ).length;
-                        progressPercentage = Math.round((completedCount / courseLessons.length) * 100);
-                    }
-                }
-            }
-
-            return { course, progressState, progressPercentage };
-        });
-    });
+    protected readonly coursesWithState = computed<CourseWithState[]>(() =>
+        this.courses().map((course) => {
+            const { state, percentage } = courseProgress(course.id, {
+                userCourses: this.userCourses(),
+                lessons: this.allLessons(),
+                userLessons: this.userLessons(),
+            });
+            return { course, progressState: state, progressPercentage: percentage };
+        })
+    );
 
     async ngOnInit(): Promise<void> {
         await this.loadData();
