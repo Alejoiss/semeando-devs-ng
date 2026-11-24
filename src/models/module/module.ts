@@ -8,5 +8,6 @@ export interface Module {
     icon?: string;
     order: number;
     slug: string;
+    published?: boolean;
     course: Course;
 }

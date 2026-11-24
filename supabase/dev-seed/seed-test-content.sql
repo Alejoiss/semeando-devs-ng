@@ -396,3 +396,5 @@ Estilize a classe `.card`:
 2. Um `padding` confortável
 3. Mude a cor de fundo ao passar o mouse (`:hover`)', 0) on conflict (id) do nothing;
 commit;
+
+update public.submodules s set published = true from public.modules m where m.id = s.module_id and m.in_revision = false and s.id in (select id from public.submodules where module_id in ('11ba5020-4323-5483-9824-1410497398fa', '381a7121-0664-5437-a734-631e004ae378'));

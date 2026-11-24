@@ -104,7 +104,7 @@ function toPublicCourses(rows: CurriculumRow[]): PublicCourse[] {
                 lessons: withLessonSlugs([...sub.lessons].sort(byOrder).filter(lesson => lesson.type === 'LESSON')),
             }))
             .filter(sub => sub.lessons.length > 0),
-    }));
+    })).filter(course => course.modules.length > 0);
 }
 
 /**

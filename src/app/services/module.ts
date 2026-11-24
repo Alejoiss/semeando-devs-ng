@@ -88,7 +88,7 @@ export class ModuleService {
         return data as unknown as Module;
     }
 
-    async updateModule(id: string, payload: { title?: string; description?: string; slug?: string; avatar?: string | null; icon?: string | null }): Promise<Module> {
+    async updateModule(id: string, payload: { title?: string; description?: string; slug?: string; avatar?: string | null; icon?: string | null; published?: boolean }): Promise<Module> {
         const { data, error } = await this.supabase
             .from('submodules')
             .update(payload)
@@ -101,6 +101,10 @@ export class ModuleService {
         }
 
         return data as unknown as Module;
+    }
+
+    async setModulePublished(id: string, published: boolean): Promise<Module> {
+        return this.updateModule(id, { published });
     }
 
     async getModuleById(id: string): Promise<Module | null> {

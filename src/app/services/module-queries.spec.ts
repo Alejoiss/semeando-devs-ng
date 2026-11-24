@@ -60,6 +60,18 @@ describe('ModuleService queries', () => {
         await expectAsync(service.updateModule('s', {})).toBeRejectedWithError('boom');
     });
 
+    it('publishes and unpublishes a module', async () => {
+        const stub = use({ data: { id: 's', published: true } });
+        expect(await service.setModulePublished('s', true)).toEqual({ id: 's', published: true } as any);
+        expect(stub.spy(0, 'update')).toHaveBeenCalledWith({ published: true });
+        expect(stub.spy(0, 'eq')).toHaveBeenCalledWith('id', 's');
+        const off = use({ data: { id: 's', published: false } });
+        await service.setModulePublished('s', false);
+        expect(off.spy(0, 'update')).toHaveBeenCalledWith({ published: false });
+        use(fails);
+        await expectAsync(service.setModulePublished('s', true)).toBeRejectedWithError('boom');
+    });
+
     it('gets a module by id, null on any failure', async () => {
         use({ data: { id: 's' } });
         expect(await service.getModuleById('s')).toEqual({ id: 's' } as any);

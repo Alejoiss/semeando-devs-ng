@@ -48,6 +48,22 @@ describe('PublicCatalogService', () => {
         expect(course.modules[0].lessons.map(lesson => lesson.id)).toEqual(['l1', 'l2', 'l3']);
     });
 
+    it('hides courses that have no published module yet', async () => {
+        source.curriculum.and.resolveTo([
+            ...curriculum,
+            {
+                id: 'm2', slug: 'java', title: 'Java', description: null, icon: null, avatar: null,
+                submodules: [{ id: 's9', slug: 'em-breve', title: 'Em breve', description: null, icon: null, order: 1, lessons: [] }],
+            },
+            { id: 'm3', slug: 'go', title: 'Go', description: null, icon: null, avatar: null, submodules: [] },
+        ]);
+
+        const courses = await service.getCurriculum();
+
+        expect(courses.map(course => course.slug)).toEqual(['css']);
+        expect(await service.getCourse('java')).toBeNull();
+    });
+
     it('generates unique lesson slugs within a module', async () => {
         const [course] = await service.getCurriculum();
 
