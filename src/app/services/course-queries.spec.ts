@@ -48,8 +48,11 @@ describe('CourseService queries', () => {
     });
 
     it('gets the curriculum of published courses only', async () => {
-        const stub = use({ data: [row] });
-        expect(await service.getCurriculum()).toEqual([row]);
+        const stub = use({ data: [{ ...row, submodules: [{ id: 's1', lessons: [] }] }, { ...row, id: 'm2', submodules: null }] });
+        expect(await service.getCurriculum()).toEqual([
+            { ...row, modules: [{ id: 's1', lessons: [] }] },
+            { ...row, id: 'm2', modules: [] },
+        ]);
         expect(stub.spy(0, 'eq')).toHaveBeenCalledWith('in_revision', false);
         use({ error: { message: 'boom' } });
         await expectAsync(service.getCurriculum()).toBeRejectedWithError('boom');

@@ -80,7 +80,7 @@ export class CourseService {
             throw new Error(error.message);
         }
 
-        return data;
+        return (data ?? []).map(({ submodules, ...course }: any) => ({ ...course, modules: submodules ?? [] }));
     }
 
     async getTeacherCourses(teacherId: string): Promise<Course[]> {
