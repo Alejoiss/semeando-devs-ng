@@ -1,4 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { provideRouter } from '@angular/router';
 import { Quiz } from './quiz';
 
 describe('Quiz', () => {
@@ -28,5 +29,34 @@ describe('Quiz', () => {
     // REQ-3.1: Verify quiz completion triggers exactly once
     // REQ-3.2: Verify keyboard shortcuts are ignored during completion
     // REQ-3.3: Verify loading indicators are displayed
+  });
+
+  describe('leaving before the result is saved', () => {
+    function unload(): BeforeUnloadEvent {
+      const event = new Event('beforeunload', { cancelable: true }) as BeforeUnloadEvent;
+      (component as any).warnBeforeLosingResult(event);
+      return event;
+    }
+
+    beforeEach(() => {
+      TestBed.configureTestingModule({ providers: [provideRouter([])] });
+      fixture = TestBed.createComponent(Quiz);
+      component = fixture.componentInstance;
+    });
+
+    it('lets the user leave while the quiz is still in progress', () => {
+      expect(unload().defaultPrevented).toBeFalse();
+    });
+
+    it('asks for confirmation once the quiz is finished but the result is not saved', () => {
+      (component as any).finished.set(true);
+      expect(unload().defaultPrevented).toBeTrue();
+    });
+
+    it('lets the user leave after the result is saved', () => {
+      (component as any).finished.set(true);
+      (component as any).quizCompletionResult.set({ xpAwarded: 10 });
+      expect(unload().defaultPrevented).toBeFalse();
+    });
   });
 });

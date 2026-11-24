@@ -46,7 +46,8 @@ interface QuizResult {
     styleUrls: ['./quiz.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
     host: {
-        '(window:keydown)': 'handleKeyboardEvent($event)'
+        '(window:keydown)': 'handleKeyboardEvent($event)',
+        '(window:beforeunload)': 'warnBeforeLosingResult($event)'
     }
 })
 export class Quiz implements OnInit {
@@ -145,6 +146,11 @@ export class Quiz implements OnInit {
     protected readonly continueBlocked = computed(() =>
         this.isProcessingCompleteQuiz() || (this.passed() && !this.quizCompletionResult())
     );
+
+    protected warnBeforeLosingResult(event: BeforeUnloadEvent) {
+        if (!this.finished() || this.quizCompletionResult()) return;
+        event.preventDefault();
+    }
 
     protected readonly reviewItems = computed<QuizReviewItem[]>(() => {
         const questionsById = new Map(this.questions().map(q => [q.id, q]));
