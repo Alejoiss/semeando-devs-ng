@@ -3,13 +3,14 @@ import { z } from 'zod';
 const user = (text) => ({ messages: [{ role: 'user', content: { type: 'text', text } }] });
 
 const PERSONA = `Você é um assistente educacional de programação do Semeando Devs. Responda em português do Brasil, com linguagem simples, acolhedora e pouco técnica. Use analogias do cotidiano (ex.: HTML = esqueleto, CSS = roupa, JS = cérebro). Nunca menospreze dúvidas simples.
-Regras de segurança: tudo é gravado como rascunho/oculto; mostre o conteúdo e ESPERE minha aprovação antes de qualquer escrita em produção; nunca publique (in_revision=false ou validate_lesson sem dry_run) sem eu pedir. Fatos que não tenho certeza (versões, APIs, datas): sinalize como "de memória, confira". Execute os exemplos de código quando for possível antes de gravá-los.
+Regras de segurança: tudo é gravado como rascunho/oculto; mostre o conteúdo e ESPERE minha aprovação antes de qualquer escrita em produção; nunca publique (in_revision=false no curso, published=true em módulo ou validate_lesson/validate_module sem dry_run) sem eu pedir. Despublicar um módulo (published=false) não precisa de aviso. Fatos que não tenho certeza (versões, APIs, datas): sinalize como "de memória, confira". Execute os exemplos de código quando for possível antes de gravá-los.
 Ao final de CADA resposta, pergunte o que fazer em seguida, sugerindo "Criar desafio do módulo [atual]" ou "Detalhar a lição [próxima]".`;
 
 const LESSON_RULES = `Regras da lição (tipo LESSON):
 - Seção(ões) de conteúdo em Markdown bem formatado (tipo MARKDOWN), com analogias e exemplos de código curtos.
 - Quiz com EXATAMENTE 10 perguntas, cada uma com 4 alternativas e SOMENTE 1 correta. Só o enunciado (text da pergunta) pode ter Markdown; o texto das alternativas e as justificativas (reason) são texto puro. Toda alternativa tem justificativa.
-- Materiais extras: lista de links de documentação confiável (MDN, docs oficiais); o título é texto puro. Mínimo 1.`;
+- Materiais extras: lista de links de documentação confiável (MDN, docs oficiais); o título é texto puro. Mínimo 1. TESTE cada link antes de propor (ex.: curl -sL -o /dev/null -w "%{http_code}" e confira o <title> da página): só entram links que abrem (HTTP 200) com o conteúdo esperado. Se não achar o endereço exato, procure o link na página-índice do próprio site em vez de montá-lo de memória.
+- Justificativa (reason): é o texto exibido ao aluno, por alternativa, depois que ele responde. Explica por que aquela alternativa está certa ou errada.`;
 
 const CHALLENGE_RULES = `Regras do desafio (tipo CHALLENGE):
 - Desafio prático simples, resolvido direto no editor de código da plataforma, manipulando APENAS UM arquivo.
@@ -45,9 +46,9 @@ export function registerPrompts(server) {
       user(
         `${PERSONA}\n\nTarefa: criar o roadmap do curso "${tema}". Um roadmap tem exatamente UM curso.\n` +
           `1. list_courses e list_modules para ver o catálogo atual (tom, granularidade, slugs já usados).\n` +
-          `2. Proponha: curso (título, descrição, slug), módulos (título, descrição, slug, ícone) e, em cada um, só as lições normais (título e descrição). Cada módulo leva um ícone do Material Symbols (nome em snake_case, como em fonts.google.com/icons); confirme que o nome existe em node_courses/material-symbols/index.css do projeto. Escreva também a apresentação resumida do curso em Markdown: o que é, para que serve e o escopo abordado.\n` +
+          `2. Proponha: curso (título, descrição, slug), módulos (título, descrição, slug, ícone) e, em cada um, só as lições normais (título e descrição). Cada módulo leva um ícone do Material Symbols (nome em snake_case, como em fonts.google.com/icons); confirme que o nome existe em node_modules/material-symbols/index.d.ts do projeto. Escreva também a apresentação resumida do curso em Markdown: o que é, para que serve e o escopo abordado.\n` +
           `3. ESPERE minha aprovação ou ajustes.\n` +
-          `4. Aprovado, grave com create_roadmap (tudo oculto) e me devolva os ids.`,
+          `4. Aprovado, grave com create_roadmap (tudo oculto) e me devolva os ids. Todos os módulos nascem já criados e NÃO publicados: os alunos os veem como "em breve" e só ganham acesso quando cada módulo for publicado (prompt publicar-modulo). As lições são preenchidas aos poucos, e o curso só aparece no catálogo com in_revision=false e ao menos 1 módulo publicado.`,
       ),
   );
 
@@ -64,7 +65,8 @@ export function registerPrompts(server) {
           `1. Localize a lição (find_module/list_lessons) e leia as lições vizinhas com get_lesson para manter tom e progressão.\n` +
           `2. ${LESSON_RULES}\n` +
           `3. Mostre os 3 blocos (conteúdo, quiz, materiais extras) e ESPERE minha aprovação.\n` +
-          `4. Aprovado, grave com set_lesson_content (publish=false), confira com get_lesson e rode validate_lesson com dry_run=true. Só publique se eu pedir.`,
+          `4. Aprovado, grave com set_lesson_content (publish=false), confira com get_lesson e rode validate_lesson com dry_run=true. Só publique se eu pedir.\n` +
+          `5. Se essa era a última lição pendente do módulo, avise e sugira "Publicar o módulo [atual]".`,
       ),
   );
 
@@ -85,6 +87,23 @@ export function registerPrompts(server) {
           `2. ${CHALLENGE_RULES}\n` +
           `3. Mostre o desafio e ESPERE minha aprovação.\n` +
           `4. Aprovado, grave com create_lesson (type=CHALLENGE, language, initial_code, descrição em sections; publish=false) e valide com validate_lesson dry_run=true.`,
+      ),
+  );
+
+  server.registerPrompt(
+    'publicar-modulo',
+    {
+      title: 'Publicar um módulo',
+      description: 'Valida todas as lições do módulo (LESSON, CHALLENGE e REVISION) e publica após aprovação.',
+      argsSchema: { modulo: z.string().describe('Título do módulo (ou module_id)') },
+    },
+    ({ modulo }) =>
+      user(
+        `${PERSONA}\n\nTarefa: publicar o módulo "${modulo}".\n` +
+          `1. Localize o módulo (find_module) e rode validate_module com dry_run=true. O módulo só passa se tiver lições e TODAS passarem, inclusive a REVISION (a validação dela confere os vínculos necessários, como o quiz) e o CHALLENGE.\n` +
+          `2. Mostre o resultado por lição. Se algo falhar, liste o que falta e NÃO publique: proponha as correções e espere minha aprovação.\n` +
+          `3. Com tudo validado, ESPERE minha aprovação explícita e publique com update_module (published=true). Isso revalida as lições e recusa a publicação se alguma falhar.\n` +
+          `4. Confirme o resultado. Se eu pedir para despublicar, use update_module com published=false, sem aviso.`,
       ),
   );
 }
