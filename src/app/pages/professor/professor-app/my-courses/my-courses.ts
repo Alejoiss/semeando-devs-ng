@@ -56,9 +56,9 @@ export class MyCourses implements OnInit {
 
         try {
             if (available) {
-                const allValidated = await this.courseService.checkAllLessonsValidated(course.id);
-                if (!allValidated) {
-                    this.toggleError.set(`O curso "${course.title}" possui lições não validadas. Valide todas as lições antes de disponibilizá-lo.`);
+                const hasValidModule = await this.courseService.hasPublishedValidModule(course.id);
+                if (!hasValidModule) {
+                    this.toggleError.set(`O curso "${course.title}" não tem nenhum módulo publicado e validado. Publique ao menos um módulo antes de disponibilizá-lo.`);
                     return;
                 }
             }

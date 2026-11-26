@@ -135,6 +135,15 @@ Deno.test('finishing the last submodule completes the module', async () => {
     assertEquals(fake.callsFor('user_modules', 'upsert')[0].payload.module_id, 'mod-1')
 })
 
+Deno.test('modules not published yet still count toward the course completion', async () => {
+    const { json, fake } = await call({ lessonsTotal: 3, lessonsDone: 3, subModulesTotal: 4, subModulesDone: 2 })
+    assertEquals(json.subModuleCompleted, true)
+    assertEquals(json.moduleCompleted, false)
+    assertEquals(fake.callsFor('user_modules', 'upsert'), [])
+    const counts = fake.callsFor('submodules', 'select').flatMap((c) => c.filters.map((f) => f[1]))
+    assertEquals(counts.includes('published'), false)
+})
+
 Deno.test('errors from the database become a 500 with the message', quiet(async () => {
     const { res, json } = await call({ lessonError: { message: 'lesson not found' } })
     assertEquals(res.status, 500)

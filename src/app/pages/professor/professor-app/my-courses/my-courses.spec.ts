@@ -25,9 +25,9 @@ describe('MyCourses', () => {
 
     beforeEach(() => {
         currentUser = signal({ id: 't1', role: 'teacher' });
-        courseService = jasmine.createSpyObj('CourseService', ['getTeacherCourses', 'checkAllLessonsValidated', 'updateCourseAvailability']);
+        courseService = jasmine.createSpyObj('CourseService', ['getTeacherCourses', 'hasPublishedValidModule', 'updateCourseAvailability']);
         courseService.getTeacherCourses.and.resolveTo([mod('a'), mod('b', { inRevision: true })] as any);
-        courseService.checkAllLessonsValidated.and.resolveTo(true);
+        courseService.hasPublishedValidModule.and.resolveTo(true);
         courseService.updateCourseAvailability.and.resolveTo();
         TestBed.configureTestingModule({
             providers: [
@@ -89,18 +89,18 @@ describe('MyCourses', () => {
                 expect(toggles().map(t => t.getAttribute('aria-checked'))).toEqual(['true', 'false']);
             });
 
-            it('makes a course available after checking that all lessons are validated', async () => {
+            it('makes a course available after checking that it has a published, validated module', async () => {
                 await setup();
 
                 await component.toggleAvailability(component.courses()[1], true);
 
-                expect(courseService.checkAllLessonsValidated).toHaveBeenCalledWith('b');
+                expect(courseService.hasPublishedValidModule).toHaveBeenCalledWith('b');
                 expect(courseService.updateCourseAvailability).toHaveBeenCalledWith('b', true);
                 expect(component.courses()[1].inRevision).toBeFalse();
             });
 
-            it('refuses to publish a course with unvalidated lessons', async () => {
-                courseService.checkAllLessonsValidated.and.resolveTo(false);
+            it('refuses to make available a course without any published and validated module', async () => {
+                courseService.hasPublishedValidModule.and.resolveTo(false);
                 await setup();
 
                 await component.toggleAvailability(component.courses()[1], true);
@@ -109,7 +109,7 @@ describe('MyCourses', () => {
                 expect(courseService.updateCourseAvailability).not.toHaveBeenCalled();
                 expect(component.courses()[1].inRevision).toBeTrue();
                 expect(fixture.nativeElement.querySelector('[role="alert"]').textContent).toContain(
-                    'O curso "Curso b" possui lições não validadas',
+                    'O curso "Curso b" não tem nenhum módulo publicado e validado',
                 );
             });
 
@@ -118,7 +118,7 @@ describe('MyCourses', () => {
 
                 await component.toggleAvailability(component.courses()[0], false);
 
-                expect(courseService.checkAllLessonsValidated).not.toHaveBeenCalled();
+                expect(courseService.hasPublishedValidModule).not.toHaveBeenCalled();
                 expect(courseService.updateCourseAvailability).toHaveBeenCalledWith('a', false);
                 expect(component.courses()[0].inRevision).toBeTrue();
             });
@@ -151,7 +151,7 @@ describe('MyCourses', () => {
             });
 
             it('lets the admin dismiss the alert', async () => {
-                courseService.checkAllLessonsValidated.and.resolveTo(false);
+                courseService.hasPublishedValidModule.and.resolveTo(false);
                 await setup();
                 await component.toggleAvailability(component.courses()[1], true);
                 fixture.detectChanges();

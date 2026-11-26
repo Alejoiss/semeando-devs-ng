@@ -124,33 +124,47 @@ describe('CourseService queries', () => {
         await expectAsync(service.updateCourse('m1', {})).toBeRejectedWithError('boom');
     });
 
-    describe('checkAllLessonsValidated', () => {
-        it('is false when modules cannot be read', async () => {
+    describe('hasPublishedValidModule', () => {
+        it('is false when there is no published module or it cannot be read', async () => {
             use({ error: { message: 'x' } });
-            expect(await service.checkAllLessonsValidated('m')).toBeFalse();
+            expect(await service.hasPublishedValidModule('m')).toBeFalse();
             use({ data: null });
-            expect(await service.checkAllLessonsValidated('m')).toBeFalse();
-        });
-
-        it('is true for a course without modules or without lessons', async () => {
+            expect(await service.hasPublishedValidModule('m')).toBeFalse();
             use({ data: [] });
-            expect(await service.checkAllLessonsValidated('m')).toBeTrue();
-            use({ data: [{ id: 's' }] }, { data: [] });
-            expect(await service.checkAllLessonsValidated('m')).toBeTrue();
-            use({ data: [{ id: 's' }] }, { data: null });
-            expect(await service.checkAllLessonsValidated('m')).toBeTrue();
+            expect(await service.hasPublishedValidModule('m')).toBeFalse();
         });
 
-        it('is false when lessons cannot be read', async () => {
+        it('only looks at the published modules of the course', async () => {
+            const stub = use({ data: [] });
+            await service.hasPublishedValidModule('m');
+            expect(stub.spy(0, 'eq')).toHaveBeenCalledWith('module_id', 'm');
+            expect(stub.spy(0, 'eq')).toHaveBeenCalledWith('published', true);
+        });
+
+        it('is false when the lessons cannot be read', async () => {
             use({ data: [{ id: 's' }] }, { error: { message: 'x' } });
-            expect(await service.checkAllLessonsValidated('m')).toBeFalse();
+            expect(await service.hasPublishedValidModule('m')).toBeFalse();
+            use({ data: [{ id: 's' }] }, { data: null });
+            expect(await service.hasPublishedValidModule('m')).toBeFalse();
         });
 
-        it('requires every non-revision lesson to be validated', async () => {
-            use({ data: [{ id: 's' }] }, { data: [{ is_validated: true }, { is_validated: true }] });
-            expect(await service.checkAllLessonsValidated('m')).toBeTrue();
-            use({ data: [{ id: 's' }] }, { data: [{ is_validated: true }, { is_validated: null }] });
-            expect(await service.checkAllLessonsValidated('m')).toBeFalse();
+        it('is false when the published module has no lessons or an unvalidated one', async () => {
+            use({ data: [{ id: 's' }] }, { data: [] });
+            expect(await service.hasPublishedValidModule('m')).toBeFalse();
+            use({ data: [{ id: 's' }] }, { data: [{ sub_module_id: 's', is_validated: true }, { sub_module_id: 's', is_validated: null }] });
+            expect(await service.hasPublishedValidModule('m')).toBeFalse();
+        });
+
+        it('is true when a single published module is fully validated, whatever the other ones are', async () => {
+            use(
+                { data: [{ id: 's1' }, { id: 's2' }] },
+                { data: [
+                    { sub_module_id: 's1', is_validated: false },
+                    { sub_module_id: 's2', is_validated: true },
+                    { sub_module_id: 's2', is_validated: true },
+                ] },
+            );
+            expect(await service.hasPublishedValidModule('m')).toBeTrue();
         });
     });
 

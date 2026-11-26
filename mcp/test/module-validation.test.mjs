@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
-import { applyModuleValidation, checkModule } from '../src/lesson-model.mjs';
+import { applyModuleValidation, checkCourseReadiness, checkModule } from '../src/lesson-model.mjs';
 
 function fakeDb(lessons) {
   const updates = [];
@@ -50,4 +50,36 @@ test('applying the validation records is_validated on each lesson', async () => 
   const db = fakeDb(LESSONS);
   await applyModuleValidation(db, 'm', verdicts({ c: 'Falta language.' }));
   assert.deepEqual(db.updates.map((u) => [u.id, u.patch.is_validated]), [['l', true], ['c', false], ['r', true]]);
+});
+
+function courseDb(modules, lessonsByModule) {
+  return {
+    from(table) {
+      let moduleId;
+      const q = {
+        select: () => q,
+        eq: (column, value) => {
+          if (column === 'sub_module_id') moduleId = value;
+          return q;
+        },
+        order: () => Promise.resolve({ data: table === 'submodules' ? modules : lessonsByModule[moduleId], error: null }),
+      };
+      return q;
+    },
+  };
+}
+
+test('a course is ready when at least one published module is valid, whatever the others are', async () => {
+  const db = courseDb([{ id: 'm1', title: 'Quebrado' }, { id: 'm2', title: 'Pronto' }], { m1: [{ id: 'x', title: 'X', type: 'LESSON' }], m2: [{ id: 'y', title: 'Y', type: 'LESSON' }] });
+  const result = await checkCourseReadiness(db, 'c', async (_db, id) => ({ passed: id === 'y', problems: id === 'y' ? [] : ['Falta conteúdo.'] }));
+  assert.deepEqual(result, { passed: true, problems: [] });
+});
+
+test('a course is not ready without a published module or when none of them is valid', async () => {
+  assert.deepEqual(await checkCourseReadiness(courseDb([], {}), 'c'), { passed: false, problems: ['O curso não tem nenhum módulo publicado.'] });
+
+  const db = courseDb([{ id: 'm1', title: 'Quebrado' }], { m1: [{ id: 'x', title: 'X', type: 'LESSON' }] });
+  const result = await checkCourseReadiness(db, 'c', async () => ({ passed: false, problems: ['Falta conteúdo.'] }));
+  assert.equal(result.passed, false);
+  assert.match(result.problems[0], /^Quebrado: X \(LESSON\): Falta conteúdo\.$/);
 });

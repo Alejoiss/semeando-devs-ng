@@ -207,29 +207,27 @@ export class CourseService {
         } as Course;
     }
 
-    async checkAllLessonsValidated(courseId: string): Promise<boolean> {
-        const { data: modules, error: subError } = await this.supabase
+    /** Só os módulos publicados aparecem aos alunos: o curso pode ir ao ar se ao menos um deles tiver lições e todas validadas. */
+    async hasPublishedValidModule(courseId: string): Promise<boolean> {
+        const { data: modules, error: moduleError } = await this.supabase
             .from('submodules')
             .select('id')
-            .eq('module_id', courseId);
+            .eq('module_id', courseId)
+            .eq('published', true);
 
-        if (subError || !modules) return false;
-
-        if (modules.length === 0) return true;
-
-        const moduleIds = modules.map((s: any) => s.id);
+        if (moduleError || !modules || modules.length === 0) return false;
 
         const { data: lessons, error: lessonError } = await this.supabase
             .from('lessons')
-            .select('id, is_validated')
-            .in('sub_module_id', moduleIds)
-            .neq('type', 'REVISION');
+            .select('sub_module_id, is_validated')
+            .in('sub_module_id', modules.map((m: any) => m.id));
 
-        if (lessonError) return false;
+        if (lessonError || !lessons) return false;
 
-        if (!lessons || lessons.length === 0) return true;
-
-        return lessons.every((l: any) => l.is_validated === true);
+        return modules.some((m: any) => {
+            const own = lessons.filter((l: any) => l.sub_module_id === m.id);
+            return own.length > 0 && own.every((l: any) => l.is_validated === true);
+        });
     }
 
     async updateCourseAvailability(courseId: string, available: boolean): Promise<void> {

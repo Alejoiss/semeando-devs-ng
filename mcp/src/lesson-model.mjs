@@ -146,6 +146,19 @@ export async function checkModule(db, moduleId, check = checkLesson) {
   };
 }
 
+// O curso só vai ao ar com ao menos 1 módulo publicado e válido: os não publicados não aparecem aos alunos.
+export async function checkCourseReadiness(db, courseId, check = checkLesson) {
+  const modules = unwrap(
+    await db.from('submodules').select('id, title').eq('module_id', courseId).eq('published', true).order('order'),
+    'submodules',
+  );
+  if (!modules.length) return { passed: false, problems: ['O curso não tem nenhum módulo publicado.'] };
+  const results = [];
+  for (const module of modules) results.push({ module, ...(await checkModule(db, module.id, check)) });
+  if (results.some((r) => r.passed)) return { passed: true, problems: [] };
+  return { passed: false, problems: results.map((r) => `${r.module.title}: ${r.problems.join(' ')}`) };
+}
+
 export async function applyModuleValidation(db, moduleId, check = checkLesson) {
   const result = await checkModule(db, moduleId, check);
   for (const lesson of result.lessons) {

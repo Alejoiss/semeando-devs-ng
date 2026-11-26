@@ -1,6 +1,6 @@
 import { z } from 'zod';
 import { defineTool, unwrap } from '../util.mjs';
-import { applyModuleValidation, checkModule, nextOrder, ownerFields, resolveAuthorId, slugify } from '../lesson-model.mjs';
+import { applyModuleValidation, checkCourseReadiness, checkModule, nextOrder, ownerFields, resolveAuthorId, slugify } from '../lesson-model.mjs';
 
 const id = z.string().uuid();
 
@@ -92,7 +92,7 @@ export function registerStructureTools(server, ctx) {
     {
       title: 'Editar curso',
       description:
-        'Altera título, descrição, slug, ícone, avatar ou a apresentação. in_revision=false PUBLICA o curso para todos os alunos: só use com aprovação explícita.',
+        'Altera título, descrição, slug, ícone, avatar ou a apresentação. in_revision=false PUBLICA o curso para todos os alunos: só use com aprovação explícita, e exige ao menos 1 módulo publicado e válido (os módulos não publicados não contam).',
       inputSchema: {
         course_id: id,
         title: z.string().min(1).optional(),
@@ -110,6 +110,10 @@ export function registerStructureTools(server, ctx) {
         const cur = unwrap(await db.from('modules').select('slug').eq('id', course_id).single(), 'course');
         if (cur.slug !== fields.slug) throw e;
       });
+      if (fields.in_revision === false) {
+        const readiness = await checkCourseReadiness(db, course_id);
+        if (!readiness.passed) throw new Error(`Curso não publicado, falta ao menos 1 módulo publicado e válido:\n- ${readiness.problems.join('\n- ')}`);
+      }
       if (Object.keys(fields).length) unwrap(await db.from('modules').update(fields).eq('id', course_id), 'update_course');
       if (intro_markdown !== undefined) {
         unwrap(await db.from('section_content').delete().eq('module_id', course_id), 'limpar intro');

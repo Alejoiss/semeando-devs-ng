@@ -48,7 +48,7 @@ export function registerPrompts(server) {
           `1. list_courses e list_modules para ver o catálogo atual (tom, granularidade, slugs já usados).\n` +
           `2. Proponha: curso (título, descrição, slug), módulos (título, descrição, slug, ícone) e, em cada um, só as lições normais (título e descrição). Cada módulo leva um ícone do Material Symbols (nome em snake_case, como em fonts.google.com/icons); confirme que o nome existe em node_modules/material-symbols/index.d.ts do projeto. Escreva também a apresentação resumida do curso em Markdown: o que é, para que serve e o escopo abordado.\n` +
           `3. ESPERE minha aprovação ou ajustes.\n` +
-          `4. Aprovado, grave com create_roadmap (tudo oculto) e me devolva os ids. Todos os módulos nascem já criados e NÃO publicados: os alunos os veem como "em breve" e só ganham acesso quando cada módulo for publicado (prompt publicar-modulo). As lições são preenchidas aos poucos, e o curso só aparece no catálogo com in_revision=false e ao menos 1 módulo publicado.`,
+          `4. Aprovado, grave com create_roadmap (tudo oculto) e me devolva os ids. Todos os módulos nascem já criados e NÃO publicados: os alunos os veem como "em breve" e só ganham acesso quando cada módulo for publicado (prompt publicar-modulo). As lições são preenchidas aos poucos, e o curso só aparece no catálogo com in_revision=false, e só pode ser disponibilizado com ao menos 1 módulo publicado e válido (os módulos não publicados não entram nessa validação).`,
       ),
   );
 

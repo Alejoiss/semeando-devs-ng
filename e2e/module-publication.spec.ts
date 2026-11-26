@@ -132,6 +132,32 @@ test.describe('module publication', () => {
             });
         });
 
+        test.describe('admin making a course available', () => {
+            test.use({ storageState: storageStateFor('admin') });
+
+            test('needs one published and validated module, ignoring the unpublished ones', async ({ page }) => {
+                sql(`insert into teacher_modules (teacher_id, module_id, assigned_by) values ('${E2E_USERS.admin.id}', '${course.courseId}', '${E2E_USERS.admin.id}')`);
+                sql(`update modules set in_revision = true where id = '${course.courseId}'`);
+                for (const module of course.modules) setPublished(module.id, false);
+                sql(`update lessons set is_validated = null where sub_module_id = '${first().id}'`);
+
+                await page.goto('/professor/meus-cursos');
+                const toggle = page.getByRole('switch');
+                await expect(toggle).toHaveAttribute('aria-checked', 'false');
+
+                await toggle.click();
+                await expect(page.getByRole('alert')).toContainText('não tem nenhum módulo publicado e validado');
+                await expect(toggle).toHaveAttribute('aria-checked', 'false');
+                expect(sql(`select in_revision from modules where id = '${course.courseId}'`)).toBe('t');
+
+                setPublished(second().id, true);
+                await page.reload();
+                await page.getByRole('switch').click();
+                await expect(page.getByRole('switch')).toHaveAttribute('aria-checked', 'true');
+                expect(sql(`select in_revision from modules where id = '${course.courseId}'`)).toBe('f');
+            });
+        });
+
         test.describe('teacher', () => {
             test.use({ storageState: storageStateFor('teacher') });
 

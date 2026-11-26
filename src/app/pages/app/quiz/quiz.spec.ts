@@ -1,5 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { provideRouter } from '@angular/router';
+import { ActivatedRoute, provideRouter, Router } from '@angular/router';
+import { AchievementsService } from '../../../services/achievements';
 import { Quiz } from './quiz';
 
 describe('Quiz', () => {
@@ -57,6 +58,57 @@ describe('Quiz', () => {
       (component as any).finished.set(true);
       (component as any).quizCompletionResult.set({ xpAwarded: 10 });
       expect(unload().defaultPrevented).toBeFalse();
+    });
+  });
+
+  describe('where "Continuar" goes after the result', () => {
+    let navigate: jasmine.Spy;
+
+    function setup(correct: number) {
+      TestBed.configureTestingModule({
+        providers: [
+          provideRouter([]),
+          {
+            provide: ActivatedRoute,
+            useValue: { snapshot: { params: { slug: 'git', slugModule: 'modulo-1' }, paramMap: { get: () => 'lesson-1' } } },
+          },
+        ],
+      });
+      navigate = spyOn(TestBed.inject(Router), 'navigate').and.resolveTo(true);
+      spyOn(TestBed.inject(AchievementsService), 'checkUnseenAchievements');
+      fixture = TestBed.createComponent(Quiz);
+      component = fixture.componentInstance;
+      (component as any).questions.set(Array.from({ length: 10 }, (_, i) => ({ id: `q${i}` })));
+      (component as any).results.set(Array.from({ length: 10 }, (_, i) => ({ correct: i < correct })));
+    }
+
+    const finishWith = (result: object) => {
+      (component as any).quizCompletionResult.set({ xpAwarded: 10, ...result });
+      (component as any).continueQuiz();
+    };
+
+    it('goes back to the lesson when the student failed', () => {
+      setup(5);
+      finishWith({ moduleCompleted: true, courseCompleted: true });
+      expect(navigate).toHaveBeenCalledOnceWith(['/app/c', 'git', 'm', 'modulo-1', 'lesson', 'lesson-1']);
+    });
+
+    it('goes to the module while it still has lessons left', () => {
+      setup(9);
+      finishWith({ moduleCompleted: false, courseCompleted: false });
+      expect(navigate).toHaveBeenCalledOnceWith(['/app/c', 'git', 'm', 'modulo-1']);
+    });
+
+    it('goes to the course page after the last published module, as modules coming soon keep the course open', () => {
+      setup(9);
+      finishWith({ moduleCompleted: true, courseCompleted: false });
+      expect(navigate).toHaveBeenCalledOnceWith(['/app/c', 'git']);
+    });
+
+    it('goes to the course finished page only when the whole course is completed', () => {
+      setup(9);
+      finishWith({ moduleCompleted: true, courseCompleted: true });
+      expect(navigate).toHaveBeenCalledOnceWith(['/app/c', 'git', 'finished']);
     });
   });
 });
