@@ -56,6 +56,7 @@ export class CreateModule {
                     description: sm.description,
                 });
                 this.courseId.set((sm as any).module_id);
+                this.published.set(sm.published === true);
 
                 if (sm.icon && sm.icon.trim()) {
                     this.visualMode.set('icon');
@@ -150,6 +151,56 @@ export class CreateModule {
             alert(err.message || 'Erro ao validar lição.');
         } finally {
             this.isValidating.set(null);
+        }
+    }
+
+    published = signal(false);
+    isPublishing = signal(false);
+    publishError = signal<string | null>(null);
+
+    async publishModule() {
+        const moduleId = this.savedModuleId();
+        if (!moduleId || this.isPublishing()) return;
+        this.isPublishing.set(true);
+        this.publishError.set(null);
+        try {
+            const lessons = this.lessons();
+            if (!lessons.length) {
+                this.publishError.set('O módulo não tem lições.');
+                return;
+            }
+            const results: Lesson[] = [];
+            for (const lesson of lessons) {
+                const passed = await this.lessonService.validateLesson(lesson.id, lesson.type);
+                results.push({ ...lesson, isValidated: passed });
+            }
+            this.lessons.set(results);
+            const failed = results.filter(l => l.isValidated !== true);
+            if (failed.length) {
+                this.publishError.set(`Valide estas lições antes de publicar: ${failed.map(l => l.title).join(', ')}.`);
+                return;
+            }
+            await this.moduleService.setModulePublished(moduleId, true);
+            this.published.set(true);
+        } catch (err: any) {
+            this.publishError.set(err.message || 'Erro ao publicar o módulo.');
+        } finally {
+            this.isPublishing.set(false);
+        }
+    }
+
+    async unpublishModule() {
+        const moduleId = this.savedModuleId();
+        if (!moduleId || this.isPublishing()) return;
+        this.isPublishing.set(true);
+        this.publishError.set(null);
+        try {
+            await this.moduleService.setModulePublished(moduleId, false);
+            this.published.set(false);
+        } catch (err: any) {
+            this.publishError.set(err.message || 'Erro ao despublicar o módulo.');
+        } finally {
+            this.isPublishing.set(false);
         }
     }
 

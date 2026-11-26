@@ -126,6 +126,34 @@ export async function applyValidation(db, lessonId) {
   return result;
 }
 
+// Um módulo só passa quando tem lições e TODAS passam (inclusive REVISION, que valida os vínculos necessários).
+export async function checkModule(db, moduleId, check = checkLesson) {
+  const lessons = unwrap(
+    await db.from('lessons').select('id, title, type, order').eq('sub_module_id', moduleId).order('order'),
+    'lessons',
+  );
+  if (!lessons.length) return { passed: false, problems: ['O módulo não tem lições.'], lessons: [] };
+  const results = [];
+  for (const lesson of lessons) {
+    const { passed, problems } = await check(db, lesson.id);
+    results.push({ id: lesson.id, title: lesson.title, type: lesson.type, passed, problems });
+  }
+  const failed = results.filter((r) => !r.passed);
+  return {
+    passed: failed.length === 0,
+    problems: failed.map((r) => `${r.title} (${r.type}): ${r.problems.join(' ')}`),
+    lessons: results,
+  };
+}
+
+export async function applyModuleValidation(db, moduleId, check = checkLesson) {
+  const result = await checkModule(db, moduleId, check);
+  for (const lesson of result.lessons) {
+    unwrap(await db.from('lessons').update({ is_validated: lesson.passed }).eq('id', lesson.id), 'is_validated');
+  }
+  return result;
+}
+
 export function slugify(text) {
   return String(text)
     .normalize('NFD')

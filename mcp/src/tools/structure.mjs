@@ -1,6 +1,6 @@
 import { z } from 'zod';
 import { defineTool, unwrap } from '../util.mjs';
-import { nextOrder, ownerFields, resolveAuthorId, slugify } from '../lesson-model.mjs';
+import { applyModuleValidation, checkModule, nextOrder, ownerFields, resolveAuthorId, slugify } from '../lesson-model.mjs';
 
 const id = z.string().uuid();
 
@@ -160,7 +160,8 @@ export function registerStructureTools(server, ctx) {
     'update_module',
     {
       title: 'Editar módulo',
-      description: 'Altera título, descrição, slug, ícone ou ordem de um módulo.',
+      description:
+        'Altera título, descrição, slug, ícone, ordem ou publicação de um módulo. published=true PUBLICA o módulo para os alunos (só se todas as lições passarem na validação; use com aprovação explícita). published=false despublica sem aviso.',
       inputSchema: {
         module_id: id,
         title: z.string().min(1).optional(),
@@ -168,16 +169,35 @@ export function registerStructureTools(server, ctx) {
         slug: z.string().optional(),
         icon: z.string().optional(),
         order: z.number().int().optional(),
+        published: z.boolean().optional(),
       },
     },
     async ({ module_id, ...patch }) => {
       const fields = Object.fromEntries(Object.entries(patch).filter(([, v]) => v !== undefined));
       if (!Object.keys(fields).length) throw new Error('Nada para alterar.');
+      if (fields.published === true) {
+        const result = await applyModuleValidation(db, module_id);
+        if (!result.passed) throw new Error(`Módulo não validado, não foi publicado:\n- ${result.problems.join('\n- ')}`);
+      }
       return unwrap(
-        await db.from('submodules').update(fields).eq('id', module_id).select('id, title, slug, order').single(),
+        await db.from('submodules').update(fields).eq('id', module_id).select('id, title, slug, order, published').single(),
         'update_module',
       );
     },
+    { write: true },
+  );
+
+  defineTool(
+    server,
+    ctx,
+    'validate_module',
+    {
+      title: 'Validar módulo',
+      description:
+        'Roda a validação de todas as lições do módulo (LESSON, CHALLENGE e REVISION) e devolve o resultado por lição. Com dry_run=false grava is_validated em cada uma. Não publica: para isso use update_module com published=true.',
+      inputSchema: { module_id: id, dry_run: z.boolean().default(true) },
+    },
+    async ({ module_id, dry_run }) => (dry_run ? checkModule(db, module_id) : applyModuleValidation(db, module_id)),
     { write: true },
   );
 

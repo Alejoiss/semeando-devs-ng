@@ -43,7 +43,8 @@ describe('CreateModule', () => {
             getLessonCountByModuleId: jasmine.createSpy().and.returnValue(Promise.resolve(2)),
             createLesson: jasmine.createSpy().and.returnValue(Promise.resolve({ id: 'l3' })),
             deleteLesson: jasmine.createSpy().and.returnValue(Promise.resolve()),
-            updateLessonOrder: jasmine.createSpy().and.returnValue(Promise.resolve())
+            updateLessonOrder: jasmine.createSpy().and.returnValue(Promise.resolve()),
+            validateLesson: jasmine.createSpy().and.returnValue(Promise.resolve(true))
         };
 
         mockQuizService = {
@@ -59,7 +60,8 @@ describe('CreateModule', () => {
             })),
             getModuleCountByCourseId: jasmine.createSpy().and.returnValue(Promise.resolve(0)),
             createModule: jasmine.createSpy().and.returnValue(Promise.resolve({ id: 'module-1' })),
-            updateModule: jasmine.createSpy().and.returnValue(Promise.resolve())
+            updateModule: jasmine.createSpy().and.returnValue(Promise.resolve()),
+            setModulePublished: jasmine.createSpy().and.returnValue(Promise.resolve())
         };
 
         await TestBed.configureTestingModule({
@@ -129,5 +131,78 @@ describe('CreateModule', () => {
         expect(lessonsList.length).toBe(2);
         expect(lessonsList[0].type).toBe('LESSON');
         expect(lessonsList[1].type).toBe('REVISION');
+    });
+
+    describe('publication', () => {
+        const status = () => (fixture.nativeElement as HTMLElement).querySelector('[data-testid="publication-status"]')?.textContent?.trim();
+
+        beforeEach(async () => {
+            await fixture.whenStable();
+            fixture.detectChanges();
+        });
+
+        it('starts as a draft when the module is not published', () => {
+            expect(component.published()).toBeFalse();
+            expect(status()).toBe('Módulo em rascunho');
+        });
+
+        it('reflects a module that is already published', async () => {
+            mockModuleService.getModuleById.and.resolveTo({ id: 'module-1', title: 'T', description: 'D', module_id: 'course-1', published: true });
+            await component.loadModule('module-1');
+            fixture.detectChanges();
+
+            expect(status()).toBe('Módulo publicado');
+        });
+
+        it('validates every lesson, REVISION included, and then publishes', async () => {
+            await component.publishModule();
+
+            expect(mockLessonService.validateLesson).toHaveBeenCalledWith('l1', LessonType.LESSON);
+            expect(mockLessonService.validateLesson).toHaveBeenCalledWith('l2', LessonType.REVISION);
+            expect(mockModuleService.setModulePublished).toHaveBeenCalledOnceWith('module-1', true);
+            expect(component.published()).toBeTrue();
+            expect(component.publishError()).toBeNull();
+        });
+
+        it('does not publish and names the lessons that failed validation', async () => {
+            mockLessonService.validateLesson.and.callFake((id: string) => Promise.resolve(id !== 'l2'));
+
+            await component.publishModule();
+
+            expect(mockModuleService.setModulePublished).not.toHaveBeenCalled();
+            expect(component.published()).toBeFalse();
+            expect(component.publishError()).toContain('Revisão do módulo Introdução ao Angular');
+            expect(component.publishError()).not.toContain('Licao 1');
+            expect(component.lessons().find(l => l.id === 'l2')?.isValidated).toBeFalse();
+        });
+
+        it('does not publish a module without lessons', async () => {
+            component.lessons.set([]);
+
+            await component.publishModule();
+
+            expect(mockLessonService.validateLesson).not.toHaveBeenCalled();
+            expect(mockModuleService.setModulePublished).not.toHaveBeenCalled();
+            expect(component.publishError()).toBe('O módulo não tem lições.');
+        });
+
+        it('shows the error when publishing fails', async () => {
+            mockModuleService.setModulePublished.and.rejectWith(new Error('RLS negou'));
+
+            await component.publishModule();
+
+            expect(component.published()).toBeFalse();
+            expect(component.publishError()).toBe('RLS negou');
+        });
+
+        it('unpublishes without confirmation or validation', async () => {
+            component.published.set(true);
+
+            await component.unpublishModule();
+
+            expect(mockModuleService.setModulePublished).toHaveBeenCalledOnceWith('module-1', false);
+            expect(mockLessonService.validateLesson).not.toHaveBeenCalled();
+            expect(component.published()).toBeFalse();
+        });
     });
 });
