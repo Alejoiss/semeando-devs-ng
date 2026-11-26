@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy, Component, inject, OnInit, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, OnInit, signal } from '@angular/core';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { ModuleService } from '../../../services/module';
 import { UserModuleService } from '../../../services/user-module';
@@ -20,7 +20,7 @@ import { MarkdownModule } from 'ngx-markdown';
 
 export interface ModuleWithState {
     module: Module;
-    progressState: 'not-started' | 'in-progress' | 'completed' | 'blocked';
+    progressState: 'not-started' | 'in-progress' | 'completed' | 'blocked' | 'coming-soon';
     targetLessonId: string | null;
     progressPercentage: number;
 }
@@ -50,6 +50,7 @@ export class ModulePage implements OnInit {
     course = signal<Course | null>(null);
     tracks = signal<TrackSummary[]>([]);
     modulesWithState = signal<ModuleWithState[]>([]);
+    comingSoonCount = computed(() => this.modulesWithState().filter(m => m.progressState === 'coming-soon').length);
     achievement = signal<Achievements | null>(null);
     isLoading = signal<boolean>(true);
     error = signal<string | null>(null);
@@ -141,9 +142,13 @@ export class ModulePage implements OnInit {
             const withState: ModuleWithState[] = [];
 
             for (const sm of sortedModules) {
+                if (sm.published === false) {
+                    withState.push({ module: sm, progressState: 'coming-soon', targetLessonId: null, progressPercentage: 0 });
+                    continue;
+                }
                 // @ts-ignore - DB returns sub_module_id as well
                 const usm = userModules.find(u => u.module?.id === sm.id || u.sub_module_id === sm.id);
-                let state: 'not-started' | 'in-progress' | 'completed' | 'blocked' = 'not-started';
+                let state: 'not-started' | 'in-progress' | 'completed' | 'blocked' | 'coming-soon' = 'not-started';
 
                 if (usm) {
                     state = usm.completed ? 'completed' : 'in-progress';

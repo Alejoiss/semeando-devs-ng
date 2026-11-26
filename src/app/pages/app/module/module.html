@@ -104,6 +104,14 @@
     </section>
     }
 
+    @if (!isLoading() && !error() && comingSoonCount() > 0) {
+    <p role="status" class="mb-6 flex items-center gap-3 bg-secondary/10 text-on-surface rounded-lg px-5 py-4" data-testid="coming-soon-banner">
+        <span class="material-symbols-outlined text-secondary" aria-hidden="true">schedule</span>
+        <span>{{ comingSoonCount() === 1 ? '1 módulo deste curso será liberado em breve.' : comingSoonCount() + ' módulos deste curso serão liberados em breve.' }}
+            A conclusão do curso considera todos os módulos.</span>
+    </p>
+    }
+
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-8">
         @if (isLoading()) {
         @for (_ of [1, 2, 3, 4]; track $index) {
@@ -120,6 +128,25 @@
         </div>
         } @else {
         @for (item of modulesWithState(); track item.module.id) {
+        @if (item.progressState === 'coming-soon') {
+        <div class="relative bg-surface-container rounded-lg p-8" data-testid="coming-soon-module">
+            <div class="absolute top-0 right-0 p-4">
+                <div class="bg-secondary/20 text-secondary font-label text-[10px] px-3 py-1 rounded-full uppercase tracking-widest font-bold">
+                    Em breve
+                </div>
+            </div>
+            <div class="flex items-start gap-6">
+                <div class="w-16 h-16 rounded-xl flex items-center justify-center bg-surface-container-highest text-on-surface-variant">
+                    <span class="material-symbols-outlined text-3xl" aria-hidden="true">{{ item.module.icon || 'schedule' }}</span>
+                </div>
+                <div class="flex-1">
+                    <h3 class="text-2xl font-headline font-bold mb-2 text-on-surface-variant">{{ item.module.title }}</h3>
+                    <p class="text-on-surface-variant text-sm font-body leading-relaxed">{{ item.module.description }}</p>
+                    <p class="mt-4 text-sm text-on-surface-variant">Este módulo será liberado em breve.</p>
+                </div>
+            </div>
+        </div>
+        } @else {
         <div class="group relative bg-surface-container rounded-lg p-8 transition"
             [class]="item.progressState === 'in-progress' ? 'border-t-2 border-primary/20 cursor-pointer hover:bg-surface-container-high' : item.progressState === 'blocked' ? 'grayscale select-none' : 'cursor-pointer hover:bg-surface-container-high'">
             <div class="absolute top-0 right-0 p-4">
@@ -231,6 +258,7 @@
             </div>
             }
         </div>
+        }
         } @empty {
         <div class="col-span-full bg-surface-container rounded-lg p-8 text-center flex flex-col items-center">
             <span class="material-symbols-outlined text-5xl text-on-surface-variant mb-4" data-icon="inbox">inbox</span>

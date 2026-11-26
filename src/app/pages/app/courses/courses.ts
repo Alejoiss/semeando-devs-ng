@@ -9,6 +9,7 @@ import { UserCourse } from '../../../../models/user-course/user-course';
 import { CourseService } from '../../../services/course';
 import { UserCourseService } from '../../../services/user-course';
 import { LessonService } from '../../../services/lesson';
+import { ModuleService } from '../../../services/module';
 import { UserLessonService } from '../../../services/user-lesson';
 import { RankingWeeklyService } from '../../../services/ranking-weekly';
 import { UserService } from '../../../services/user';
@@ -28,6 +29,11 @@ interface TrackGroup {
     percentage: number;
 }
 
+function hasPublishedModule(courseId: string, modules: { courseId: string; published: boolean }[]): boolean {
+    const own = modules.filter(m => m.courseId === courseId);
+    return own.length === 0 || own.some(m => m.published);
+}
+
 @Component({
     selector: 'app-courses',
     imports: [RouterLink, DecimalPipe, NgTemplateOutlet],
@@ -39,6 +45,7 @@ export class Courses implements OnInit {
     private readonly courseService = inject(CourseService);
     private readonly userCourseService = inject(UserCourseService);
     private readonly lessonService = inject(LessonService);
+    private readonly moduleService = inject(ModuleService);
     private readonly userLessonService = inject(UserLessonService);
     private readonly rankingWeeklyService = inject(RankingWeeklyService);
     protected readonly userService = inject(UserService);
@@ -51,6 +58,7 @@ export class Courses implements OnInit {
     protected readonly expandedTrackIds = signal<ReadonlySet<string>>(new Set());
     protected readonly userCourses = signal<any[]>([]);
     protected readonly allLessons = signal<{ id: string; moduleId: string; courseId: string }[]>([]);
+    protected readonly moduleSummaries = signal<{ id: string; courseId: string; published: boolean }[]>([]);
     protected readonly userLessons = signal<any[]>([]);
     
     protected readonly podiumUsers = signal<RankingEntry[]>([]);
@@ -66,6 +74,7 @@ export class Courses implements OnInit {
                 userCourses: this.userCourses(),
                 lessons: this.allLessons(),
                 userLessons: this.userLessons(),
+                modules: this.moduleSummaries(),
             });
             return { course, progressState: state, progressPercentage: percentage };
         })
@@ -106,16 +115,18 @@ export class Courses implements OnInit {
                 throw new Error('Usuário não autenticado.');
             }
 
-            const [courses, userCourses, userLessons, rankingResult, lightweightLessons, tracks] = await Promise.all([
+            const [courses, userCourses, userLessons, rankingResult, lightweightLessons, tracks, moduleSummaries] = await Promise.all([
                 this.courseService.getCoursesForDisplay(),
                 this.userCourseService.getUserCoursesForUser(userId),
                 this.userLessonService.getUserLessonsForUser(userId),
                 this.rankingWeeklyService.getRanking(),
                 this.lessonService.getLessonsLightweight(),
-                this.trackService.getPublishedTracks().catch(() => [])
+                this.trackService.getPublishedTracks().catch(() => []),
+                this.moduleService.getModuleSummaries().catch(() => [])
             ]);
 
-            this.courses.set(courses.filter(m => !m.inRevision));
+            this.moduleSummaries.set(moduleSummaries);
+            this.courses.set(courses.filter(m => !m.inRevision && hasPublishedModule(m.id, moduleSummaries)));
             this.userCourses.set(userCourses);
             this.userLessons.set(userLessons);
             this.allLessons.set(lightweightLessons);

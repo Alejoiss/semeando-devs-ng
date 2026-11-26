@@ -24,6 +24,19 @@ describe('ModuleService queries', () => {
         await expectAsync(service.getModulesByCourseId('m')).toBeRejectedWithError('boom');
     });
 
+    it('summarizes every module with its course and publication state', async () => {
+        use({ data: [{ id: 's1', module_id: 'c1', published: true }, { id: 's2', module_id: 'c1', published: false }, { id: 's3', module_id: 'c2', published: null }] });
+        expect(await service.getModuleSummaries()).toEqual([
+            { id: 's1', courseId: 'c1', published: true },
+            { id: 's2', courseId: 'c1', published: false },
+            { id: 's3', courseId: 'c2', published: false },
+        ]);
+        use({ data: null });
+        expect(await service.getModuleSummaries()).toEqual([]);
+        use(fails);
+        await expectAsync(service.getModuleSummaries()).toBeRejectedWithError('boom');
+    });
+
     it('counts modules', async () => {
         use({ count: 3 });
         expect(await service.getModuleCountByCourseId('m')).toBe(3);

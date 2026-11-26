@@ -37,6 +37,18 @@ export class ModuleService {
         return data as unknown as Module[];
     }
 
+    async getModuleSummaries(): Promise<{ id: string; courseId: string; published: boolean }[]> {
+        const { data, error } = await this.supabase
+            .from('submodules')
+            .select('id, module_id, published');
+
+        if (error) {
+            throw new Error(error.message);
+        }
+
+        return (data ?? []).map((m: any) => ({ id: m.id, courseId: m.module_id, published: m.published === true }));
+    }
+
     async getModuleCountByCourseId(courseId: string): Promise<number> {
         const { count, error } = await this.supabase
             .from('submodules')

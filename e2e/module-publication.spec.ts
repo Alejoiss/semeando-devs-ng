@@ -50,6 +50,38 @@ test.describe('module publication', () => {
         });
     });
 
+    test.describe('student catalog', () => {
+        test.use({ storageState: storageStateFor('student') });
+
+        test('the course page shows the unpublished module as "Em breve" and announces it', async ({ page }) => {
+            setPublished(first().id, false);
+
+            await page.goto(`/app/c/${course.slug}`);
+
+            const comingSoon = page.getByTestId('coming-soon-module');
+            await expect(comingSoon).toHaveCount(1);
+            await expect(comingSoon).toContainText(first().title);
+            await expect(comingSoon).toContainText('Em breve');
+            await expect(comingSoon.getByRole('button')).toHaveCount(0);
+            await expect(page.getByTestId('coming-soon-banner')).toContainText('1 módulo deste curso será liberado em breve');
+            await expect(page.getByText(second().title).first()).toBeVisible();
+        });
+
+        test('a course with no published module leaves the course list, and returns when one is published', async ({ page }) => {
+            await page.goto('/app');
+            await expect(page.getByRole('heading', { name: `ZZ Clone ${course.slug}` })).toBeVisible();
+
+            for (const module of course.modules) setPublished(module.id, false);
+            await page.goto('/app');
+            await expect(page.getByRole('heading', { name: 'HTML Essencial' })).toBeVisible();
+            await expect(page.getByRole('heading', { name: `ZZ Clone ${course.slug}` })).toHaveCount(0);
+
+            setPublished(second().id, true);
+            await page.goto('/app');
+            await expect(page.getByRole('heading', { name: `ZZ Clone ${course.slug}` })).toBeVisible();
+        });
+    });
+
     test('a visitor cannot read lessons of an unpublished module through the API', async ({ request }) => {
         const read = async () =>
             (await request.get(`${SUPABASE_URL}/rest/v1/lessons?sub_module_id=eq.${first().id}&select=id`, { headers: { apikey: SUPABASE_KEY } })).json();
