@@ -270,7 +270,7 @@ describe('Courses page', () => {
             setup();
             await settle();
 
-            expect(header('Trilha t1').textContent).toContain('1 de 2 cursos concluídos');
+            expect(header('Trilha t1').textContent).toContain('1/2');
         });
 
         it('lists courses without a track under "Outros cursos" and hides empty tracks', async () => {
