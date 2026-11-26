@@ -55,6 +55,8 @@ test.describe('professor content creation', () => {
     });
 
     test('creates a course and finds it in "Meus cursos"', async ({ page }) => {
+        sql(`delete from modules where slug = 'e2e-curso-novo'`);
+
         await page.goto('/professor/criar-curso');
         await page.getByPlaceholder('Ex: Introdução ao Angular').fill('E2E Curso Novo');
         await expect(page.getByRole('textbox').nth(1)).toHaveValue('e2e-curso-novo');
@@ -73,13 +75,14 @@ test.describe('professor content creation', () => {
     });
 
     test('a course cannot be saved without the required fields', async ({ page }) => {
-        const coursesBefore = sql('select count(*) from modules');
+        const coursesOf = `select count(*) from teacher_modules where teacher_id = '${teacherId}'`;
+        const coursesBefore = sql(coursesOf);
 
         await page.goto('/professor/criar-curso');
         await page.getByRole('button', { name: 'Salvar Curso' }).click();
 
         await expect(page).toHaveURL(/\/professor\/criar-curso$/);
-        expect(sql('select count(*) from modules')).toBe(coursesBefore);
+        expect(sql(coursesOf)).toBe(coursesBefore);
     });
 
     test('adds a module to a course', async ({ page }) => {

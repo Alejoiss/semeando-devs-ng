@@ -106,4 +106,29 @@ export function registerPrompts(server) {
           `4. Confirme o resultado. Se eu pedir para despublicar, use update_module com published=false, sem aviso.`,
       ),
   );
+
+  server.registerPrompt(
+    'criar-newsletter',
+    {
+      title: 'Criar newsletter',
+      description: 'Monta a newsletter (e-mail + modal Novidade) a partir do boilerplate e entrega os valores para o painel de envio.',
+      argsSchema: {
+        assunto: z.string().describe('Novidade a anunciar, ex.: "curso Git e GitHub" ou "nova funcionalidade X"'),
+        link: z.string().optional().describe('Link do botão (padrão: página pública do curso)'),
+      },
+    },
+    ({ assunto, link }) =>
+      user(
+        `${PERSONA}\n\nTarefa: criar a newsletter sobre "${assunto}"${link ? `, com o botão apontando para ${link}` : ''}.\n` +
+          `Uma linha de public.newsletter alimenta DOIS lugares: o e-mail (campo html, enviado como está; {{nome_virgula}} vira ", Maria" só no e-mail) e o modal "Novidade" do app (campo body + botão cta_label/cta_url). Preencha sempre os quatro campos, mais o subject:\n` +
+          `- body: fragmento HTML (<p>, <strong>, <br>, linhas "✓"), SEM atributo style, SEM placeholder, saudação fixa "Oi, Dev 👋". Também é o texto simples do e-mail.\n` +
+          `- cta_label e cta_url: o botão do modal. Sem cta_label, o modal só mostra "Fechar".\n` +
+          `1. Levante os fatos. Se for curso, use list_courses, list_modules e list_lessons e anuncie SOMENTE o que existe e está validado/publicado (conte módulos, aulas e desafios reais); não invente números. Respeite "O que NÃO afirmar" em docs/base-de-conhecimento-marketing.md.\n` +
+          `2. Link do botão: https://semeandodevs.com.br/cursos/<slug-do-curso> (aula: /cursos/<slug-do-curso>/<slug-do-modulo>/<slug-da-aula>). Se não souber o slug da aula, use o do curso e avise. Pergunte se os módulos anunciados já estão publicados, para o link não levar a um curso vazio.\n` +
+          `3. Escreva e mostre: assunto, 4 parágrafos, 3 números (painel de estatísticas), lista de tópicos e botão. ESPERE minha aprovação.\n` +
+          `4. Aprovado, copie supabase/functions/dispatch-newsletter/templates/_boilerplate.html para templates/<slug>.html (modelos prontos: curso-sql.html e curso-git.html) e troque todos os marcadores [[...]]; confira com grep '\\[\\[' que nenhum sobrou. Mantenha o estilo: fundo #060e20, card #0f1930, azul #3fc2fb, verde #e8ffc0, rosa #fe69ac, estilos inline em tabelas, sem bordas de 1px, sem travessão longo, rodapé de descadastro.\n` +
+          `5. Me entregue, em blocos separados, o que colar em cada campo do painel /admin/envio-de-newsletter: Assunto, Mensagem (body), HTML completo (o arquivo), texto e link do botão. Só gere SQL se eu pedir. Lembre-me de usar "Enviar teste" antes do envio geral.\n` +
+          `6. Eu envio e rodo o SQL: nunca dispare a Edge Function nem altere a tabela por conta própria, e não faça commit sem eu pedir.`,
+      ),
+  );
 }
