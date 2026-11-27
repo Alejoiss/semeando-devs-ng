@@ -30,6 +30,7 @@ Para testar sem risco, aponte `MCP_SUPABASE_*` para o Supabase local (`http://12
 | Trilhas | `list_tracks`, `create_track`, `update_track`, `delete_track` |
 | Estrutura | `create_roadmap`, `create_course`, `update_course`, `delete_course`, `create_module`, `update_module`, `delete_module` |
 | Lições | `create_lesson`, `set_lesson_content`, `update_lesson`, `delete_lesson`, `validate_lesson` |
+| Alunos (leitura) | `get_student_lesson_progress` |
 | Partes da lição | `add_section`, `update_section`, `delete_section`, `add_extra_material`, `delete_extra_material`, `add_quiz_question`, `update_quiz_question`, `delete_quiz_question` |
 
 Prompts: `post-quiz-do-dia`, `novo-roadmap`, `detalhar-licao`, `criar-desafio`.
