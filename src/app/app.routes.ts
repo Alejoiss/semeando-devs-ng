@@ -65,6 +65,12 @@ export const routes: Routes = [
         title: 'Semeando Devs - Termos de Uso'
     },
     {
+        path: 'comece',
+        loadComponent: () => import('./pages/start-here/start-here').then((m) => m.StartHere),
+        title: 'Comece a programar grátis - Semeando Devs',
+        resolve: { courses: showcaseCoursesResolver }
+    },
+    {
         path: 'cursos',
         loadComponent: () => import('./pages/courses/courses').then((m) => m.Courses),
         title: 'Cursos - Semeando Devs',

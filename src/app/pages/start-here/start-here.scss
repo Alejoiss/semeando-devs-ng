@@ -1,0 +1,91 @@
+:host {
+    display: block;
+    min-height: 100vh;
+}
+
+.hero-backdrop {
+    background: radial-gradient(circle at 30% 40%, rgba(63, 194, 251, 0.15), transparent 65%);
+}
+
+.gradient-text {
+    background: linear-gradient(90deg, #3fc2fb, #fe69ac, #e8ffc0);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+}
+
+.eyebrow {
+    @apply inline-block text-secondary text-sm font-label font-bold tracking-[0.3em] uppercase;
+}
+
+.btn-primary {
+    @apply transition duration-300 hover:-translate-y-1;
+    background: linear-gradient(135deg, #3fc2fb, #1aafe7);
+    color: #002e40;
+    box-shadow: 0 8px 24px rgba(63, 194, 251, 0.2);
+    border-radius: 1rem;
+    font-weight: 800;
+}
+
+.btn-secondary {
+    @apply bg-surface-container-highest text-primary transition duration-300 hover:-translate-y-1 hover:bg-surface-bright;
+    border-radius: 1rem;
+    font-weight: 700;
+}
+
+.btn-primary,
+.btn-secondary,
+.course-card,
+button {
+    &:focus-visible {
+        outline: 3px solid #e8ffc0;
+        outline-offset: 3px;
+    }
+}
+
+.course-card {
+    @apply flex h-full flex-col gap-4 rounded-[1.5rem] bg-surface-container-high p-7 transition duration-300 hover:bg-surface-bright;
+}
+
+.course-icon {
+    @apply flex h-14 w-14 shrink-0 items-center justify-center overflow-hidden rounded-xl;
+}
+
+.step-number {
+    @apply flex h-10 w-10 items-center justify-center rounded-full bg-primary/15 font-headline text-lg font-extrabold text-primary;
+}
+
+.promo {
+    background: linear-gradient(120deg, rgba(254, 105, 172, 0.16), rgba(63, 194, 251, 0.12));
+}
+
+.coupon-code {
+    @apply rounded-xl bg-surface-container-lowest px-4 py-3 font-mono text-xl font-bold tracking-wider text-tertiary;
+}
+
+.faq-panel {
+    display: grid;
+    grid-template-rows: 0fr;
+    visibility: hidden;
+    transition: grid-template-rows var(--motion-base) var(--ease-standard), visibility 0s linear var(--motion-base);
+
+    &.is-open {
+        grid-template-rows: 1fr;
+        visibility: visible;
+        transition: grid-template-rows var(--motion-base) var(--ease-standard), visibility 0s;
+    }
+
+    > .faq-panel-inner {
+        min-height: 0;
+        overflow: hidden;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .btn-primary,
+    .btn-secondary,
+    .course-card,
+    .faq-panel {
+        transition: none;
+    }
+}

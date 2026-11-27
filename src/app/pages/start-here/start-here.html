@@ -1,0 +1,184 @@
+<div class="start-here bg-background text-on-background antialiased selection:bg-primary/30">
+    <app-header></app-header>
+
+    <main class="pt-24">
+        <section class="relative px-6 py-20 md:py-28 overflow-hidden">
+            <div class="hero-backdrop absolute inset-0 -z-10 opacity-60" aria-hidden="true"></div>
+            <div class="max-w-6xl mx-auto grid gap-12 lg:grid-cols-2 items-center">
+                <div class="space-y-6 text-center lg:text-left">
+                    <span class="eyebrow">Comece grátis</span>
+                    <h1 class="font-headline text-4xl md:text-6xl font-extrabold leading-tight tracking-tight">
+                        Aprenda a programar <span class="gradient-text">uma lição curta por vez</span>
+                    </h1>
+                    <p class="text-on-surface-variant text-lg leading-relaxed max-w-xl mx-auto lg:mx-0">
+                        Aula, quiz e desafio de código com feedback de IA, tudo no navegador. Você ganha XP, sobe no
+                        ranking e pode começar agora, sem pagar nada.
+                    </p>
+                    <div class="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
+                        <a routerLink="/auth/register" class="btn-primary px-8 py-4 text-lg text-center">Criar conta grátis</a>
+                        <a href="#cursos" class="btn-secondary px-8 py-4 text-lg text-center">Escolher um curso</a>
+                    </div>
+                    <p class="text-sm text-on-surface-variant">
+                        A 1ª lição de cada módulo é aberta, sem cadastro. O plano Free custa R$ 0.
+                    </p>
+                </div>
+                <div class="glass-card rounded-2xl overflow-hidden shadow-2xl">
+                    <img src="assets/screens/desafios_de_codigo.png" alt="Tela de desafio de código do Semeando Devs, com editor e feedback de IA"
+                        class="w-full h-auto" width="1309" height="907" />
+                </div>
+            </div>
+        </section>
+
+        <section id="cursos" class="px-6 py-20 bg-surface-container-low scroll-mt-24">
+            <div class="max-w-6xl mx-auto">
+                <div class="text-center mb-12 space-y-4">
+                    <span class="eyebrow">Por onde começar</span>
+                    <h2 class="font-headline text-3xl md:text-4xl font-bold">Escolha um curso</h2>
+                    <p class="text-on-surface-variant max-w-2xl mx-auto">
+                        Os cursos são independentes: comece por qualquer um.
+                    </p>
+                </div>
+
+                <ul class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3" role="list">
+                    @for (course of courses(); track course.id) {
+                    <li>
+                        <a [routerLink]="['/cursos', course.slug]" class="course-card group">
+                            @if (course.avatar) {
+                            <span class="course-icon bg-white p-1">
+                                <img [src]="course.avatar" alt="" width="48" height="48" class="w-full h-full object-contain rounded-lg" />
+                            </span>
+                            } @else {
+                            <span class="course-icon bg-primary/10 text-primary">
+                                <span class="material-symbols-outlined text-3xl" aria-hidden="true">{{ course.icon || 'school' }}</span>
+                            </span>
+                            }
+                            <h3 class="font-headline text-xl font-bold group-hover:text-primary transition-colors">{{ course.title }}</h3>
+                            <p class="text-on-surface-variant leading-relaxed">{{ course.description }}</p>
+                            <span class="mt-auto inline-flex items-center gap-1 font-bold text-primary">
+                                Abrir curso
+                                <span class="material-symbols-outlined text-base transition-transform group-hover:translate-x-1" aria-hidden="true">arrow_forward</span>
+                            </span>
+                        </a>
+                    </li>
+                    } @empty {
+                    <li class="sm:col-span-2 lg:col-span-3 text-center">
+                        <a routerLink="/cursos" class="btn-secondary inline-block px-8 py-4">Ver o catálogo de cursos</a>
+                    </li>
+                    }
+                </ul>
+            </div>
+        </section>
+
+        <section class="px-6 py-20">
+            <div class="max-w-6xl mx-auto">
+                <h2 class="font-headline text-3xl md:text-4xl font-bold text-center mb-12">Como funciona</h2>
+                <ol class="grid gap-6 md:grid-cols-3" role="list">
+                    @for (step of steps; track step.title; let i = $index) {
+                    <li class="rounded-[1.5rem] bg-surface-container-high p-8 space-y-3">
+                        <span class="flex items-center gap-3">
+                            <span class="step-number">{{ i + 1 }}</span>
+                            <span class="material-symbols-outlined text-tertiary text-3xl" aria-hidden="true">{{ step.icon }}</span>
+                        </span>
+                        <h3 class="font-headline text-xl font-bold">{{ step.title }}</h3>
+                        <p class="text-on-surface-variant leading-relaxed">{{ step.text }}</p>
+                    </li>
+                    }
+                </ol>
+            </div>
+        </section>
+
+        <section class="px-6 py-20 bg-surface-container-low">
+            <div class="max-w-4xl mx-auto space-y-8">
+                <div class="text-center space-y-4">
+                    <h2 class="font-headline text-3xl md:text-4xl font-bold">Free ou PRÓ: o conteúdo é o mesmo</h2>
+                    <p class="text-on-surface-variant">A diferença entre os planos é só de limites diários.</p>
+                </div>
+                <div class="overflow-x-auto rounded-[1.5rem] bg-surface-container-high">
+                    <table class="w-full text-left">
+                        <caption class="sr-only">Comparação entre os planos Free e PRÓ</caption>
+                        <thead class="bg-surface-container-highest">
+                            <tr>
+                                <th scope="col" class="p-4"><span class="sr-only">Item</span></th>
+                                <th scope="col" class="p-4 font-headline text-lg">Free</th>
+                                <th scope="col" class="p-4 font-headline text-lg text-primary">PRÓ</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr class="even:bg-surface-container">
+                                <th scope="row" class="p-4 font-normal text-on-surface-variant">Preço</th>
+                                <td class="p-4">R$ 0</td>
+                                <td class="p-4 whitespace-nowrap">R$ 29,90/mês ou R$ 299,90/ano</td>
+                            </tr>
+                            <tr class="even:bg-surface-container">
+                                <th scope="row" class="p-4 font-normal text-on-surface-variant">Lições por dia</th>
+                                <td class="p-4">5</td>
+                                <td class="p-4">Ilimitadas</td>
+                            </tr>
+                            <tr class="even:bg-surface-container">
+                                <th scope="row" class="p-4 font-normal text-on-surface-variant">Envios de desafio para a IA por dia</th>
+                                <td class="p-4">5</td>
+                                <td class="p-4">30</td>
+                            </tr>
+                            <tr class="even:bg-surface-container">
+                                <th scope="row" class="p-4 font-normal text-on-surface-variant">Cursos</th>
+                                <td class="p-4">Todos</td>
+                                <td class="p-4">Todos</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                @if (promo(); as p) {
+                <div class="promo flex flex-col md:flex-row gap-6 md:items-center justify-between rounded-[1.5rem] p-6 md:p-8">
+                    <div class="space-y-2">
+                        <h3 class="font-headline text-xl font-bold">{{ p.title }}</h3>
+                        <p class="text-on-surface-variant">{{ p.detail }}</p>
+                    </div>
+                    <div class="flex flex-wrap items-center gap-3">
+                        <span class="coupon-code">{{ p.code }}</span>
+                        <button type="button" (click)="copyCode(p.code)" class="btn-secondary px-5 py-3 inline-flex items-center gap-2">
+                            <span class="material-symbols-outlined text-base" aria-hidden="true">{{ copied() ? 'check' : 'content_copy' }}</span>
+                            {{ copied() ? 'Copiado' : 'Copiar código' }}
+                        </button>
+                    </div>
+                </div>
+                }
+            </div>
+        </section>
+
+        <section class="px-6 py-20">
+            <div class="max-w-3xl mx-auto">
+                <h2 class="font-headline text-3xl md:text-4xl font-bold text-center mb-10">Perguntas frequentes</h2>
+                <div class="space-y-3">
+                    @for (item of faq; track item.q; let i = $index) {
+                    <div class="rounded-[1.25rem] bg-surface-container-high">
+                        <h3>
+                            <button type="button" class="w-full flex items-center justify-between gap-4 p-5 text-left font-bold"
+                                [attr.aria-expanded]="openFaq() === i" [attr.aria-controls]="'faq-' + i" (click)="toggleFaq(i)">
+                                {{ item.q }}
+                                <span class="material-symbols-outlined text-primary transition-transform"
+                                    [class.rotate-180]="openFaq() === i" aria-hidden="true">expand_more</span>
+                            </button>
+                        </h3>
+                        <div [id]="'faq-' + i" class="faq-panel" [class.is-open]="openFaq() === i" role="region">
+                            <div class="faq-panel-inner">
+                                <p class="px-5 pb-5 text-on-surface-variant leading-relaxed">{{ item.a }}</p>
+                            </div>
+                        </div>
+                    </div>
+                    }
+                </div>
+            </div>
+        </section>
+
+        <section class="px-6 py-20 bg-surface-container-low text-center">
+            <div class="max-w-2xl mx-auto space-y-6">
+                <h2 class="font-headline text-3xl md:text-4xl font-bold">Sua primeira lição leva poucos minutos</h2>
+                <p class="text-on-surface-variant">Crie sua conta grátis, confirme o e-mail e comece pelo curso que quiser.</p>
+                <a routerLink="/auth/register" class="btn-primary inline-block px-8 py-4 text-lg">Começar grátis</a>
+            </div>
+        </section>
+    </main>
+
+    <app-footer></app-footer>
+</div>
