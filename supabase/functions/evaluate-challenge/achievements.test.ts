@@ -6,6 +6,7 @@ import { evaluateAchievements } from "./achievements.ts"
 const USER = 'user-1'
 const NOW = '2026-03-10T12:00:00Z'
 const TODAY = '2026-03-10'
+const COMPLETED_AT = new Date(NOW).toISOString()
 const YESTERDAY = '2026-03-09'
 
 type Ach = { id: string; identification: string; xp_amount?: number; module_id?: string }
@@ -110,7 +111,7 @@ Deno.test('completes the achievement of the module just finished and awards its 
         achievements: [m, ach('OTHER', 5, { module_id: 'mod-2' })],
         context: { moduleCompleted: true },
     })
-    assertEquals(updatesOf(fake), [{ id: m.id, updates: { completed: true } }])
+    assertEquals(updatesOf(fake), [{ id: m.id, updates: { completed: true, completed_at: COMPLETED_AT } }])
     assertEquals(totalXpAwarded, 200)
     assertEquals(earnedAchievements, [m])
 })
@@ -144,7 +145,7 @@ Deno.test('perfection streaks advance on a perfect quiz and complete at their th
         context: { lessonType: 'QUIZ', score: 10 },
     })
     assertEquals(updatesOf(fake), [
-        { id: 'a-SERIE_PERFEITA', updates: { progress: 5, completed: true } },
+        { id: 'a-SERIE_PERFEITA', updates: { progress: 5, completed: true, completed_at: COMPLETED_AT } },
         { id: 'a-COMBO_INSANO', updates: { progress: 5, completed: false } },
     ])
     assertEquals(earnedAchievements.map((a) => a.identification), ['SERIE_PERFEITA'])
@@ -173,7 +174,7 @@ Deno.test('the day streak advances when yesterday was recorded and completes at 
         ],
     })
     assertEquals(updatesOf(fake), [
-        { id: 'a-MARATONISTA_DO_CODIGO', updates: { progress: 5, completed: true, last_value: TODAY } },
+        { id: 'a-MARATONISTA_DO_CODIGO', updates: { progress: 5, completed: true, completed_at: COMPLETED_AT, last_value: TODAY } },
         { id: 'a-IMPARAVEL', updates: { progress: 5, completed: false, last_value: TODAY } },
     ])
     assertEquals(earnedAchievements.map((a) => a.identification), ['MARATONISTA_DO_CODIGO'])

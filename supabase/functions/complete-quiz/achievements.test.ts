@@ -6,6 +6,7 @@ import { evaluateAchievements } from "./achievements.ts"
 const USER = 'user-1'
 const NOW = '2026-03-10T12:00:00Z'
 const TODAY = '2026-03-10'
+const COMPLETED_AT = new Date(NOW).toISOString()
 const YESTERDAY = '2026-03-09'
 
 type Ach = { id: string; identification: string; xp_amount?: number; module_id?: string }
@@ -103,7 +104,7 @@ Deno.test('completes the achievement of the module just finished and awards its 
         achievements: [m, ach('OTHER', 5, { module_id: 'mod-2' })],
         context: { moduleCompleted: true },
     })
-    assertEquals(updatesOf(fake), [{ id: m.id, updates: { completed: true } }])
+    assertEquals(updatesOf(fake), [{ id: m.id, updates: { completed: true, completed_at: COMPLETED_AT } }])
     assertEquals(xpEntries, [{ amount: 200, reason: 'ACHIEVEMENT' }])
     assertEquals(earnedAchievements, [m])
 })
@@ -131,7 +132,7 @@ Deno.test('SERIE_PERFEITA completes on the fifth perfect score', async () => {
         states: [state('SERIE_PERFEITA', { progress: 4 })],
         context: { score: 10 },
     })
-    assertEquals(updatesOf(fake), [{ id: 'a-SERIE_PERFEITA', updates: { progress: 5, completed: true } }])
+    assertEquals(updatesOf(fake), [{ id: 'a-SERIE_PERFEITA', updates: { progress: 5, completed: true, completed_at: COMPLETED_AT } }])
     assertEquals(xpEntries, [{ amount: 50, reason: 'ACHIEVEMENT' }])
 })
 
