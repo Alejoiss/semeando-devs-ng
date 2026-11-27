@@ -87,6 +87,7 @@ export async function evaluateAchievements(
             const hasChanges = Object.keys(updates).some(key => updates[key] !== currentState[key]);
             if (!hasChanges) return;
 
+            if (updates.completed) updates.completed_at = new Date().toISOString();
             pending.push({ ach, updates });
             Object.assign(currentState, updates);
         };

@@ -73,6 +73,8 @@ export async function evaluateAchievements(
             const hasChanges = Object.keys(updates).some(key => updates[key] !== currentState[key]);
             if (!hasChanges) return;
 
+            if (updates.completed) updates.completed_at = new Date().toISOString();
+
             const { error: updateError } = await supabase
                 .from('user_achievements')
                 .update(updates)

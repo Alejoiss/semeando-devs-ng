@@ -54,6 +54,9 @@
                       [class.bg-surface-container-low]="!earned">
                     {{ achievement.xpAmount }} XP
                 </span>
+                @if (earned) {
+                    <span class="font-label text-xs text-primary/80 mt-2">Conquistada em {{ getEarnedDate(achievement.id) }}</span>
+                }
             </div>
         }
     </div>

@@ -6,6 +6,7 @@ export class UserAchievement {
     public completed: boolean;
     public lastValue: string | null;
     public createdAt: Date;
+    public completedAt: Date | null;
 
     constructor(data: any = {}) {
         this.userId = data.user_id || '';
@@ -14,6 +15,7 @@ export class UserAchievement {
         this.progress = data.progress || 0;
         this.completed = data.completed || false;
         this.lastValue = data.last_value || null;
+        this.completedAt = data.completed_at ? new Date(data.completed_at) : null;
         this.createdAt = data.created_at ? new Date(data.created_at) : new Date();
     }
 }

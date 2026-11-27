@@ -25,11 +25,11 @@
                     <label for="student-sort-select" class="block font-label text-sm text-[#dee5ff]/80 mb-2">Ordenar por</label>
                     <select 
                         id="student-sort-select"
-                        (change)="sortField.set($any($event.target).value)"
-                        [value]="sortField()"
+                        (change)="onSortChange($any($event.target).value)"
                         class="w-full bg-[#060e20] text-[#dee5ff] rounded-xl px-4 py-3 font-body focus:outline-none focus:ring-2 focus:ring-[#3fc2fb]/30 transition appearance-none cursor-pointer">
                         <option value="name">Nome (A-Z)</option>
-                        <option value="created_at">Data de Cadastro</option>
+                        <option value="created_at">Cadastro (mais recentes)</option>
+                        <option value="created_at_asc">Cadastro (mais antigos)</option>
                     </select>
                 </div>
 

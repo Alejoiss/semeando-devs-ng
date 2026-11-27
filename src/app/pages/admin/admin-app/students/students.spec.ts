@@ -102,6 +102,19 @@ describe('AdminStudents', () => {
         expect(mockService.getStudents).toHaveBeenCalledWith(jasmine.objectContaining({ sortField: 'created_at', sortDir: 'desc' }));
     }));
 
+    it('offers oldest-first ordering by registration date', fakeAsync(() => {
+        fixture.detectChanges();
+        tick();
+
+        const sortSelect = fixture.debugElement.query(By.css('#student-sort-select')).nativeElement;
+        sortSelect.value = 'created_at_asc';
+        sortSelect.dispatchEvent(new Event('change'));
+        fixture.detectChanges();
+        tick();
+
+        expect(mockService.getStudents).toHaveBeenCalledWith(jasmine.objectContaining({ sortField: 'created_at', sortDir: 'asc' }));
+    }));
+
     it('filter input narrows the list and resets to page one (REQ-3.1, REQ-3.2, REQ-3.3)', fakeAsync(() => {
         // Set page to 1 first
         component.currentPage.set(1);

@@ -73,7 +73,7 @@ export class Achievements implements OnInit {
         const ua = this.userAchievements().find(ua => ua.achievementId === achievementId);
         if (!ua) return null;
 
-        return ua.createdAt.toLocaleDateString('pt-BR', {
+        return (ua.completedAt ?? ua.createdAt).toLocaleDateString('pt-BR', {
             day: '2-digit',
             month: 'short',
             year: 'numeric'

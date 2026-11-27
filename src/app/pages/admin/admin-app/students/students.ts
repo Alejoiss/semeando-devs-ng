@@ -18,6 +18,7 @@ export class AdminStudents {
 
     readonly searchQuery = signal('');
     readonly sortField = signal<'name' | 'created_at'>('name');
+    readonly sortDir = signal<'asc' | 'desc'>('asc');
     readonly currentPage = signal(0);
     readonly pageSize = signal(10);
 
@@ -39,12 +40,24 @@ export class AdminStudents {
             // Read signals to trigger effect on change
             this.searchQuery();
             this.sortField();
+            this.sortDir();
             this.currentPage();
             this.pageSize();
             
             // Call untracked load
             this.loadStudents();
         });
+    }
+
+    onSortChange(value: string) {
+        if (value === 'name') {
+            this.sortField.set('name');
+            this.sortDir.set('asc');
+        } else {
+            this.sortField.set('created_at');
+            this.sortDir.set(value === 'created_at_asc' ? 'asc' : 'desc');
+        }
+        this.currentPage.set(0);
     }
 
     onSearchChange(query: string) {
@@ -60,7 +73,7 @@ export class AdminStudents {
             const result = await this.adminStudentService.getStudents({
                 search: this.searchQuery(),
                 sortField: this.sortField(),
-                sortDir: this.sortField() === 'created_at' ? 'desc' : 'asc',
+                sortDir: this.sortDir(),
                 page: this.currentPage(),
                 pageSize: this.pageSize()
             });
