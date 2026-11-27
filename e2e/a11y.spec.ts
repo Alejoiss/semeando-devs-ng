@@ -59,6 +59,9 @@ for (const [audience, scans] of Object.entries(SCANS)) {
                 await page.waitForFunction(() =>
                     document.getAnimations().every(a => a.effect?.getComputedTiming().iterations === Infinity || a.playState === 'finished'),
                 );
+                await page.waitForFunction(() =>
+                    [...document.querySelectorAll('[data-hero]')].every(el => getComputedStyle(el).opacity === '1'),
+                );
                 await page.waitForTimeout(300);
                 await expectNoAxeViolations(page, { exclude: ['iframe'] });
             };
